@@ -14,7 +14,12 @@ import type { BossScore } from '@/components/GameOverlay';
 // decorative fallback is shown. Nudge NAME_TOP to line the name up with the blank
 // line on the real template.
 const CERT_TEMPLATE = '/certificate-template.png';
-const NAME_TOP = '52%'; // vertical position of the name over the template
+// Tuned against the real template (2000×1414 px, ratio 1.414 : 1 = A4 landscape).
+// Nudge these if the operator swaps in a re-laid-out template later.
+const NAME_TOP = '45.5%';   // the "...awarded to ______" blank
+const DATE_TOP = '58%';     // the "...awarded on ______" blank
+const NAME_LEFT = '30%';
+const NAME_WIDTH = '68%';
 
 export default function CertificateModal({ score = null, onClose }: { score?: BossScore | null; onClose: () => void }) {
   const [name, setName] = useState('');
@@ -23,6 +28,7 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
   const [err, setErr] = useState('');
 
   const scoreText = score ? `${score.correct}/${score.total} (${score.percent}%)` : null;
+  const issuedDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
   async function submit() {
     const clean = name.trim().replace(/\s+/g, ' ').slice(0, 60);
@@ -67,24 +73,24 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
             style={{
               position: 'relative', width: '100%', aspectRatio: '1.414 / 1',
               borderRadius: 14, overflow: 'hidden',
-              background: 'linear-gradient(135deg,#FFFDF4,#FBF3D9)',
               boxShadow: '0 18px 50px rgba(0,0,0,.4)',
-              border: '10px double #C9A227',
               backgroundImage: `url(${CERT_TEMPLATE})`,
               backgroundSize: 'cover', backgroundPosition: 'center',
             }}
           >
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '8%', pointerEvents: 'none' }}>
-              <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 'clamp(20px,4vw,34px)', color: '#7C3EE0' }}>ใบประกาศนียบัตร</div>
-              <div style={{ fontFamily: 'Sarabun', fontSize: 'clamp(11px,1.8vw,15px)', color: '#8A6D1E', marginTop: 6 }}>ทักษะคอมพิวเตอร์ · DigComp 3.0</div>
-              <div style={{ fontFamily: 'Sarabun', fontSize: 'clamp(11px,1.8vw,15px)', color: '#5a4a2a', marginTop: 'auto' }}>มอบให้แก่</div>
+            {/* Name goes on the "...is awarded to ______" blank */}
+            <div style={{ position: 'absolute', top: NAME_TOP, left: NAME_LEFT, width: NAME_WIDTH, transform: 'translateY(-50%)', textAlign: 'center', pointerEvents: 'none' }}>
+              <span style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 'clamp(16px,2.6vw,28px)', color: '#2b3350' }}>{issued}</span>
             </div>
-            <div style={{ position: 'absolute', top: NAME_TOP, left: 0, right: 0, transform: 'translateY(-50%)', textAlign: 'center', padding: '0 8%' }}>
-              <span style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 'clamp(26px,5.5vw,52px)', color: '#2b1a52' }}>{issued}</span>
+            {/* Date goes on the "...was awarded on ______" blank */}
+            <div style={{ position: 'absolute', top: DATE_TOP, left: NAME_LEFT, width: NAME_WIDTH, transform: 'translateY(-50%)', textAlign: 'center', pointerEvents: 'none' }}>
+              <span style={{ fontFamily: 'Sarabun', fontWeight: 600, fontSize: 'clamp(11px,1.6vw,15px)', color: '#5b6a86' }}>{issuedDate}</span>
             </div>
-            <div style={{ position: 'absolute', bottom: '8%', left: 0, right: 0, textAlign: 'center', fontFamily: 'Sarabun', fontSize: 'clamp(10px,1.6vw,14px)', color: '#5a4a2a', pointerEvents: 'none' }}>
-              ผ่านบอสไฟท์สุดท้ายครบทุกด้าน 🏆{scoreText ? ` · คะแนน ${scoreText}` : ''}
-            </div>
+            {scoreText && (
+              <div style={{ position: 'absolute', bottom: '4%', left: '6%', fontFamily: 'Sarabun', fontWeight: 600, fontSize: 'clamp(9px,1.3vw,12px)', color: '#9aa3b8', pointerEvents: 'none' }}>
+                คะแนน {scoreText}
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>

@@ -24,6 +24,13 @@ export async function POST(req: NextRequest) {
   }
 
   clearFailures(key);
-  await writeSession();
+  try {
+    await writeSession();
+  } catch (e) {
+    // SESSION_SECRET missing/too short — surface this as a real error instead of
+    // an unhandled 500/HTML page that breaks the client's r.json() parse.
+    console.error('admin auth: writeSession failed:', e);
+    return NextResponse.json({ ok: false, error: 'ตั้งค่าเซิร์ฟเวอร์ไม่ครบ (SESSION_SECRET)' }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
