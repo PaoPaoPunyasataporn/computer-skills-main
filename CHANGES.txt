@@ -1,0 +1,80 @@
+
+
+================================================================================
+6. THE SPEAKERS NOW SPEAK REAL THAI · 2-STAR PARTY · SHORTER GAME CARDS
+   [12 July 2026]
+================================================================================
+
+--- Why some speakers sounded wrong ------------------------------------------
+
+`dlf.speak(text)` plays a pre-recorded Thai MP3 when one exists for that exact
+string, and only falls back to the browser's speech engine when it doesn't.
+
+This machine — and most Thai school Windows machines — has NO Thai voice installed
+(only English David/Zira). So every speaker whose text had no clip was being read
+in an English accent. Those were the ones that "used the backup TTS".
+
+The clip maps were generated before much of the content existed, so the gaps were
+big: the boss fight had clips for only 34 of its 92 answer options.
+
+Fixed in two halves:
+
+1. Every speaker now says text that is actually recorded. Where a speaker had been
+   given an invented paraphrase ("ปุ่มย้อนกลับ") it now says the control's real
+   on-screen label, which is what got recorded.
+
+2. The missing clips were RECORDED. `scripts/gen-audio.mjs` finds every Thai string
+   a game can speak, synthesises the ones with no clip, and embeds them in the same
+   map under the same key scheme. 560 new clips across the 9 games.
+
+   The React side had no clips at all (its speakers were pure browser-voice, so the
+   competition quiz and the exit dialog were gibberish on a Thai-voice-less machine).
+   `scripts/gen-audio-app.mjs` records those 301 strings into public/audio/ with a
+   manifest; lib/speak.ts now plays the clip and only falls back to the browser voice
+   for a string with no recording.
+
+   Both scripts are idempotent and cached — re-running costs nothing. Run them after
+   adding any new Thai text, or its speaker will fall back to the browser voice again.
+
+   node scripts/gen-audio.mjs        # the 9 games
+   node scripts/gen-audio-app.mjs    # the React app (competition, dialogs)
+
+   `node scripts/check-speakers.mjs` audits it: it reports any speaker whose text has
+   no clip. It currently reports zero.
+
+   A bug worth naming: the first extractor pass used a naive regex that truncated any
+   string containing the other kind of quote — so 21 quiz questions like
+   'มีอีเมลจาก "ธนาคาร" บอกว่า…' were silently skipped. Both scripts now use a proper
+   string-literal matcher.
+
+TRADE-OFF, PLEASE READ: the clips are embedded as base64, so the games got much
+bigger — the boss fight is now 17.6 MB, unit5 15.2 MB. That is fine over a LAN or a
+decent connection, but on a slow classroom link the first load of a game will be
+noticeably slower. If that bites, the fix is to move the clips out of the HTML into
+public/audio/ like the React side already does, and have dlf fetch them on demand.
+
+--- 2 stars now gets the party ------------------------------------------------
+
+dlf.bigCongrats fires confetti + the cheering clip at 2 stars or more (was 3).
+1 star still gets the quiet well-done screen.
+
+--- Guided games always award 3 stars -----------------------------------------
+
+Where the child is walked through and cannot really fail, the game now just gives 3
+stars on completion instead of grading them:
+
+  unit1 Learn mode      (read all the parts)
+  unit2 Mock Desktop    (step-by-step missions)
+  unit3 keyboard lessons (drills only advance on the correct key)
+  unit4 browser quest   (missions only advance on the correct action)
+
+Still genuinely graded, because a child really can do worse: unit1 Quiz/Memory/Care,
+unit2's timed click arena, unit5 (lives), unit7, unit8, unit9, and the boss fight
+(full pass = 3, conditional pass = 2).
+
+--- Shorter game cards --------------------------------------------------------
+
+On a category page each game card reserved a footer row that used to hold the
+completion star. With that indicator gone the row was empty space. The play button
+now sits in the header row and the card is only as tall as its content
+(components/LessonApp.tsx + a `.gamecard` block in app/globals.css).
