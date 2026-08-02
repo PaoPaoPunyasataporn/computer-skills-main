@@ -194,9 +194,11 @@ h1{font-family:'Mitr',sans-serif;}
 .goal-text b{color:var(--primary,#16A34A);font-weight:600;}
 
 /* ══════════ dashboard-match layer: 3D cards + pressable buttons ══════════ */
+:root{--shadow:none;}
 .goal-box{border-bottom-width:5px!important;border-radius:20px!important;box-shadow:none!important;}
 .md-btn{border-radius:16px!important;font-weight:700;transition:transform .1s,box-shadow .1s;}
-.md-btn-primary{box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black);}
+.md-btn-primary{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary))!important;box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black);}
+.btn-start{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary))!important;}
 .md-btn-primary:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--primary) 70%,black);}
 .btn-start{border-radius:16px!important;font-family:'Mitr',sans-serif;font-weight:700;box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
 .stat-box{border:1.5px solid var(--border);border-bottom-width:4px;border-radius:14px;box-shadow:none!important;}

@@ -112,9 +112,10 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
 .res-score{font-size:15px;color:var(--text2);margin-bottom:14px;}
 
 /* ══════════ dashboard-match layer: 3D cards + pressable buttons ══════════ */
+:root{--shadow:none;}
 .intro-wrap,.mission-card,.goal-box,.results-wrap,.devpanel{border:1.5px solid var(--border)!important;border-bottom-width:5px!important;border-radius:20px!important;box-shadow:none!important;}
 .btn{border-radius:16px!important;font-weight:700;transition:transform .1s,box-shadow .1s;}
-.btn:not(.ghost){box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
+.btn:not(.ghost){background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary))!important;color:#fff!important;box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
 .btn:not(.ghost):active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
 .btn.ghost{border:1.5px solid var(--border)!important;border-bottom-width:4px!important;}
 .act-btn,.appicon,.taskcard{border-radius:14px;}

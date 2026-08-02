@@ -132,8 +132,9 @@ button:disabled + .opt-spk{opacity:.75;}
 .btn-restart:hover{background:#1d4ed8;}
 
 /* ══════════ dashboard-match layer: 3D cards + pressable buttons ══════════ */
+:root{--shadow:none;}
 .intro-wrap,.mission-card,.results-wrap,.goal-box{border:1.5px solid var(--border)!important;border-bottom-width:5px!important;border-radius:20px!important;box-shadow:none!important;}
-.btn-start,.btn-restart{border-radius:16px!important;font-weight:700;box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black)!important;transition:transform .1s,box-shadow .1s;}
+.btn-start,.btn-restart{border-radius:16px!important;font-weight:700;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary))!important;box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black)!important;transition:transform .1s,box-shadow .1s;}
 .btn-start:active,.btn-restart:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
 .nav-btn{border-radius:14px;}
 </style>
