@@ -85,14 +85,14 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
 .hand-title{font-family:'Mitr',sans-serif;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:10px;text-align:center;}
 .fingers{display:flex;gap:6px;justify-content:center;}
 .finger{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.finger-knuckle{width:28px;height:56px;border-radius:14px 14px 8px 8px;border:1.5px solid var(--border);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:9px;color:var(--text3);font-weight:600;transition:background 0.2s,border-color 0.2s;}
+.finger-knuckle{width:28px;height:56px;border-radius:14px 14px 8px 8px;border:1.5px solid var(--border);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-size:9px;color:var(--text2);font-weight:600;transition:background 0.2s,border-color 0.2s,color 0.2s;}
 .finger-base{width:32px;height:20px;border-radius:0 0 8px 8px;background:var(--surface2);border:1.5px solid var(--border);border-top:none;}
-.finger-label{font-size:9px;color:var(--text3);}
-.finger.active .finger-knuckle{background:rgba(245,158,11,0.25);border-color:var(--primary);}
-.finger.active .finger-label{color:var(--primary);}
+.finger-label{font-size:9px;color:var(--text2);}
+.finger.active .finger-knuckle{background:var(--primary);border-color:color-mix(in srgb,var(--primary) 70%,black);color:#fff;}
+.finger.active .finger-label{color:var(--primary);font-weight:700;}
 .thumb-wrap{display:flex;align-items:flex-end;}
-.thumb-key{width:50px;height:28px;border-radius:8px;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);font-weight:600;}
-.thumb-key.active{background:rgba(251,191,36,0.2);border-color:#FBBF24;color:#FBBF24;}
+.thumb-key{width:50px;height:28px;border-radius:8px;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text2);font-weight:600;}
+.thumb-key.active{background:var(--primary);border-color:color-mix(in srgb,var(--primary) 70%,black);color:#fff;}
 
 /* ── LESSON MODES ── */
 .lesson-panel{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;}
