@@ -777,7 +777,7 @@ function finish(){
     });}catch(e){}
     DLF_SELS.forEach(function(sel){try{document.querySelectorAll(sel).forEach(readable);}catch(e){}});
   }
-  setInterval(decorate,700);decorate();
+  /* dashboard-match: whole-page auto-decorator disabled -- was duplicating .opt-spk buttons and reading entire containers */
 
   // No greeting and no primer needed — embedded MP3 audio plays directly on any
   // click, including the very first click on a 🔊 button.
