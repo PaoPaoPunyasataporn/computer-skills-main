@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkBotId } from 'botid/server';
 import { addCertification } from '@/lib/cert-db';
 import { rateLimit, clientKey } from '@/lib/ratelimit';
 
@@ -10,6 +11,9 @@ export const dynamic = 'force-dynamic';
 // DATABASE_URL is unset the insert no-ops and we still return ok, so the
 // certificate shows either way.
 export async function POST(req: NextRequest) {
+  const bot = await checkBotId();
+  if (bot.isBot) return NextResponse.json({ ok: false, error: 'ยืนยันไม่สำเร็จ' }, { status: 403 });
+
   if (!rateLimit(`certify:${clientKey(req)}`, 30, 60_000))
     return NextResponse.json({ ok: false, error: 'ลองบ่อยเกินไป รอสักครู่' }, { status: 429 });
 
