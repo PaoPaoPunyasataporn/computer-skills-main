@@ -1748,7 +1748,7 @@ function failTest(summary){
   }
   function dlfIsControl(el){
     if(el.matches('button,a,input,textarea,select,label')) return true;
-    if(el.closest('button,a[href],input,.opt-btn,.btn,.mode-card,.care-btn,.cc-btn,.tab,.id-option,.ans-btn,.flip-card,.start-btn,.next-btn,.choice,[role="button"]')) return true;
+    if(el.closest('button,a[href],input,.opt-btn,.btn,.mode-card,.care-btn,.cc-btn,.tab,.id-option,.ans-btn,.flip-card,.start-btn,.next-btn,.choice,[role="button"],.nav-btn,.new-tab-btn,.browser-toolbar,.browser-titlebar,.tabs-container,.address-bar,[class*="toolbar"],[class*="titlebar"]')) return true;
     return false;
   }
   function dlfFullText(el){
@@ -1783,7 +1783,8 @@ function failTest(summary){
     if(el.id && DLF_NOSAY[el.id]) return;            // dynamic counters/date/celebration text: value changes at runtime, skip
     if(el.classList && el.classList.contains('no-say')) return;
     if(el.closest && el.closest('.no-say')) return;   // .no-say applies to the whole subtree
-    if(el.querySelector(':scope > .dlf-say')) return;
+    if(el.querySelector('.dlf-say')) return;
+    if(el.querySelector('.opt-spk')) return;
     // narrate leaves, not containers: skip wrappers whose text is just their children re-concatenated
     if(dlfOwnThaiLen(el)<12 && dlfHasDecoratedChild(el)) return;
     var txt=dlfFullText(el);
@@ -1806,7 +1807,7 @@ function failTest(summary){
     });}catch(e){}
     DLF_SELS.forEach(function(sel){try{document.querySelectorAll(sel).forEach(readable);}catch(e){}});
   }
-  /* dashboard-match: whole-page auto-decorator disabled -- was duplicating .opt-spk buttons and reading entire containers */
+  setInterval(decorate,1800);decorate();
 
   // No greeting and no primer needed — embedded MP3 audio plays directly on any
   // click, including the very first click on a 🔊 button.

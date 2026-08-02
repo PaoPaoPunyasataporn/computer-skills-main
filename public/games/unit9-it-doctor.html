@@ -734,7 +734,7 @@ function finish(){
   }
   function dlfIsControl(el){
     if(el.matches('button,a,input,textarea,select,label')) return true;
-    if(el.closest('button,a[href],input,.opt-btn,.btn,.mode-card,.care-btn,.cc-btn,.tab,.id-option,.ans-btn,.flip-card,.start-btn,.next-btn,.choice,[role="button"]')) return true;
+    if(el.closest('button,a[href],input,.opt-btn,.btn,.mode-card,.care-btn,.cc-btn,.tab,.id-option,.ans-btn,.flip-card,.start-btn,.next-btn,.choice,[role="button"],.nav-btn,.new-tab-btn,.browser-toolbar,.browser-titlebar,.tabs-container,.address-bar,[class*="toolbar"],[class*="titlebar"]')) return true;
     return false;
   }
   function dlfFullText(el){
@@ -757,7 +757,8 @@ function finish(){
   function readable(el){
     if(!el || el.nodeType!==1) return;
     if(dlfIsControl(el)) return;
-    if(el.querySelector(':scope > .dlf-say')) return;
+    if(el.querySelector('.dlf-say')) return;
+    if(el.querySelector('.opt-spk')) return;
     var txt=dlfFullText(el);
     if(!txt||txt.length<2||txt.length>220) return;
     if(!/[\u0E00-\u0E7F]/.test(txt)) return;
@@ -777,7 +778,7 @@ function finish(){
     });}catch(e){}
     DLF_SELS.forEach(function(sel){try{document.querySelectorAll(sel).forEach(readable);}catch(e){}});
   }
-  /* dashboard-match: whole-page auto-decorator disabled -- was duplicating .opt-spk buttons and reading entire containers */
+  setInterval(decorate,700);decorate();
 
   // No greeting and no primer needed — embedded MP3 audio plays directly on any
   // click, including the very first click on a 🔊 button.
