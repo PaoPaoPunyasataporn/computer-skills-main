@@ -957,7 +957,7 @@ buildLessonList();
   }
   function dlfIsControl(el){
     if(el.matches('button,a,input,textarea,select,label')) return true;
-    if(el.closest('button,a[href],input,.opt-btn,.btn,.mode-card,.care-btn,.cc-btn,.tab,.id-option,.ans-btn,.flip-card,.start-btn,.next-btn,.choice,[role="button"],.nav-btn,.new-tab-btn,.browser-toolbar,.browser-titlebar,.tabs-container,.address-bar,[class*="toolbar"],[class*="titlebar"]')) return true;
+    if(el.closest('button,a[href],input,.opt-btn,.btn,.mode-card,.care-btn,.cc-btn,.tab,.id-option,.ans-btn,.flip-card,.start-btn,.next-btn,.choice,[role="button"],.nav-btn,.new-tab-btn,.browser-toolbar,.browser-titlebar,.tabs-container,.address-bar,[class*="toolbar"],[class*="titlebar"],.key,.thumb-key,.finger-knuckle')) return true;
     return false;
   }
   function dlfFullText(el){
