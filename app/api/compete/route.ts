@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkBotId } from 'botid/server';
 import { rateLimit, clientKey } from '@/lib/ratelimit';
 import {
   createRoom, joinRoom, getState, startRace, reportProgress, leaveRoom, rematch,
@@ -62,12 +61,10 @@ export async function POST(req: NextRequest) {
   try {
     switch (action) {
       case 'create': {
-        // Only room creation is bot-checked -- 'progress' fires every ~1s per
-        // racing player and checking every one of those would be wasteful and
-        // isn't where the actual abuse vector (spamming rooms) lives.
-        const bot = await checkBotId();
-        if (bot.isBot) return fail('ยืนยันไม่สำเร็จ', 403);
-
+        // Deliberately not BotID-checked -- see instrumentation-client.ts:
+        // BotID's client wrapper was found to leave fetches to this endpoint
+        // permanently pending in some browser contexts. Room creation still
+        // has the standard IP rate limit above.
         const name = cleanName(b.name);
         if (!name) return fail('ใส่ชื่อเล่นก่อนนะ');
         const mode = MODES.includes(b.mode as Mode) ? (b.mode as Mode) : 'quiz';
