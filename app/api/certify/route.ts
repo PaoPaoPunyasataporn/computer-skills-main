@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkBotId } from 'botid/server';
 import { addCertification } from '@/lib/cert-db';
 import { rateLimit, clientKey } from '@/lib/ratelimit';
 
@@ -10,10 +9,14 @@ export const dynamic = 'force-dynamic';
 // auth: this is the one public write, and it only ever appends a row. When
 // DATABASE_URL is unset the insert no-ops and we still return ok, so the
 // certificate shows either way.
+//
+// Deliberately NOT BotID-protected: tested and found that BotID's client-side
+// wrapper can leave this fetch permanently pending (no response, no error) in
+// some automated/edge-case browser contexts. This is the reward moment for a
+// child who just finished the whole course -- an indefinite hang here is a far
+// worse failure than the (already-present) IP rate limit below being the only
+// spam guard.
 export async function POST(req: NextRequest) {
-  const bot = await checkBotId();
-  if (bot.isBot) return NextResponse.json({ ok: false, error: 'ยืนยันไม่สำเร็จ' }, { status: 403 });
-
   if (!rateLimit(`certify:${clientKey(req)}`, 30, 60_000))
     return NextResponse.json({ ok: false, error: 'ลองบ่อยเกินไป รอสักครู่' }, { status: 429 });
 
