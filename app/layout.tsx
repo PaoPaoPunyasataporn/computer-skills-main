@@ -1,11 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { BotIdClient } from 'botid/client';
 import { Analytics } from '@vercel/analytics/next';
-
-// Admin sign-in is the auth endpoint worth shielding from automated abuse.
-// Vercel BotID no-ops locally.
-const protectedRoutes = [{ path: '/api/admin/auth', method: 'POST' }];
 
 export const metadata: Metadata = {
   title: 'ทักษะคอมพิวเตอร์ · DigComp 3.0',
@@ -16,7 +11,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="th">
       <head>
-        <BotIdClient protect={protectedRoutes} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

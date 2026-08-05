@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit, clientKey } from '@/lib/ratelimit';
 import {
   createRoom, joinRoom, getState, startRace, reportProgress, leaveRoom, rematch,
-  type Mode,
+  type Mode, type TypingLevel,
 } from '@/lib/compete-store';
 
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,8 @@ export const dynamic = 'force-dynamic';
 //   GET  ?code=ABCD                       -> live room state (polled ~1/s while racing)
 //   POST {action:'create'|'join'|'start'|'progress'|'leave'|'rematch', ...}
 
-const MODES: Mode[] = ['typing', 'clicking', 'quiz'];
+const MODES: Mode[] = ['typing', 'dragdrop', 'filesort', 'scamquiz'];
+const LEVELS: TypingLevel[] = [0, 1, 2, 3];
 
 // Nicknames are shown to every other child in the room, so keep them short and
 // drop control characters and angle brackets.
@@ -67,8 +68,9 @@ export async function POST(req: NextRequest) {
         // has the standard IP rate limit above.
         const name = cleanName(b.name);
         if (!name) return fail('ใส่ชื่อเล่นก่อนนะ');
-        const mode = MODES.includes(b.mode as Mode) ? (b.mode as Mode) : 'quiz';
-        const { room, playerId: id } = await createRoom(mode, { name, avatar: cleanAvatar(b.avatar) });
+        const mode = MODES.includes(b.mode as Mode) ? (b.mode as Mode) : 'typing';
+        const level = LEVELS.includes(b.level as TypingLevel) ? (b.level as TypingLevel) : null;
+        const { room, playerId: id } = await createRoom(mode, { name, avatar: cleanAvatar(b.avatar) }, level);
         return NextResponse.json({ ok: true, code: room.code, playerId: id, ...(await getState(room.code))! });
       }
 

@@ -1,16 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkBotId } from 'botid/server';
 import { checkAdminPassword, writeSession } from '@/lib/auth';
 import { rateLimit, clientKey, isBlocked, recordFailure, clearFailures } from '@/lib/ratelimit';
 
 // Admin sign-in with the single shared ADMIN_PASSWORD. On success we set the
 // signed admin session cookie.
 export async function POST(req: NextRequest) {
-  // layout.tsx declares this route protected client-side, but that's inert on
-  // its own -- the actual block only happens here, server-side. No-ops locally.
-  const bot = await checkBotId();
-  if (bot.isBot) return NextResponse.json({ ok: false, error: 'ยืนยันไม่สำเร็จ' }, { status: 403 });
-
   if (!rateLimit(`aauth:${clientKey(req)}`, 20, 60_000))
     return NextResponse.json({ ok: false, error: 'ลองบ่อยเกินไป รอสักครู่' }, { status: 429 });
 

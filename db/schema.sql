@@ -39,13 +39,18 @@ create index if not exists certifications_created_idx on certifications(created_
 
 create table if not exists compete_rooms (
   code        text primary key,                       -- 4 chars, e.g. 'K7QP'
-  mode        text not null,                          -- 'typing' | 'clicking' | 'quiz'
+  mode        text not null,                          -- 'typing' | 'dragdrop' | 'filesort' | 'scamquiz'
   status      text not null default 'lobby',          -- 'lobby' | 'running' | 'done'
   seed        bigint not null,                        -- every player derives the same items from this
   rounds      integer not null,
   started_at  timestamptz,
   created_at  timestamptz not null default now()
 );
+
+-- Typing-race difficulty (0=easy letters/digits, 1=short words, 2=medium, 3=hard
+-- sentences). Null for non-typing modes and for rooms created before this column
+-- existed. Bring older databases up to date the same conservative way as `score` above.
+alter table compete_rooms add column if not exists level integer;
 
 create table if not exists compete_players (
   id          text primary key,

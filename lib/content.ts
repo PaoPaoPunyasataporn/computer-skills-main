@@ -43,6 +43,21 @@ export const AREAS: Area[] = [
       { code: 'g-itdoctor', icon: '🔧', th: 'หมอไอที', desc: 'แก้ปัญหาเครื่องและเลือกเครื่องมือให้ถูก', file: '/games/unit9-it-doctor.html' },
     ],
   },
+  {
+    // Not a DigComp area -- the full "LLM Unboxed" AI course, Module 0-5.
+    // Each game here forces the actual skill (click the real UI, write your
+    // own prompt, answer live, design system rules) instead of letting a
+    // kid pattern-match a multiple-choice answer key.
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จากหน้าจอ AI พื้นฐาน ไปจนถึงออกแบบ AI ติวเตอร์ของตัวเอง — 6 โมดูลเรียงตามลำดับ',
+    games: [
+      { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'โมดูล 0 · พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai0-ai-foundations.html' },
+      { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'โมดูล 1 · รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai1-ui-inspector.html' },
+      { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'โมดูล 2 · เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai2-prompt-fixer.html' },
+      { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'โมดูล 3 · เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai3-learn-with-ai.html' },
+      { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'โมดูล 4 · ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai4-gem-architect.html' },
+      { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'โมดูล 5 · ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai5-sandbox-master.html' },
+    ],
+  },
 ];
 
 // Capstone challenge shown on the home page — tests skills from every area.

@@ -21,10 +21,25 @@ export type TypingPhrase = {
   id: string;
   text: string;
   lang: 'th' | 'en';
-  level: 1 | 2 | 3;
+  level: 0 | 1 | 2 | 3;
 };
 
 export type ClickTarget = { id: string; label: string; icon: string };
+
+/** A file/folder icon dragged in the drag & drop games. */
+export type DragItem = { id: string; label: string; icon: string; folder: FolderId };
+
+export type FolderId = 'pictures' | 'documents' | 'music' | 'videos' | 'apps';
+
+export type Folder = { id: FolderId; label: string; icon: string };
+
+export type ScamQ = {
+  id: string;
+  text: string;
+  kind: 'popup' | 'email' | 'website' | 'chat';
+  category: 'safe' | 'scam' | 'dangerous';
+  why: string;
+};
 
 /* ------------------------------------------------------------------ */
 /* Quiz bank — 42 scenario questions, 7 per DigComp area (0–5)          */
@@ -622,45 +637,62 @@ export const QUIZ_BANK: QuizQ[] = [
 /* ------------------------------------------------------------------ */
 
 export const TYPING_BANK: TypingPhrase[] = [
+  // ---- Level 0: single letters / digits (easy drill) ----
+  { id: 't-easy-01', text: 'A S D F', lang: 'en', level: 0 },
+  { id: 't-easy-02', text: 'J K L ;', lang: 'en', level: 0 },
+  { id: 't-easy-03', text: '1 2 3 4', lang: 'en', level: 0 },
+  { id: 't-easy-04', text: '5 6 7 8', lang: 'en', level: 0 },
+  { id: 't-easy-05', text: 'Q W E R', lang: 'en', level: 0 },
+  { id: 't-easy-06', text: 'Z X C V', lang: 'en', level: 0 },
+  { id: 't-easy-07', text: 'ก ข ค ง', lang: 'th', level: 0 },
+  { id: 't-easy-08', text: 'จ ฉ ช ซ', lang: 'th', level: 0 },
+  { id: 't-easy-09', text: 'A B C D', lang: 'en', level: 0 },
+  { id: 't-easy-10', text: '9 0 1 2', lang: 'en', level: 0 },
+  { id: 't-easy-11', text: 'M N O P', lang: 'en', level: 0 },
+  { id: 't-easy-12', text: 'ด ต ถ ท', lang: 'th', level: 0 },
+  { id: 't-easy-13', text: 'U I O P', lang: 'en', level: 0 },
+  { id: 't-easy-14', text: '3 6 9 0', lang: 'en', level: 0 },
+  { id: 't-easy-15', text: 'น บ ป ผ', lang: 'th', level: 0 },
+
   // ---- Level 1: short & easy (~15–25 chars) ----
-  { id: 't-th-01', text: 'ฉันชอบเรียนคอมพิวเตอร์', lang: 'th', level: 1 },
+  { id: 't-th-01', text: 'ฉันชอบอ่านหนังสือ', lang: 'th', level: 1 },
   { id: 't-th-02', text: 'วันนี้อากาศดีมากเลย', lang: 'th', level: 1 },
   { id: 't-th-03', text: 'แมวสีดำนอนอยู่ใต้โต๊ะ', lang: 'th', level: 1 },
-  { id: 't-th-04', text: 'อย่าลืมบันทึกงานนะ', lang: 'th', level: 1 },
-  { id: 't-th-05', text: 'เมาส์และแป้นพิมพ์', lang: 'th', level: 1 },
-  { id: 't-en-01', text: 'save your file now', lang: 'en', level: 1 },
-  { id: 't-en-02', text: 'mouse and keyboard', lang: 'en', level: 1 },
-  { id: 't-en-03', text: 'I love computer class', lang: 'en', level: 1 },
-  { id: 't-en-04', text: 'a strong password', lang: 'en', level: 1 },
-  { id: 't-en-05', text: 'click the blue icon', lang: 'en', level: 1 },
-  { id: 't-en-06', text: 'do not share it', lang: 'en', level: 1 },
+  { id: 't-th-04', text: 'ดอกไม้บานในสวน', lang: 'th', level: 1 },
+  { id: 't-th-05', text: 'ฉันกินข้าวกับครอบครัว', lang: 'th', level: 1 },
+  { id: 't-en-01', text: 'The sun is shining.', lang: 'en', level: 1 },
+  { id: 't-en-02', text: 'My dog likes to run.', lang: 'en', level: 1 },
+  { id: 't-en-03', text: 'I love story books.', lang: 'en', level: 1 },
+  { id: 't-en-04', text: 'The birds sing softly.', lang: 'en', level: 1 },
+  { id: 't-en-05', text: 'We play after school.', lang: 'en', level: 1 },
+  { id: 't-en-06', text: 'The moon is bright.', lang: 'en', level: 1 },
 
   // ---- Level 2: medium (~30–45 chars) ----
-  { id: 't-th-06', text: 'ตั้งรหัสผ่านให้ยาวและเดายากที่สุด', lang: 'th', level: 2 },
-  { id: 't-th-07', text: 'อย่าบอกที่อยู่บ้านกับคนแปลกหน้า', lang: 'th', level: 2 },
-  { id: 't-th-08', text: 'พักสายตาทุกยี่สิบนาทีนะเพื่อน ๆ', lang: 'th', level: 2 },
-  { id: 't-th-09', text: 'ใช้รูปของคนอื่นต้องขออนุญาตก่อนเสมอ', lang: 'th', level: 2 },
-  { id: 't-th-10', text: 'กด Ctrl S เพื่อบันทึกงานของเรา', lang: 'th', level: 2 },
-  { id: 't-th-11', text: 'ฉันนั่งหลังตรงเวลาใช้คอมพิวเตอร์', lang: 'th', level: 2 },
-  { id: 't-en-07', text: 'Never share your password online.', lang: 'en', level: 2 },
-  { id: 't-en-08', text: 'Check the source before you share.', lang: 'en', level: 2 },
-  { id: 't-en-09', text: 'Ask a grown up if you feel unsafe.', lang: 'en', level: 2 },
-  { id: 't-en-10', text: 'Be kind in every chat you send.', lang: 'en', level: 2 },
-  { id: 't-en-11', text: 'Save your work every few minutes.', lang: 'en', level: 2 },
-  { id: 't-en-12', text: 'A good file name is easy to find.', lang: 'en', level: 2 },
+  { id: 't-th-06', text: 'ครอบครัวของฉันไปเที่ยวทะเล', lang: 'th', level: 2 },
+  { id: 't-th-07', text: 'นกตัวเล็กบินอยู่บนท้องฟ้า', lang: 'th', level: 2 },
+  { id: 't-th-08', text: 'ฉันช่วยแม่รดน้ำต้นไม้ทุกเย็น', lang: 'th', level: 2 },
+  { id: 't-th-09', text: 'เพื่อนของฉันยิ้มเก่งมาก', lang: 'th', level: 2 },
+  { id: 't-th-10', text: 'สายรุ้งปรากฏหลังฝนตก', lang: 'th', level: 2 },
+  { id: 't-th-11', text: 'เรากินผลไม้สดในตอนเช้า', lang: 'th', level: 2 },
+  { id: 't-en-07', text: 'The children laugh in the playground.', lang: 'en', level: 2 },
+  { id: 't-en-08', text: 'A small boat moves across the lake.', lang: 'en', level: 2 },
+  { id: 't-en-09', text: 'My family eats dinner together.', lang: 'en', level: 2 },
+  { id: 't-en-10', text: 'The rain makes the garden green.', lang: 'en', level: 2 },
+  { id: 't-en-11', text: 'We watch the stars at night.', lang: 'en', level: 2 },
+  { id: 't-en-12', text: 'The library is quiet and warm.', lang: 'en', level: 2 },
 
   // ---- Level 3: long (~50–80 chars) ----
-  { id: 't-th-12', text: 'ถ้าหน้าจอค้าง ให้รอสักครู่แล้วค่อยปิดโปรแกรมที่ไม่ตอบสนอง', lang: 'th', level: 3 },
-  { id: 't-th-13', text: 'ก่อนแชร์ข่าวต่อ เราควรตรวจสอบก่อนว่าข่าวนั้นมาจากแหล่งที่เชื่อถือได้', lang: 'th', level: 3 },
-  { id: 't-th-14', text: 'ป๊อปอัปที่บอกว่าเราได้รางวัลฟรีมักเป็นกลลวง อย่ากดและอย่ากรอกข้อมูล', lang: 'th', level: 3 },
-  { id: 't-th-15', text: 'เมื่อใช้คอมพิวเตอร์สาธารณะเสร็จแล้ว ต้องออกจากระบบทุกครั้งก่อนลุกไป', lang: 'th', level: 3 },
-  { id: 't-th-16', text: 'ถ้าเห็นเพื่อนถูกล้อในกลุ่มแชท เราไม่ล้อตาม และบอกครูหรือผู้ปกครอง', lang: 'th', level: 3 },
-  { id: 't-th-17', text: 'AI ช่วยเราคิดได้ แต่เราต้องตรวจสอบคำตอบและเขียนงานด้วยคำของเราเอง', lang: 'th', level: 3 },
-  { id: 't-en-13', text: 'A bank will never ask for your password in an email.', lang: 'en', level: 3 },
-  { id: 't-en-14', text: 'Rest your eyes for twenty seconds every twenty minutes.', lang: 'en', level: 3 },
-  { id: 't-en-15', text: 'Give credit to the artist when you use someone else picture.', lang: 'en', level: 3 },
-  { id: 't-en-16', text: 'If a pop up says you won a free prize, close it and tell an adult.', lang: 'en', level: 3 },
-  { id: 't-en-17', text: 'Type slowly at first, and speed will come with practice every day.', lang: 'en', level: 3 },
+  { id: 't-th-12', text: 'วันหยุดนี้ครอบครัวของฉันจะไปเดินเล่นที่สวนสาธารณะใกล้บ้าน', lang: 'th', level: 3 },
+  { id: 't-th-13', text: 'เด็ก ๆ ช่วยกันปลูกต้นไม้เพื่อให้สนามโรงเรียนร่มรื่นและสวยงาม', lang: 'th', level: 3 },
+  { id: 't-th-14', text: 'หลังฝนตกอากาศสดชื่นและเรามักเห็นนกออกมาหาอาหารบนสนามหญ้า', lang: 'th', level: 3 },
+  { id: 't-th-15', text: 'คุณยายเล่านิทานสนุก ๆ ให้หลานฟังทุกคืนก่อนเวลานอน', lang: 'th', level: 3 },
+  { id: 't-th-16', text: 'ในวันเกิดเพื่อน ๆ ร้องเพลงและมอบการ์ดสีสันสดใสให้เจ้าของวันเกิด', lang: 'th', level: 3 },
+  { id: 't-th-17', text: 'ตอนเช้าแสงแดดส่องผ่านหน้าต่างและทำให้ห้องเรียนดูอบอุ่นน่าเรียน', lang: 'th', level: 3 },
+  { id: 't-en-13', text: 'The family packed sandwiches for a picnic in the park.', lang: 'en', level: 3 },
+  { id: 't-en-14', text: 'After the rain, bright drops sparkled on every leaf.', lang: 'en', level: 3 },
+  { id: 't-en-15', text: 'Our class made colorful paintings for the school hall.', lang: 'en', level: 3 },
+  { id: 't-en-16', text: 'The little puppy followed its owner along the sunny path.', lang: 'en', level: 3 },
+  { id: 't-en-17', text: 'At night, we watched the stars appear above the quiet town.', lang: 'en', level: 3 },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -687,11 +719,118 @@ export const CLICK_TARGETS: ClickTarget[] = [
 ];
 
 /* ------------------------------------------------------------------ */
+/* Click & Drag Sprint — phase 2 drag targets (file icon -> bin)        */
+/* ------------------------------------------------------------------ */
+
+export const DRAGDROP_ITEMS: DragItem[] = [
+  { id: 'd-doc-01', label: 'เอกสารเก่า.docx', icon: '📄', folder: 'documents' },
+  { id: 'd-img-01', label: 'รูปเลอะ.jpg', icon: '🖼️', folder: 'pictures' },
+  { id: 'd-mp3-01', label: 'เพลงซ้ำ.mp3', icon: '🎵', folder: 'music' },
+  { id: 'd-doc-02', label: 'การบ้านเก่า.pdf', icon: '📄', folder: 'documents' },
+  { id: 'd-img-02', label: 'สติกเกอร์.png', icon: '🖼️', folder: 'pictures' },
+  { id: 'd-mp3-02', label: 'เสียงเรียกเข้า.mp3', icon: '🎵', folder: 'music' },
+  { id: 'd-doc-03', label: 'สเปรดชีต.xlsx', icon: '📄', folder: 'documents' },
+  { id: 'd-img-03', label: 'ภาพหน้าจอ.png', icon: '🖼️', folder: 'pictures' },
+];
+
+/** The single recycle-bin drop zone used in Click & Drag Sprint's phase 2. */
+export const RECYCLE_BIN: Folder = { id: 'documents', label: 'ถังขยะ', icon: '🗑️' };
+
+/** Phase 3 of Click & Drag Sprint — desktop icons that must be double-clicked to open. */
+export type DesktopIcon = { id: string; label: string; icon: string };
+export const DESKTOP_ICONS: DesktopIcon[] = [
+  { id: 'ic-recycle', label: 'ถังขยะ', icon: '🗑️' },
+  { id: 'ic-browser', label: 'เว็บเบราว์เซอร์', icon: '🌐' },
+  { id: 'ic-docs', label: 'โฟลเดอร์เอกสาร', icon: '📁' },
+  { id: 'ic-mail', label: 'อีเมล', icon: '📧' },
+  { id: 'ic-paint', label: 'โปรแกรมวาดภาพ', icon: '🎨' },
+  { id: 'ic-calc', label: 'เครื่องคิดเลข', icon: '🧮' },
+  { id: 'ic-music', label: 'เครื่องเล่นเพลง', icon: '🎧' },
+  { id: 'ic-camera', label: 'กล้อง', icon: '📷' },
+];
+
+/** Phase 4 of Click & Drag Sprint — right-click a file, then pick the correct
+ * context-menu action. Each entry names the action the player must select;
+ * `decoys` are the other menu options shown alongside it (order is shuffled
+ * per round so the player can't just memorise a position). */
+export type ContextTask = { id: string; fileLabel: string; fileIcon: string; action: string; decoys: string[] };
+export const CONTEXT_TASKS: ContextTask[] = [
+  { id: 'ctx-rename', fileLabel: 'เอกสารใหม่.docx', fileIcon: '📄', action: 'เปลี่ยนชื่อ', decoys: ['คัดลอก', 'ลบ', 'พิมพ์'] },
+  { id: 'ctx-delete', fileLabel: 'ไฟล์ขยะ.tmp', fileIcon: '🗑️', action: 'ลบ', decoys: ['เปลี่ยนชื่อ', 'แชร์', 'บีบอัด'] },
+  { id: 'ctx-copy', fileLabel: 'รูปสำคัญ.png', fileIcon: '🖼️', action: 'คัดลอก', decoys: ['ลบ', 'เปลี่ยนชื่อ', 'ตั้งเป็นพื้นหลัง'] },
+  { id: 'ctx-zip', fileLabel: 'โฟลเดอร์งานกลุ่ม', fileIcon: '📁', action: 'บีบอัดไฟล์ (Zip)', decoys: ['เปลี่ยนชื่อ', 'ลบ', 'คัดลอก'] },
+  { id: 'ctx-share', fileLabel: 'การบ้านวิทย์.pdf', fileIcon: '📄', action: 'แชร์', decoys: ['ลบ', 'บีบอัด', 'พิมพ์'] },
+  { id: 'ctx-print', fileLabel: 'ใบงานคณิต.pdf', fileIcon: '📄', action: 'พิมพ์', decoys: ['เปลี่ยนชื่อ', 'ลบ', 'แชร์'] },
+];
+
+/* ------------------------------------------------------------------ */
+/* File & Window Sorting Race — messy icons + 3 labelled folders        */
+/* ------------------------------------------------------------------ */
+
+export const FILESORT_FOLDERS: Folder[] = [
+  { id: 'pictures', label: 'รูปภาพ', icon: '🖼️' },
+  { id: 'documents', label: 'เอกสาร', icon: '📄' },
+  { id: 'music', label: 'เพลง', icon: '🎵' },
+  { id: 'videos', label: 'วิดีโอ', icon: '🎬' },
+  { id: 'apps', label: 'โปรแกรม', icon: '⚙️' },
+];
+
+export const FILESORT_ITEMS: DragItem[] = [
+  { id: 'f-img-01', label: 'ทะเล.jpg', icon: '📷', folder: 'pictures' },
+  { id: 'f-img-02', label: 'วันเกิด.png', icon: '📷', folder: 'pictures' },
+  { id: 'f-img-03', label: 'เพื่อนๆ.jpg', icon: '📷', folder: 'pictures' },
+  { id: 'f-img-04', label: 'ท้องฟ้า.png', icon: '📷', folder: 'pictures' },
+  { id: 'f-img-05', label: 'สัตว์เลี้ยง.jpeg', icon: '📷', folder: 'pictures' },
+  { id: 'f-doc-01', label: 'รายงาน.pdf', icon: '📄', folder: 'documents' },
+  { id: 'f-doc-02', label: 'การบ้าน.docx', icon: '📄', folder: 'documents' },
+  { id: 'f-doc-03', label: 'ใบงาน.pdf', icon: '📄', folder: 'documents' },
+  { id: 'f-doc-04', label: 'สรุปบทเรียน.docx', icon: '📄', folder: 'documents' },
+  { id: 'f-doc-05', label: 'ตารางเรียน.xlsx', icon: '📄', folder: 'documents' },
+  { id: 'f-mus-01', label: 'เพลงโปรด.mp3', icon: '🎵', folder: 'music' },
+  { id: 'f-mus-02', label: 'เพลงเด็ก.mp3', icon: '🎵', folder: 'music' },
+  { id: 'f-mus-03', label: 'ดนตรีบรรเลง.mp3', icon: '🎵', folder: 'music' },
+  { id: 'f-mus-04', label: 'เพลงประกอบหนัง.mp3', icon: '🎵', folder: 'music' },
+  { id: 'f-vid-01', label: 'คลิปวันเกิด.mp4', icon: '🎬', folder: 'videos' },
+  { id: 'f-vid-02', label: 'การ์ตูนตอนโปรด.mp4', icon: '🎬', folder: 'videos' },
+  { id: 'f-vid-03', label: 'วิดีโอกีฬาสี.mov', icon: '🎬', folder: 'videos' },
+  { id: 'f-vid-04', label: 'คลิปสอนวาดรูป.mp4', icon: '🎬', folder: 'videos' },
+  { id: 'f-app-01', label: 'ตัวติดตั้งเกม.exe', icon: '⚙️', folder: 'apps' },
+  { id: 'f-app-02', label: 'โปรแกรมวาดภาพ.exe', icon: '⚙️', folder: 'apps' },
+  { id: 'f-app-03', label: 'เครื่องคิดเลข.exe', icon: '⚙️', folder: 'apps' },
+  { id: 'f-app-04', label: 'ตัวติดตั้งพิมพ์ดีด.exe', icon: '⚙️', folder: 'apps' },
+];
+
+/* ------------------------------------------------------------------ */
+/* Real vs. Scam speed quiz                                              */
+/* ------------------------------------------------------------------ */
+
+export const SCAM_QUIZ_BANK: ScamQ[] = [
+  { id: 's-01', text: '"ยินดีด้วย! คุณถูกรางวัลมือถือฟรี กดลิงก์รับของรางวัลภายใน 5 นาที"', kind: 'popup', category: 'scam', why: 'ป๊อปอัปแจกรางวัลฟรีแบบเร่งเวลาเป็นกลลวงคลาสสิก อย่ากด' },
+  { id: 's-02', text: '"สวัสดีค่ะ นัดส่งการบ้านพรุ่งนี้เก้าโมงเช้านะคะ — ครูอ้อย"', kind: 'chat', category: 'safe', why: 'ข้อความจากครูเรื่องปกติ ไม่มีลิงก์หรือขอข้อมูลส่วนตัว ปลอดภัย' },
+  { id: 's-03', text: 'อีเมล "ธนาคาร" ขอให้กดลิงก์แล้วกรอกรหัสผ่านเพื่อยืนยันบัญชีด่วน', kind: 'email', category: 'scam', why: 'ธนาคารจริงไม่ขอรหัสผ่านทางอีเมล นี่คือฟิชชิง' },
+  { id: 's-04', text: 'คนแปลกหน้าทักในเกมขอที่อยู่บ้านและเบอร์โทรเพื่อ "ส่งของขวัญ"', kind: 'chat', category: 'dangerous', why: 'การขอข้อมูลที่อยู่จริงจากคนแปลกหน้าออนไลน์เป็นอันตราย ห้ามให้ข้อมูล' },
+  { id: 's-05', text: 'เว็บไซต์โรงเรียนที่มี https:// และแสดงตารางเรียนของสัปดาห์นี้', kind: 'website', category: 'safe', why: 'เว็บที่เข้ารหัสและมาจากโรงเรียนจริง ใช้งานได้ตามปกติ' },
+  { id: 's-06', text: '"ดาวน์โหลดแอปนี้เดี๋ยวนี้ กดยอมรับสิทธิ์ทั้งหมดเพื่อรับเกมฟรี" พร้อมปุ่มกะพริบ', kind: 'popup', category: 'scam', why: 'ป๊อปอัปเร่งให้กดยอมรับสิทธิ์ทุกอย่างโดยไม่อ่าน มักแฝงมัลแวร์' },
+  { id: 's-07', text: 'อีเมลจากเพื่อนในห้องแนบไฟล์การบ้านกลุ่มที่ตกลงกันไว้ล่วงหน้า', kind: 'email', category: 'safe', why: 'ไฟล์แนบจากคนรู้จักที่คาดหวังไว้อยู่แล้ว ความเสี่ยงต่ำ' },
+  { id: 's-08', text: '"เว็บดูการ์ตูนฟรี" ขอให้ปิดโปรแกรมป้องกันไวรัสก่อนเข้าชม', kind: 'website', category: 'dangerous', why: 'เว็บที่ขอให้ปิดระบบป้องกันก่อนเข้าใช้งานเป็นสัญญาณอันตรายมาก' },
+  { id: 's-09', text: '"คุณชนะ iPhone ล่าสุด! กรอกเลขบัตรประชาชนเพื่อยืนยันตัวตนรับของ"', kind: 'popup', category: 'dangerous', why: 'การขอเลขบัตรประชาชนเพื่อรับรางวัลฟรีเป็นการหลอกเอาข้อมูลสำคัญ อันตราย' },
+  { id: 's-10', text: 'แชทกลุ่มห้องเรียนแจ้งเปลี่ยนห้องเรียนวิชาศิลปะเป็นห้อง 203', kind: 'chat', category: 'safe', why: 'ประกาศเรื่องเรียนปกติจากกลุ่มที่รู้จัก ไม่มีความเสี่ยง' },
+  { id: 's-11', text: 'อีเมล "ฝ่ายไอที" ขอรหัสผ่านอีเมลโรงเรียนเพื่อ "อัปเกรดระบบ"', kind: 'email', category: 'scam', why: 'ฝ่ายไอทีจริงไม่มีทางขอรหัสผ่านของเราทางอีเมล นี่คือฟิชชิง' },
+  { id: 's-12', text: 'เว็บข่าวของสถานีโทรทัศน์ที่มีชื่อเสียง รายงานพยากรณ์อากาศวันนี้', kind: 'website', category: 'safe', why: 'แหล่งข่าวที่มีชื่อองค์กรชัดเจนและน่าเชื่อถือ' },
+  { id: 's-13', text: '"คลิกที่นี่เพื่อดูว่าใครแอบดูโปรไฟล์ของคุณ" พร้อมลิงก์แปลก ๆ', kind: 'popup', category: 'scam', why: 'ข้ออ้างเรื่อง "ใครดูโปรไฟล์คุณ" เป็นเหยื่อล่อคลาสสิกที่ไม่มีจริง' },
+  { id: 's-14', text: 'คนแปลกหน้าในแชทขอให้วิดีโอคอลแล้วโน้มน้าวให้ถอดเสื้อผ้า', kind: 'chat', category: 'dangerous', why: 'นี่คือการล่วงละเมิดร้ายแรง ต้องปิดแชททันทีและบอกผู้ใหญ่' },
+  { id: 's-15', text: 'อีเมลยืนยันการสมัครเข้าค่ายวิทยาศาสตร์ที่ผู้ปกครองสมัครให้', kind: 'email', category: 'safe', why: 'อีเมลยืนยันจากกิจกรรมที่ครอบครัวสมัครไว้เอง ไม่มีความเสี่ยง' },
+  { id: 's-16', text: '"ระบบตรวจพบไวรัส 5 ตัว กดที่นี่เพื่อสแกนฟรีทันที" เต็มหน้าจอ', kind: 'popup', category: 'scam', why: 'ป๊อปอัปแจ้งเตือนไวรัสปลอมเพื่อหลอกให้ดาวน์โหลดโปรแกรมอันตราย' },
+  { id: 's-17', text: 'เว็บขายของเล่นที่ไม่มี https ราคาถูกผิดปกติ ขอเลขบัตรเครดิตก่อนดูสินค้า', kind: 'website', category: 'dangerous', why: 'เว็บไม่ปลอดภัยที่ขอข้อมูลการเงินก่อนแสดงสินค้าจริงเป็นอันตราย' },
+  { id: 's-18', text: 'กลุ่มแชทครอบครัวส่งรูปกิจกรรมทัศนศึกษาของโรงเรียน', kind: 'chat', category: 'safe', why: 'การแชร์ภาพในกลุ่มครอบครัวที่ไว้ใจได้ ไม่มีความเสี่ยง' },
+];
+
+/* ------------------------------------------------------------------ */
 /* Deterministic seeded picking                                         */
 /* ------------------------------------------------------------------ */
 
 /** mulberry32 — tiny, fast, deterministic PRNG. Same seed => same stream. */
-function mulberry32(seed: number): () => number {
+export function mulberry32(seed: number): () => number {
   // Normalise to a 32-bit unsigned integer so any seed (negative, float) works.
   let a = seed >>> 0;
   return function next(): number {
@@ -726,7 +865,22 @@ export function pickQuiz(seed: number, n: number): QuizQ[] {
   return pickSeeded(QUIZ_BANK, seed, n);
 }
 
-/** Same seed + same n => same typing phrases in the same order for every player. */
-export function pickTyping(seed: number, n: number): TypingPhrase[] {
-  return pickSeeded(TYPING_BANK, seed, n);
+/**
+ * Same seed + same n + same level => same typing phrases in the same order for
+ * every player. `level` is optional — omit it to draw from the whole bank (old
+ * behaviour, still used as a fallback).
+ */
+export function pickTyping(seed: number, n: number, level?: 0 | 1 | 2 | 3): TypingPhrase[] {
+  const bank = level === undefined ? TYPING_BANK : TYPING_BANK.filter((t) => t.level === level);
+  return pickSeeded(bank.length ? bank : TYPING_BANK, seed, n);
+}
+
+/** Same seed + same n => same drag items in the same order for every player. */
+export function pickDragItems(bank: readonly DragItem[], seed: number, n: number): DragItem[] {
+  return pickSeeded(bank, seed, n);
+}
+
+/** Same seed + same n => same real-vs-scam prompts in the same order for every player. */
+export function pickScamQuiz(seed: number, n: number): ScamQ[] {
+  return pickSeeded(SCAM_QUIZ_BANK, seed, n);
 }

@@ -24,6 +24,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { spawn } from 'child_process';
 
 // A proper JS string-literal matcher. The naive character-class version truncated any
 // literal containing the OTHER kind of quote — e.g. 'เว็บที่บอกว่า "กินน้ำแข็งแล้วเก่ง"' —
@@ -39,16 +40,21 @@ function literalStrings(code) {
 }
 
 const GAMES = 'public/games';
-const CACHE = path.join('node_modules', '.cache', 'cs-tts');   // MP3s, keyed by clip id
+const CACHE = path.join('node_modules', '.cache', 'cs-edge-tts'); // Edge TTS MP3s, keyed by clip id
+const REFRESH_PROGRESS = path.join(CACHE, 'refresh-progress.json');
 const MAX_LEN = 160;          // the TTS endpoint truncates long strings; ours are labels
 const DELAY_MS = 120;         // be a polite client
+const REFRESH = process.env.CS_EDGE_TTS_REFRESH === '1' || process.argv.includes('--refresh');
+console.log(`Edge TTS refresh: ${REFRESH}`);
 
 // Must mirror dlfCleanKey() in the games exactly, or the keys will not line up.
 function cleanKey(s) {
   if (!s) return '';
   s = s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}\u{2B00}-\u{2BFF}\u{FE00}-\u{FE0F}\u{1F1E6}-\u{1F1FF}‍⃣™ℹ↔-↪]/gu, '');
   s = s.replace(/\u{1F50A}/gu, '');
-  s = s.replace(/[“”‘’`]/g, '');
+  // The games' own dlfCleanKey() strips STRAIGHT quotes, not curly ones -- must match
+  // exactly or a clip's build-time hash never lines up with its runtime lookup hash.
+  s = s.replace(/["'`]/g, '');
   s = s.replace(/\s+/g, ' ').trim();
   return s;
 }
@@ -61,15 +67,19 @@ async function synth(text) {
   const cached = path.join(CACHE, id + '.mp3');
   if (fs.existsSync(cached)) return fs.readFileSync(cached);
 
-  const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=th&q=' + encodeURIComponent(text);
+  const voice = /[฀-๿]/.test(text) ? 'th-TH-PremwadeeNeural' : 'en-US-JennyNeural';
   for (let attempt = 1; attempt <= 4; attempt++) {
     try {
-      const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const buf = Buffer.from(await r.arrayBuffer());
-      if (buf.length < 500) throw new Error('suspiciously small (' + buf.length + 'B)');
       fs.mkdirSync(CACHE, { recursive: true });
-      fs.writeFileSync(cached, buf);
+      await new Promise((resolve, reject) => {
+        const child = spawn('python', ['-m', 'edge_tts', '--voice', voice, '--text', text, '--write-media', cached], { stdio: 'pipe' });
+        let error = '';
+        child.stderr.on('data', (chunk) => { error += chunk; });
+        child.on('error', reject);
+        child.on('close', (code) => code === 0 ? resolve() : reject(new Error(error || `edge-tts exited ${code}`)));
+      });
+      const buf = fs.readFileSync(cached);
+      if (buf.length < 500) throw new Error('suspiciously small (' + buf.length + 'B)');
       return buf;
     } catch (e) {
       if (attempt === 4) throw e;
@@ -103,6 +113,8 @@ function speakableStrings(html) {
 const args = process.argv.slice(2);
 const dry = args.includes('--dry');
 const only = args.filter((a) => !a.startsWith('--'));
+fs.mkdirSync(CACHE, { recursive: true });
+const refreshProgress = fs.existsSync(REFRESH_PROGRESS) ? JSON.parse(fs.readFileSync(REFRESH_PROGRESS, 'utf8')) : {};
 
 const files = fs.readdirSync(GAMES)
   .filter((f) => f.endsWith('.html'))
@@ -117,7 +129,8 @@ for (const file of files) {
   if (!m) { console.log('!! no audio map in ' + path.basename(file)); continue; }
 
   const audio = JSON.parse(m[2]);
-  const missing = speakableStrings(html).filter((t) => !(clipId(t) in audio) && !(t in audio));
+  const progressKey = (text) => `${path.basename(file)}:${clipId(text)}`;
+  const missing = speakableStrings(html).filter((t) => REFRESH ? !refreshProgress[progressKey(t)] : (!(clipId(t) in audio) && !(t in audio)));
 
   const before = Object.keys(audio).length;
   console.log(`\n${path.basename(file)} — ${before} clips embedded, ${missing.length} missing`);
@@ -129,6 +142,10 @@ for (const file of files) {
     try {
       const buf = await synth(text);
       audio[clipId(text)] = 'data:audio/mp3;base64,' + buf.toString('base64');
+      if (REFRESH) {
+        refreshProgress[progressKey(text)] = true;
+        fs.writeFileSync(REFRESH_PROGRESS, JSON.stringify(refreshProgress), 'utf8');
+      }
       added++; bytes += buf.length;
       if (added % 25 === 0) process.stdout.write(`   …${added}/${missing.length}\n`);
       await sleep(DELAY_MS);

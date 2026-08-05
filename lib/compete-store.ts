@@ -15,8 +15,11 @@
 // clobber each other the way a single shared JSON blob would.
 import { getSql } from './db';
 
-export type Mode = 'typing' | 'clicking' | 'quiz';
+export type Mode = 'typing' | 'dragdrop' | 'filesort' | 'scamquiz';
 export type Status = 'lobby' | 'running' | 'done';
+// Typing-race difficulty. Only meaningful when mode === 'typing'; null for the
+// other modes (and for older rooms created before this column existed).
+export type TypingLevel = 0 | 1 | 2 | 3;
 
 export type Player = {
   id: string;
@@ -35,13 +38,14 @@ export type Room = {
   status: Status;
   seed: number;        // every player derives the SAME questions/phrases from this
   rounds: number;      // questions / phrases / targets in this race
+  level: TypingLevel | null; // typing-race difficulty; null for other modes
   startedAt: number | null;
   createdAt: number;
 };
 
 export type RoomState = { room: Room; players: Player[] };
 
-export const ROUNDS: Record<Mode, number> = { typing: 5, clicking: 20, quiz: 10 };
+export const ROUNDS: Record<Mode, number> = { typing: 5, dragdrop: 16, filesort: 16, scamquiz: 12 };
 const ROOM_TTL_MS = 2 * 60 * 60 * 1000; // rooms older than this are swept
 const PLAYER_STALE_MS = 45_000;         // a player who stops polling drops out of the list
 
@@ -71,14 +75,19 @@ function sweepMem() {
 
 // ───────────────────────── public API ─────────────────────────
 
-export async function createRoom(mode: Mode, host: { name: string; avatar: string }): Promise<{ room: Room; playerId: string }> {
+export async function createRoom(
+  mode: Mode,
+  host: { name: string; avatar: string },
+  level: TypingLevel | null = null,
+): Promise<{ room: Room; playerId: string }> {
   const sql = getSql();
   const playerId = makeId();
   const now = Date.now();
+  const lvl = mode === 'typing' ? (level ?? 2) : null;
 
   for (let attempt = 0; attempt < 6; attempt++) {
     const code = makeCode();
-    const room: Room = { code, mode, status: 'lobby', seed: Math.floor(Math.random() * 1e9), rounds: ROUNDS[mode], startedAt: null, createdAt: now };
+    const room: Room = { code, mode, status: 'lobby', seed: Math.floor(Math.random() * 1e9), rounds: ROUNDS[mode], level: lvl, startedAt: null, createdAt: now };
 
     if (!sql) {
       sweepMem();
@@ -91,8 +100,8 @@ export async function createRoom(mode: Mode, host: { name: string; avatar: strin
     // `on conflict do nothing` + rowcount tells us whether the code was free,
     // without a read-then-write race between two children creating rooms at once.
     const ins = await sql`
-      insert into compete_rooms (code, mode, status, seed, rounds, created_at)
-      values (${code}, ${mode}, 'lobby', ${room.seed}, ${room.rounds}, now())
+      insert into compete_rooms (code, mode, status, seed, rounds, level, created_at)
+      values (${code}, ${mode}, 'lobby', ${room.seed}, ${room.rounds}, ${lvl}, now())
       on conflict (code) do nothing
       returning code`;
     if (ins.length === 0) continue; // taken — try another code
@@ -135,7 +144,7 @@ export async function getRoom(code: string): Promise<Room | null> {
   if (!sql) { sweepMem(); return mem.rooms.get(code) ?? null; }
 
   const rows = await sql`
-    select code, mode, status, seed, rounds,
+    select code, mode, status, seed, rounds, level,
            extract(epoch from started_at) * 1000 as started_ms,
            extract(epoch from created_at) * 1000 as created_ms
     from compete_rooms where code = ${code}` as Record<string, unknown>[];
@@ -147,6 +156,7 @@ export async function getRoom(code: string): Promise<Room | null> {
     status: r.status as Status,
     seed: Number(r.seed),
     rounds: Number(r.rounds),
+    level: r.level == null ? null : (Number(r.level) as TypingLevel),
     startedAt: r.started_ms == null ? null : Number(r.started_ms),
     createdAt: Number(r.created_ms),
   };
@@ -239,14 +249,13 @@ export async function reportProgress(
       set score = ${s}, progress = ${pc}, last_seen = now(),
           finished_at = case when ${done} and finished_at is null then now() else finished_at end
       where id = ${playerId} and room_code = ${code}`;
-    // Race is over once nobody is left running.
+    // Race is over the moment ANY player crosses the finish line — that's the
+    // winner, and everyone else's screen should flip to the podium too, not
+    // wait for stragglers.
     await sql`
       update compete_rooms r set status = 'done'
       where r.code = ${code} and r.status = 'running'
-        and not exists (
-          select 1 from compete_players p
-          where p.room_code = ${code} and p.finished_at is null
-            and p.last_seen > now() - interval '45 seconds')`;
+        and exists (select 1 from compete_players p where p.room_code = ${code} and p.finished_at is not null)`;
   }
   return getState(code);
 }
@@ -256,7 +265,8 @@ function maybeFinishMem(code: string) {
   if (!room || room.status !== 'running') return;
   const cutoff = Date.now() - PLAYER_STALE_MS;
   const live = (mem.players.get(code) ?? []).filter((p) => p.lastSeen > cutoff || p.finishedAt !== null);
-  if (live.length && live.every((p) => p.finishedAt !== null)) room.status = 'done';
+  // The moment ANY player finishes, they've won — end the race for everyone.
+  if (live.some((p) => p.finishedAt !== null)) room.status = 'done';
 }
 
 export async function leaveRoom(code: string, playerId: string): Promise<void> {

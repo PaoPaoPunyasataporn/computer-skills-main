@@ -14,36 +14,93 @@ import type { BossScore } from '@/components/GameOverlay';
 // decorative fallback is shown. Nudge NAME_TOP to line the name up with the blank
 // line on the real template.
 const CERT_TEMPLATE = '/certificate-template.png';
-// Tuned against the real template (2000×1414 px, ratio 1.414 : 1 = A4 landscape).
-// Nudge these if the operator swaps in a re-laid-out template later.
-const NAME_TOP = '45.5%';   // the "...awarded to ______" blank
-const DATE_TOP = '58%';     // the "...awarded on ______" blank
-const NAME_LEFT = '30%';
-const NAME_WIDTH = '68%';
+// Coordinates for the real 2000×1414 px template. The name line is deliberately
+// kept narrow so it sits on the intended underline, rather than drifting into the
+// explanatory text for long names.
+const NAME_X = 1350;
+const NAME_Y = 632;
+const NAME_MAX_WIDTH = 540;
+const DATE_X = 1445;
+const DATE_Y = 778;
 
 export default function CertificateModal({ score = null, onClose }: { score?: BossScore | null; onClose: () => void }) {
   const [name, setName] = useState('');
   const [issued, setIssued] = useState('');   // the name once submitted
   const [busy, setBusy] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloaded, setDownloaded] = useState(false);
   const [err, setErr] = useState('');
 
   const scoreText = score ? `${score.correct}/${score.total} (${score.percent}%)` : null;
   const issuedDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const previewNameScale = issued ? Math.max(0.52, Math.min(1, 27 / [...issued].length)) : 1;
 
   async function submit() {
+    if (busy) return;   // guard against rapid double-Enter firing two concurrent POSTs
     const clean = name.trim().replace(/\s+/g, ' ').slice(0, 60);
     if (!clean) { setErr('พิมพ์ชื่อของหนูก่อนนะ'); return; }
     setBusy(true); setErr('');
+    // Show the earned certificate immediately. Recording is deliberately
+    // non-blocking so a slow database cannot interrupt this reward moment.
+    setIssued(clean);
+    setBusy(false);
     try {
-      // Record the pass. Even if the server is unreachable, still show the
-      // certificate — the child earned it.
-      await fetch('/api/certify', {
+      const response = await fetch('/api/certify', {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ name: clean, score: score ? score.percent : null }),
-      }).catch(() => {});
+      });
+      if (!response.ok) console.error('Could not record certification');
+    } catch {
+      console.error('Could not record certification');
     } finally {
-      setIssued(clean);
-      setBusy(false);
+      // The certificate remains available even if the optional server record fails.
+    }
+  }
+
+  async function downloadJpeg() {
+    if (!issued || downloading) return;
+    setDownloading(true);
+    try {
+      const image = new Image();
+      image.src = CERT_TEMPLATE;
+      await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('template failed to load')); });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) throw new Error('canvas unavailable');
+      ctx.drawImage(image, 0, 0);
+
+      // Shrink long names until they fit inside the printed name line.
+      let size = 30;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#2b3350';
+      do {
+        ctx.font = `700 ${size}px Mitr, "Noto Sans Thai", sans-serif`;
+        if (ctx.measureText(issued).width <= NAME_MAX_WIDTH || size <= 18) break;
+        size -= 1;
+      } while (size > 18);
+      ctx.fillText(issued, NAME_X, NAME_Y, NAME_MAX_WIDTH);
+
+      ctx.font = '600 22px Sarabun, "Noto Sans Thai", sans-serif';
+      ctx.fillStyle = '#5b6a86';
+      ctx.fillText(issuedDate, DATE_X, DATE_Y, 300);
+
+      const href = canvas.toDataURL('image/jpeg', 0.95);
+      const link = document.createElement('a');
+      const safeName = issued.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'student';
+      link.href = href;
+      link.download = `certificate-${safeName}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setDownloaded(true);
+    } catch {
+      setErr('ดาวน์โหลดใบประกาศไม่สำเร็จ ลองอีกครั้งนะ');
+    } finally {
+      setDownloading(false);
     }
   }
 
@@ -61,11 +118,7 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
     return (
       <div style={overlay}>
         <style>{`
-          @media print {
-            body * { visibility: hidden !important; }
-            #cert-print-area, #cert-print-area * { visibility: visible !important; }
-            #cert-print-area { position: fixed; inset: 0; margin: 0; box-shadow: none; }
-          }
+          #cert-print-area { background-image: url(${CERT_TEMPLATE}); }
         `}</style>
         <div style={{ width: 'min(760px, 96vw)', display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center' }}>
           <div
@@ -74,17 +127,16 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
               position: 'relative', width: '100%', aspectRatio: '1.414 / 1',
               borderRadius: 14, overflow: 'hidden',
               boxShadow: '0 18px 50px rgba(0,0,0,.4)',
-              backgroundImage: `url(${CERT_TEMPLATE})`,
               backgroundSize: 'cover', backgroundPosition: 'center',
             }}
           >
             {/* Name goes on the "...is awarded to ______" blank */}
-            <div style={{ position: 'absolute', top: NAME_TOP, left: NAME_LEFT, width: NAME_WIDTH, transform: 'translateY(-50%)', textAlign: 'center', pointerEvents: 'none' }}>
-              <span style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 'clamp(16px,2.6vw,28px)', color: '#2b3350' }}>{issued}</span>
+            <div style={{ position: 'absolute', top: `${(NAME_Y / 1414) * 100}%`, left: `${(NAME_X / 2000) * 100}%`, width: `${(NAME_MAX_WIDTH / 2000) * 100}%`, transform: `translate(-50%, -50%) scaleX(${previewNameScale})`, textAlign: 'center', pointerEvents: 'none' }}>
+              <span style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 'clamp(8px,1vw,11px)', color: '#2b3350', whiteSpace: 'nowrap' }}>{issued}</span>
             </div>
             {/* Date goes on the "...was awarded on ______" blank */}
-            <div style={{ position: 'absolute', top: DATE_TOP, left: NAME_LEFT, width: NAME_WIDTH, transform: 'translateY(-50%)', textAlign: 'center', pointerEvents: 'none' }}>
-              <span style={{ fontFamily: 'Sarabun', fontWeight: 600, fontSize: 'clamp(11px,1.6vw,15px)', color: '#5b6a86' }}>{issuedDate}</span>
+            <div style={{ position: 'absolute', top: `${(DATE_Y / 1414) * 100}%`, left: `${(DATE_X / 2000) * 100}%`, width: '15%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
+              <span style={{ fontFamily: 'Sarabun', fontWeight: 600, fontSize: 'clamp(7px,1vw,11px)', color: '#5b6a86', whiteSpace: 'nowrap' }}>{issuedDate}</span>
             </div>
             {scoreText && (
               <div style={{ position: 'absolute', bottom: '4%', left: '6%', fontFamily: 'Sarabun', fontWeight: 600, fontSize: 'clamp(9px,1.3vw,12px)', color: '#9aa3b8', pointerEvents: 'none' }}>
@@ -94,9 +146,10 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
           </div>
 
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button className="btn3d blue" style={{ padding: '12px 22px', fontSize: 16 }} onClick={() => window.print()}>🖨️ พิมพ์ / บันทึกใบประกาศ</button>
-            <button className="btn-ghost3d" style={{ padding: '12px 22px', fontSize: 16 }} onClick={onClose}>เสร็จแล้ว</button>
+            <button className="btn3d blue" style={{ padding: '12px 22px', fontSize: 16, opacity: downloading ? 0.6 : 1 }} disabled={downloading} onClick={downloadJpeg}>📥 {downloading ? 'กำลังสร้างไฟล์...' : 'ดาวน์โหลดใบประกาศ JPEG'}</button>
+            <button className="btn-ghost3d" style={{ padding: '12px 22px', fontSize: 16, opacity: downloaded ? 1 : 0.45 }} disabled={!downloaded} onClick={onClose}>{downloaded ? 'เสร็จแล้ว' : 'ดาวน์โหลดก่อนจึงออกได้'}</button>
           </div>
+          {err && <div style={{ color: '#C23B2A', fontFamily: 'Sarabun', fontSize: 14 }}>{err}</div>}
         </div>
       </div>
     );
@@ -113,10 +166,11 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
           <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 18, color: 'var(--green-d)', marginBottom: 14 }}>คะแนนของหนู: {scoreText}</div>
         )}
         <input
-          style={field}
+          style={{ ...field, opacity: busy ? 0.6 : 1 }}
           placeholder="ชื่อ - นามสกุล"
           value={name}
           autoFocus
+          disabled={busy}
           onChange={(e) => setName(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && submit()}
         />
@@ -124,7 +178,6 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
         <button className="btn3d blue" style={{ width: '100%', marginTop: 16, opacity: busy ? 0.6 : 1 }} disabled={busy} onClick={submit}>
           {busy ? '...' : 'รับใบประกาศนียบัตร'}
         </button>
-        <button className="btn-ghost3d" style={{ width: '100%', marginTop: 10, fontSize: 14 }} onClick={onClose}>ข้าม</button>
       </div>
     </div>
   );

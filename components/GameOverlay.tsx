@@ -47,13 +47,15 @@ export default function GameOverlay({
       if (d && typeof d === 'object' && d.type === 'cs-boss-complete') {
         const correct = Number(d.correct), total = Number(d.total), percent = Number(d.percent);
         if (Number.isFinite(correct) && Number.isFinite(total) && Number.isFinite(percent)) {
-          setScore({ correct, total, percent });
+          // The boss fight is the authoritative pass signal. Move straight to
+          // the certificate instead of leaving the child on an interim screen.
+          onFinish({ correct, total, percent });
         }
       }
     }
     window.addEventListener('message', onMsg);
     return () => window.removeEventListener('message', onMsg);
-  }, []);
+  }, [onFinish]);
 
   const cleared = isTest && score !== null;
 

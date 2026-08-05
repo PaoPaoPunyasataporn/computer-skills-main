@@ -15,6 +15,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { spawn } from 'child_process';
 
 // A proper JS/TS string-literal matcher. The naive character-class version truncated any
 // literal containing the OTHER kind of quote — e.g. 'มีอีเมลจาก "ธนาคาร" บอกว่า…' — so 21
@@ -31,8 +32,11 @@ function literalStrings(code) {
 
 const OUT = path.join('public', 'audio');
 const MANIFEST = path.join(OUT, 'manifest.json');
-const SOURCES = ['lib/compete-content.ts', 'components/GameOverlay.tsx'];
+const EDGE_PROGRESS = path.join(OUT, '.edge-tts-progress.json');
+const SOURCES = ['components/GameOverlay.tsx', 'app/audio-check/page.tsx'];
+const COMPETE_CONTENT = 'lib/compete-content.ts';
 const MAX_LEN = 160;
+const REFRESH = process.argv.includes('--refresh');
 
 // Must match cleanText() in lib/speak.ts.
 function cleanKey(s) {
@@ -46,12 +50,18 @@ const id = (t) => crypto.createHash('md5').update(cleanKey(t), 'utf8').digest('h
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function synth(text) {
-  const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=th&q=' + encodeURIComponent(text);
+  const voice = /[฀-๿]/.test(text) ? 'th-TH-PremwadeeNeural' : 'en-US-JennyNeural';
+  const output = path.join(OUT, `${id(text)}.mp3`);
   for (let i = 1; i <= 4; i++) {
     try {
-      const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const buf = Buffer.from(await r.arrayBuffer());
+      await new Promise((resolve, reject) => {
+        const child = spawn('python', ['-m', 'edge_tts', '--voice', voice, '--text', text, '--write-media', output], { stdio: 'pipe' });
+        let error = '';
+        child.stderr.on('data', (chunk) => { error += chunk; });
+        child.on('error', reject);
+        child.on('close', (code) => code === 0 ? resolve() : reject(new Error(error || `edge-tts exited ${code}`)));
+      });
+      const buf = fs.readFileSync(output);
       if (buf.length < 500) throw new Error('too small');
       return buf;
     } catch (e) {
@@ -70,13 +80,38 @@ for (const src of SOURCES) {
     const c = cleanKey(t);
     if (c && c.length <= MAX_LEN) strings.add(c);
   }
+  // English typing-bank entries are also used by <Speaker>, but have no Thai
+  // characters and would otherwise be missed by the Thai literal scan above.
+  for (const m of code.matchAll(/text:\s*'((?:[^'\\]|\\.)*)'/g)) {
+    const c = cleanKey(m[1].replace(/\\'/g, "'"));
+    if (c && c.length <= MAX_LEN) strings.add(c);
+  }
 }
+
+// These are the only dynamic competition values currently passed to <Speaker>:
+// typing targets, scam prompts/explanations, and the three scam classifications.
+const competitionCode = fs.readFileSync(COMPETE_CONTENT, 'utf8');
+for (const sectionStart of ['export const TYPING_BANK', 'export const SCAM_QUIZ_BANK']) {
+  const start = competitionCode.indexOf(sectionStart);
+  const end = competitionCode.indexOf('\n];', start);
+  const section = competitionCode.slice(start, end + 3);
+  for (const t of literalStrings(section)) {
+    const c = cleanKey(t);
+    if (c && c.length <= MAX_LEN) strings.add(c);
+  }
+  for (const m of section.matchAll(/text:\s*'((?:[^'\\]|\\.)*)'/g)) {
+    const c = cleanKey(m[1].replace(/\\'/g, "'"));
+    if (c && c.length <= MAX_LEN) strings.add(c);
+  }
+}
+for (const label of ['ปลอดภัย', 'หลอกลวง', 'อันตราย']) strings.add(label);
 
 fs.mkdirSync(OUT, { recursive: true });
 const manifest = fs.existsSync(MANIFEST) ? JSON.parse(fs.readFileSync(MANIFEST, 'utf8')) : {};
+const edgeProgress = fs.existsSync(EDGE_PROGRESS) ? JSON.parse(fs.readFileSync(EDGE_PROGRESS, 'utf8')) : {};
 const dry = process.argv.includes('--dry');
 
-const todo = [...strings].filter((t) => !manifest[t] || !fs.existsSync(path.join(OUT, id(t) + '.mp3')));
+const todo = [...strings].filter((t) => REFRESH ? !edgeProgress[t] : !manifest[t] || !fs.existsSync(path.join(OUT, id(t) + '.mp3')));
 console.log(`${strings.size} speakable strings · ${todo.length} to record`);
 if (dry) { todo.forEach((t) => console.log('  ✗ ' + t)); process.exit(0); }
 
@@ -87,6 +122,8 @@ for (const text of todo) {
     const buf = await synth(text);
     fs.writeFileSync(path.join(OUT, id(text) + '.mp3'), buf);
     manifest[text] = `/audio/${id(text)}.mp3`;
+    edgeProgress[text] = true;
+    fs.writeFileSync(EDGE_PROGRESS, JSON.stringify(edgeProgress), 'utf8');
     added++; bytes += buf.length;
     if (added % 25 === 0) console.log(`   …${added}/${todo.length}`);
     await sleep(120);

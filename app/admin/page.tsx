@@ -41,10 +41,15 @@ export default function AdminPage() {
         method: 'POST', headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ password }),
       });
-      const d = await r.json();
+      const d = await r.json().catch(() => ({ ok: false, error: 'เซิร์ฟเวอร์ตอบกลับไม่ถูกต้อง' }));
       if (!d.ok) { setErr(d.error || 'เข้าสู่ระบบไม่ได้'); setBusy(false); return; }
       setPassword('');
-      await load();
+      // The auth response has set the HttpOnly session cookie. Show the dashboard
+      // immediately, then load the records in the background instead of making the
+      // login button appear frozen while a second request is in flight.
+      setAuthed(true);
+      setBusy(false);
+      void load();
     } catch { setErr('เชื่อมต่อไม่ได้'); setBusy(false); }
   }
 
