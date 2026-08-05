@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { Game } from '@/lib/content';
 import Speaker from '@/components/Speaker';
+import { playApplause } from '@/lib/sfx';
 
 export type BossScore = { correct: number; total: number; percent: number };
 
@@ -49,6 +50,7 @@ export default function GameOverlay({
         if (Number.isFinite(correct) && Number.isFinite(total) && Number.isFinite(percent)) {
           // The boss fight is the authoritative pass signal. Move straight to
           // the certificate instead of leaving the child on an interim screen.
+          playApplause();
           onFinish({ correct, total, percent });
         }
       }

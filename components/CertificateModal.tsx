@@ -14,14 +14,16 @@ import type { BossScore } from '@/components/GameOverlay';
 // decorative fallback is shown. Nudge NAME_TOP to line the name up with the blank
 // line on the real template.
 const CERT_TEMPLATE = '/certificate-template.png';
-// Coordinates for the real 2000×1414 px template. The name line is deliberately
-// kept narrow so it sits on the intended underline, rather than drifting into the
-// explanatory text for long names.
-const NAME_X = 1350;
+// Coordinates for the real 2000×1414 px template, measured directly off the
+// template's printed underlines (pixel-scanned: name blank spans x 1271–1651 at
+// y≈645; date blank spans x 1356–1696 at y≈787) so the text sits centered on
+// each line rather than eyeballed.
+const NAME_X = 1461;
 const NAME_Y = 632;
-const NAME_MAX_WIDTH = 540;
-const DATE_X = 1445;
+const NAME_MAX_WIDTH = 380;
+const DATE_X = 1526;
 const DATE_Y = 778;
+const DATE_MAX_WIDTH = 340;
 
 export default function CertificateModal({ score = null, onClose }: { score?: BossScore | null; onClose: () => void }) {
   const [name, setName] = useState('');
@@ -72,21 +74,24 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
       if (!ctx) throw new Error('canvas unavailable');
       ctx.drawImage(image, 0, 0);
 
-      // Shrink long names until they fit inside the printed name line.
+      // Shrink long names until they actually fit inside the printed name line.
+      // No floor: fillText's own maxWidth arg is a last-resort horizontal squeeze,
+      // not a substitute — by the time it kicks in the text is already illegible,
+      // so we keep reducing font size first for as long as that stays readable.
       let size = 30;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#2b3350';
       do {
-        ctx.font = `700 ${size}px Mitr, "Noto Sans Thai", sans-serif`;
-        if (ctx.measureText(issued).width <= NAME_MAX_WIDTH || size <= 18) break;
+        ctx.font = `700 ${size}px Sarabun, "Noto Sans Thai", sans-serif`;
+        if (ctx.measureText(issued).width <= NAME_MAX_WIDTH || size <= 10) break;
         size -= 1;
-      } while (size > 18);
+      } while (size > 10);
       ctx.fillText(issued, NAME_X, NAME_Y, NAME_MAX_WIDTH);
 
       ctx.font = '600 22px Sarabun, "Noto Sans Thai", sans-serif';
       ctx.fillStyle = '#5b6a86';
-      ctx.fillText(issuedDate, DATE_X, DATE_Y, 300);
+      ctx.fillText(issuedDate, DATE_X, DATE_Y, DATE_MAX_WIDTH);
 
       const href = canvas.toDataURL('image/jpeg', 0.95);
       const link = document.createElement('a');
@@ -132,10 +137,10 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
           >
             {/* Name goes on the "...is awarded to ______" blank */}
             <div style={{ position: 'absolute', top: `${(NAME_Y / 1414) * 100}%`, left: `${(NAME_X / 2000) * 100}%`, width: `${(NAME_MAX_WIDTH / 2000) * 100}%`, transform: `translate(-50%, -50%) scaleX(${previewNameScale})`, textAlign: 'center', pointerEvents: 'none' }}>
-              <span style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 'clamp(8px,1vw,11px)', color: '#2b3350', whiteSpace: 'nowrap' }}>{issued}</span>
+              <span style={{ fontFamily: 'Sarabun', fontWeight: 700, fontSize: 'clamp(8px,1vw,11px)', color: '#2b3350', whiteSpace: 'nowrap' }}>{issued}</span>
             </div>
             {/* Date goes on the "...was awarded on ______" blank */}
-            <div style={{ position: 'absolute', top: `${(DATE_Y / 1414) * 100}%`, left: `${(DATE_X / 2000) * 100}%`, width: '15%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
+            <div style={{ position: 'absolute', top: `${(DATE_Y / 1414) * 100}%`, left: `${(DATE_X / 2000) * 100}%`, width: `${(DATE_MAX_WIDTH / 2000) * 100}%`, transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
               <span style={{ fontFamily: 'Sarabun', fontWeight: 600, fontSize: 'clamp(7px,1vw,11px)', color: '#5b6a86', whiteSpace: 'nowrap' }}>{issuedDate}</span>
             </div>
             {scoreText && (

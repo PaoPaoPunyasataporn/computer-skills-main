@@ -661,6 +661,7 @@ function finish(){
     document.getElementById('dlfCongSub').textContent=o.sub||(perfect?'น้องทำสำเร็จแล้ว':'ลองอีกครั้งเพื่อเก็บ 3 ดาวนะ');
     document.getElementById('dlfCongStars').textContent='⭐'.repeat(st)+'☆'.repeat(3-st);
     cong.classList.add('show');
+    if(st>=3){try{var _ap=new Audio('/audio/applause.wav');_ap.play().catch(function(){});setTimeout(function(){var steps=20;var i=0;var iv=setInterval(function(){i++;_ap.volume=Math.max(0,1-i/steps);if(i>=steps)clearInterval(iv);},30);},2400);setTimeout(function(){try{_ap.pause();}catch(e){}},3000);}catch(e){}}
     if(perfect){confetti(150);dlfPlayCheer();}
   };
   // How every game says "the child finished, here is how well they did".

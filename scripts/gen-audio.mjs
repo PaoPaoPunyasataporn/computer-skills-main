@@ -131,6 +131,9 @@ for (const file of files) {
   const audio = JSON.parse(m[2]);
   const progressKey = (text) => `${path.basename(file)}:${clipId(text)}`;
   const missing = speakableStrings(html).filter((t) => REFRESH ? !refreshProgress[progressKey(t)] : (!(clipId(t) in audio) && !(t in audio)));
+  const saveAudioMap = () => {
+    fs.writeFileSync(file, html.slice(0, m.index) + m[1] + JSON.stringify(audio) + m[3] + html.slice(m.index + m[0].length), 'utf8');
+  };
 
   const before = Object.keys(audio).length;
   console.log(`\n${path.basename(file)} — ${before} clips embedded, ${missing.length} missing`);
@@ -146,6 +149,9 @@ for (const file of files) {
         refreshProgress[progressKey(text)] = true;
         fs.writeFileSync(REFRESH_PROGRESS, JSON.stringify(refreshProgress), 'utf8');
       }
+      // Checkpoint immediately: the embedded JSON remains valid even if this
+      // long Edge-TTS refresh is stopped mid-file.
+      saveAudioMap();
       added++; bytes += buf.length;
       if (added % 25 === 0) process.stdout.write(`   …${added}/${missing.length}\n`);
       await sleep(DELAY_MS);
@@ -155,7 +161,7 @@ for (const file of files) {
   }
 
   // Rewrite the map in place. Everything else in the file is untouched.
-  fs.writeFileSync(file, html.slice(0, m.index) + m[1] + JSON.stringify(audio) + m[3] + html.slice(m.index + m[0].length), 'utf8');
+  saveAudioMap();
   grandTotal += added; grandBytes += bytes;
   console.log(`   ✔ added ${added} clips (+${(bytes / 1048576).toFixed(2)} MB) — now ${Object.keys(audio).length} total`);
   failed.forEach((f) => console.log('   ✗ FAILED: ' + f));
