@@ -4,8 +4,6 @@
 
 Interactive Thai computer-literacy lessons with read-aloud on every line. Runs in any browser — no download. Mapped to the EU **DigComp 3.0** framework (JRC, 2025): all **5 areas · 21 competences**, at the **Basic** proficiency level.
 
-**🔗 เริ่มเรียนที่นี่ / Start here:** https://paopaopunyasataporn.github.io/computer-skills/
-
 ---
 
 ## โครงสร้าง · Structure
