@@ -953,6 +953,7 @@ document.addEventListener('keydown',function(e){
   spk.addEventListener('click',()=>{muted=!muted;try{localStorage.setItem('dlfMute',muted?'1':'0');}catch(e){}
     if(muted){stopAudio();}else{dlf.speak('เปิดเสียงแล้ว');}paint();});
 
+  const cols=['#F0982E','#38A93A','#3A82F6','#9A5CF0','#FFC24B'];
   function confetti(n){n=n||80;for(let i=0;i<n;i++){const c=document.createElement('div');c.className='dlf-confetti';
     const s=6+Math.random()*8;c.style.width=s+'px';c.style.height=(s*.6)+'px';c.style.left=(Math.random()*100)+'vw';
     c.style.background=cols[Math.floor(Math.random()*cols.length)];c.style.opacity=.9;const d=2.4+Math.random()*1.8;
