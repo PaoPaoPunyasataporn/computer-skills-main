@@ -2,10 +2,13 @@
 //
 // WHY THIS EXISTS
 // Each game embeds a map of pre-recorded Thai MP3s (`dlfAudioData`), keyed by the
-// first 12 hex chars of md5(cleaned text). dlf.speak(text) plays the clip when one
-// exists and otherwise falls back to the browser's speech engine. On a machine with
-// no Thai voice installed — the default on most Windows boxes — that fallback reads
-// Thai words in an English voice, which is gibberish to a child.
+// first 12 hex chars of md5(cleaned text), with values pointing at real files under
+// public/games/audio/<game>/<id>.mp3 — not inlined as base64, which used to bloat
+// every game's HTML by ~30x and made the files too large to even read as source.
+// dlf.speak(text) plays the clip when one exists and otherwise falls back to the
+// browser's speech engine. On a machine with no Thai voice installed — the default
+// on most Windows boxes — that fallback reads Thai words in an English voice, which
+// is gibberish to a child.
 //
 // The clip map was generated before a lot of content was written (the boss fight's
 // extra challenges, the newer units), so hundreds of strings had no clip and every
@@ -65,7 +68,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 async function synth(text) {
   const id = clipId(text);
   const cached = path.join(CACHE, id + '.mp3');
-  if (fs.existsSync(cached)) return fs.readFileSync(cached);
+  // A cache hit skips synthesis entirely, so it must pass the same size sanity check a
+  // fresh synthesis does below — otherwise a 0-byte file left by a process kill (SIGKILL
+  // mid-write, e.g. from an interrupted run) is trusted forever and silently reproduces
+  // a silent clip on every future run that touches this exact string.
+  if (fs.existsSync(cached)) {
+    const buf = fs.readFileSync(cached);
+    if (buf.length >= 500) return buf;
+    fs.rmSync(cached);   // corrupt cache entry — fall through and resynthesize
+  }
 
   const voice = /[฀-๿]/.test(text) ? 'th-TH-PremwadeeNeural' : 'en-US-JennyNeural';
   for (let attempt = 1; attempt <= 4; attempt++) {
@@ -74,9 +85,25 @@ async function synth(text) {
       await new Promise((resolve, reject) => {
         const child = spawn('python', ['-m', 'edge_tts', '--voice', voice, '--text', text, '--write-media', cached], { stdio: 'pipe' });
         let error = '';
+        let settled = false;
+        // A hung websocket here previously stalled the whole migration for hours with
+        // zero log output — nothing ever called back to reject or resolve. 25s is far
+        // more than any real synthesis takes; past that, kill it and let the retry loop
+        // (or the next run, since progress is checkpointed per-clip) take over.
+        const killTimer = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          child.kill('SIGKILL');
+          reject(new Error('edge-tts timed out after 25s (hung subprocess)'));
+        }, 25_000);
         child.stderr.on('data', (chunk) => { error += chunk; });
-        child.on('error', reject);
-        child.on('close', (code) => code === 0 ? resolve() : reject(new Error(error || `edge-tts exited ${code}`)));
+        child.on('error', (e) => { if (settled) return; settled = true; clearTimeout(killTimer); reject(e); });
+        child.on('close', (code) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(killTimer);
+          code === 0 ? resolve() : reject(new Error(error || `edge-tts exited ${code}`));
+        });
       });
       const buf = fs.readFileSync(cached);
       if (buf.length < 500) throw new Error('suspiciously small (' + buf.length + 'B)');
@@ -92,20 +119,36 @@ async function synth(text) {
 //   * every Thai string literal in the source (choice text, labels, explanations), and
 //   * every literal data-say="…" — including ones with no Thai in them at all, like the
 //     wifi SSID "CoffeeShop_Free". A child still needs to hear those read out.
-function speakableStrings(html) {
+//   * every Thai string literal in the game's shared engine file (public/games/_lib/*.js,
+//     loaded via <script src>) — the engine itself speaks a few hardcoded fallback lines
+//     ("เยี่ยมมาก!", the mute-button label, ...), and those moved out of the HTML when the
+//     engine was deduplicated into a shared file. Miss this and a re-run can never find them.
+function speakableStrings(html, dir) {
   const out = new Set();
   const add = (raw) => {
     const c = cleanKey(raw);
-    if (c && c.length <= MAX_LEN) out.add(c);
+    // Mirror the engine's own readable() gate (txt.length<2 never gets a speaker
+    // button). Below that length this is almost always a data value picked up by the
+    // literal-string scan — e.g. a keyboard layout's {th:'ก', ths:'๒'} entries — never
+    // actually passed to dlf.speak() at runtime. Recording these was worse than a no-op:
+    // several such isolated glyphs (Thai digits, ฿, the phinthu diacritic ฺ, ...) have no
+    // pronunciation Azure's TTS can produce in isolation, so they hard-failed synthesis
+    // for text nothing ever speaks.
+    if (c && c.length >= 2 && c.length <= MAX_LEN) out.add(c);
   };
-  // Scan the code only. The audio map is one multi-megabyte base64 line and running a
-  // string-literal regex across it overflows the regex engine's stack.
+  // Scan the code only. The audio map used to be one multi-megabyte base64 line (clips are
+  // now real files, referenced by a short path) but this guard is harmless to keep.
   const code = html.replace(/<script id="dlfAudioData"[\s\S]*?<\/script>/, '');
   for (const t of literalStrings(code)) add(t);
   for (const m of html.matchAll(/data-say="([^"]*)"/g)) {
     const v = m[1];
     if (v.includes('${') || v.includes("'+")) continue;   // built at runtime, not a literal
     add(v.replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
+  }
+  for (const m of html.matchAll(/<script src="([^"]+\.js)"/g)) {
+    const jsPath = path.join(dir, m[1]);
+    if (!fs.existsSync(jsPath)) continue;
+    for (const t of literalStrings(fs.readFileSync(jsPath, 'utf8'))) add(t);
   }
   return [...out];
 }
@@ -128,15 +171,35 @@ for (const file of files) {
   const m = html.match(/(<script id="dlfAudioData" type="application\/json">)([\s\S]*?)(<\/script>)/);
   if (!m) { console.log('!! no audio map in ' + path.basename(file)); continue; }
 
+  const slug = path.basename(file, '.html');
+  // Clips are written to disk (public/games/audio/<slug>/<id>.mp3), and the map holds
+  // only that relative path — not a base64 data URI. new Audio(src) plays a URL exactly
+  // like a data URI, but a data URI bloats the HTML ~33% *and* forces the browser to
+  // parse and hold the whole multi-MB blob just to load the page; a real file is cached
+  // and fetched on demand.
+  const audioDir = path.join(GAMES, 'audio', slug);
   const audio = JSON.parse(m[2]);
   const progressKey = (text) => `${path.basename(file)}:${clipId(text)}`;
-  const missing = speakableStrings(html).filter((t) => REFRESH ? !refreshProgress[progressKey(t)] : (!(clipId(t) in audio) && !(t in audio)));
+  const missing = speakableStrings(html, path.dirname(file)).filter((t) => REFRESH ? !refreshProgress[progressKey(t)] : (!(clipId(t) in audio) && !(t in audio)));
   const saveAudioMap = () => {
     fs.writeFileSync(file, html.slice(0, m.index) + m[1] + JSON.stringify(audio) + m[3] + html.slice(m.index + m[0].length), 'utf8');
   };
 
   const before = Object.keys(audio).length;
   console.log(`\n${path.basename(file)} — ${before} clips embedded, ${missing.length} missing`);
+
+  // Prune orphaned clips: a source-text edit changes a string's hash, so the old
+  // recording's id drops out of `audio` but the mp3 stays on disk forever unless
+  // something removes it. Without this, public/games/audio/ only ever grows.
+  if (fs.existsSync(audioDir)) {
+    const keep = new Set(Object.keys(audio).map((id) => id + '.mp3'));
+    const orphans = fs.readdirSync(audioDir).filter((f) => f.endsWith('.mp3') && !keep.has(f));
+    if (orphans.length) {
+      console.log(`   ${dry ? '(dry run, would prune)' : 'pruned'} ${orphans.length} orphaned clip(s)`);
+      if (!dry) orphans.forEach((f) => fs.rmSync(path.join(audioDir, f)));
+    }
+  }
+
   if (dry) { missing.forEach((t) => console.log('   ✗ ' + t)); continue; }
   if (!missing.length) continue;
 
@@ -144,7 +207,10 @@ for (const file of files) {
   for (const text of missing) {
     try {
       const buf = await synth(text);
-      audio[clipId(text)] = 'data:audio/mp3;base64,' + buf.toString('base64');
+      const id = clipId(text);
+      fs.mkdirSync(audioDir, { recursive: true });
+      fs.writeFileSync(path.join(audioDir, id + '.mp3'), buf);
+      audio[id] = 'audio/' + slug + '/' + id + '.mp3';
       if (REFRESH) {
         refreshProgress[progressKey(text)] = true;
         fs.writeFileSync(REFRESH_PROGRESS, JSON.stringify(refreshProgress), 'utf8');
