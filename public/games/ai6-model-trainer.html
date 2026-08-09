@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ครูฝึก AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --paper:#F4F2EA; --card:#FFFFFF; --cream:#F7F4EC; --cream2:#F1ECE0;
+  --ink:#0F1B2D; --muted:#54677E; --muted2:#8A8172; --muted3:#B0A794;
+  --green:#38A93A; --green-l:#5CD35B; --green-d:#2E8B30; --green-light:#E9FBE7;
+  --blue:#3A82F6; --blue-l:#2E9BFF; --blue-d:#2E64D6;
+  --purple:#9A5CF0; --purple-d:#7C3EE0;
+  --orange:#F0982E; --orange-d:#D07E1E; --gold:#FFC24B; --amber:#B4772E;
+  --line:#EFE7D6; --line-d:#D8CDB6;
+  --red:#E4614F; --red-light:#FDECEA;
+  --primary:#9A5CF0; --primary-light:#F1E8FF; --primary-dark:#7C3EE0;
+  --bg:var(--paper); --panel:var(--card); --panel2:var(--cream2); --border:var(--line);
+  --text:var(--ink); --text2:var(--muted); --text3:var(--muted3);
+  --radius:16px; --shadow:none;
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+.screen{display:none;width:100%;max-width:620px;flex-direction:column;align-items:center;gap:16px;}
+.screen.active{display:flex;}
+
+.intro-wrap,.teach-wrap,.results-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.intro-icon{font-size:64px;margin-bottom:10px;display:block;}
+.intro-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.intro-sub{font-size:14.5px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
+.goal-box{width:100%;background:var(--panel2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px;}
+.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
+.goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
+.goal-text b{color:var(--primary-dark);}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.teach-slide{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.teach-icon{font-size:52px;}
+.teach-title{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.teach-body{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.teach-example{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:var(--text);margin-top:4px;text-align:left;max-width:480px;}
+.teach-example b{color:var(--primary-dark);}
+.teach-dots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.tdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.tdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.teach-nav{display:flex;gap:10px;margin-top:14px;}
+.teach-nav .btn{flex:1;}
+
+.round-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.round-tag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+
+.taskcard{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:20px;padding:26px 24px;text-align:center;}
+.round-title{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;color:var(--primary-dark);line-height:1.6;margin-bottom:6px;}
+.round-note{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px;}
+.bigitem{font-size:76px;line-height:1.2;margin:10px 0 4px;}
+.progress-note{font-family:'Mitr',sans-serif;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:14px;}
+.basketrow{display:flex;gap:12px;}
+.basketbtn{flex:1;border:none;border-radius:16px;padding:16px 12px;font-family:'Mitr',sans-serif;font-weight:700;font-size:17px;cursor:pointer;color:#fff;transition:transform .1s;}
+.basketbtn:active{transform:translateY(3px);}
+.basketbtn.cat{background:linear-gradient(135deg,#FFB456,#F0982E);box-shadow:0 5px 0 #D07E1E;}
+.basketbtn.dog{background:linear-gradient(135deg,#5CA0FF,#3A82F6);box-shadow:0 5px 0 #2E64D6;}
+
+.minirow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0;}
+.minicard{display:inline-flex;flex-direction:column;align-items:center;gap:2px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:8px 10px;font-size:26px;}
+.minicard i{font-style:normal;font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:600;color:var(--primary-dark);background:var(--primary-light);border-radius:8px;padding:1px 8px;}
+.trainbar{width:100%;max-width:360px;height:14px;background:var(--cream2);border:1.5px solid var(--border);border-radius:99px;margin:14px auto 4px;overflow:hidden;}
+.trainfill{width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--primary-dark));transition:width 1.5s ease;}
+.trainmsg{font-family:'Mitr',sans-serif;font-size:13px;font-weight:600;color:var(--text2);margin-top:8px;}
+
+.testrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0 4px;}
+.testcard{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--cream);border:2px solid var(--border);border-radius:14px;padding:12px 14px;min-width:86px;opacity:.45;transition:all .3s;}
+.testcard .temo{font-size:38px;}
+.testcard .tpred{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.testcard.ok{opacity:1;border-color:var(--green);background:var(--green-light);}
+.testcard.ok .tpred{color:var(--green-d);}
+.testcard.no{opacity:1;border-color:var(--red);background:var(--red-light);animation:mtShake .45s ease;}
+.testcard.no .tpred{color:#A32E20;}
+@keyframes mtShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px) rotate(-2deg);}75%{transform:translateX(5px) rotate(2deg);}}
+
+.datagrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;}
+@media (max-width:480px){.datagrid{grid-template-columns:repeat(2,1fr);}}
+.datacard{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--cream);border:2px solid var(--border);border-radius:14px;padding:12px 8px;cursor:pointer;transition:all .15s;}
+.datacard:active{transform:scale(.95);}
+.datacard .demo{font-size:36px;}
+.datacard .dlbl{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border-radius:8px;padding:2px 10px;}
+.datacard.bad{border-color:var(--red);background:var(--red-light);}
+.datacard.bad::after{content:'❌';position:absolute;top:-8px;right:-6px;font-size:16px;}
+
+.choicecol{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.choiceopt{border:2px solid var(--border);border-bottom:5px solid var(--line-d);border-radius:16px;background:var(--panel);padding:14px 16px;font-family:'Sarabun',sans-serif;font-size:14.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;line-height:1.6;transition:transform .1s;}
+.choiceopt:active{transform:translateY(2px);}
+.choiceopt:disabled{opacity:.45;cursor:not-allowed;}
+.choiceopt.right{border-color:var(--green);background:var(--green-light);color:var(--green-d);}
+
+.modelbubble{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid var(--border);border-radius:18px;border-bottom-left-radius:4px;padding:10px 16px;font-size:15px;font-weight:600;margin-top:10px;}
+.modelbubble.confused{border-color:var(--red);background:var(--red-light);color:#A32E20;animation:mtShake .5s ease 2;}
+.modelbubble.happy{border-color:var(--green);background:var(--green-light);color:var(--green-d);}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;text-align:left;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div id="intro" class="screen active">
+  <div class="intro-wrap">
+    <span class="intro-icon">🧑‍🏫</span>
+    <div class="intro-title">ครูฝึก AI</div>
+    <div class="intro-sub">AI เก่งได้เพราะมี "ครู" สอนด้วยข้อมูลดี ๆ — วันนี้เราจะมาเป็นครูฝึก AI กันเอง จะได้เห็นกับตาว่า AI เรียนรู้จากข้อมูลจริง ๆ ยังไง</div>
+    <div class="goal-box">
+      <span class="goal-chip">โมดูล 1</span>
+      <span class="goal-text">ทำ 3 ภารกิจของครูฝึก AI: <b>ติดป้ายข้อมูลฝึก</b> ให้ถูกต้อง, <b>จับผิดข้อมูลเสีย</b> ก่อนฝึกโมเดล และ <b>เติมข้อมูลให้หลากหลาย</b> เมื่อโมเดลทายผิด</span>
+    </div>
+    <button class="btn" onclick="showTeach()">เริ่มเรียนรู้ →</button>
+  </div>
+</div>
+
+<div id="teach" class="screen">
+  <div class="teach-wrap">
+    <div id="teachSlides"></div>
+    <div class="teach-dots" id="teachDots"></div>
+    <div class="teach-nav">
+      <button class="btn ghost" id="teachBack" onclick="teachPrev()">← ย้อนกลับ</button>
+      <button class="btn" id="teachNext" onclick="teachNext()">ถัดไป →</button>
+    </div>
+  </div>
+</div>
+
+<div id="game" class="screen">
+  <div class="round-head">
+    <span class="round-tag" id="roundTag">รอบที่ 1/3</span>
+    <span class="scorepill" id="scorePill">พลาด 0 ครั้ง</span>
+  </div>
+  <div id="stage" style="width:100%;display:flex;flex-direction:column;gap:16px;align-items:center;"></div>
+</div>
+
+<div id="done" class="screen">
+  <div class="results-wrap">
+    <div class="res-emoji" id="resEmoji">🏆</div>
+    <div class="res-title" id="resTitle">เป็นครูฝึก AI ตัวจริงแล้ว!</div>
+    <div class="res-stars" id="resStars">⭐⭐⭐</div>
+    <div class="res-score" id="resScore"></div>
+    <button class="btn" onclick="restartGame()">เล่นอีกครั้ง →</button>
+  </div>
+</div>
+
+<script>
+const TEACH_SLIDES = [
+  { icon:'🐣', title:'AI ไม่ได้เกิดมาฉลาด', body:'AI ทุกตัวเริ่มจากศูนย์ — มันต้องถูก "ฝึก" (train) ด้วยข้อมูลตัวอย่างจำนวนมากก่อน ถึงจะเริ่มทำงานเก่ง ๆ ได้ ไม่มีข้อมูลฝึก ก็ไม่มี AI',
+    example:'เหมือนลูกสุนัขที่ต้องฝึกซ้ำ ๆ ก่อนจะรู้จักคำสั่ง "นั่ง" — AI ก็ต้องเห็นตัวอย่างมากมายก่อนถึงจะทำงานได้' },
+  { icon:'🏷️', title:'ข้อมูลฝึก = ตัวอย่าง + ป้ายกำกับ', body:'ข้อมูลฝึก (training data) คือตัวอย่างที่มี "ป้ายกำกับ" (label) บอกคำตอบที่ถูกต้องแนบมาด้วย เช่น รูปแมวคู่กับคำว่า "แมว" — ป้ายนี้แหละคือสิ่งที่ AI ใช้เรียนรู้',
+    example:'รูปแมว 1,000 รูปคู่กับป้าย "แมว" และรูปหมา 1,000 รูปคู่กับป้าย "หมา" คือข้อมูลฝึกของโมเดลแยกแมว-หมา' },
+  { icon:'🔍', title:'โมเดลหารูปแบบจากตัวอย่างเอง', body:'ตอนฝึก โมเดลจะค่อย ๆ สังเกตรูปแบบที่ซ่อนอยู่ในตัวอย่าง เช่น หูแหลม หนวดยาว มักเป็นแมว — ยิ่งตัวอย่างถูกต้องและหลากหลาย โมเดลยิ่งทายแม่น',
+    example:'ถ้าเห็นแมวหลายพันธุ์ หลายสี หลายท่าทาง โมเดลจะจับ "ความเป็นแมว" ได้เก่งกว่าเห็นแมวแบบเดียวซ้ำ ๆ' },
+  { icon:'🧪', title:'ต้องสอบด้วยข้อสอบที่ไม่เคยเห็น', body:'จะรู้ว่าโมเดลเก่งจริงไหม ต้องทดสอบด้วยข้อมูลที่มันไม่เคยเห็นตอนฝึก (test data) — ถ้าทายถูก แปลว่ามันเข้าใจรูปแบบจริง ๆ ไม่ใช่แค่จำตัวอย่างเดิมได้',
+    example:'เหมือนข้อสอบจริงที่ไม่ใช่โจทย์ในหนังสือเรียน — ถ้าตอบถูกแปลว่าเข้าใจจริง ไม่ใช่แค่ท่องจำ' },
+  { icon:'🗑️', title:'ขยะเข้า ขยะออก', body:'ถ้าข้อมูลฝึกมีป้ายผิด ปนกัน หรือไม่ครบถ้วน โมเดลจะเรียนรู้ผิดตามไปด้วย — ภาษา AI เรียกว่า "garbage in, garbage out" ข้อมูลดีจึงสำคัญไม่แพ้โมเดลเก่ง',
+    example:'ถ้ารูปกล้วยถูกติดป้ายว่า "แอปเปิล" โมเดลก็จะจำผิดตาม — ครูสอนผิด นักเรียนก็จำผิด' },
+];
+let teachIdx = 0;
+function $(id){ return document.getElementById(id); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderTeach(){
+  const s = TEACH_SLIDES[teachIdx];
+  $('teachSlides').innerHTML = `<div class="teach-slide">
+    <span class="teach-icon">${s.icon}</span>
+    <div class="teach-title">${esc(s.title)}</div>
+    <div class="teach-body">${esc(s.body)}</div>
+    ${s.example ? `<div class="teach-example"><b>ตัวอย่าง</b> ${esc(s.example)}</div>` : ''}
+  </div>`;
+  $('teachDots').innerHTML = TEACH_SLIDES.map((_,i)=>`<span class="tdot${i===teachIdx?' on':''}"></span>`).join('');
+  $('teachBack').style.visibility = teachIdx===0 ? 'hidden' : 'visible';
+  const last = teachIdx === TEACH_SLIDES.length - 1;
+  $('teachNext').textContent = last ? 'เริ่มภารกิจ →' : 'ถัดไป →';
+  $('teachNext').onclick = last ? startGame : teachNext;
+}
+function teachNext(){ teachIdx = Math.min(TEACH_SLIDES.length-1, teachIdx+1); renderTeach(); }
+function teachPrev(){ teachIdx = Math.max(0, teachIdx-1); renderTeach(); }
+function showTeach(){ teachIdx = 0; renderTeach(); show('teach'); }
+
+// ─────────────────────────── game state ───────────────────────────
+let wrongCount = 0;
+function updHead(tag){ if(tag) $('roundTag').textContent = tag; $('scorePill').textContent = `พลาด ${wrongCount} ครั้ง`; }
+function stage(){ return $('stage'); }
+
+function startGame(){ wrongCount = 0; show('game'); startRound1(); }
+function restartGame(){ startGame(); }
+
+// ─────────────────────────── round 1: label the training data ───────────────────────────
+const R1_TRAIN = [
+  { e:'🐱', cls:'cat' }, { e:'🐶', cls:'dog' }, { e:'😺', cls:'cat' },
+  { e:'🐕', cls:'dog' }, { e:'🐈', cls:'cat' }, { e:'🦮', cls:'dog' },
+];
+const R1_TEST = [ { e:'😸', cls:'cat' }, { e:'🐩', cls:'dog' }, { e:'🐈‍⬛', cls:'cat' }, { e:'🐕‍🦺', cls:'dog' } ];
+const CLS_TH = { cat:'แมว', dog:'หมา' };
+let r1Idx = 0, r1Labels = [];
+
+function startRound1(){
+  r1Idx = 0; r1Labels = [];
+  updHead('รอบที่ 1/3 · ติดป้ายข้อมูลฝึก');
+  r1Render();
+}
+function r1Render(){
+  const it = R1_TRAIN[r1Idx];
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">🏷️ ติดป้ายให้ข้อมูลฝึก — รูปนี้คืออะไร?</div>
+    <div class="round-note">โมเดลจะเรียนรู้จากป้ายที่เราติด ถ้าครูติดป้ายถูก โมเดลก็เรียนถูก</div>
+    <div class="bigitem">${it.e}</div>
+    <div class="progress-note">รูปที่ ${r1Idx+1}/${R1_TRAIN.length}</div>
+    <div class="basketrow">
+      <button class="basketbtn cat" onclick="r1Pick('cat')">🧺 แมว</button>
+      <button class="basketbtn dog" onclick="r1Pick('dog')">🧺 หมา</button>
+    </div>
+  </div>`;
+}
+function r1Pick(cls){
+  const it = R1_TRAIN[r1Idx];
+  if (cls !== it.cls){ wrongCount++; updHead(); }
+  r1Labels.push({ e: it.e, actual: it.cls, given: cls });
+  r1Idx++;
+  if (r1Idx < R1_TRAIN.length) r1Render(); else r1Train();
+}
+function r1Train(){
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">⚙️ กำลังฝึกโมเดลด้วยข้อมูลของครู...</div>
+    <div class="minirow">${r1Labels.map(l=>`<span class="minicard">${l.e}<i>${CLS_TH[l.given]}</i></span>`).join('')}</div>
+    <div class="trainbar"><div class="trainfill" id="tf1"></div></div>
+    <div class="trainmsg">โมเดลกำลังหารูปแบบจากตัวอย่าง 6 รูป...</div>
+  </div>`;
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ $('tf1').style.width='100%'; }); });
+  setTimeout(r1Test, 1800);
+}
+function r1Test(){
+  const catGood = r1Labels.filter(l=>l.actual==='cat' && l.given==='cat').length >= 2;
+  const dogGood = r1Labels.filter(l=>l.actual==='dog' && l.given==='dog').length >= 2;
+  const preds = R1_TEST.map(t=>{
+    const ok = t.cls==='cat' ? catGood : dogGood;
+    return { label: ok ? CLS_TH[t.cls] : CLS_TH[t.cls==='cat'?'dog':'cat'], ok };
+  });
+  const nOK = preds.filter(p=>p.ok).length;
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">🧪 สอบโมเดลด้วยรูปที่ไม่เคยเห็น!</div>
+    <div class="round-note">ดูซิว่าโมเดลของครูจะทายรูปใหม่ ๆ ถูกไหม</div>
+    <div class="testrow">${R1_TEST.map(t=>`<div class="testcard"><span class="temo">${t.e}</span><span class="tpred">กำลังทาย...</span></div>`).join('')}</div>
+    <div class="explainbox" id="r1Explain"></div>
+    <button class="btn ghost" id="r1Next" style="display:none;margin-top:14px;" onclick="startRound2()">ไปภารกิจถัดไป →</button>
+  </div>`;
+  const cards = stage().querySelectorAll('.testcard');
+  preds.forEach((p,i)=>{
+    setTimeout(()=>{
+      cards[i].querySelector('.tpred').textContent = p.label + (p.ok ? ' ✓' : ' ✗');
+      cards[i].classList.add(p.ok ? 'ok' : 'no');
+      if (i === preds.length-1) setTimeout(()=>r1Summary(nOK), 700);
+    }, 500 + i*700);
+  });
+}
+function r1Summary(nOK){
+  const missed = r1Labels.filter(l=>l.given!==l.actual);
+  const box = $('r1Explain');
+  if (missed.length === 0){
+    box.className = 'explainbox show correct';
+    box.innerHTML = `<b>🎉 ผลสอบ: ทายถูก 4/4!</b>ครูติดป้ายข้อมูลฝึกถูกต้องทุกรูป โมเดลเลยจับรูปแบบของแมวและหมาได้แม่นยำ — ข้อมูลฝึกดี = โมเดลเก่ง!`;
+    if (window.dlf) dlf.cheer('เก่งมาก!');
+  } else if (nOK === 4){
+    box.className = 'explainbox show correct';
+    box.innerHTML = `<b>ผลสอบ: ทายถูก 4/4 (หวุดหวิด!)</b>มีป้ายผิดไป ${missed.length} รูป (${missed.map(m=>m.e).join(' ')}) แต่ตัวอย่างที่ถูกต้องยังมีมากกว่า โมเดลเลยพอทายถูก — ยิ่งข้อมูลสะอาด โมเดลยิ่งแม่นนะ`;
+  } else {
+    box.className = 'explainbox show wrong';
+    box.innerHTML = `<b>ผลสอบ: ทายถูกแค่ ${nOK}/4</b>${missed.map(m=>`รูป ${m.e} ที่จริงคือ${CLS_TH[m.actual]} แต่ถูกติดป้ายว่า "${CLS_TH[m.given]}"`).join(' · ')} — ครูสอนผิด โมเดลก็จำผิดตาม นี่แหละพลังของป้ายกำกับ!`;
+  }
+  $('r1Next').style.display = 'block';
+}
+
+// ─────────────────────────── round 2: catch the bad data ───────────────────────────
+const R2_SET = [
+  { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍌', lbl:'กล้วย',  ok:true  },
+  { e:'🍌', lbl:'แอปเปิล', ok:false },
+  { e:'🍎', lbl:'กล้วย',  ok:false },
+  { e:'🍌', lbl:'กล้วย',  ok:true  },
+  { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍌', lbl:'แอปเปิล', ok:false },
+  { e:'🍎', lbl:'แอปเปิล', ok:true  },
+];
+let r2Sel = [];
+
+function startRound2(){
+  r2Sel = R2_SET.map(()=>false);
+  updHead('รอบที่ 2/3 · จับผิดข้อมูลเสีย');
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">🕵️ จับผิดข้อมูลเสียก่อนฝึกโมเดล!</div>
+    <div class="round-note">มีคนติดป้ายผิดปนอยู่ในข้อมูลฝึกชุดนี้ — แตะการ์ดที่ป้าย "ไม่ตรงกับรูป" ให้ครบทุกใบ แล้วกดฝึกโมเดล</div>
+    <div class="datagrid" id="r2Grid"></div>
+    <div class="explainbox" id="r2Explain"></div>
+    <button class="btn" id="r2TrainBtn" style="margin-top:8px;" onclick="r2Train()">🚀 ฝึกโมเดล</button>
+  </div>`;
+  r2RenderGrid();
+}
+function r2RenderGrid(){
+  $('r2Grid').innerHTML = R2_SET.map((c,i)=>
+    `<div class="datacard${r2Sel[i]?' bad':''}" onclick="r2Toggle(${i})"><span class="demo">${c.e}</span><span class="dlbl">${esc(c.lbl)}</span></div>`
+  ).join('');
+}
+function r2Toggle(i){ r2Sel[i] = !r2Sel[i]; r2RenderGrid(); }
+function r2Train(){
+  const missedBad = [], wrongGood = [];
+  R2_SET.forEach((c,i)=>{
+    if (!c.ok && !r2Sel[i]) missedBad.push(c);
+    if (c.ok && r2Sel[i]) wrongGood.push(c);
+  });
+  const box = $('r2Explain');
+  if (!missedBad.length && !wrongGood.length){ r2Success(); return; }
+  wrongCount++; updHead();
+  const parts = [];
+  if (missedBad.length) parts.push(`ยังมีป้ายผิดหลงเหลืออยู่ ${missedBad.length} ใบ เช่น รูป ${missedBad[0].e} ที่ติดป้ายว่า "${esc(missedBad[0].lbl)}" — ถ้าฝึกด้วยการ์ดใบนี้ โมเดลจะสับสนว่า${missedBad[0].e==='🍌'?'กล้วยคือแอปเปิล':'แอปเปิลคือกล้วย'}เลยนะ`);
+  if (wrongGood.length) parts.push(`การ์ด ${wrongGood.map(c=>c.e).join(' ')} ป้ายถูกต้องอยู่แล้ว ไม่ต้องตัดออก — ตัดข้อมูลดีทิ้งไป โมเดลจะมีตัวอย่างให้เรียนน้อยลง`);
+  box.className = 'explainbox show wrong';
+  box.innerHTML = `<b>ลองตรวจอีกครั้งนะ</b>${parts.join(' · ')} ดูป้ายกับรูปทีละใบว่าตรงกันไหม แล้วกดฝึกโมเดลใหม่`;
+}
+function r2Success(){
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">⚙️ ข้อมูลสะอาดแล้ว! กำลังฝึกโมเดล...</div>
+    <div class="minirow">${R2_SET.filter(c=>c.ok).map(c=>`<span class="minicard">${c.e}<i>${esc(c.lbl)}</i></span>`).join('')}</div>
+    <div class="trainbar"><div class="trainfill" id="tf2"></div></div>
+    <div class="trainmsg">ฝึกด้วยข้อมูลที่ตรวจแล้ว 5 ใบ...</div>
+  </div>`;
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ $('tf2').style.width='100%'; }); });
+  setTimeout(()=>{
+    stage().innerHTML = `<div class="taskcard">
+      <div class="round-title">🧪 สอบโมเดลผลไม้!</div>
+      <div class="testrow">
+        <div class="testcard"><span class="temo">🍎</span><span class="tpred">กำลังทาย...</span></div>
+        <div class="testcard"><span class="temo">🍌</span><span class="tpred">กำลังทาย...</span></div>
+      </div>
+      <div class="explainbox" id="r2Done"></div>
+      <button class="btn ghost" id="r2Next" style="display:none;margin-top:14px;" onclick="startRound3()">ไปภารกิจสุดท้าย →</button>
+    </div>`;
+    const cards = stage().querySelectorAll('.testcard');
+    [['แอปเปิล ✓'],['กล้วย ✓']].forEach((p,i)=>{
+      setTimeout(()=>{
+        cards[i].querySelector('.tpred').textContent = p[0];
+        cards[i].classList.add('ok');
+        if (i===1){
+          const box = $('r2Done');
+          box.className = 'explainbox show correct';
+          box.innerHTML = `<b>🎉 ทายถูกหมดเลย!</b>เพราะครูคัดข้อมูลเสียออกก่อนฝึก โมเดลเลยไม่สับสน — จำไว้เลย "ขยะเข้า ขยะออก" ข้อมูลสะอาดคือหัวใจของ AI เก่ง ๆ`;
+          $('r2Next').style.display = 'block';
+          if (window.dlf) dlf.cheer('สุดยอดนักสืบข้อมูล!');
+        }
+      }, 500 + i*700);
+    });
+  }, 1800);
+}
+
+// ─────────────────────────── round 3: incomplete data ───────────────────────────
+function startRound3(){
+  updHead('รอบที่ 3/3 · ข้อมูลไม่ครบ');
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">📦 โมเดลใหม่ ฝึกด้วยข้อมูลชุดนี้</div>
+    <div class="round-note">คราวนี้ข้อมูลฝึกทุกใบติดป้าย "ถูกต้อง" หมดเลยนะ ลองฝึกแล้วสอบดู</div>
+    <div class="minirow">
+      <span class="minicard">🍎<i>แอปเปิล</i></span><span class="minicard">🍎<i>แอปเปิล</i></span><span class="minicard">🍎<i>แอปเปิล</i></span>
+      <span class="minicard">🍌<i>กล้วย</i></span><span class="minicard">🍌<i>กล้วย</i></span><span class="minicard">🍌<i>กล้วย</i></span>
+    </div>
+    <div class="trainbar"><div class="trainfill" id="tf3"></div></div>
+    <div class="trainmsg" id="r3Msg">กำลังฝึกโมเดล...</div>
+  </div>`;
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ $('tf3').style.width='100%'; }); });
+  setTimeout(r3Quiz, 1800);
+}
+function r3Quiz(){
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">🧪 ข้อสอบ: แอปเปิลเขียว!</div>
+    <div class="bigitem">🍏</div>
+    <div class="modelbubble confused">🤖 อืม... กล้วย...มั้ง? 😵‍💫</div>
+    <div class="round-note" style="margin-top:14px;">โมเดลทายผิดทั้งที่ป้ายข้อมูลฝึกถูกทุกใบ! เพราะอะไรนะ... เราควรแก้ยังไงดี?</div>
+    <div class="choicecol">
+      <button class="choiceopt" id="r3a" onclick="r3Pick('a')">😤 ด่าโมเดลให้ตั้งใจทายกว่านี้หน่อย</button>
+      <button class="choiceopt" id="r3b" onclick="r3Pick('b')">🍎🍏 เพิ่มตัวอย่างแอปเปิลหลากสีลงในข้อมูลฝึก</button>
+      <button class="choiceopt" id="r3c" onclick="r3Pick('c')">🌍 ลบแอปเปิลเขียวออกจากโลกนี้ไปเลย</button>
+    </div>
+    <div class="explainbox" id="r3Explain"></div>
+  </div>`;
+}
+function r3Pick(k){
+  const box = $('r3Explain');
+  if (k === 'b'){
+    $('r3b').classList.add('right');
+    ['r3a','r3b','r3c'].forEach(id=>$(id).disabled = true);
+    box.className = 'explainbox show correct';
+    box.innerHTML = `<b>✅ ถูกต้องที่สุด!</b>โมเดลไม่เคยเห็นแอปเปิลเขียวเลย มันเลยเดาจากสีว่าน่าจะเป็นกล้วย — เพิ่มตัวอย่างให้หลากหลาย แล้วฝึกใหม่กันเลย!`;
+    if (window.dlf) dlf.cheer('เยี่ยมมาก!');
+    setTimeout(r3Retrain, 1600);
+  } else {
+    wrongCount++; updHead();
+    $(k==='a'?'r3a':'r3c').disabled = true;
+    box.className = 'explainbox show wrong';
+    box.innerHTML = k === 'a'
+      ? `<b>โมเดลไม่ได้ขี้เกียจนะ 😅</b>มันไม่เคยเห็นแอปเปิลเขียวในข้อมูลฝึกเลยสักรูป จะให้ทายถูกได้ยังไงล่ะ — ปัญหาอยู่ที่ข้อมูล ไม่ใช่ความตั้งใจ ลองเลือกใหม่นะ`
+      : `<b>แอปเปิลเขียวอร่อยจะตาย! 😄</b>ปัญหาไม่ได้อยู่ที่แอปเปิลเขียว แต่อยู่ที่ข้อมูลฝึกของเราไม่หลากหลายพอ — ลองคิดดูว่าจะเติมอะไรให้โมเดลดี`;
+  }
+}
+function r3Retrain(){
+  stage().innerHTML = `<div class="taskcard">
+    <div class="round-title">⚙️ ฝึกใหม่ด้วยข้อมูลที่หลากหลายขึ้น</div>
+    <div class="minirow">
+      <span class="minicard">🍎<i>แอปเปิล</i></span><span class="minicard">🍏<i>แอปเปิล</i></span><span class="minicard">🍎<i>แอปเปิล</i></span><span class="minicard">🍏<i>แอปเปิล</i></span>
+      <span class="minicard">🍌<i>กล้วย</i></span><span class="minicard">🍌<i>กล้วย</i></span>
+    </div>
+    <div class="trainbar"><div class="trainfill" id="tf4"></div></div>
+    <div class="trainmsg">คราวนี้มีแอปเปิลทั้งแดงและเขียวแล้ว...</div>
+  </div>`;
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ $('tf4').style.width='100%'; }); });
+  setTimeout(()=>{
+    stage().innerHTML = `<div class="taskcard">
+      <div class="round-title">🧪 สอบใหม่อีกครั้ง!</div>
+      <div class="bigitem">🍏</div>
+      <div class="modelbubble happy">🤖 แอปเปิล! มั่นใจเลย 🎉</div>
+      <div class="explainbox show correct" style="margin-top:14px;">
+        <b>🌟 เห็นไหม!</b>พอข้อมูลฝึกหลากหลายขึ้น โมเดลก็ทายเก่งขึ้นทันที — ข้อมูลที่ไม่หลากหลายทำให้ AI "ลำเอียง" เข้าข้างสิ่งที่มันเคยเห็นบ่อย ๆ ได้ เรื่องนี้เราจะเรียนต่อแบบเต็ม ๆ ในโมดูลถัดไปนะ 🔍
+      </div>
+      <button class="btn" style="margin-top:14px;" onclick="finishGame()">สรุปผลภารกิจ →</button>
+    </div>`;
+    if (window.dlf) dlf.cheer('ครูฝึก AI ตัวจริง!');
+  }, 1800);
+}
+
+// ─────────────────────────── results ───────────────────────────
+function finishGame(){
+  window.dlfStars = wrongCount <= 1 ? 3 : wrongCount <= 3 ? 2 : 1;
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = window.dlfStars === 3 ? 'เป็นครูฝึก AI ตัวจริงแล้ว!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = `ผ่านครบทั้ง 3 ภารกิจ: ติดป้ายข้อมูล จับผิดข้อมูลเสีย และเติมข้อมูลให้หลากหลาย — พลาดไป ${wrongCount} ครั้ง`;
+  show('done');
+}
+</script>
+
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<script id="dlfAudioData" type="application/json">{}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.round-title'],extraNonDecorateSelectors:'.basketbtn,.datacard,.choiceopt,.minicard,.testcard'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>

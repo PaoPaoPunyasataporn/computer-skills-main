@@ -1,163 +1,61 @@
 # หลักสูตร AI · AI Literacy Curriculum
-### (AI Class ASEAN Edition — adapted for Thai youth learners)
+### (Experience AI Edition — adapted for Thai youth learners)
 
-Based on **AI Class ASEAN** (ASEAN Foundation × Google.org, part of the *AI Ready ASEAN* initiative — [aiclassasean.org](https://aiclassasean.org)). Their platform offers 15 courses across 3 categories for Youth, Parents, Educators, and Master Trainers. This curriculum adapts those 15 courses 1:1 into short, gamified, bilingual (Thai/English) lessons matching the pacing and engine of the existing computer-skills course (`assets/engine.js`, `dlf.js` read-aloud, quiz-then-badge unit structure).
+Structured on **Experience AI** (Raspberry Pi Foundation × Google DeepMind — [experience-ai.org](https://experience-ai.org)), the closest structural match to this course: designed for **11–14 year olds** as a comprehensive introductory AI course, already localized in 19+ languages across 38 countries, with **offline-friendly activity variants** (built for their Kenya deployment) that fit this project's no-internet-assumption deployment. Their lesson structure is lifted here and the interactive parts are re-implemented natively as self-contained HTML games on the existing engine (`public/games/_lib/dlf-ai-engine.js`, `dlf` read-aloud, teach-slides → game → stars unit structure) — no cloud tools required.
 
-**Format per unit:** 2–3 short chapters → mini-quiz (3–5 questions) → badge. ~15–20 minutes each. Every unit carries the **AI** badge.
+**Secondary reference:** MIT **Day of AI** ([dayofai.org](https://dayofai.org)) — its chatbots/bias/productive-use unit for ages 12+ overlaps directly with the chatbot modules (3–7) and follows the same UNESCO framework.
 
----
+**Framework mapping target:** the **UNESCO AI Competency Framework for Students** (2024) — the same move as the digital-literacy course's DigComp mapping, so both courses have parallel, citable competency backbones. UNESCO's four competency aspects:
 
-## Area 1 — พื้นฐาน AI · AI Fundamentals
-*(maps to AI Class ASEAN's "AI Fundamental" category)*
-
-### 1.1 AI คืออะไร · Introduction to AI
-- **วัตถุประสงค์ / Objectives:** อธิบายว่า AI คืออะไร แตกต่างจากโปรแกรมคอมพิวเตอร์ทั่วไปอย่างไร และ AI "เรียนรู้" ได้อย่างไร (จากข้อมูล ไม่ใช่กฎตายตัว)
-- **Chapters:**
-  1. AI คืออะไร — ระบบที่เรียนรู้จากข้อมูลเพื่อทำนายหรือตัดสินใจ ไม่ใช่หุ่นยนต์ที่คิดเองแบบมนุษย์
-  2. AI ต่างจากโปรแกรมทั่วไปอย่างไร — โปรแกรมทั่วไปทำตามคำสั่งตายตัว, AI เรียนรู้รูปแบบจากตัวอย่างจำนวนมาก
-  3. AI เรียนรู้ได้อย่างไร (แนวคิดง่ายๆ) — ข้อมูล (data) → ฝึกฝน (training) → ทำนาย (prediction)
-- **Quiz sample:** "AI เรียนรู้จากอะไร?" → ก) กฎที่มนุษย์เขียนตายตัว ข) ข้อมูลตัวอย่างจำนวนมาก ✓ ค) เวทมนตร์
-
-### 1.2 AI มีกี่แบบ · Variety of AI
-- **Objectives:** จำแนก AI แคบ (narrow AI) เทียบ AI ทั่วไป (general AI) และรู้จักตัวอย่าง AI ประเภทต่างๆ
-- **Chapters:**
-  1. AI แคบ vs AI ทั่วไป — AI แคบทำงานเฉพาะทาง (แชทบอท, แนะนำสินค้า), AI ทั่วไปยังเป็นเพียงแนวคิด/อยู่ระหว่างพัฒนา
-  2. ตัวอย่าง AI รอบตัว — แชทบอท, ระบบแนะนำวิดีโอ/สินค้า, การจดจำใบหน้า, การแปลภาษา
-  3. Generative AI คืออีกประเภทหนึ่ง — สร้างเนื้อหาใหม่ (ข้อความ รูปภาพ) แทนที่จะแค่ทำนาย/จำแนก
-- **Quiz sample:** "ระบบแนะนำวิดีโอที่ดูต่อ เป็น AI ประเภทใด?" → AI แคบ (narrow AI) ✓
-
-### 1.3 AI ในชีวิตประจำวัน · AI for Everyday Life
-- **Objectives:** ระบุจุดที่ AI ทำงานอยู่เบื้องหลังแอปที่ใช้ทุกวัน
-- **Chapters:**
-  1. แผนที่และเส้นทาง — AI คำนวณเส้นทางที่เร็วที่สุดจากข้อมูลจราจรแบบเรียลไทม์
-  2. ผู้ช่วยเสียงและการแปลภาษา — จดจำเสียงพูด แปลงเป็นข้อความ แปลภาษาแบบทันที
-  3. ตัวกรองสแปมและฟีดข่าว — AI คัดกรองอีเมลขยะ และจัดเรียงเนื้อหาที่น่าจะสนใจ
-- **Quiz sample:** จับคู่แอป (Google Maps, Gmail, YouTube feed) กับหน้าที่ของ AI เบื้องหลัง
-
-### 1.4 พื้นฐาน Generative AI · Fundamentals of Generative AI
-- **Objectives:** เข้าใจว่า Generative AI สร้างเนื้อหาใหม่ได้อย่างไร และข้อจำกัด (อาจผิดพลาด/มั่นใจผิดๆ)
-- **Chapters:**
-  1. Generative AI คืออะไร — โมเดลที่ฝึกจากข้อความ/รูปภาพจำนวนมาก แล้วสร้างเนื้อหาใหม่ตามคำสั่ง (prompt)
-  2. สิ่งที่ทำได้ — เขียนเรื่อง แต่งเพลง วาดรูป เขียนโค้ด ตอบคำถาม
-  3. ข้อจำกัดสำคัญ — อาจ "มั่ว" ข้อมูลผิด (hallucination) มั่นใจในคำตอบที่ผิดได้ ต้องตรวจสอบซ้ำเสมอ
-- **Quiz sample:** "ถ้า AI ตอบคำถามด้วยความมั่นใจ แปลว่าคำตอบถูกเสมอหรือไม่?" → ไม่ใช่ ✓ ต้องตรวจสอบแหล่งอ้างอิงเสมอ
+| Aspect | คำอธิบาย |
+|---|---|
+| **A. Human-centred mindset** | มนุษย์เป็นผู้ตัดสินใจ AI เป็นเครื่องมือ — agency, ไม่พึ่งพาเกินไป |
+| **B. Ethics of AI** | ความยุติธรรม อคติ ความเป็นส่วนตัว ความรับผิดชอบ |
+| **C. AI techniques & applications** | AI/ML ทำงานอย่างไร ใช้เครื่องมือ AI เป็น |
+| **D. AI system design** | ออกแบบ/ประเมินระบบ AI ครบวงจร (ระดับเริ่มต้น: กำหนดปัญหา ข้อมูล ทดสอบ) |
 
 ---
 
-## Area 2 — การใช้งานและประยุกต์ AI · AI Usage & Implementation
-*(maps to AI Class ASEAN's "AI Usage & Implementation" category)*
+## โครงหลักสูตร · The six-lesson arc → 10 modules
 
-### 2.1 คุยกับ AI ให้เก่ง · AI Prompts 101
-- **Objectives:** เขียนคำสั่ง (prompt) ที่ชัดเจนเพื่อให้ AI ตอบได้ตรงความต้องการ
-- **Chapters:**
-  1. Prompt ที่ดีมีอะไรบ้าง — บริบท (context), เป้าหมายชัดเจน, รูปแบบคำตอบที่ต้องการ
-  2. ตัวอย่าง prompt แย่ vs prompt ดี — เทียบ "เขียนเรียงความ" กับ "เขียนเรียงความ 200 คำ หัวข้อการอนุรักษ์น้ำ สำหรับนักเรียนมัธยมต้น"
-  3. ปรับปรุง prompt ทีละขั้น (iterate) — ถามต่อ/แก้ไขคำสั่งเมื่อคำตอบยังไม่ตรง
-- **Quiz sample:** เลือก prompt ที่ดีที่สุดจาก 3 ตัวเลือกสำหรับงานที่กำหนด
+Experience AI's foundation arc: **What is AI → How machine learning works (data + models) → Bias in data → How AI creates (generative) → Real-world applications → Applied challenge.** The earlier version of this course covered only the generative-tools slice (lessons 4–5); modules 1, 2, 8, 9 add the conceptual layers underneath, so learners understand *why* the chatbot behaves the way it does, not just how to prompt it.
 
-### 2.2 ทำงานฉลาดขึ้นด้วย AI · Work Smarter not Harder
-- **Objectives:** ใช้ AI ช่วยงานประจำวัน (สรุปข้อความ จัดตาราง ร่างอีเมล) อย่างมีประสิทธิภาพ
-- **Chapters:**
-  1. งานที่ AI ช่วยได้ดี — สรุปเอกสารยาว ร่างอีเมล จัดระเบียบข้อมูล
-  2. งานที่ควรทำเอง/ตรวจสอบเอง — การตัดสินใจสำคัญ ข้อมูลอ่อนไหว ความคิดสร้างสรรค์ส่วนตัว
-  3. ตัวอย่างจริง — ใช้ AI สรุปการประชุม แล้วตรวจทานก่อนส่ง
-- **Quiz sample:** จัดหมวดงาน 4 อย่างว่า "ให้ AI ช่วยได้" หรือ "ควรตรวจสอบเองก่อนเสมอ"
+| # | โมดูล | ไฟล์ | Experience AI lesson | UNESCO aspect |
+|---|---|---|---|---|
+| 0 | 🤖 AI คืออะไร และทำงานอย่างไร | `ai0-ai-foundations.html` | **L1** What is AI | C (understand), A |
+| 1 | 🧑‍🏫 ครูฝึก AI — ติดป้ายข้อมูล ฝึกโมเดล ทดสอบ | `ai6-model-trainer.html` | **L2** How ML works (data + models) | C (understand) |
+| 2 | 🕵️ นักสืบอคติ AI — หาและแก้อคติในข้อมูลฝึก | `ai7-bias-detective.html` | **L3** Bias in data | B, C |
+| 3 | 🖥️ นักสำรวจหน้าจอ AI — UI และ token | `ai1-ui-inspector.html` | **L4** How AI creates (generative) | C (apply) |
+| 4 | 🧩 ช่างซ่อมคำสั่ง AI — prompting | `ai2-prompt-fixer.html` | **L4** How AI creates | C (apply) |
+| 5 | 🎓 เรียนรู้เรื่องใหม่กับ AI — ใช้แชทช่วยเรียน | `ai3-learn-with-ai.html` | **L5** Applications | A, C (apply) |
+| 6 | 💎 สถาปนิกติวเตอร์ AI — ออกแบบกฎ system prompt | `ai4-gem-architect.html` | **L5→L6** bridge | A, D |
+| 7 | 🧪 นักทดลองแซนด์บ็อกซ์ AI — ปรับพารามิเตอร์/บทบาท | `ai5-sandbox-master.html` | **L5** Applications | C (apply) |
+| 8 | 🌏 AI รอบตัวเรา — แอปจริง ข้อมูลฝึกจริง ประโยชน์และความเสี่ยง | `ai8-ai-in-the-world.html` | **L5** Real-world applications | A, B |
+| 9 | 🏆 ภารกิจนักออกแบบ AI — ออกแบบ AI แยกขยะโรงเรียนครบวงจร | `ai9-ai-quest.html` | **L6** Applied challenge (AI Quests format) | D, A, B |
 
-### 2.3 สร้างคอนเทนต์ด้วย AI · AI for Content Creation
-- **Objectives:** ใช้ AI ช่วยสร้างงานเขียน/ภาพ พร้อมให้เครดิตและตรวจสอบความถูกต้อง
-- **Chapters:**
-  1. เครื่องมือสร้างคอนเทนต์ — เขียนข้อความ สร้างภาพ ตัดต่อวิดีโอสั้น
-  2. ขั้นตอนสร้างงานอย่างมีความรับผิดชอบ — ร่างด้วย AI → แก้ไขให้เป็นของตัวเอง → ตรวจสอบข้อเท็จจริง → ให้เครดิตเครื่องมือที่ใช้
-  3. กรณีตัวอย่าง — โปสเตอร์กิจกรรมโรงเรียนที่ทำด้วย AI + การปรับแต่งเอง
-- **Quiz sample:** "ขั้นตอนไหนที่ห้ามข้าม เมื่อใช้ AI สร้างคอนเทนต์เพื่อส่งงาน?" → ตรวจสอบข้อเท็จจริงก่อนเผยแพร่ ✓
+**Format per module:** intro → teach slides (4–5) → interactive game ที่บังคับใช้ทักษะจริง (ติดป้ายข้อมูลจริง แก้ชุดข้อมูลจริง เขียน prompt เอง) → ดาว 1–3 ดวงตามจำนวนครั้งที่ผิด ~10–20 นาทีต่อโมดูล รวม ~2.5–3.5 ชั่วโมง
 
-### 2.4 AI กับโซเชียลมีเดีย · AI for Social Media
-- **Objectives:** เข้าใจว่า AI จัดเรียงฟีดและแนะนำเนื้อหาอย่างไร และใช้ AI สร้าง/จัดตารางโพสต์อย่างมีวิจารณญาณ
-- **Chapters:**
-  1. อัลกอริทึมฟีด — AI เรียนรู้จากพฤติกรรมการดู/ไลก์ เพื่อเลือกเนื้อหาที่ "น่าจะ" สนใจ ไม่ใช่ "ดีที่สุด" เสมอ
-  2. AI ช่วยสร้างโพสต์ — แคปชั่น รูปภาพ ตารางเวลาโพสต์
-  3. ข้อควรระวัง — ห้องเสียงสะท้อน (echo chamber), เนื้อหาปลอมที่แพร่กระจายเร็ว
-- **Quiz sample:** "ทำไมฟีดของเราแต่ละคนถึงไม่เหมือนกัน?" → AI ปรับตามพฤติกรรมของแต่ละคน ✓
-
-### 2.5 AI จับเท็จ · AI in Combating Fake News, Hoax & Misinformation
-- **Objectives:** ใช้เครื่องมือ AI และวิจารณญาณตรวจสอบข่าวปลอม/ข้อมูลบิดเบือน
-- **Chapters:**
-  1. ข่าวปลอมแพร่กระจายอย่างไร — เร็วกว่าข่าวจริง เพราะกระตุ้นอารมณ์
-  2. เครื่องมือช่วยตรวจสอบ — reverse image search, fact-checking sites, ถาม AI ให้ช่วยหาแหล่งอ้างอิง
-  3. สัญญาณเตือนของข่าวปลอม — ไม่มีแหล่งที่มา, พาดหัวเร้าอารมณ์, ภาพ/วิดีโอที่ตัดต่อผิดปกติ
-- **Quiz sample:** ระบุ 3 สัญญาณของข่าวปลอมจากตัวอย่างข่าว
-
-### 2.6 สร้างเครื่องมือ AI ง่ายๆ · Fundamental to Develop AI-Based Tools
-- **Objectives:** เข้าใจแนวคิดเบื้องต้นของการสร้างเครื่องมือ AI แบบไม่ต้องเขียนโค้ด (no-code)
-- **Chapters:**
-  1. ส่วนประกอบเบื้องต้น — ข้อมูลตัวอย่าง, คำสั่ง/กติกา, ผลลัพธ์ที่ต้องการ
-  2. แพลตฟอร์ม no-code ตัวอย่าง — สร้างแชทบอทถาม-ตอบง่ายๆ จากชุดคำถาม
-  3. ทดลองสร้างและทดสอบ — ลองสร้างแชทบอทตอบ FAQ ของห้องเรียน แล้วทดสอบว่าตอบถูกไหม
-- **Quiz sample:** เรียงลำดับขั้นตอนสร้างเครื่องมือ AI ง่ายๆ ให้ถูกต้อง
-
-### 2.7 อาชีพในยุค AI · Career Opportunity in the Era of AI
-- **Objectives:** รู้จักทักษะและอาชีพใหม่ที่เกี่ยวข้องกับ AI และวิธี AI เปลี่ยนงานเดิม
-- **Chapters:**
-  1. อาชีพใหม่ที่เกิดจาก AI — ผู้เขียน prompt, ผู้ตรวจสอบข้อมูล AI, นักพัฒนา AI
-  2. AI เปลี่ยนงานเดิมอย่างไร — งานที่ทำซ้ำๆ ถูก AI ช่วย/แทนที่บางส่วน, ทักษะที่มนุษย์ยังสำคัญ (ความคิดสร้างสรรค์ การตัดสินใจเชิงจริยธรรม)
-  3. ทักษะที่ควรฝึกตั้งแต่วันนี้ — การคิดวิเคราะห์ การใช้ AI เป็นเครื่องมือ ไม่ใช่พึ่งพาทั้งหมด
-- **Quiz sample:** จับคู่อาชีพใหม่กับหน้าที่หลัก
+**Arc logic (why this order):**
+1. **แนวคิด (0–2):** AI คืออะไร → เรียนจากข้อมูลอย่างไร (เด็กเป็น "ครู" ฝึกโมเดลเอง) → ข้อมูลเอียงทำให้ AI ลำเอียง
+2. **เครื่องมือ (3–7):** จอแชทจริง token prompting การใช้ช่วยเรียน การออกแบบกฎ การทดลองพารามิเตอร์
+3. **โลกจริงและสังเคราะห์ (8–9):** AI ในชีวิตจริง ประโยชน์/ความเสี่ยง → ภารกิจออกแบบระบบ AI เองครบทุกขั้น (ปัญหา → ข้อมูล → ฝึก → ทดสอบ/ตรวจอคติ → ใช้อย่างรับผิดชอบ)
 
 ---
 
-## Area 3 — จริยธรรม ความเป็นส่วนตัว และความปลอดภัย · AI Ethics, Privacy & Security
-*(maps to AI Class ASEAN's "AI Ethics, Privacy & Security" category)*
+## การนำไปใช้ · Deployment notes
 
-### 3.1 จริยธรรม AI และการใช้อย่างรับผิดชอบ · AI Ethics & Responsible AI Use
-- **Objectives:** ระบุหลักการใช้ AI อย่างมีจริยธรรม (ความเป็นธรรม ความโปร่งใส ความรับผิดชอบ)
-- **Chapters:**
-  1. อคติใน AI (AI bias) — AI เรียนรู้จากข้อมูลที่มนุษย์สร้าง จึงอาจมีอคติแฝงอยู่
-  2. หลักการใช้ AI อย่างรับผิดชอบ — ตรวจสอบผลลัพธ์ ไม่ใช้หลอกลวงผู้อื่น เปิดเผยเมื่อใช้ AI ช่วยทำงาน
-  3. กรณีศึกษาสั้นๆ — AI ปฏิเสธสมัครงานอย่างไม่เป็นธรรมเพราะข้อมูลฝึกมีอคติ
-- **Quiz sample:** "ทำไม AI ถึงมีอคติได้ทั้งที่เป็นเครื่องจักร?" → เพราะเรียนรู้จากข้อมูลที่มนุษย์สร้างซึ่งอาจมีอคติ ✓
+- **Offline-first:** ทุกโมดูลเป็นไฟล์ HTML เดี่ยว ไม่เรียก API ภายนอก (แชท AI ในเกมเป็นการจำลองแบบกำหนดผลลัพธ์ไว้) — ตรงกับแนวทาง offline-friendly ของ Experience AI ฉบับ localization
+- **เสียงอ่าน:** ทุกข้อความผ่าน `dlf.speak` — MP3 ที่อัดไว้เล่นก่อน ถ้าไม่มีใช้เสียง Thai TTS ของเบราว์เซอร์ โมดูลใหม่ (1, 2, 8, 9) ยังไม่มีคลิปเสียง: รัน `node scripts/gen-audio-edge.mjs` (คุณภาพสูง ต้องมี `edge-tts`) หรือ `node scripts/gen-audio.mjs` เพื่อเติม `dlfAudioData` map ของแต่ละไฟล์
+- **การให้ดาว/XP:** เหมือนทุกเกมในคอร์ส — เกมตั้ง `window.dlfStars`, หน้า `/ai` บันทึกผ่าน `saveProgress` ใน `lib/progress.ts`
 
-### 3.2 ลิขสิทธิ์และการคัดลอกผลงาน · Ethical AI Usage – Plagiarism & Copyright Issues
-- **Objectives:** เข้าใจประเด็นลิขสิทธิ์เมื่อใช้ AI สร้างเนื้อหา และวิธีให้เครดิตอย่างเหมาะสม
-- **Chapters:**
-  1. AI กับลิขสิทธิ์ — เนื้อหาที่ AI สร้างอาจอิงจากผลงานที่มีลิขสิทธิ์ในข้อมูลฝึก
-  2. การคัดลอกผลงาน (plagiarism) — ส่งงานที่ AI เขียนทั้งหมดโดยไม่ปรับแต่ง/ไม่แจ้ง ถือเป็นการคัดลอก
-  3. แนวทางที่ถูกต้อง — ใช้ AI เป็นผู้ช่วยร่าง แล้วปรับเป็นภาษาตัวเอง พร้อมระบุว่าใช้เครื่องมือใดช่วย
-- **Quiz sample:** สถานการณ์: ส่งการบ้านที่ AI เขียนทั้งหมดโดยไม่บอกครู → ถูกหรือผิด? → ผิด ✓
+## ที่มาและเวอร์ชันก่อนหน้า · Provenance
 
-### 3.3 ความเป็นส่วนตัวและความปลอดภัยของข้อมูล · Data Privacy & AI Safety
-- **Objectives:** ปกป้องข้อมูลส่วนตัวเมื่อใช้เครื่องมือ AI และเข้าใจความเสี่ยง
-- **Chapters:**
-  1. ข้อมูลอะไรไม่ควรใส่ใน AI — รหัสผ่าน ข้อมูลบัตร ข้อมูลส่วนตัวของผู้อื่น
-  2. AI เก็บข้อมูลของเราไปทำอะไร — อาจใช้ฝึกโมเดลต่อ หรือเก็บประวัติการสนทนา
-  3. ตั้งค่าความเป็นส่วนตัว — ตรวจสอบนโยบายก่อนใช้, ปิดการเก็บประวัติเมื่อทำได้
-- **Quiz sample:** เลือกข้อมูลที่ "ห้าม" พิมพ์ใส่แชทบอท AI จากรายการ
+- เวอร์ชันแรกของเอกสารนี้ (ดู git history) ร่างโครง 15 หน่วยจาก **AI Class ASEAN** (ASEAN Foundation × Google.org) — ไม่ได้สร้างจริง ถูกแทนที่ด้วยโครง Experience AI เพราะตรงกับกลุ่มอายุ รูปแบบบทเรียน และบริบท offline มากกว่า เนื้อหาจริยธรรม/ความเป็นส่วนตัวจากร่างนั้นถูกหลอมรวมในโมดูล 2, 8, 9 แล้ว
+- Experience AI lesson arc: What is AI → How ML works → Bias → How AI creates → Applications → Applied challenge (their Lesson 6 "AI Quests" gamified-challenge format คือแม่แบบของโมดูล 9)
 
-### 3.4 อนาคตของ AI เพื่อสังคม · The Future of AI Development: AI for Social Good
-- **Objectives:** เห็นภาพบทบาทของ AI ในการแก้ปัญหาสังคม/สิ่งแวดล้อม และบทบาทของตนเองในอนาคต AI
-- **Chapters:**
-  1. AI เพื่อสังคม — พยากรณ์ภัยพิบัติ ตรวจจับโรคจากภาพทางการแพทย์ ช่วยเกษตรกรวางแผนเพาะปลูก
-  2. ความท้าทายที่ต้องช่วยกันดูแล — ความเหลื่อมล้ำในการเข้าถึง AI, ผลกระทบต่อสิ่งแวดล้อมจากการประมวลผล
-  3. บทบาทของเรา — ใช้ AI อย่างมีวิจารณญาณ และช่วยส่งต่อความรู้ให้ผู้อื่นในชุมชน
-- **Quiz sample:** ยกตัวอย่าง AI เพื่อสังคม 1 ตัวอย่างจากบทเรียน แล้วอธิบายประโยชน์
+## งานถัดไป · Next steps (not yet built)
 
----
-
-## Capstone — ด่านสุดท้าย AI · AI Bossfight
-Optional closing challenge (matching the existing `bossfight` pattern) drawing one question from each of the 15 units — tests recall across all 3 areas before awarding the full **AI Literacy** certificate.
-
----
-
-## Summary table
-
-| Area | หัวข้อ | หน่วยเรียน | จำนวน |
-|---|---|---|---|
-| 1 | AI Fundamentals | 1.1–1.4 | 4 |
-| 2 | AI Usage & Implementation | 2.1–2.7 | 7 |
-| 3 | AI Ethics, Privacy & Security | 3.1–3.4 | 4 |
-| — | Capstone | AI Bossfight | 1 |
-
-**Total: 15 units + 1 capstone**, ~4–5 hours total learning time.
-
----
-
-*Next steps (not yet built): decide delivery — new `ai-area1..3-*.html` files using the existing engine, or a separate `/ai` route — and whether to generate TTS audio via `scripts/gen-audio.mjs` for the new Thai content.*
+- [ ] สร้างคลิปเสียงไทยสำหรับโมดูล 1, 2, 8, 9 (`gen-audio-edge.mjs`)
+- [ ] เพิ่มคำถาม AI ลงบอสไฟท์สุดท้าย (`final-bossfight.html`) ให้ครอบคลุมโมดูลใหม่ หรือแยก AI bossfight + ใบประกาศ AI Literacy ต่างหาก
+- [ ] แปลบทเรียนเป็นอังกฤษคู่ขนาน (โครง Experience AI มี localization playbook อ้างอิงได้)
+- [ ] ตาราง mapping ละเอียดราย competency ของ UNESCO framework (ระดับ Understand/Apply/Create) สำหรับเอกสารขอทุน/โรงเรียน

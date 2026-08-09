@@ -2,7 +2,7 @@
 
 Plain-text, editable roadmap. Edit this file directly — check items off, move dates, add rows. No special format required, just markdown checkboxes and tables.
 
-Last updated: 2026-08-06
+Last updated: 2026-08-09
 
 ---
 
@@ -25,7 +25,7 @@ The immediate punch-list — small, high-value, already scoped.
 | ✅ | Applause SFX on 3-star finish + boss-fight clear | Fires at the exact "⭐⭐⭐" moment, not on exit |
 | ✅ | Confetti/cheer crash fixed (9 games) | Missing `cols` array threw on every 2-3 star finish |
 | ✅ | Boss-fight audio migrated to Edge TTS | 270/270 clips confirmed |
-| 🔴 | **Migrate remaining 14 games to Edge TTS** | Audit found ~1,774 clips across `unit1–9` and `ai0–5` still on the old Google TTS voice. Boss fight was the only one actually fixed. |
+| 🔴 | **Migrate remaining 14 games to Edge TTS** | Audit found ~1,774 clips across `unit1–9` and `ai0–5` still on the old Google TTS voice. Boss fight was the only one actually fixed. (The new `ai6–9` modules were recorded on Edge TTS from the start and are not affected.) |
 | 🔴 | **Competition mode: race doesn't end when someone wins** | `lib/compete-store.ts` requires *all* players to finish before the room closes and shows the podium. Needs to end (and show podium) as soon as *one* player finishes. Diagnosed, not yet fixed. |
 
 ---
@@ -51,7 +51,8 @@ Bigger or lower-urgency items — pull into "Next" when ready.
 |---|---|---|
 | ⬜ | Broader device/browser testing pass | Especially audio autoplay behavior on iOS Safari |
 | ⬜ | Persist competition results server-side beyond room lifetime | Currently in-memory + Neon dual backend, no long-term history |
-| ⬜ | Expand AI literacy modules | `ai0–5` currently 6 modules; room to grow per `AI_CURRICULUM.md` |
+| ✅ | Expand AI literacy modules | Expanded 6 → 10 modules (2026-08-09) on the Experience AI six-lesson arc: new `ai6` train-a-model, `ai7` bias-in-data, `ai8` real-world AI, `ai9` design-an-AI capstone; course reordered concepts → tools → applied. See `AI_CURRICULUM.md` (now mapped to the UNESCO AI Competency Framework) |
+| ⬜ | Extend `final-bossfight` to cover the new AI modules | Boss currently draws nothing from `ai6–9` (data/training, bias, real-world, design pipeline) — either add questions or build a separate AI bossfight + AI Literacy certificate |
 | ⬜ | Accessibility pass on the boss fight's desktop-simulation screens | Confirm contrast/readability holds on all sub-screens, not just the ones already checked |
 
 ---
