@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>นักสืบอคติ AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --paper:#F4F2EA; --card:#FFFFFF; --cream:#F7F4EC; --cream2:#F1ECE0;
+  --ink:#0F1B2D; --muted:#54677E; --muted2:#8A8172; --muted3:#B0A794;
+  --green:#38A93A; --green-l:#5CD35B; --green-d:#2E8B30; --green-light:#E9FBE7;
+  --blue:#3A82F6; --blue-l:#2E9BFF; --blue-d:#2E64D6;
+  --purple:#9A5CF0; --purple-d:#7C3EE0;
+  --orange:#F0982E; --orange-d:#D07E1E; --gold:#FFC24B; --amber:#B4772E;
+  --line:#EFE7D6; --line-d:#D8CDB6;
+  --red:#E4614F; --red-light:#FDECEA;
+  --primary:#E4614F; --primary-light:#FDECEA; --primary-dark:#B7331E;
+  --bg:var(--paper); --panel:var(--card); --panel2:var(--cream2); --border:var(--line);
+  --text:var(--ink); --text2:var(--muted); --text3:var(--muted3);
+  --radius:16px; --shadow:none;
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+.screen{display:none;width:100%;max-width:620px;flex-direction:column;align-items:center;gap:16px;}
+.screen.active{display:flex;}
+
+.intro-wrap,.teach-wrap,.results-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.intro-icon{font-size:64px;margin-bottom:10px;display:block;}
+.intro-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.intro-sub{font-size:14.5px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
+.goal-box{width:100%;background:var(--panel2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px;}
+.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
+.goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
+.goal-text b{color:var(--primary-dark);}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.teach-slide{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.teach-icon{font-size:52px;}
+.teach-title{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.teach-body{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.teach-example{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:var(--text);margin-top:4px;text-align:left;max-width:480px;}
+.teach-example b{color:var(--primary-dark);}
+.teach-dots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.tdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.tdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.teach-nav{display:flex;gap:10px;margin-top:14px;}
+.teach-nav .btn{flex:1;}
+
+.round-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.round-tag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+
+.casecard{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:20px;padding:24px 22px;text-align:center;}
+.step-chip{display:inline-block;font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;margin-bottom:10px;}
+.case-title{font-family:'Mitr',sans-serif;font-size:19px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.case-body{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:14px;}
+.stepq{font-size:15.5px;color:var(--text);line-height:1.7;font-weight:600;margin:6px 0 12px;}
+
+.scenegrid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:12px;}
+.scenecard{flex:1 1 110px;max-width:135px;background:var(--cream);border:1.5px solid var(--border);border-radius:14px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.scenecard .semoji{font-size:34px;}
+.scenecard .slabel{font-size:12px;color:var(--text2);line-height:1.4;}
+.verdict-chip{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;border-radius:12px;padding:2px 9px;white-space:nowrap;}
+.verdict-chip.ok{background:var(--green-light);color:var(--green-d);border:1px solid var(--green);}
+.verdict-chip.bad{background:var(--red-light);color:#A32E20;border:1px solid var(--red);}
+.obs-note{background:var(--red-light);border-left:4px solid var(--red);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:#A32E20;line-height:1.6;text-align:left;margin-bottom:8px;}
+
+.datatable{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;text-align:left;}
+.datatable .dt-head{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;}
+.datarow{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.datarow:last-child{margin-bottom:0;}
+.datarow .demoji{font-size:22px;flex:0 0 28px;text-align:center;}
+.datarow .dlabel{font-size:12.5px;color:var(--text);flex:0 0 130px;line-height:1.4;}
+.databar-track{flex:1;height:16px;background:#fff;border:1px solid var(--line-d);border-radius:9px;overflow:hidden;}
+.databar{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--primary),color-mix(in srgb,var(--primary) 60%,white));transition:width .8s ease;}
+.datarow .dcount{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--primary-dark);flex:0 0 44px;text-align:right;}
+
+.optcol{width:100%;display:flex;flex-direction:column;gap:10px;}
+.optbtn{width:100%;border:2px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;background:var(--panel);color:var(--text);font-family:'Sarabun',sans-serif;font-weight:600;font-size:14px;line-height:1.6;padding:13px 16px;text-align:left;cursor:pointer;transition:transform .1s;}
+.optbtn:active{transform:translateY(2px);}
+.optbtn:disabled{cursor:not-allowed;}
+.optbtn.right{background:var(--green-light);border-color:var(--green);color:var(--green-d);}
+.optbtn.wrong{background:var(--red-light);border-color:#F1B3AC;color:#A32E20;opacity:.75;}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;text-align:left;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+.trainbox{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center;margin-bottom:4px;}
+.trainbox .tmsg{font-family:'Mitr',sans-serif;font-size:14px;font-weight:600;color:var(--primary-dark);margin-bottom:12px;}
+.train-track{width:100%;height:14px;background:#fff;border:1px solid var(--line-d);border-radius:8px;overflow:hidden;}
+.train-fill{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--green-l),var(--green));transition:width 1.4s ease;}
+
+.fairwrap{width:100%;background:var(--cream);border:1.5px solid var(--border);border-radius:14px;padding:14px;text-align:left;margin-bottom:8px;}
+.fairwrap .f-head{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;}
+.fairrow{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.fairrow:last-child{margin-bottom:0;}
+.fairrow .flabel{font-size:12.5px;color:var(--text);flex:0 0 130px;line-height:1.4;}
+.fairbar-track{flex:1;height:16px;background:#fff;border:1px solid var(--line-d);border-radius:9px;overflow:hidden;}
+.fairbar{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--green-l),var(--green));transition:width 1s ease;}
+.fairrow .fpct{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--green-d);flex:0 0 44px;text-align:right;}
+.fix-note{background:var(--green-light);border-left:4px solid var(--green);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:#1F6B33;line-height:1.6;text-align:left;margin-bottom:8px;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14.5px;color:var(--text2);margin-bottom:10px;}
+.res-close{font-size:13.5px;color:var(--text2);line-height:1.7;background:var(--panel2);border-left:4px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;text-align:left;margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div id="intro" class="screen active">
+  <div class="intro-wrap">
+    <span class="intro-icon">🕵️</span>
+    <div class="intro-title">นักสืบอคติ AI</div>
+    <div class="intro-sub">AI ไม่ได้ยุติธรรมเสมอไป — วันนี้เราเป็นนักสืบ ตามหาสาเหตุที่ AI ลำเอียง แล้วแก้ให้ถูก</div>
+    <div class="goal-box">
+      <span class="goal-chip">โมดูล 2</span>
+      <span class="goal-text">AI เรียนรู้จากข้อมูล ถ้าข้อมูลฝึก<b>ไม่สมดุล</b> AI ก็จะ<b>ลำเอียง (bias)</b> — มาสืบ 3 คดี: สังเกตพฤติกรรมแปลก ๆ หาสาเหตุจากข้อมูลฝึก แล้วแก้ให้ AI ยุติธรรมกับทุกคน</span>
+    </div>
+    <button class="btn" onclick="showTeach()">เริ่มสืบคดี →</button>
+  </div>
+</div>
+
+<div id="teach" class="screen">
+  <div class="teach-wrap">
+    <div id="teachSlides"></div>
+    <div class="teach-dots" id="teachDots"></div>
+    <div class="teach-nav">
+      <button class="btn ghost" id="teachBack" onclick="teachPrev()">← ย้อนกลับ</button>
+      <button class="btn" id="teachNext" onclick="teachNext()">ถัดไป →</button>
+    </div>
+  </div>
+</div>
+
+<div id="game" class="screen">
+  <div class="round-head">
+    <span class="round-tag" id="roundTag">คดีที่ 1/3</span>
+    <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
+  </div>
+  <div class="casecard" id="caseCard"></div>
+  <div class="explainbox" id="explainBox"></div>
+  <button class="btn" id="nextBtn" style="display:none;" onclick="onNext()">ต่อไป →</button>
+</div>
+
+<div id="done" class="screen">
+  <div class="results-wrap">
+    <div class="res-emoji" id="resEmoji">🏆</div>
+    <div class="res-title" id="resTitle">นักสืบตัวจริง!</div>
+    <div class="res-stars" id="resStars">⭐⭐⭐</div>
+    <div class="res-score" id="resScore"></div>
+    <div class="res-close">🕵️ บันทึกนักสืบ: อคติของ AI แก้ได้ด้วยข้อมูลที่ดีขึ้น และคนแบบเราที่คอยสังเกตเห็น</div>
+    <button class="btn" onclick="restartGame()">เล่นอีกครั้ง →</button>
+  </div>
+</div>
+
+<script>
+const TEACH_SLIDES = [
+  { icon:'⚖️', title:'AI เอียงได้เพราะข้อมูลเอียง', body:'AI เรียนรู้ทุกอย่างจากข้อมูลที่มนุษย์ป้อนให้ตอนฝึก ถ้าข้อมูลนั้นเอียงไปทางใดทางหนึ่ง AI ก็จะเอียงตามไปด้วย — เราเรียกอาการนี้ว่า "อคติ" (bias)',
+    example:'ถ้าสอน AI ให้รู้จักแมวด้วยรูปแมวสีส้มอย่างเดียว พอเจอแมวสีดำ มันอาจบอกว่า "นี่ไม่ใช่แมว"' },
+  { icon:'🤖', title:'AI ไม่ได้ใจร้าย', body:'อคติของ AI ไม่ได้เกิดเพราะ AI เกลียดใครหรือใจร้าย — มันเป็นแค่โปรแกรม แต่ข้อมูลฝึกที่ไม่สมดุลหรือไม่หลากหลายพอ ทำให้มันตัดสินบางกลุ่มผิดพลาดบ่อยกว่ากลุ่มอื่น',
+    example:'เหมือนเพื่อนที่เคยกินแต่ส้มตำไม่เผ็ด พอเจอส้มตำปูปลาร้าก็บอกว่า "นี่ไม่ใช่ส้มตำ" — ไม่ใช่นิสัยไม่ดี แค่ประสบการณ์ยังแคบ' },
+  { icon:'🌍', title:'เรื่องจริงที่เคยเกิดขึ้น', body:'ในโลกจริง เคยมีระบบจดจำใบหน้าที่ถูกฝึกด้วยรูปคนกลุ่มเดียวเป็นส่วนใหญ่ พอไปเจอคนกลุ่มอื่น มันจดจำผิดพลาดบ่อยกว่ามาก จนบางคนถูกระบบปฏิเสธทั้งที่ไม่ได้ทำอะไรผิด',
+    example:'อคติของ AI จึงไม่ใช่เรื่องเล่น ๆ — มันกระทบคนจริง ๆ ได้ ถ้าไม่มีใครสังเกตเห็นและแก้ไข' },
+  { icon:'🔍', title:'วิธีตรวจจับอคติ', body:'นักสืบอคติจะทดสอบ AI กับ "ทุกกลุ่ม" อย่างเท่าเทียมกัน แล้วเทียบผลลัพธ์ดู — ถ้ากลุ่มไหนถูกตัดสินผิดบ่อยกว่ากลุ่มอื่นมาก ๆ นั่นคือสัญญาณของอคติ',
+    example:'ลองให้ AI คัดแอปเปิลแดง 10 ลูก กับแอปเปิลเขียว 10 ลูก — ถ้าแดงผ่านหมดแต่เขียวโดนปฏิเสธหมด แปลว่ามีอะไรผิดปกติแน่นอน' },
+  { icon:'🛠️', title:'วิธีแก้อคติ', body:'แก้ได้ด้วยการเติมข้อมูลฝึกให้หลากหลายและสมดุล ครอบคลุมทุกกลุ่มที่ AI ต้องเจอจริง ๆ และที่สำคัญคือต้องมีมนุษย์คอยตรวจสอบผลของ AI อยู่เสมอ',
+    example:'เติมรูปแมวทุกสี ทุกขนาด ทุกท่าทาง — แล้วทดสอบซ้ำจนกว่า AI จะยุติธรรมกับแมวทุกตัว' },
+];
+let teachIdx = 0;
+function $(id){ return document.getElementById(id); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderTeach(){
+  const s = TEACH_SLIDES[teachIdx];
+  $('teachSlides').innerHTML = `<div class="teach-slide">
+    <span class="teach-icon">${s.icon}</span>
+    <div class="teach-title">${esc(s.title)}</div>
+    <div class="teach-body">${esc(s.body)}</div>
+    ${s.example ? `<div class="teach-example"><b>ตัวอย่าง</b> ${esc(s.example)}</div>` : ''}
+  </div>`;
+  $('teachDots').innerHTML = TEACH_SLIDES.map((_,i)=>`<span class="tdot${i===teachIdx?' on':''}"></span>`).join('');
+  $('teachBack').style.visibility = teachIdx===0 ? 'hidden' : 'visible';
+  const last = teachIdx === TEACH_SLIDES.length - 1;
+  $('teachNext').textContent = last ? 'เริ่มคดีแรก →' : 'ถัดไป →';
+  $('teachNext').onclick = last ? startGame : teachNext;
+}
+function teachNext(){ teachIdx = Math.min(TEACH_SLIDES.length-1, teachIdx+1); renderTeach(); }
+function teachPrev(){ teachIdx = Math.max(0, teachIdx-1); renderTeach(); }
+function showTeach(){ teachIdx = 0; renderTeach(); show('teach'); }
+
+const CASES = [
+  {
+    icon:'🍎', title:'คดีที่ 1 · เครื่องคัดผลไม้เจ้าปัญหา',
+    scene:'โรงเรียนใช้ AI คัดแอปเปิลเข้ากล่องขายงานโรงเรียน แต่วันนี้แม่ค้าบ่นว่ามีเรื่องแปลก ๆ...',
+    tests:[
+      { emoji:'🍎', label:'แอปเปิลแดง', ok:true,  verdict:'แอปเปิล ✓' },
+      { emoji:'🍎', label:'แอปเปิลแดง', ok:true,  verdict:'แอปเปิล ✓' },
+      { emoji:'🍏', label:'แอปเปิลเขียว', ok:false, verdict:'ไม่ใช่แอปเปิล ✗' },
+      { emoji:'🍏', label:'แอปเปิลเขียว', ok:false, verdict:'ไม่ใช่แอปเปิล ✗' },
+    ],
+    observe:'AI บอกว่าแอปเปิลเขียว "ไม่ใช่แอปเปิล" แล้วทิ้งลงถังทุกลูก ทั้งที่มันคือแอปเปิลแท้ ๆ!',
+    dataHead:'ข้อมูลที่ใช้ฝึก AI เครื่องนี้',
+    data:[
+      { emoji:'🍎', label:'รูปแอปเปิลแดง', count:10, max:10 },
+      { emoji:'🍏', label:'รูปแอปเปิลเขียว', count:1,  max:10 },
+    ],
+    whyQ:'ทำไม AI ถึงคิดว่าแอปเปิลเขียวไม่ใช่แอปเปิล?',
+    whyOpts:[
+      { t:'AI ไม่ชอบสีเขียว เลยแกล้งทิ้งแอปเปิลเขียว', ok:false,
+        ex:'AI ไม่มีความรู้สึกชอบหรือไม่ชอบ — มันแค่ทายจากรูปแบบที่เคยเห็นในข้อมูลฝึกเท่านั้น ลองดูตารางข้อมูลฝึกอีกทีสิ' },
+      { t:'ข้อมูลฝึกมีแต่แอปเปิลแดงเกือบทั้งหมด AI เลยไม่รู้จักแอปเปิลเขียว', ok:true,
+        ex:'ใช่เลย! ข้อมูลฝึกมีแอปเปิลแดง 10 รูป แต่เขียวแค่ 1 รูป AI เลยเรียนรู้ว่า "แอปเปิลต้องสีแดง" — นี่แหละอคติจากข้อมูลไม่สมดุล' },
+      { t:'แอปเปิลเขียวทั้งหมดเน่าเสีย AI เลยคัดทิ้งถูกแล้ว', ok:false,
+        ex:'แอปเปิลเขียวพวกนั้นสดใหม่ทุกลูกเลยนะ — ปัญหาไม่ได้อยู่ที่ผลไม้ แต่อยู่ที่สิ่งที่ AI เคยเรียนรู้มา' },
+    ],
+    fixQ:'ควรเติมข้อมูลแบบไหนเพื่อแก้อคติของ AI?',
+    fixOpts:[
+      { t:'เติมรูปแอปเปิลแดงอีก 20 รูป ให้ AI เก่งเรื่องสีแดงสุด ๆ', ok:false,
+        ex:'แบบนั้นข้อมูลยิ่งเอียงหนักกว่าเดิม! AI เก่งเรื่องแอปเปิลแดงอยู่แล้ว สิ่งที่ขาดคือความรู้เรื่องแอปเปิลเขียวต่างหาก' },
+      { t:'เติมรูปแอปเปิลเขียวอีก 9 รูป ให้สมดุลกับฝั่งสีแดง', ok:true,
+        ex:'ถูกต้อง! พอข้อมูลสองฝั่งสมดุลกัน AI จะได้เรียนรู้ว่าแอปเปิลมีทั้งสีแดงและสีเขียว' },
+      { t:'ลบข้อมูลฝึกทั้งหมดทิ้ง แล้วให้ AI เดาเอาเอง', ok:false,
+        ex:'ถ้าไม่มีข้อมูลฝึกเลย AI จะไม่รู้จักแอปเปิลสักลูก — เราต้องการข้อมูลที่ "หลากหลายขึ้น" ไม่ใช่ "หายไปหมด"' },
+    ],
+    trainMsg:'กำลังฝึก AI ใหม่ด้วยข้อมูลที่สมดุล... 🍎🍏',
+    fairHead:'ความแม่นยำของ AI กับแต่ละกลุ่ม',
+    groups:[ { label:'แอปเปิลแดง', before:100 }, { label:'แอปเปิลเขียว', before:10 } ],
+    fixedTests:[
+      { emoji:'🍎', label:'แอปเปิลแดง', verdict:'แอปเปิล ✓' },
+      { emoji:'🍏', label:'แอปเปิลเขียว', verdict:'แอปเปิล ✓' },
+    ],
+    fixedLine:'สำเร็จ! ตอนนี้ AI รู้จักแอปเปิลทั้งสองสีแล้ว ไม่มีลูกไหนโดนทิ้งอย่างไม่ยุติธรรมอีก',
+  },
+  {
+    icon:'🚪', title:'คดีที่ 2 · ประตูโรงเรียนใจร้าย',
+    scene:'โรงเรียนติดตั้งประตูอัจฉริยะที่เปิดด้วยการสแกนใบหน้านักเรียน แต่เช้านี้มีน้อง ๆ ยืนติดอยู่หน้าประตูกันหลายคน...',
+    tests:[
+      { emoji:'🧑‍🎓', label:'พี่ ม.6', ok:true,  verdict:'ประตูเปิด ✓' },
+      { emoji:'🧑‍🎓', label:'พี่ ม.5', ok:true,  verdict:'ประตูเปิด ✓' },
+      { emoji:'🧒', label:'น้อง ป.1', ok:false, verdict:'ไม่รู้จัก ✗' },
+      { emoji:'🧒', label:'น้อง ป.2', ok:false, verdict:'ไม่รู้จัก ✗' },
+    ],
+    observe:'ประตูเปิดให้พี่โต ๆ ทุกคน แต่กลับบอกว่า "ไม่รู้จัก" น้องตัวเล็ก ทั้งที่น้อง ๆ ก็เป็นนักเรียนโรงเรียนนี้เหมือนกัน!',
+    dataHead:'รูปที่ใช้ฝึกระบบสแกนใบหน้า',
+    data:[
+      { emoji:'🧑‍🎓', label:'รูปนักเรียนโต (ม.ปลาย)', count:12, max:12 },
+      { emoji:'🧒', label:'รูปนักเรียนเล็ก (ป.1–ป.3)', count:1,  max:12 },
+    ],
+    whyQ:'ทำไมประตูถึงจำหน้าน้องตัวเล็กไม่ได้?',
+    whyOpts:[
+      { t:'ประตูเสีย ต้องเรียกช่างมาซ่อมมอเตอร์', ok:false,
+        ex:'ประตูเปิดให้พี่ ๆ ได้ปกติ แสดงว่าเครื่องไม่ได้เสีย — ปัญหาอยู่ที่ AI จำหน้า "บางกลุ่ม" ไม่ได้ต่างหาก' },
+      { t:'น้อง ๆ ทำหน้าตาแปลกเกินไป ระบบเลยงง', ok:false,
+        ex:'หน้าตาน้อง ๆ ปกติดีทุกคนเลย — อย่าเพิ่งโทษคนที่โดนระบบปฏิเสธ ลองสืบดูว่า AI เคยเห็นหน้าใครมาบ้างตอนฝึก' },
+      { t:'รูปที่ใช้ฝึกเป็นรูปพี่โต ๆ เกือบทั้งหมด AI เลยจำหน้าเด็กเล็กไม่เก่ง', ok:true,
+        ex:'ใช่เลย! AI เห็นหน้านักเรียนโต 12 รูป แต่หน้าเด็กเล็กแค่ 1 รูป มันเลยเก่งกับกลุ่มหนึ่ง แต่พลาดกับอีกกลุ่มบ่อยมาก — อคติแบบเดียวกับคดีแอปเปิลเลย' },
+    ],
+    fixQ:'ควรแก้ยังไงให้ประตูยุติธรรมกับนักเรียนทุกคน?',
+    fixOpts:[
+      { t:'ให้น้อง ๆ เขย่งขาหรือต่อขาตั้งให้ตัวสูงเท่าพี่', ok:false,
+        ex:'อันนี้แก้ที่คนไม่ใช่แก้ที่ AI! ระบบที่ดีต้องปรับตัวให้เข้ากับผู้ใช้ทุกคน ไม่ใช่บังคับให้ทุกคนเปลี่ยนตัวเองเพื่อระบบ' },
+      { t:'เติมรูปนักเรียนเล็กให้ครบทุกชั้นปี (ขออนุญาตก่อนถ่ายด้วยนะ)', ok:true,
+        ex:'ถูกต้อง! เติมข้อมูลกลุ่มที่ขาดให้สมดุล — และการขออนุญาตก่อนเก็บรูปใบหน้าเป็นเรื่องสำคัญมาก เพราะเป็นข้อมูลส่วนตัว' },
+      { t:'เพิ่มรูปพี่ ม.ปลายอีก 20 รูป เผื่อ AI จะฉลาดขึ้นเอง', ok:false,
+        ex:'เพิ่มข้อมูลฝั่งที่เยอะอยู่แล้ว ไม่ช่วยให้ AI รู้จักน้องเล็กขึ้นเลย — ต้องเติมข้อมูลกลุ่มที่ "ขาด" สิ' },
+    ],
+    trainMsg:'กำลังฝึกระบบใหม่ด้วยรูปนักเรียนครบทุกวัย... 🧒🧑‍🎓',
+    fairHead:'อัตราการจำหน้าถูกต้อง แยกตามกลุ่ม',
+    groups:[ { label:'นักเรียนโต', before:100 }, { label:'นักเรียนเล็ก', before:15 } ],
+    fixedTests:[
+      { emoji:'🧑‍🎓', label:'พี่ ม.6', verdict:'ประตูเปิด ✓' },
+      { emoji:'🧒', label:'น้อง ป.1', verdict:'ประตูเปิด ✓' },
+    ],
+    fixedLine:'สำเร็จ! เช้าวันต่อมา ประตูเปิดต้อนรับนักเรียนทุกคนตั้งแต่ ป.1 ถึง ม.6 ไม่มีใครต้องยืนรอหน้าประตูอีก',
+  },
+  {
+    icon:'🎤', title:'คดีที่ 3 · ผู้ช่วยเสียงฟังไม่ออก',
+    scene:'ห้องสมุดมีผู้ช่วยเสียง AI ภาษาไทยไว้ช่วยหาหนังสือ เพื่อน ๆ ลองใช้กันใหญ่ แต่บางคนกลับใช้ไม่ได้เลย...',
+    tests:[
+      { emoji:'🧑', label:'เพื่อนสำเนียงกรุงเทพฯ', ok:true,  verdict:'เข้าใจ ✓' },
+      { emoji:'🧑‍🦱', label:'เพื่อนสำเนียงกรุงเทพฯ', ok:true,  verdict:'เข้าใจ ✓' },
+      { emoji:'👧', label:'เพื่อนสำเนียงอีสาน', ok:false, verdict:'ฟังไม่ออก ✗' },
+      { emoji:'👦', label:'เพื่อนสำเนียงใต้', ok:false, verdict:'ฟังไม่ออก ✗' },
+    ],
+    observe:'AI ตอบเพื่อนที่พูดสำเนียงกรุงเทพฯ ได้คล่องแคล่ว แต่พอเพื่อนสำเนียงอีสานหรือใต้พูด มันกลับบอกว่า "ขอโทษค่ะ ฟังไม่เข้าใจ" ทุกครั้ง!',
+    dataHead:'เสียงที่ใช้ฝึกผู้ช่วย AI',
+    data:[
+      { emoji:'🗣️', label:'เสียงสำเนียงกรุงเทพฯ', count:15, max:15 },
+      { emoji:'🗣️', label:'เสียงสำเนียงอีสาน', count:0,  max:15 },
+      { emoji:'🗣️', label:'เสียงสำเนียงใต้', count:0,  max:15 },
+    ],
+    whyQ:'ทำไม AI ถึงฟังเพื่อนสำเนียงอีสานและใต้ไม่ออก?',
+    whyOpts:[
+      { t:'ข้อมูลเสียงที่ใช้ฝึกมีแต่สำเนียงกรุงเทพฯ AI เลยไม่เคยเรียนรู้สำเนียงอื่นเลย', ok:true,
+        ex:'ใช่เลย! เสียงฝึก 15 ชุดเป็นสำเนียงกรุงเทพฯ ล้วน ๆ ส่วนสำเนียงอีสานกับใต้เป็นศูนย์ — AI ไม่เคยได้ยินมาก่อน มันเลยฟังไม่ออก' },
+      { t:'เพื่อนสำเนียงอีสานกับใต้พูดผิดภาษา ต้องพูดให้ชัดกว่านี้', ok:false,
+        ex:'เพื่อน ๆ พูดภาษาไทยถูกต้องชัดเจนมาก — สำเนียงท้องถิ่นไม่ใช่การพูดผิด ปัญหาอยู่ที่ AI ไม่เคยเรียนรู้ความหลากหลายของภาษาไทยต่างหาก' },
+      { t:'ไมโครโฟนของห้องสมุดรับเสียงบางคนไม่ได้', ok:false,
+        ex:'ไมโครโฟนรับเสียงทุกคนได้ชัดเท่ากัน — ถ้าไมค์เสีย เพื่อนสำเนียงกรุงเทพฯ ก็ต้องใช้ไม่ได้เหมือนกันสิ ลองดูข้อมูลเสียงฝึกอีกครั้ง' },
+    ],
+    fixQ:'ควรเติมข้อมูลแบบไหนให้ AI ฟังทุกคนออก?',
+    fixOpts:[
+      { t:'ให้เพื่อนอีสานกับใต้ฝึกพูดสำเนียงกรุงเทพฯ ก่อนใช้เครื่อง', ok:false,
+        ex:'ไม่ยุติธรรมเลย! สำเนียงคือเอกลักษณ์ของแต่ละท้องถิ่น เทคโนโลยีที่ดีต้องรับใช้ทุกคนอย่างที่เขาเป็น ไม่ใช่ให้ทุกคนเปลี่ยนตัวเองเพื่อเครื่อง' },
+      { t:'เพิ่มเสียงสำเนียงกรุงเทพฯ อีก 30 ชุด ให้ AI แม่นสุด ๆ', ok:false,
+        ex:'AI เก่งสำเนียงกรุงเทพฯ อยู่แล้ว เพิ่มอีกก็ไม่ช่วยให้ฟังสำเนียงอื่นออก — ช่องโหว่คือสำเนียงที่ AI ไม่เคยได้ยินต่างหาก' },
+      { t:'บันทึกเสียงสำเนียงอีสาน ใต้ เหนือ และอื่น ๆ เติมให้ครบทุกภาค', ok:true,
+        ex:'ถูกต้อง! ภาษาไทยมีหลายสำเนียง ข้อมูลฝึกก็ต้องหลากหลายตามไปด้วย AI ถึงจะเข้าใจคนไทยทุกภาคจริง ๆ' },
+    ],
+    trainMsg:'กำลังฝึก AI ด้วยเสียงจากทุกภาคทั่วไทย... 🗣️🎶',
+    fairHead:'อัตราการฟังเข้าใจ แยกตามสำเนียง',
+    groups:[ { label:'สำเนียงกรุงเทพฯ', before:100 }, { label:'สำเนียงอีสาน', before:5 }, { label:'สำเนียงใต้', before:5 } ],
+    fixedTests:[
+      { emoji:'🧑', label:'สำเนียงกรุงเทพฯ', verdict:'เข้าใจ ✓' },
+      { emoji:'👧', label:'สำเนียงอีสาน', verdict:'เข้าใจ ✓' },
+      { emoji:'👦', label:'สำเนียงใต้', verdict:'เข้าใจ ✓' },
+    ],
+    fixedLine:'สำเร็จ! ตอนนี้ผู้ช่วย AI ตอบเพื่อนได้ทุกสำเนียง ห้องสมุดกลับมาสนุกสำหรับทุกคนอีกครั้ง',
+  },
+];
+
+let caseIdx = 0, step = 'observe', wrongCount = 0;
+
+function startGame(){ caseIdx = 0; wrongCount = 0; show('game'); renderStep('observe'); }
+function restartGame(){ startGame(); }
+
+function updateHead(){
+  $('roundTag').textContent = `คดีที่ ${caseIdx+1}/${CASES.length}`;
+  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
+}
+function clearFeedback(){
+  $('explainBox').className = 'explainbox';
+  $('explainBox').innerHTML = '';
+  $('nextBtn').style.display = 'none';
+}
+function sceneCards(tests){
+  return `<div class="scenegrid">` + tests.map(t =>
+    `<div class="scenecard"><span class="semoji">${t.emoji}</span><span class="slabel">${esc(t.label)}</span><span class="verdict-chip ${t.ok===false?'bad':'ok'}">${esc(t.verdict)}</span></div>`
+  ).join('') + `</div>`;
+}
+function dataTable(c){
+  return `<div class="datatable"><div class="dt-head">📋 ${esc(c.dataHead)}</div>` + c.data.map(d =>
+    `<div class="datarow"><span class="demoji">${d.emoji}</span><span class="dlabel">${esc(d.label)}</span><span class="databar-track"><span class="databar" style="width:${Math.max(2, d.count/d.max*100)}%"></span></span><span class="dcount">× ${d.count}</span></div>`
+  ).join('') + `</div>`;
+}
+function optButtons(opts, kind){
+  return `<div class="optcol">` + opts.map((o,i) =>
+    `<button type="button" class="optbtn" id="opt-${kind}-${i}" onclick="onOpt('${kind}',${i})">${esc(o.t)}</button>`
+  ).join('') + `</div>`;
+}
+
+function renderStep(s){
+  step = s;
+  const c = CASES[caseIdx];
+  updateHead();
+  clearFeedback();
+  if (s === 'observe'){
+    $('caseCard').innerHTML = `
+      <span class="step-chip">ขั้นที่ 1 · ดูพฤติกรรมแปลก ๆ</span>
+      <div class="case-title">${c.icon} ${esc(c.title)}</div>
+      <div class="case-body">${esc(c.scene)}</div>
+      ${sceneCards(c.tests)}
+      <div class="obs-note">🔎 ${esc(c.observe)}</div>`;
+    $('nextBtn').textContent = 'สืบต่อ →';
+    $('nextBtn').style.display = 'block';
+  } else if (s === 'why'){
+    $('caseCard').innerHTML = `
+      <span class="step-chip">ขั้นที่ 2 · สืบหาสาเหตุ</span>
+      <div class="case-title">${c.icon} ${esc(c.title)}</div>
+      <div class="case-body">นักสืบเจาะเข้าไปดู "ข้อมูลที่ใช้ฝึก" AI เครื่องนี้ แล้วพบสิ่งนี้...</div>
+      ${dataTable(c)}
+      <div class="stepq">🤔 ${esc(c.whyQ)}</div>
+      ${optButtons(c.whyOpts, 'why')}`;
+  } else if (s === 'fix'){
+    $('caseCard').innerHTML = `
+      <span class="step-chip">ขั้นที่ 3 · แก้ข้อมูล</span>
+      <div class="case-title">${c.icon} ${esc(c.title)}</div>
+      <div class="case-body">เจอสาเหตุแล้ว! ต่อไปคือการแก้ไข — เลือกข้อมูลที่จะเติมเข้าไปในชุดฝึก</div>
+      ${dataTable(c)}
+      <div class="stepq">🛠️ ${esc(c.fixQ)}</div>
+      ${optButtons(c.fixOpts, 'fix')}`;
+  } else if (s === 'retrain'){
+    $('caseCard').innerHTML = `
+      <span class="step-chip">กำลังฝึกใหม่</span>
+      <div class="case-title">${c.icon} ${esc(c.title)}</div>
+      <div class="trainbox"><div class="tmsg">${esc(c.trainMsg)}</div>
+        <div class="train-track"><div class="train-fill" id="trainFill"></div></div></div>`;
+    setTimeout(() => { const f = $('trainFill'); if (f) f.style.width = '100%'; }, 80);
+    setTimeout(() => renderStep('fixed'), 1800);
+  } else if (s === 'fixed'){
+    $('caseCard').innerHTML = `
+      <span class="step-chip">ผลหลังแก้ไข</span>
+      <div class="case-title">${c.icon} ${esc(c.title)}</div>
+      <div class="case-body">ทดสอบซ้ำกับทุกกลุ่มอีกครั้ง...</div>
+      ${sceneCards(c.fixedTests)}
+      <div class="fairwrap"><div class="f-head">📊 ${esc(c.fairHead)}</div>` +
+      c.groups.map((g,i) =>
+        `<div class="fairrow"><span class="flabel">${esc(g.label)}</span><span class="fairbar-track"><span class="fairbar" id="fair-${i}" style="width:${Math.max(2,g.before)}%"></span></span><span class="fpct" id="fairpct-${i}">${g.before}%</span></div>`
+      ).join('') +
+      `</div>
+      <div class="fix-note">✅ ${esc(c.fixedLine)}</div>`;
+    setTimeout(() => {
+      c.groups.forEach((g,i) => {
+        const bar = $(`fair-${i}`), pct = $(`fairpct-${i}`);
+        if (bar) bar.style.width = '100%';
+        if (pct) pct.textContent = '100%';
+      });
+    }, 350);
+    const last = caseIdx === CASES.length - 1;
+    $('nextBtn').textContent = last ? 'สรุปผลนักสืบ →' : 'คดีถัดไป →';
+    $('nextBtn').style.display = 'block';
+  }
+}
+
+function onOpt(kind, i){
+  const c = CASES[caseIdx];
+  const opts = kind === 'why' ? c.whyOpts : c.fixOpts;
+  const o = opts[i];
+  const btn = $(`opt-${kind}-${i}`);
+  if (!btn || btn.disabled) return;
+  if (o.ok){
+    opts.forEach((_,j) => { const b = $(`opt-${kind}-${j}`); if (b) b.disabled = true; });
+    btn.classList.add('right');
+    $('explainBox').className = 'explainbox show correct';
+    $('explainBox').innerHTML = `<b>✅ ถูกต้อง!</b>${esc(o.ex)}`;
+    if (window.dlf) dlf.cheer('เก่งมาก นักสืบ!');
+    $('nextBtn').textContent = kind === 'why' ? 'ไปแก้ไขกันเลย →' : 'เริ่มฝึก AI ใหม่ →';
+    $('nextBtn').style.display = 'block';
+  } else {
+    wrongCount++;
+    updateHead();
+    btn.disabled = true;
+    btn.classList.add('wrong');
+    $('explainBox').className = 'explainbox show wrong';
+    $('explainBox').innerHTML = `<b>❌ ยังไม่ใช่ ลองใหม่อีกครั้ง</b>${esc(o.ex)}`;
+  }
+}
+
+function onNext(){
+  if (step === 'observe'){ renderStep('why'); }
+  else if (step === 'why'){ renderStep('fix'); }
+  else if (step === 'fix'){ renderStep('retrain'); }
+  else if (step === 'fixed'){
+    if (caseIdx < CASES.length - 1){ caseIdx++; renderStep('observe'); }
+    else { finishGame(); }
+  }
+}
+
+function finishGame(){
+  window.dlfStars = wrongCount <= 1 ? 3 : wrongCount <= 3 ? 2 : 1;
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = window.dlfStars === 3 ? 'นักสืบตัวจริง!' : 'ปิดคดีได้ เก่งขึ้นเรื่อย ๆ!';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = `ปิดคดีครบ ${CASES.length} คดี โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
+  show('done');
+}
+</script>
+
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<script id="dlfAudioData" type="application/json">{"72ccb9b27c48":"audio/ai7-bias-detective/72ccb9b27c48.mp3","8499a6d09020":"audio/ai7-bias-detective/8499a6d09020.mp3","1c0f3a1e405a":"audio/ai7-bias-detective/1c0f3a1e405a.mp3","8ba0b7acb4cd":"audio/ai7-bias-detective/8ba0b7acb4cd.mp3","865a89061aec":"audio/ai7-bias-detective/865a89061aec.mp3","1bced0aa5256":"audio/ai7-bias-detective/1bced0aa5256.mp3","8056c73b9c13":"audio/ai7-bias-detective/8056c73b9c13.mp3","82f747cdfe02":"audio/ai7-bias-detective/82f747cdfe02.mp3","7ca40bf8992d":"audio/ai7-bias-detective/7ca40bf8992d.mp3","f3609fcd3c10":"audio/ai7-bias-detective/f3609fcd3c10.mp3","cfa5a0a82ac8":"audio/ai7-bias-detective/cfa5a0a82ac8.mp3","a7c21b734637":"audio/ai7-bias-detective/a7c21b734637.mp3","1bf3c5d433f9":"audio/ai7-bias-detective/1bf3c5d433f9.mp3","89d321bf2e49":"audio/ai7-bias-detective/89d321bf2e49.mp3","86b2ecfeaa66":"audio/ai7-bias-detective/86b2ecfeaa66.mp3","b719a5dd4b15":"audio/ai7-bias-detective/b719a5dd4b15.mp3","d585a6a9d18d":"audio/ai7-bias-detective/d585a6a9d18d.mp3","4555b7eee7d6":"audio/ai7-bias-detective/4555b7eee7d6.mp3","7f5837acbb3a":"audio/ai7-bias-detective/7f5837acbb3a.mp3","b5b800acb89e":"audio/ai7-bias-detective/b5b800acb89e.mp3","6b8e9186b88b":"audio/ai7-bias-detective/6b8e9186b88b.mp3","96f0a8cb71bc":"audio/ai7-bias-detective/96f0a8cb71bc.mp3","8aa1b41bea9a":"audio/ai7-bias-detective/8aa1b41bea9a.mp3","96b0f2397abb":"audio/ai7-bias-detective/96b0f2397abb.mp3","4478a420295c":"audio/ai7-bias-detective/4478a420295c.mp3","9c27f45f28ad":"audio/ai7-bias-detective/9c27f45f28ad.mp3","dac196e4deff":"audio/ai7-bias-detective/dac196e4deff.mp3","64e2a463402c":"audio/ai7-bias-detective/64e2a463402c.mp3","6a21fc273ee0":"audio/ai7-bias-detective/6a21fc273ee0.mp3","e215d5924cac":"audio/ai7-bias-detective/e215d5924cac.mp3","58522c65eaeb":"audio/ai7-bias-detective/58522c65eaeb.mp3","9b7d9baf8f3c":"audio/ai7-bias-detective/9b7d9baf8f3c.mp3","8bd191dbb9d0":"audio/ai7-bias-detective/8bd191dbb9d0.mp3","f2e0ee6cc73d":"audio/ai7-bias-detective/f2e0ee6cc73d.mp3","610951707b04":"audio/ai7-bias-detective/610951707b04.mp3","a03782fe1f10":"audio/ai7-bias-detective/a03782fe1f10.mp3","edb5313d24df":"audio/ai7-bias-detective/edb5313d24df.mp3","8e4a7b1f7e59":"audio/ai7-bias-detective/8e4a7b1f7e59.mp3","5374ff666377":"audio/ai7-bias-detective/5374ff666377.mp3","da23e06a00df":"audio/ai7-bias-detective/da23e06a00df.mp3","86b7a9931c6b":"audio/ai7-bias-detective/86b7a9931c6b.mp3","f346c7b83756":"audio/ai7-bias-detective/f346c7b83756.mp3","3a78a8496e02":"audio/ai7-bias-detective/3a78a8496e02.mp3","0ab0ce7d1cc3":"audio/ai7-bias-detective/0ab0ce7d1cc3.mp3","420670de83da":"audio/ai7-bias-detective/420670de83da.mp3","7a2335b32f08":"audio/ai7-bias-detective/7a2335b32f08.mp3","45e80b10157a":"audio/ai7-bias-detective/45e80b10157a.mp3","c0939b4026f2":"audio/ai7-bias-detective/c0939b4026f2.mp3","cbd48a4ee2fc":"audio/ai7-bias-detective/cbd48a4ee2fc.mp3","81f46afef263":"audio/ai7-bias-detective/81f46afef263.mp3","1c69ad889cfb":"audio/ai7-bias-detective/1c69ad889cfb.mp3","ad9dd4840916":"audio/ai7-bias-detective/ad9dd4840916.mp3","1d8257a40dc2":"audio/ai7-bias-detective/1d8257a40dc2.mp3","a9f53d925c96":"audio/ai7-bias-detective/a9f53d925c96.mp3","5529d262cee8":"audio/ai7-bias-detective/5529d262cee8.mp3","20fefa40aa4f":"audio/ai7-bias-detective/20fefa40aa4f.mp3","ba15382db131":"audio/ai7-bias-detective/ba15382db131.mp3","6a7d716d227f":"audio/ai7-bias-detective/6a7d716d227f.mp3","cb694aa7ea37":"audio/ai7-bias-detective/cb694aa7ea37.mp3","0df0ccc5f9d1":"audio/ai7-bias-detective/0df0ccc5f9d1.mp3","fa7a2140853f":"audio/ai7-bias-detective/fa7a2140853f.mp3","d8244cbd9860":"audio/ai7-bias-detective/d8244cbd9860.mp3","ba33df3b536f":"audio/ai7-bias-detective/ba33df3b536f.mp3","0c5b27b88b72":"audio/ai7-bias-detective/0c5b27b88b72.mp3","a5727b97093d":"audio/ai7-bias-detective/a5727b97093d.mp3","4640520f2a19":"audio/ai7-bias-detective/4640520f2a19.mp3","972ff5f92f62":"audio/ai7-bias-detective/972ff5f92f62.mp3","2a535d20d2b6":"audio/ai7-bias-detective/2a535d20d2b6.mp3","590755001bc5":"audio/ai7-bias-detective/590755001bc5.mp3","ebed953caa8d":"audio/ai7-bias-detective/ebed953caa8d.mp3","aba35d68d488":"audio/ai7-bias-detective/aba35d68d488.mp3","df3ec803573b":"audio/ai7-bias-detective/df3ec803573b.mp3","237d12f15180":"audio/ai7-bias-detective/237d12f15180.mp3","e1014d4b01a1":"audio/ai7-bias-detective/e1014d4b01a1.mp3","04d6d48ebb91":"audio/ai7-bias-detective/04d6d48ebb91.mp3","86b041f72f8b":"audio/ai7-bias-detective/86b041f72f8b.mp3","ba06e5d54857":"audio/ai7-bias-detective/ba06e5d54857.mp3","a3776cc5f873":"audio/ai7-bias-detective/a3776cc5f873.mp3","1f630bdb0cb1":"audio/ai7-bias-detective/1f630bdb0cb1.mp3","ab56885ad6d1":"audio/ai7-bias-detective/ab56885ad6d1.mp3","87d7e7890f72":"audio/ai7-bias-detective/87d7e7890f72.mp3","34722394e95d":"audio/ai7-bias-detective/34722394e95d.mp3","c5f2b29c5347":"audio/ai7-bias-detective/c5f2b29c5347.mp3","66e383fb209c":"audio/ai7-bias-detective/66e383fb209c.mp3","1c35568e05b9":"audio/ai7-bias-detective/1c35568e05b9.mp3","3a327e59f7e9":"audio/ai7-bias-detective/3a327e59f7e9.mp3","108448d4a502":"audio/ai7-bias-detective/108448d4a502.mp3","87641f44c46c":"audio/ai7-bias-detective/87641f44c46c.mp3","053d4783ef91":"audio/ai7-bias-detective/053d4783ef91.mp3","5eaca08d52a1":"audio/ai7-bias-detective/5eaca08d52a1.mp3","f5525f9e9671":"audio/ai7-bias-detective/f5525f9e9671.mp3","8fb2ab457d57":"audio/ai7-bias-detective/8fb2ab457d57.mp3","f8d277beb33b":"audio/ai7-bias-detective/f8d277beb33b.mp3","b55aef8a6ac4":"audio/ai7-bias-detective/b55aef8a6ac4.mp3","5b179b35f958":"audio/ai7-bias-detective/5b179b35f958.mp3","5dc079ed21c1":"audio/ai7-bias-detective/5dc079ed21c1.mp3","73c4961751fc":"audio/ai7-bias-detective/73c4961751fc.mp3","176fc47ca288":"audio/ai7-bias-detective/176fc47ca288.mp3","347aa8b9c14e":"audio/ai7-bias-detective/347aa8b9c14e.mp3","f640f7b214c5":"audio/ai7-bias-detective/f640f7b214c5.mp3","16da76e2076a":"audio/ai7-bias-detective/16da76e2076a.mp3","2a1df5a68c65":"audio/ai7-bias-detective/2a1df5a68c65.mp3","d37216982f67":"audio/ai7-bias-detective/d37216982f67.mp3","6687c1d3c05c":"audio/ai7-bias-detective/6687c1d3c05c.mp3","f35d2e5740d6":"audio/ai7-bias-detective/f35d2e5740d6.mp3","a52275997a0c":"audio/ai7-bias-detective/a52275997a0c.mp3","c55d6e03a165":"audio/ai7-bias-detective/c55d6e03a165.mp3","86c09bb8c94d":"audio/ai7-bias-detective/86c09bb8c94d.mp3","3b7c8b6de864":"audio/ai7-bias-detective/3b7c8b6de864.mp3","ae02409e3b30":"audio/ai7-bias-detective/ae02409e3b30.mp3","fa8e8970df84":"audio/ai7-bias-detective/fa8e8970df84.mp3","46ba44a3f0b1":"audio/ai7-bias-detective/46ba44a3f0b1.mp3","b7c129b5d330":"audio/ai7-bias-detective/b7c129b5d330.mp3","c32e2f8b6da0":"audio/ai7-bias-detective/c32e2f8b6da0.mp3","966856f62951":"audio/ai7-bias-detective/966856f62951.mp3","d0533ff3fec8":"audio/ai7-bias-detective/d0533ff3fec8.mp3","dfb3e4afa929":"audio/ai7-bias-detective/dfb3e4afa929.mp3","f6714c8aef95":"audio/ai7-bias-detective/f6714c8aef95.mp3","203bb418e648":"audio/ai7-bias-detective/203bb418e648.mp3","298b60a3a970":"audio/ai7-bias-detective/298b60a3a970.mp3","5a218041f2b8":"audio/ai7-bias-detective/5a218041f2b8.mp3","e04742eeacc1":"audio/ai7-bias-detective/e04742eeacc1.mp3","2c84caebcf6a":"audio/ai7-bias-detective/2c84caebcf6a.mp3","af6ba89d9b27":"audio/ai7-bias-detective/af6ba89d9b27.mp3","aca2b0992481":"audio/ai7-bias-detective/aca2b0992481.mp3","aac99ce9a26e":"audio/ai7-bias-detective/aac99ce9a26e.mp3","c1bd144efd37":"audio/ai7-bias-detective/c1bd144efd37.mp3","c6584b8eea1e":"audio/ai7-bias-detective/c6584b8eea1e.mp3","4ee79f574443":"audio/ai7-bias-detective/4ee79f574443.mp3","81abc20a504a":"audio/ai7-bias-detective/81abc20a504a.mp3","13a7731d3323":"audio/ai7-bias-detective/13a7731d3323.mp3","3fb0e684b56b":"audio/ai7-bias-detective/3fb0e684b56b.mp3","3113f39fa875":"audio/ai7-bias-detective/3113f39fa875.mp3","3a86ebc8a0de":"audio/ai7-bias-detective/3a86ebc8a0de.mp3","66590c21d92e":"audio/ai7-bias-detective/66590c21d92e.mp3","e18a189a9371":"audio/ai7-bias-detective/e18a189a9371.mp3","8af1f0edc12c":"audio/ai7-bias-detective/8af1f0edc12c.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.case-title','.stepq']};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>

@@ -1,6 +1,61 @@
 
 
 ================================================================================
+7. THE AI COURSE GROWS UP: 6 → 10 MODULES ON THE EXPERIENCE AI ARC
+   [9 August 2026]
+================================================================================
+
+--- Why -----------------------------------------------------------------------
+
+Every AI module so far simulated a chatbot screen and taught how to drive it —
+buttons, tokens, prompts, tutors. That is the middle of an AI education, not the
+start of one. A kid who finishes it can prompt well but has no model of WHY the
+thing behaves the way it does, so course was restructured on the six-lesson
+foundation arc of Experience AI (Raspberry Pi Foundation × Google DeepMind —
+right age band, built offline-first for their Kenya deployment, structure worth
+stealing): what AI is → how machine learning learns from data → bias in data →
+generative tools → real-world applications → applied challenge.
+
+--- Four new games fill the missing layers ------------------------------------
+
+  ai6-model-trainer   "ครูฝึก AI"          The kid IS the trainer: label cat/dog
+                                          examples, train, watch the model pass or
+                                          fail test items, hunt planted bad labels,
+                                          and fix a model that only ever saw red
+                                          apples. Data → training → prediction,
+                                          garbage in → garbage out.
+  ai7-bias-detective  "นักสืบอคติ AI"       Three cases (fruit sorter vs green
+                                          apples, face-gate vs shorter students,
+                                          voice assistant vs regional accents):
+                                          observe the unfairness, diagnose the
+                                          skewed training table, fix the data,
+                                          watch the fairness bars level out.
+  ai8-ai-in-the-world "AI รอบตัวเรา"        Match real systems (maps, X-ray reader,
+                                          crop doctor, flood warning, translator)
+                                          to what they were trained on, then judge
+                                          six scenarios: smart use or be careful
+                                          (deepfakes, over-trust, privacy).
+  ai9-ai-quest        "ภารกิจนักออกแบบ AI"   Capstone in Experience AI's "AI Quest"
+                                          style: design the school's recycling-
+                                          sorter end to end — pick the problem,
+                                          pick the data, read a per-class accuracy
+                                          table, fix a bias case, choose the
+                                          responsible-use rules, launch it.
+
+Course order in lib/content.ts is now concepts (0-2) → tools (3-7) → world +
+capstone (8-9); the old ai1-ai5 games kept their files but their "โมดูล N" chips
+were renumbered to 3-7. AI_CURRICULUM.md was rewritten around this arc and
+mapped to the UNESCO AI Competency Framework for Students — the same citable-
+backbone move as the DigComp mapping on the literacy side. The previous
+AI-Class-ASEAN-based draft lives on in git history; its ethics/privacy themes
+were folded into modules 2, 8 and 9.
+
+Per the rule from entry 6 ("run the audio build after adding any new Thai
+text"), the ~350 spoken strings in the four new games were recorded with
+gen-audio-edge.mjs — so the new modules speak the good Edge voice from day one
+and are exempt from the pending old-voice migration.
+
+================================================================================
 6. THE SPEAKERS NOW SPEAK REAL THAI · 2-STAR PARTY · SHORTER GAME CARDS
    [12 July 2026]
 ================================================================================

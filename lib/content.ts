@@ -44,18 +44,25 @@ export const AREAS: Area[] = [
     ],
   },
   {
-    // Not a DigComp area -- the full "LLM Unboxed" AI course, Module 0-5.
-    // Each game here forces the actual skill (click the real UI, write your
-    // own prompt, answer live, design system rules) instead of letting a
-    // kid pattern-match a multiple-choice answer key.
-    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จากหน้าจอ AI พื้นฐาน ไปจนถึงออกแบบ AI ติวเตอร์ของตัวเอง — 6 โมดูลเรียงตามลำดับ',
+    // Not a DigComp area -- the full AI literacy course, Module 0-9.
+    // Structured on the Experience AI foundation arc (Raspberry Pi Foundation
+    // × Google DeepMind): what AI is → how ML learns from data → bias in data
+    // → generative AI tools & prompting → applying AI → applied challenge.
+    // Each game forces the actual skill (label real data, fix a biased
+    // dataset, click the real UI, write your own prompt, design system rules)
+    // instead of letting a kid pattern-match a multiple-choice answer key.
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ฝึกโมเดลเอง จับอคติในข้อมูล ไปจนถึงออกแบบ AI ของตัวเอง — 10 โมดูลเรียงตามลำดับ',
     games: [
       { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'โมดูล 0 · พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai0-ai-foundations.html' },
-      { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'โมดูล 1 · รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai1-ui-inspector.html' },
-      { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'โมดูล 2 · เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai2-prompt-fixer.html' },
-      { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'โมดูล 3 · เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai3-learn-with-ai.html' },
-      { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'โมดูล 4 · ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai4-gem-architect.html' },
-      { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'โมดูล 5 · ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai5-sandbox-master.html' },
+      { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'โมดูล 1 · เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai6-model-trainer.html' },
+      { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'โมดูล 2 · สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai7-bias-detective.html' },
+      { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'โมดูล 3 · รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai1-ui-inspector.html' },
+      { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'โมดูล 4 · เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai2-prompt-fixer.html' },
+      { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'โมดูล 5 · เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai3-learn-with-ai.html' },
+      { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'โมดูล 6 · ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai4-gem-architect.html' },
+      { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'โมดูล 7 · ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai5-sandbox-master.html' },
+      { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'โมดูล 8 · AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร', file: '/games/ai8-ai-in-the-world.html' },
+      { code: 'g-aiquest', icon: '🏆', th: 'ภารกิจนักออกแบบ AI', desc: 'โมดูล 9 · ภารกิจสุดท้าย ออกแบบ AI แยกขยะของโรงเรียนเองครบทุกขั้นตอน', file: '/games/ai9-ai-quest.html' },
     ],
   },
 ];
