@@ -377,7 +377,7 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
   <div class="intro-wrap">
     <span class="intro-icon">👾</span>
     <div class="intro-title">บททดสอบรับรองทักษะคอมพิวเตอร์</div>
-    <div class="intro-sub">ทำลายมอนสเตอร์ด้วยการตอบให้ถูกต้อง ผ่านให้ครบ <b>ทั้ง 5 หมวด</b><br>🔎 ข้อมูล · 💬 การสื่อสาร · ✍️ สร้างเนื้อหา · 🛡️ ความปลอดภัย · 🧩 แก้ปัญหา<br>ทดสอบครั้งเดียวจบ — ตอบผิดเกินที่กำหนดต้องเริ่มใหม่ทั้งหมด<br>ผ่านแล้วจะได้รับ <b>ใบรับรอง</b> ว่าทำได้จริงทุกหมวด</div>
+    <div class="intro-sub">ทำลายมอนสเตอร์ด้วยการตอบให้ถูกต้อง ผ่านให้ครบ <b>ทั้ง 5 หมวด</b><br>🔎 ข้อมูล · 💬 การสื่อสาร · ✍️ สร้างเนื้อหา · 🛡️ ความปลอดภัย · 🧩 แก้ปัญหา<br>ทั้งหมด 38 ข้อ — <b>ตอบผิดได้ไม่เกิน 3 ข้อ</b> ถ้าเกินต้องเริ่มใหม่ทั้งหมด<br>ผ่านแล้วจะได้รับ <b>ใบรับรอง</b> ว่าทำได้จริงทุกหมวด</div>
     <!-- The 5 categories, in the order they are tested. -->
     <div class="intro-units">
       <div class="iu"><b>หมวดที่ 1</b>🔎 ความรู้ด้านข้อมูลและสารสนเทศ</div>
@@ -507,10 +507,10 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
     <div class="cert-kicker">ใบรับรองการผ่านหลักสูตร · Course Completion Certificate</div>
     <div class="cert-title">ผ่านแบบทดสอบทักษะดิจิทัลพื้นฐาน</div>
     <div class="cert-name" id="certName">—</div>
-    <div class="cert-line">ขอรับรองว่าผู้เข้าทดสอบข้างต้นได้ผ่านแบบทดสอบท้ายหลักสูตรตามเกณฑ์ผ่าน <b>70%</b><br>
+    <div class="cert-line">ขอรับรองว่าผู้เข้าทดสอบข้างต้นได้ผ่านแบบทดสอบท้ายหลักสูตร โดยตอบถูกอย่างน้อย <b>35 จาก 38 ข้อ</b> (ผิดได้ไม่เกิน 3 ข้อ)<br>
       เนื้อหาเทียบเคียงกรอบสมรรถนะดิจิทัล <b>DigComp 3.0</b> (JRC, 2025)<br>
       ระดับพื้นฐาน (Foundation ระดับ 1–2) ครอบคลุมสมรรถนะทั้ง 5 ด้าน และสอดคล้องแนวทางตัวชี้วัด <b>UNESCO SDG 4.4.2</b> (2018)<br>
-      <span class="dc-sub">Assessed at DigComp 3.0 Foundation level (1–2) across all five competence areas, consistent with UNESCO SDG Indicator 4.4.2 (2018). Passing threshold: 70%.</span></div>
+      <span class="dc-sub">Assessed at DigComp 3.0 Foundation level (1–2) across all five competence areas, consistent with UNESCO SDG Indicator 4.4.2 (2018). Passing requires at least 35 of 38 correct (no more than 3 mistakes).</span></div>
     <div class="cert-skills" id="certSkills"></div>
     <div class="cert-meta">
       <div><span class="cm-label">ระดับ</span><span class="cm-val" id="certLevel">—</span></div>
@@ -553,8 +553,6 @@ const DIGCOMP_COMPETENCES = {
   '5.2':{th:'การเลือกใช้เทคโนโลยีให้ตรงความต้องการ', en:'Identifying needs & technological responses'},
   '5.3':{th:'การใช้เทคโนโลยีดิจิทัลอย่างสร้างสรรค์', en:'Creatively using digital technologies'},
 };
-const PASS_PERCENT = 70; // DigComp-aligned passing threshold — stated on the intro and all result screens
-
 // ════════ DATA ════════
 // These groups are ONLY an authoring convenience (they mirror the 5 teaching units).
 // The test itself is organised by DigComp area — see PHASES below, which regroups every
@@ -587,7 +585,7 @@ const UNIT_GROUPS = [
        visual:'🧹', opts:[
         {t:'ใช้ผ้านุ่มแห้งเช็ดจอเบาๆ', ico:'🧴', ok:true},
         {t:'ฉีดน้ำใส่จอโดยตรงแล้วถูแรงๆ', ico:'🚿'},
-        {t:'ใช้แปรงลวดขัดหน้าจอ', ico:'🪥'},
+        {t:'ใช้กระดาษทิชชู่แห้งเช็ดแรงๆ จนสะอาดเอี่ยม', ico:'🧻'},
         {t:'เช็ดด้วยน้ำยาล้างห้องน้ำ', ico:'🧪'}],
        explain:'ใช้ผ้านุ่มแห้งเช็ดเบาๆ เพื่อไม่ให้จอเป็นรอย ห้ามฉีดน้ำใส่จอโดยตรง ใช้ของมีคม หรือสารเคมีรุนแรง เพราะจะทำให้จอเสียหาย'},
       {type:'mc', tag:'ความปลอดภัย', digcompArea:'4', digcompCompetence:'4.1',
@@ -613,38 +611,46 @@ const UNIT_GROUPS = [
     unit:2, name:'การควบคุมเมาส์ใน Windows File Explorer', boss:'🖱️', bossName:'เจ้าหนูคลิกป่วน',
     challenges:[
       {type:'explorer', tag:'ดับเบิลคลิกเปิดโฟลเดอร์', digcompArea:'1', digcompCompetence:'1.3', action:'open', openTarget:'เอกสาร',
-       q:'ใน File Explorer ให้ “ดับเบิลคลิก” เพื่อเปิดโฟลเดอร์ เอกสาร (Documents)',
+       q:'เปิดโฟลเดอร์ “เอกสาร (Documents)” ให้ได้',
        path:'This PC',
        items:[
         {name:'เอกสาร', sub:'Documents', kind:'folder'},
         {name:'รูปภาพ', sub:'Pictures', kind:'folder'},
         {name:'ดาวน์โหลด', sub:'Downloads', kind:'folder'},
+        {name:'เพลง', sub:'Music', kind:'folder'},
+        {name:'วิดีโอ', sub:'Videos', kind:'folder'},
         {name:'สรุปงาน.txt', kind:'file', ico:'📄'}],
        explain:'ดับเบิลคลิก (คลิกซ้ายเร็วๆ 2 ครั้ง) คือวิธีเปิดโฟลเดอร์ ไฟล์ หรือโปรแกรมใน Windows'},
       {type:'explorer', tag:'ลากไฟล์ไปวางในโฟลเดอร์', digcompArea:'1', digcompCompetence:'1.3', action:'drag', dragFile:'รายงาน.docx', dropTarget:'งานโรงเรียน',
-       q:'ลากไฟล์ “รายงาน.docx” ไปวางลงในโฟลเดอร์ “งานโรงเรียน” (Drag & Drop)',
+       q:'ย้ายไฟล์ “รายงาน.docx” ไปเก็บไว้ในโฟลเดอร์ “งานโรงเรียน”',
        path:'This PC > เอกสาร',
        items:[
         {name:'รายงาน.docx', kind:'file', ico:'📘', drag:true},
+        {name:'รายงานเก่า.docx', kind:'file', ico:'📘'},
         {name:'งานโรงเรียน', kind:'folder', drop:true},
+        {name:'งานพิเศษ', kind:'folder'},
         {name:'รูปภาพ', sub:'Pictures', kind:'folder'}],
-       explain:'ลากแล้ววาง (Drag & Drop) ใช้ย้ายไฟล์เข้าโฟลเดอร์ที่ต้องการ กดค้างที่ไฟล์แล้วลากไปปล่อยบนโฟลเดอร์'},
+       explain:'ลากแล้ววาง (Drag & Drop) ใช้ย้ายไฟล์เข้าโฟลเดอร์ที่ต้องการ กดค้างที่ไฟล์แล้วลากไปปล่อยบนโฟลเดอร์ ระวังเลือกไฟล์และโฟลเดอร์ให้ตรงชื่อ เพราะมีชื่อคล้ายกันอยู่'},
       // Removing a suspicious .exe = protecting the device (4.1), not mere file management.
       {type:'explorer', tag:'ลบไฟล์ลงถังรีไซเคิล', digcompArea:'4', digcompCompetence:'4.1', action:'drag', dragFile:'ไวรัส_อันตราย.exe', dropTarget:'recycle',
-       q:'ลบไฟล์ต้องสงสัย “ไวรัส_อันตราย.exe” โดยลากไปทิ้งที่ 🗑️ ถังรีไซเคิล (Recycle Bin) ทางซ้าย',
+       q:'ไฟล์ “ไวรัส_อันตราย.exe” นี้น่าสงสัย ให้ลบทิ้งจากเครื่อง',
        path:'This PC > ดาวน์โหลด',
        items:[
         {name:'ไวรัส_อันตราย.exe', kind:'file', ico:'⚠️', drag:true},
         {name:'การบ้าน.pdf', kind:'file', ico:'📕'},
-        {name:'เพลง.mp3', kind:'file', ico:'🎵'}],
+        {name:'เพลง.mp3', kind:'file', ico:'🎵'},
+        {name:'รูปเที่ยว.jpg', kind:'file', ico:'🖼️'},
+        {name:'บันทึกงาน', kind:'folder'}],
        explain:'ลากไฟล์ที่ไม่ต้องการไปวางที่ถังรีไซเคิลเพื่อลบทิ้ง ไฟล์ .exe จากแหล่งไม่น่าเชื่อถือมักเป็นอันตราย'},
       {type:'explorer', tag:'คลิกขวาเรียกเมนู', digcompArea:'1', digcompCompetence:'1.3', action:'context', ctxFile:'รูปเก่า.jpg', ctxChoose:'เปลี่ยนชื่อ',
-       q:'คลิกขวา ที่ไฟล์ “รูปเก่า.jpg” แล้วเลือกคำสั่ง “เปลี่ยนชื่อ (Rename)” จากเมนู',
+       q:'เปลี่ยนชื่อไฟล์ “รูปเก่า.jpg” เป็นชื่ออื่น',
        path:'This PC > รูปภาพ',
        items:[
         {name:'รูปเก่า.jpg', kind:'file', ico:'🖼️', ctx:true},
+        {name:'รูปใหม่.jpg', kind:'file', ico:'🖼️'},
         {name:'วันหยุด.png', kind:'file', ico:'🖼️'},
-        {name:'อัลบั้ม', kind:'folder'}],
+        {name:'อัลบั้ม', kind:'folder'},
+        {name:'อัลบั้มเก่า', kind:'folder'}],
        explain:'คลิกขวาเปิดเมนูลัด (context menu) ที่มีคำสั่ง เปิด/ตัด/คัดลอก/เปลี่ยนชื่อ/ลบ ให้เลือกใช้'},
     ]
   },
@@ -688,26 +694,26 @@ const UNIT_GROUPS = [
     unit:4, name:'เว็บเบราว์เซอร์', boss:'🌐', bossName:'ปีศาจเว็บไซต์',
     challenges:[
       {type:'chrome', tag:'พิมพ์ URL ในแถบที่อยู่', digcompArea:'1', digcompCompetence:'1.1', action:'goto', target:'www.search.co.th',
-       q:'คลิกที่แถบที่อยู่ (address bar) พิมพ์ URL: www.search.co.th ให้ถูกต้อง แล้วกด Enter',
-       tabs:[{title:'แท็บใหม่', url:''}], activeTab:0,
+       q:'ไปที่เว็บไซต์ www.search.co.th ให้ได้',
+       tabs:[{title:'แท็บใหม่', url:''},{title:'เว็บโรงเรียน', url:'www.school.ac.th'}], activeTab:0,
        explain:'แถบที่อยู่ใช้พิมพ์ URL เพื่อไปยังเว็บไซต์โดยตรง พิมพ์ให้ครบถ้วนแล้วกด Enter'},
       {type:'chrome', tag:'เปิดแท็บใหม่', digcompArea:'1', digcompCompetence:'1.1', action:'newtab',
-       q:'เปิด “แท็บใหม่ (New Tab)” โดยคลิกปุ่ม + (หรือกด Ctrl+T)',
-       tabs:[{title:'ค้นหา', url:'www.search.co.th'}], activeTab:0,
+       q:'เปิดแท็บใหม่ขึ้นมาอีกหนึ่งแท็บ',
+       tabs:[{title:'ค้นหา', url:'www.search.co.th'},{title:'สารานุกรม', url:'th.wikipedia.org'}], activeTab:0,
        explain:'แท็บช่วยให้เปิดหลายเว็บไซต์พร้อมกันในหน้าต่างเดียว ปุ่ม + อยู่ท้ายแถวแท็บ'},
       // Refreshing a stuck page = the Foundation example of solving a simple technical problem (5.1).
       {type:'chrome', tag:'โหลดหน้าใหม่ (Refresh)', digcompArea:'5', digcompCompetence:'5.1', action:'reload',
-       q:'หน้าเว็บโหลดไม่สมบูรณ์/ค้าง ต้องการ “โหลดหน้าใหม่ (Refresh)” ให้คลิกปุ่มโหลดหน้าใหม่ ⟳ ในแถบเครื่องมือ',
-       tabs:[{title:'สารานุกรม', url:'th.wikipedia.org'}], activeTab:0,
+       q:'หน้าเว็บนี้โหลดไม่สมบูรณ์/ค้างอยู่ ให้โหลดหน้าใหม่อีกครั้ง',
+       tabs:[{title:'สารานุกรม', url:'th.wikipedia.org'},{title:'เว็บโรงเรียน', url:'www.school.ac.th'}], activeTab:0,
        explain:'ปุ่มโหลดหน้าใหม่ (Refresh ⟳) ใช้โหลดหน้าเว็บซ้ำเมื่อหน้าค้างหรือโหลดไม่ครบ อยู่ถัดจากปุ่มย้อนกลับ (←) และไปข้างหน้า (→)'},
       // Closing an unsafe promo tab is motivated by device/user protection (4.1), not navigation.
       {type:'chrome', tag:'ปิดแท็บที่ไม่ปลอดภัย', digcompArea:'4', digcompCompetence:'4.1', action:'closetab', closeTitle:'โปรโมชั่น!! รับฟรี',
-       q:'ปิดแท็บโฆษณาที่ไม่ปลอดภัย ชื่อ “โปรโมชั่น!! รับฟรี” โดยคลิกปุ่ม × บนแท็บนั้น',
-       tabs:[{title:'เว็บโรงเรียน', url:'www.school.ac.th'},{title:'โปรโมชั่น!! รับฟรี', url:'free-prize.win', bad:true},{title:'สารานุกรม', url:'th.wikipedia.org'}], activeTab:0,
+       q:'แท็บ “โปรโมชั่น!! รับฟรี” นี้ดูไม่ปลอดภัย ให้ปิดแท็บนี้ทิ้ง',
+       tabs:[{title:'เว็บโรงเรียน', url:'www.school.ac.th'},{title:'โปรโมชั่น!! รับฟรี', url:'free-prize.win', bad:true},{title:'สารานุกรม', url:'th.wikipedia.org'},{title:'อีเมล', url:'mail.school.ac.th'}], activeTab:0,
        explain:'ปิดแท็บที่ไม่ปลอดภัยหรือไม่ต้องการด้วยปุ่ม × บนตัวแท็บ เพื่อความปลอดภัยและความเป็นระเบียบ'},
       // Choosing the real link over the "free games 100%" ad = evaluating content trustworthiness (1.2).
       {type:'chrome', tag:'คลิกลิงก์ให้ถูก', digcompArea:'1', digcompCompetence:'1.2', action:'clicklink', linkText:'ข่าวสารและกิจกรรมโรงเรียน',
-       q:'บนหน้าเว็บโรงเรียน ให้คลิกลิงก์ “ข่าวสารและกิจกรรมโรงเรียน”',
+       q:'ต้องการดูข่าวสารและกิจกรรมของโรงเรียน ให้ไปยังหน้านั้น',
        tabs:[{title:'เว็บโรงเรียน', url:'www.school.ac.th'}], activeTab:0,
        links:['หน้าแรก','ข่าวสารและกิจกรรมโรงเรียน','ดาวน์โหลดเกมฟรี 100%','เข้าสู่ระบบครู'],
        explain:'ลิงก์คือข้อความ (มักมีขีดเส้นใต้/สีต่าง) ที่คลิกเพื่อไปหน้าอื่น ควรอ่านให้ดีและเลี่ยงลิงก์โฆษณาหลอกลวง'},
@@ -721,7 +727,7 @@ const UNIT_GROUPS = [
        visual:'💼', opts:[
         {t:'ไม่โอน เพราะงานจริงไม่เก็บเงินมัดจำก่อน และตรวจสอบบริษัทให้ชัดก่อน', ico:'🛡️', ok:true},
         {t:'รีบโอนทันทีเพราะกลัวเสียโอกาสได้งาน', ico:'💸'},
-        {t:'ให้เลขบัญชีและรหัสผ่านเพื่อยืนยันตัวตน', ico:'🔑'},
+        {t:'โอนเงินมัดจำเพียงครึ่งเดียวก่อน เพื่อลดความเสี่ยง', ico:'🔑'},
         {t:'ชวนเพื่อนมาสมัครและโอนเงินด้วยกัน', ico:'👥'}],
        explain:'งานจริงไม่มีการเรียกเก็บ “เงินมัดจำ” ก่อนเริ่มงาน การให้โอนเงินก่อนคือกลโกงรับสมัครงานปลอม ควรตรวจสอบบริษัทจากแหล่งทางการก่อนเสมอ และไม่บอกรหัสผ่าน/เลขบัญชีแก่ใคร'},
       {type:'mc', tag:'ตรวจสอบ URL จริง-ปลอม', digcompArea:'4', digcompCompetence:'4.2',
@@ -751,7 +757,7 @@ const UNIT_GROUPS = [
         {t:'ปิดหน้าต่าง/แท็บนั้นทิ้ง ไม่โทรและไม่ดาวน์โหลด แล้วสแกนด้วยแอนตี้ไวรัสจริง', ico:'🛡️', ok:true},
         {t:'รีบโทรตามเบอร์ที่แจ้งทันที', ico:'📞'},
         {t:'กดดาวน์โหลดโปรแกรมที่มันแนะนำ', ico:'⬇️'},
-        {t:'กรอกเลขบัตรเครดิตเพื่อยืนยันตัวตน', ico:'💳'}],
+        {t:'จดเบอร์โทรที่แจ้งไว้ก่อน เผื่อจะโทรกลับทีหลัง', ico:'💳'}],
        explain:'popup ขู่ให้ตกใจแบบนี้คือกลลวง (scareware) ห้ามโทรหรือดาวน์โหลด ให้ปิดทิ้งและใช้แอนตี้ไวรัสที่เชื่อถือได้'},
       // Primary 2.2 Sharing responsibly (the decision is whether/when to share); secondary 1.2 Evaluating.
       // This is the assessment's only Area-2 item — flagged: Area 2 coverage is minimal by design of the course.
@@ -844,6 +850,35 @@ const EXTRA_CHALLENGES = [
    explain:'การคัดลอกงานผู้อื่นมาเป็นของตนคือการลอกผลงาน (plagiarism) ควรสรุปเรียบเรียงด้วยภาษาของเราและอ้างอิงที่มาเสมอ'},
 
   // ---- Area 5 · การแก้ปัญหา ----
+  // Every other challenge in this file tests one isolated action. Real tasks chain
+  // several together — this is the one item that requires that: step 1 must be solved
+  // correctly before step 2 is even revealed, and getting step 1 right doesn't help if
+  // step 2 is wrong. See renderCompound()/wireCompound() for the mechanism.
+  {type:'compound', tag:'งานหลายขั้นตอน', digcompArea:'5', digcompCompetence:'5.1',
+   q:'ภารกิจ 2 ขั้นตอน: หาโฟลเดอร์ที่ถูกต้องก่อน แล้วย้ายไฟล์ไปเก็บให้ครบ',
+   steps:[
+    {kind:'open', prompt:'เปิดโฟลเดอร์ที่เก็บงานโรงเรียนเอาไว้',
+     items:[{name:'งานโรงเรียน',kind:'folder'},{name:'เพลงโปรด',kind:'folder'},{name:'รูปเกม',kind:'folder'},{name:'สูตรอาหาร',kind:'folder'}],
+     target:'งานโรงเรียน'},
+    {kind:'move', prompt:'ย้ายไฟล์ “การบ้านวิทย์.docx” ไปไว้ในโฟลเดอร์ “ส่งแล้ว”',
+     items:[{name:'การบ้านวิทย์.docx',kind:'file',ico:'📘'},{name:'บันทึกส่วนตัว.txt',kind:'file',ico:'📄'},{name:'ส่งแล้ว',kind:'folder'},{name:'ยังไม่ส่ง',kind:'folder'}],
+     drag:'การบ้านวิทย์.docx', drop:'ส่งแล้ว'}
+   ],
+   explain:'งานจริงมักมีหลายขั้นตอนต่อเนื่องกัน ต้องทำให้ครบและถูกต้องทุกขั้นจึงจะสำเร็จ ฝึกทำตามลำดับทีละขั้นอย่างรอบคอบ'},
+  // ASSUMPTION (flagged, same precedent as unit1's hardware-naming mapping): Start
+  // Menu + Settings navigation has no exact DigComp competence of its own — mapped to
+  // 5.2 (identifying the right tool/response for a need) since finding where a device
+  // function lives is that same skill. This is genuinely NEW content: an audit of every
+  // teaching unit found zero coverage of the Start Menu or Settings panel anywhere in
+  // the curriculum before this. Testing an undertaught fundamental in a *certification*
+  // is a fairness concern on its own — flagging this honestly rather than pretending a
+  // single certification question is equivalent to it having been taught.
+  {type:'settings', tag:'เมนู Start และการตั้งค่า', digcompArea:'5', digcompCompetence:'5.2',
+   q:'เปิดใช้งาน Wi-Fi ผ่านเมนู Start และหน้าการตั้งค่า',
+   toggleTarget:'Wi-Fi', settingsPrompt:'เปิดสวิตช์ Wi-Fi ให้ใช้งานได้',
+   startApps:[{name:'การตั้งค่า',icon:'⚙️',target:true},{name:'File Explorer',icon:'📁'},{name:'เครื่องคิดเลข',icon:'🧮'},{name:'เว็บเบราว์เซอร์',icon:'🌐'},{name:'Paint',icon:'🎨'}],
+   rows:[{name:'Wi-Fi',icon:'📶',on:false},{name:'Bluetooth',icon:'🔵',on:false},{name:'โหมดเครื่องบิน',icon:'✈️',on:true}],
+   explain:'ปุ่ม Start (มุมล่างซ้ายของหน้าจอ) เป็นทางเข้าสู่โปรแกรมและการตั้งค่าเครื่อง (Settings) ซึ่งใช้เปิด/ปิดฟังก์ชันของเครื่องได้ เช่น Wi-Fi, Bluetooth, โหมดเครื่องบิน'},
   {type:'mc', tag:'แก้ปัญหาทีละขั้น', digcompArea:'5', digcompCompetence:'5.1',
    q:'สั่งพิมพ์เอกสารแล้วเครื่องพิมพ์ไม่ทำงาน ควรตรวจสอบอย่างไรก่อน?',
    visual:'🖨️', opts:[
@@ -866,7 +901,7 @@ const EXTRA_CHALLENGES = [
     {t:'สั่งปิดเฉพาะโปรแกรมที่ไม่ตอบสนอง (End task) แล้วเปิดใหม่', ico:'✖️', ok:true},
     {t:'ถอดปลั๊กไฟออกจากผนังทันที', ico:'🔌'},
     {t:'กดปุ่มทุกปุ่มบนคีย์บอร์ดพร้อมกันรัว ๆ', ico:'⌨️'},
-    {t:'ทุบเมาส์ลงโต๊ะแรง ๆ', ico:'🖱️'}],
+    {t:'ปิดเครื่องด้วยการกดปุ่ม Power ค้างไว้ทันที', ico:'🔴'}],
    explain:'ปิดเฉพาะโปรแกรมที่ค้างก่อน เพราะการดับเครื่องกะทันหันอาจทำให้ไฟล์เสียหายและงานที่ยังไม่บันทึกหายไป'},
   {type:'mc', tag:'ใช้เทคโนโลยีอย่างสร้างสรรค์', digcompArea:'5', digcompCompetence:'5.3',
    q:'อยากนำเสนอโครงงาน “การเติบโตของถั่วงอก” ให้น่าสนใจ วิธีใดใช้เทคโนโลยีได้สร้างสรรค์ที่สุด?',
@@ -897,15 +932,49 @@ const PHASES = ['1','2','3','4','5'].map(a=>({
 // ════════ TEST STATE (certification) ════════
 // Uniform post-answer pause across every game (matches สำรวจคอมพิวเตอร์ / unit1).
 const ANSWER_DELAY = 1000;
+// The ONE real pass rule: get through all 38 questions without exceeding this many
+// wrong (see fail() / finishTest()). Reaching the end therefore always means
+// >=35/38 = 92.1%. There used to ALSO be a separate "score >=75% overall AND >=50%
+// in every area" check, displayed to users as "passing threshold: 70%" — but with
+// only 38 questions spread over 5 areas of 7-9 each, those checks could never
+// actually fail: surviving to the end already guarantees >=92.1%, and the global
+// 3-mistake budget can't concentrate enough wrongs in one area to drop it below 50%
+// either. Keeping those unreachable thresholds around WAS the bug: the certificate
+// stated "70%" while the code silently required ~92%. Deleted rather than fixed the
+// number, so there's one number to keep honest instead of three.
+// Invariant this relies on: every area needs >=6 questions, so a worst-case cluster
+// of all MAX_WRONG mistakes into one area still leaves it at >=50%. If an area ever
+// drops below 6 questions, recheck this before trusting it.
 const MAX_WRONG = 3;                  // exceed this many wrong answers => fail & retry the WHOLE test
 const SECTIONS = PHASES.map(p=>({name:p.name, icon:p.boss, bossName:p.bossName}));
 var correct = 0;                      // number of skills demonstrated correctly (for the certificate)
 let QUEUE=[], qIdx=0, wrong=0, monsterHp=0, monsterHpMax=0, curSec=-1, busy=false;
 let sectionResults = [];
 
+// Fisher-Yates. Question ORDER is randomized per attempt (area order and area
+// membership stay fixed — the 5-boss story sequence is part of the game). This is
+// deliberately just an order shuffle, not a content change: the same fixed 36
+// questions are still asked, so it stops "the 3rd question is always about
+// phishing"-style position memorization, but a truly fresh pool per attempt would
+// need more authored question variants per competence (a content project, not a
+// code change) — buildQueue() only needs a one-line change (sample N from a larger
+// per-competence array instead of using p.challenges directly) whenever that content
+// exists, so this is the extensible seam for that future work.
+function shuffled(arr){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 function buildQueue(){
   QUEUE=[];
-  PHASES.forEach((p,si)=>p.challenges.forEach(c=>QUEUE.push({c, sec:si})));
+  PHASES.forEach((p,si)=>shuffled(p.challenges).forEach(c=>QUEUE.push({c, sec:si})));
+  // Challenge objects are the same instances across a restart (ALL_CHALLENGES is static
+  // module data) — a compound task's step progress from a previous, failed attempt must
+  // not leak into a fresh one.
+  ALL_CHALLENGES.forEach(c=>{ if(c.type==='compound') c._step=0; if(c.type==='settings') c._phase='menu'; });
   monsterHpMax = QUEUE.length; monsterHp = monsterHpMax;
 }
 
@@ -919,13 +988,6 @@ function initSectionResults(){
   }));
 }
 
-// sectionResults is still tracked (the pass rule requires every category to be met),
-// it is just no longer drawn as a per-category strip during the test.
-function getCertificationSummary(){
-  const overallTarget = Math.ceil((QUEUE.length||1) * 0.75);
-  const sectionsMet = sectionResults.every((s)=>s.correct >= Math.max(1, Math.ceil(s.total*0.5)));
-  return { overallTarget, passed: correct >= overallTarget && sectionsMet, sectionsMet };
-}
 
 function startGame(){
   correct=0; wrong=0; qIdx=0; curSec=-1;
@@ -1046,6 +1108,10 @@ function renderChallenge(c){
     inner += renderChrome(c);
   } else if(c.type==='typing'){
     inner += renderTyping(c);
+  } else if(c.type==='compound'){
+    inner += renderCompound(c);
+  } else if(c.type==='settings'){
+    inner += renderSettings(c);
   }
   return inner;
 }
@@ -1056,6 +1122,8 @@ function wireChallenge(c){
   if(c.type==='explorer') return wireExplorer(c);
   if(c.type==='chrome') return wireChrome(c);
   if(c.type==='typing') return wireTyping(c);
+  if(c.type==='compound') return wireCompound(c);
+  if(c.type==='settings') return wireSettings(c);
 }
 
 function wireMC(c){
@@ -1141,10 +1209,19 @@ function renderExplorer(c){
     <div class="fe-status">${c.items.length} รายการ</div>
   </div>`;
 }
+// Only one exact scripted gesture used to be accepted per task (drag was the only way
+// to delete or move, right-click the only way to rename). A student who knows an
+// equally valid real Windows shortcut instead — Delete, Enter, F2 — had no path to
+// succeed. These are added alongside the mouse gestures, not instead of them: a real
+// user could reach for either, and the task is "achieve the goal," not "use this
+// specific gesture." Cut/paste-between-folders as an alternative to drag-to-move is
+// intentionally NOT covered here (would need real multi-folder navigation the sim
+// doesn't model) — drag-and-drop is left as the only path for that one action.
 function wireExplorer(c){
   const main=document.getElementById('feMain');
   const items=[...main.querySelectorAll('.fe-item')];
-  items.forEach(el=>el.addEventListener('click',()=>{ items.forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); }));
+  main.tabIndex=0;   // a plain <div> ignores keydown until it's focusable
+  items.forEach(el=>el.addEventListener('click',()=>{ items.forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); main.focus(); }));
   bindSpk(main);
 
   if(c.action==='open'){
@@ -1153,12 +1230,25 @@ function wireExplorer(c){
       if(el.dataset.name===c.openTarget){ busy=true; el.classList.add('sel'); success(c); }
       else fail(c,true);
     }));
+    main.addEventListener('keydown',(e)=>{
+      if(e.key!=='Enter'||busy)return;
+      const sel=items.find(el=>el.classList.contains('sel')); if(!sel)return;
+      if(sel.dataset.name===c.openTarget){ busy=true; success(c); } else fail(c,true);
+    });
   } else if(c.action==='drag'){
     const dragEl=items.find(el=>el.dataset.drag);
     const targets = c.dropTarget==='recycle'
       ? [document.getElementById('feRecycle')]
       : items.filter(el=>el.dataset.name===c.dropTarget);
     feDrag(dragEl, targets, c);
+    if(c.dropTarget==='recycle'){
+      main.addEventListener('keydown',(e)=>{
+        if(e.key!=='Delete'||busy)return;
+        const sel=items.find(el=>el.classList.contains('sel')); if(!sel)return;
+        if(sel===dragEl){ busy=true; sel.style.transition='opacity .2s,transform .2s'; sel.style.opacity='0'; sel.style.transform='scale(.5)'; setTimeout(()=>success(c),220); }
+        else fail(c,true);
+      });
+    }
   } else if(c.action==='context'){
     items.forEach(el=>el.addEventListener('contextmenu',(e)=>{
       e.preventDefault(); if(busy)return;
@@ -1166,6 +1256,13 @@ function wireExplorer(c){
       if(el.dataset.name!==c.ctxFile){ flashHint('คลิกขวาที่ไฟล์ “'+c.ctxFile+'”'); return; }
       showCtxMenu(e, c);
     }));
+    if(c.ctxChoose==='เปลี่ยนชื่อ'){
+      main.addEventListener('keydown',(e)=>{
+        if(e.key!=='F2'||busy)return;
+        const sel=items.find(el=>el.classList.contains('sel')); if(!sel)return;
+        if(sel.dataset.name===c.ctxFile){ busy=true; success(c); } else fail(c,true);
+      });
+    }
   }
 }
 function feDrag(dragEl, targets, c){
@@ -1214,6 +1311,100 @@ function showCtxMenu(e, c){
 }
 function closeCtxOutside(ev){ const m=document.getElementById('ctxMenu'); if(m && !m.contains(ev.target)) closeCtxMenu(); }
 function closeCtxMenu(){ const m=document.getElementById('ctxMenu'); if(m) m.remove(); document.removeEventListener('click',closeCtxOutside); }
+
+// ════════ COMPOUND (chained multi-step) TASKS ════════
+// Every other challenge tests ONE isolated skill. A real task rarely is one isolated
+// action — find the right folder, THEN move the right file into it. This chains two
+// steps that must both be completed, in order, before it counts as one correct answer;
+// getting the first step right doesn't help if the second step is wrong, and the
+// student can't see step 2 until step 1 is genuinely done. Deliberately NOT built by
+// reusing wireExplorer()/feDrag() — those call the global success()/fail() directly by
+// a hardcoded identifier, which is lexically bound to file-scope regardless of who
+// calls them, so there is no way to intercept "step done" vs "whole thing done" through
+// them. Small bespoke click handlers here instead, calling compoundAdvance/
+// compoundMistake, which is what actually distinguishes "next step" from "finished."
+function renderCompound(c){
+  const step = c.steps[c._step||0];
+  const itemsHtml = step.items.map((it,i)=>{
+    const icon = it.kind==='folder' ? '📁' : (it.ico||'📄');
+    return `<div class="fe-item cp-item" data-i="${i}" data-name="${it.name}" data-kind="${it.kind}">
+      <div class="fe-ico">${icon}</div><div class="fe-label">${it.name}</div></div>`;
+  }).join('');
+  return `<div class="dc-sub" style="margin-bottom:8px;font-weight:600;color:var(--blue);">ขั้นตอนที่ ${(c._step||0)+1} จาก ${c.steps.length} · ${step.prompt}</div>
+    <div class="oswin fe">
+      <div class="oswin-bar"><span class="oswin-title">📁 File Explorer</span><span class="oswin-btns"><i>—</i><i>▢</i><i class="cl">✕</i></span></div>
+      <div class="fe-body"><div class="fe-main" id="cpMain" style="width:100%;">${itemsHtml}</div></div>
+      <div class="fe-status">${step.items.length} รายการ</div>
+    </div>`;
+}
+function wireCompound(c){
+  const step = c.steps[c._step||0];
+  const main = document.getElementById('cpMain');
+  const items = [...main.querySelectorAll('.cp-item')];
+  if(step.kind==='open'){
+    items.forEach(el=>el.addEventListener('dblclick',()=>{
+      if(busy)return;
+      if(el.dataset.name===step.target) compoundAdvance(c); else compoundMistake(c);
+    }));
+  } else if(step.kind==='move'){
+    let selectedFile=null;
+    items.forEach(el=>el.addEventListener('click',()=>{
+      if(busy)return;
+      if(el.dataset.kind==='file'){ items.forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); selectedFile=el; return; }
+      if(!selectedFile){ flashHint('เลือกไฟล์ที่จะย้ายก่อน แล้วค่อยคลิกโฟลเดอร์ปลายทาง'); return; }
+      if(selectedFile.dataset.name===step.drag && el.dataset.name===step.drop) compoundAdvance(c);
+      else compoundMistake(c);
+    }));
+  }
+}
+function compoundAdvance(c){
+  const next=(c._step||0)+1;
+  if(next>=c.steps.length){ busy=true; success(c); return; }
+  c._step=next;
+  renderCurrentChallenge();   // same challenge slot, next step's UI — qIdx doesn't move
+}
+function compoundMistake(c){ fail(c,true); }
+
+// ════════ START MENU + SETTINGS ════════
+// Auditing every teaching unit (grep across all 9) found zero coverage of the Start
+// Menu, the Settings panel, or toggling a system function like Wi-Fi/Bluetooth — a
+// completely untested fundamental of "using a computer." Two phases, same
+// don't-see-step-2-until-step-1-is-right shape as the compound task: find Settings in
+// the Start Menu (among decoy apps), then toggle the correct function.
+function renderSettings(c){
+  if((c._phase||'menu')==='menu'){
+    const apps=c.startApps||[{name:'การตั้งค่า',icon:'⚙️',target:true},{name:'File Explorer',icon:'📁'},{name:'เครื่องคิดเลข',icon:'🧮'},{name:'เว็บเบราว์เซอร์',icon:'🌐'},{name:'Paint',icon:'🎨'}];
+    const html=apps.map((a,i)=>`<div class="fe-item cp-item" data-i="${i}" data-target="${a.target?'1':'0'}">
+      <div class="fe-ico">${a.icon}</div><div class="fe-label">${a.name}</div></div>`).join('');
+    return `<div class="dc-sub" style="margin-bottom:8px;font-weight:600;color:var(--blue);">ขั้นตอนที่ 1 จาก 2 · เปิดเมนู Start แล้วคลิก “การตั้งค่า”</div>
+      <div class="oswin fe"><div class="oswin-bar"><span class="oswin-title">⊞ Start Menu</span><span class="oswin-btns"><i class="cl">✕</i></span></div>
+      <div class="fe-body"><div class="fe-main" id="cpMain" style="width:100%;">${html}</div></div></div>`;
+  }
+  const rows=c.rows.map((r,i)=>`<div class="fe-item cp-item" data-i="${i}" data-name="${r.name}" style="width:100%;flex-direction:row;justify-content:space-between;align-items:center;text-align:left;padding:10px 14px;">
+    <span style="display:flex;align-items:center;gap:10px;"><span class="fe-ico" style="font-size:22px;">${r.icon}</span>${r.name}</span>
+    <span class="cp-toggle" data-on="${r.on?'1':'0'}" style="width:38px;height:20px;border-radius:20px;background:${r.on?'var(--green)':'#CBD5E1'};position:relative;flex:0 0 auto;">
+      <span style="position:absolute;top:2px;left:${r.on?'20px':'2px'};width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s;"></span></span></div>`).join('');
+  return `<div class="dc-sub" style="margin-bottom:8px;font-weight:600;color:var(--blue);">ขั้นตอนที่ 2 จาก 2 · ${c.settingsPrompt}</div>
+    <div class="oswin fe"><div class="oswin-bar"><span class="oswin-title">⚙️ การตั้งค่า (Settings)</span><span class="oswin-btns"><i class="cl">✕</i></span></div>
+    <div class="fe-body"><div class="fe-main" id="cpMain" style="width:100%;flex-direction:column;gap:6px;">${rows}</div></div></div>`;
+}
+function wireSettings(c){
+  const main=document.getElementById('cpMain');
+  const items=[...main.querySelectorAll('.cp-item')];
+  if((c._phase||'menu')==='menu'){
+    items.forEach(el=>el.addEventListener('click',()=>{
+      if(busy)return;
+      if(el.dataset.target==='1'){ c._phase='panel'; renderCurrentChallenge(); }
+      else fail(c,true);
+    }));
+  } else {
+    items.forEach(el=>el.addEventListener('click',()=>{
+      if(busy)return;
+      if(el.dataset.name===c.toggleTarget){ busy=true; success(c); }
+      else fail(c,true);
+    }));
+  }
+}
 
 // ════════ SIMULATED WEB BROWSER ════════
 let gcTabs=[], gcActive=0;
@@ -1301,32 +1492,98 @@ function wireChrome(c){
     }));
   }
   // newtab & closetab are handled inside bindChromeTabs
+  // Real browser keyboard shortcuts alongside the mouse gestures — same reasoning as
+  // wireExplorer(): only clicking the exact + / × / ⟳ button used to count. Ctrl+W
+  // closes the CURRENTLY ACTIVE tab (as real browsers do), so the target tab must be
+  // selected first, same as clicking its × would require finding it first.
+  document.addEventListener('keydown', function chromeKeys(e){
+    if(!document.getElementById('gcTabs')){ document.removeEventListener('keydown', chromeKeys); return; }
+    if(busy) return;
+    if(e.ctrlKey && e.key==='t'){
+      e.preventDefault();
+      if(c.action==='newtab'){ busy=true; gcTabs.push({title:'แท็บใหม่',url:''}); gcActive=gcTabs.length-1; redrawTabs(c); redrawBody(c); success(c); }
+      else { gcTabs.push({title:'แท็บใหม่',url:''}); gcActive=gcTabs.length-1; redrawTabs(c); redrawBody(c); }
+    } else if(e.ctrlKey && e.key==='w'){
+      e.preventDefault();
+      if(c.action==='closetab'){
+        if(gcTabs[gcActive] && gcTabs[gcActive].title===c.closeTitle){ busy=true; gcTabs.splice(gcActive,1); if(gcActive>=gcTabs.length)gcActive=gcTabs.length-1; redrawTabs(c); redrawBody(c); success(c); }
+        else fail(c,true);
+      }
+    } else if(e.key==='F5'){
+      e.preventDefault();
+      if(c.action==='reload'){ busy=true; const r=document.getElementById('gcReload');
+        if(r){ r.style.transition='transform .4s'; r.style.transform='rotate(360deg)'; } success(c); }
+    }
+  });
 }
 
 // ════════ SENTENCE TYPING ════════
+// Real proficiency requirement, not just "eventually reproduce this string": the
+// timer starts on the FIRST keystroke (not on seeing the sentence, so reading time
+// isn't held against them) and the attempt must clear BOTH a minimum pace and a
+// minimum accuracy to count as a pass. Previously this called success() the instant
+// the textarea matched the target with no timer and no keystroke penalty at all —
+// meaning one-key-at-a-time hunt-and-peck, with unlimited time, watching the live
+// red/green per-character feedback as a guide, passed every time. That proved
+// "can eventually reproduce this exact sentence," not "can type."
+const TYPING_MIN_CPM = 60;      // ~12 WPM at 5 chars/word — an easy pace for anyone
+                                 // who has practiced even briefly; a real hunt-and-peck
+                                 // attempt on an unfamiliar sentence takes much longer.
+const TYPING_MAX_ERROR_RATE = 0.2; // up to 1 in 5 keystrokes may be wrong (typos happen);
+                                    // beyond that it stops looking like fluent typing.
 function renderTyping(c){
   const chars=[...c.text].map(ch=>`<span class="tc">${ch===' '?'&nbsp;':escapeHtml(ch)}</span>`).join('');
-  return `<div class="type-box">
-    <div class="type-target" id="typeTarget">${chars}</div>
-    <textarea id="typeInput" class="type-input" rows="2" placeholder="พิมพ์ประโยคด้านบนที่นี่..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
-    <div class="type-meta"><span id="typeProg">0 / ${[...c.text].length}</span><span class="type-hint">พิมพ์ให้ตรงทุกตัว แล้วจะผ่านอัตโนมัติ · ห้ามคัดลอกวาง</span></div>
-  </div>`;
+  return '<div class="type-box">' +
+    '<div class="type-target" id="typeTarget">' + chars + '</div>' +
+    '<textarea id="typeInput" class="type-input" rows="2" placeholder="พิมพ์ประโยคด้านบนที่นี่..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>' +
+    '<div class="type-meta"><span id="typeProg">0 / ' + [...c.text].length + '</span>' +
+    '<span class="type-hint" id="typeHint">พิมพ์ให้ตรงทุกตัว ไม่ช้าเกินไป และไม่พิมพ์ผิดบ่อย · ห้ามคัดลอกวาง</span></div>' +
+    '</div>';
 }
 function wireTyping(c){
   const target=[...c.text];
   const inp=document.getElementById('typeInput');
   const spans=[...document.querySelectorAll('#typeTarget .tc')];
+  const hint=document.getElementById('typeHint');
+  let startTime=null, prevLen=0, keystrokes=0, errors=0;
+  function resetAttempt(){ startTime=null; prevLen=0; keystrokes=0; errors=0; inp.value=''; }
   setTimeout(()=>inp.focus(),200);
   inp.addEventListener('paste',e=>e.preventDefault());
   inp.addEventListener('input',()=>{
     const val=[...inp.value];
+    if(startTime===null && val.length>0) startTime=performance.now();
+    // Only count NEW characters typed forward (not every re-render from a backspace)
+    // as a keystroke; that's what "errors per keystroke typed" should mean.
+    if(val.length>prevLen){
+      const i=val.length-1;
+      keystrokes++;
+      if(val[i]!==target[i]) errors++;
+    }
+    prevLen=val.length;
     spans.forEach((sp,i)=>{ sp.classList.remove('ok','bad','cur');
       if(i<val.length){ sp.classList.add(val[i]===target[i]?'ok':'bad'); } });
     let lead=0; for(let i=0;i<val.length && i<target.length;i++){ if(val[i]===target[i]) lead++; else break; }
     if(lead<spans.length && spans[lead]) spans[lead].classList.add('cur');
     document.getElementById('typeProg').textContent=`${lead} / ${target.length}`;
-    if(inp.value===c.text){ if(busy)return; busy=true;
-      spans.forEach(sp=>{sp.classList.remove('bad','cur');sp.classList.add('ok');}); inp.blur(); success(c); }
+    if(inp.value===c.text){
+      if(busy)return;
+      const elapsedMin=Math.max(0.001,(performance.now()-startTime)/60000);
+      const cpm=target.length/elapsedMin;
+      const errorRate=keystrokes>0?errors/keystrokes:0;
+      if(cpm>=TYPING_MIN_CPM && errorRate<=TYPING_MAX_ERROR_RATE){
+        busy=true;
+        spans.forEach(sp=>{sp.classList.remove('bad','cur');sp.classList.add('ok');}); inp.blur(); success(c);
+      } else {
+        busy=true;
+        const reason = cpm<TYPING_MIN_CPM ? 'พิมพ์ช้าไปหน่อย' : 'พิมพ์ผิดบ่อยไปหน่อย';
+        hint.textContent = reason + ' ลองพิมพ์ประโยคนี้อีกครั้งนะ';
+        setTimeout(()=>{ resetAttempt(); spans.forEach(sp=>sp.classList.remove('ok','bad','cur'));
+          document.getElementById('typeProg').textContent = `0 / ${target.length}`;
+          hint.textContent = 'พิมพ์ให้ตรงทุกตัว ไม่ช้าเกินไป และไม่พิมพ์ผิดบ่อย · ห้ามคัดลอกวาง';
+          busy=false; inp.focus(); }, 1400);
+        fail(c,true);
+      }
+    }
   });
 }
 
@@ -1359,7 +1616,7 @@ function fail(c, soft){
   if(wrong > MAX_WRONG){
     fb.innerHTML = `✘ ตอบผิดเกินจำนวนที่กำหนดแล้ว`;
     busy=true;
-    setTimeout(()=>failTest(getCertificationSummary()), 1300);
+    setTimeout(failTest, 1300);
     return;
   }
   if(soft){
@@ -1434,7 +1691,10 @@ function monsterAttack(){
 // ════════ END OF TEST ════════
 // Reaching the end means wrong-answers stayed within budget => PASS & certify.
 function finishTest(){
-  const summary=getCertificationSummary();
+  // Reaching here means the queue was fully traversed, which is only possible if
+  // wrong <= MAX_WRONG the whole way through (fail() redirects to failTest() the
+  // instant that budget is exceeded and never lets the queue advance further) — so
+  // this is always a pass. See getCertificationSummary() for the one real pass rule.
   // final cinematic blow, then the monster collapses
   const wrap=document.getElementById('monsterWrap');
   const m=document.getElementById('monster');
@@ -1442,7 +1702,7 @@ function finishTest(){
   m.classList.remove('hit'); void m.offsetWidth; m.classList.add('hit');
   spawnHitFX(wrap);
   setTimeout(()=>{ m.classList.remove('hit'); m.classList.add('dead'); if(window.dlf&&dlf.confetti) dlf.confetti(40); }, 450);
-  setTimeout(()=> summary.passed ? passTest() : failTest(summary), 1500);
+  setTimeout(passTest, 1500);
 }
 // The parent app stores the signed-in student under `cs_student` (same origin, so this
 // iframe can read it). No name signed in => hide the name line rather than print a dash.
@@ -1458,10 +1718,14 @@ function passTest(){
   document.getElementById('certSkills').innerHTML =
     sectionResults.map(s=>`<div class="cert-skill"><span>✅</span><span>${s.name}</span></div>`).join('');
   const total=QUEUE.length;
-  const overallTarget=Math.ceil(total*0.75);
-  const fullPass = correct >= overallTarget;
+  // Two honest, distinguishable tiers based on actual performance (not an unreachable
+  // percentage): a perfect run (0 mistakes) vs a pass with some mistakes (1-3, the
+  // MAX_WRONG budget — see its declaration above for why "70%"/"75%" were never real).
+  const fullPass = wrong === 0;
   document.getElementById('certScore').textContent = `${correct}/${total} ข้อ (${Math.round(correct/total*100)}%)`;
-  document.getElementById('certLevel').textContent = fullPass ? 'ผ่านตามเกณฑ์' : 'ผ่านแบบมีเงื่อนไข';
+  document.getElementById('certLevel').textContent = fullPass
+    ? 'ผ่านเกณฑ์แบบสมบูรณ์ (ไม่ผิดเลย)'
+    : 'ผ่านเกณฑ์ (ผิด ' + wrong + ' ข้อ จากไม่เกิน ' + MAX_WRONG + ' ข้อ)';
   document.getElementById('certEvidence').textContent = sectionResults.map(s=>`${s.correct}/${s.total}`).join(' · ');
   document.getElementById('certBreakdown').innerHTML = sectionResults.map(s=>`<div class="cert-break-row"><span>${s.icon} ${s.name}</span><span>${s.correct}/${s.total}</span></div>`).join('');
   let d;
@@ -1469,27 +1733,24 @@ function passTest(){
   document.getElementById('certDate').textContent = d;
   showScreen('certificate');
   try{if(window.parent&&window.parent!==window)window.parent.postMessage({type:'cs-boss-complete',correct:correct,total:total,percent:Math.round(correct/total*100)},'*');}catch(e){}
-  // The ONLY celebration in the whole test. ผ่านตามเกณฑ์ = 3 ดาว (คอนเฟตตี + เสียงเชียร์)
-  // ผ่านแบบมีเงื่อนไข = 2 ดาว (หน้าจอชมเชยอบอุ่น แต่ไม่มีคอนเฟตตีและไม่มีเสียงเชียร์)
+  // The ONLY celebration in the whole test. Perfect run = 3 stars (confetti + cheer).
+  // Passed with some mistakes = 2 stars (warm congrats screen, no confetti/cheer).
   if(window.dlf&&dlf.celebrate){
     dlf.celebrate(fullPass?3:2, {trophy: fullPass?'🏅':'🎖️',
-      title: fullPass?'ผ่านการรับรอง!':'ผ่านแบบมีเงื่อนไข',
+      title: fullPass?'ผ่านการรับรอง!':'ผ่านการรับรอง!',
       sub: fullPass
-        ? `ทำได้ ${correct}/${total} ข้อ · พิสูจน์ความเชี่ยวชาญครบทั้ง 5 ทักษะ`
-        : `ทำได้ ${correct}/${total} ข้อ · ผ่านทุกทักษะแล้ว อีกนิดเดียวก็ผ่านตามเกณฑ์เต็ม (${overallTarget}/${total})`});
+        ? `ทำได้ ${correct}/${total} ข้อ ไม่ผิดเลยสักข้อ · พิสูจน์ความเชี่ยวชาญครบทั้ง 5 ทักษะ`
+        : `ทำได้ ${correct}/${total} ข้อ (ผิด ${wrong} จากไม่เกิน ${MAX_WRONG} ข้อ) · ผ่านครบทั้ง 5 ทักษะ`});
   }
 }
 // Too many wrong => no certificate, retake the whole thing.
-function failTest(summary){
-  const overallTarget = summary ? summary.overallTarget : Math.ceil((QUEUE.length||1) * 0.75);
+function failTest(){
   document.getElementById('resTitle').style.color='var(--amber)';
   document.getElementById('resSub').innerHTML =
-    `คุณตอบถูก ${correct}/${QUEUE.length} ข้อ · ต้องได้อย่างน้อย ${overallTarget} ข้อ และผ่านทุกโดเมนก่อนจะรับใบรับรอง<br>ต่อไปนี้คือสถานะของแต่ละทักษะ`;
-  document.getElementById('resultsBreakdown').innerHTML = sectionResults.map((s)=>{
-    const threshold=Math.max(1, Math.ceil(s.total*0.5));
-    const label = s.correct >= threshold ? 'ผ่านเกณฑ์' : 'ต้องทบทวน';
-    return `<div class="result-row"><span>${s.icon} ${s.name}</span><span>${s.correct}/${s.total} · ${label}</span></div>`;
-  }).join('');
+    `คุณตอบผิด ${wrong} ข้อ ซึ่งเกินจำนวนที่กำหนด (ผิดได้ไม่เกิน ${MAX_WRONG} ข้อ จากทั้งหมด ${QUEUE.length} ข้อ) ต้องเริ่มทำแบบทดสอบใหม่ทั้งหมด<br>ต่อไปนี้คือสถานะของแต่ละทักษะ`;
+  document.getElementById('resultsBreakdown').innerHTML = sectionResults.map((s)=>
+    `<div class="result-row"><span>${s.icon} ${s.name}</span><span>${s.correct}/${s.total} ถูก · ${s.wrong} ผิด</span></div>`
+  ).join('');
   showScreen('results');
 }
 </script>
@@ -1548,7 +1809,7 @@ function failTest(summary){
 <div class="dlf-mini" id="dlfMini"></div>
 
 <!-- Audio map: empty => device Thai TTS voice fallback reads all Thai text aloud (same engine as unit4). -->
-<script id="dlfAudioData" type="application/json">{"616ead077e1b":"audio/final-bossfight/616ead077e1b.mp3","9e248f1977b2":"audio/final-bossfight/9e248f1977b2.mp3","adced4b0cb74":"audio/final-bossfight/adced4b0cb74.mp3","8b0f49e68f24":"audio/final-bossfight/8b0f49e68f24.mp3","a47bdde17f4a":"audio/final-bossfight/a47bdde17f4a.mp3","4c73177b8308":"audio/final-bossfight/4c73177b8308.mp3","7b4fa18571dc":"audio/final-bossfight/7b4fa18571dc.mp3","bbfbc5c87252":"audio/final-bossfight/bbfbc5c87252.mp3","e46b6992e757":"audio/final-bossfight/e46b6992e757.mp3","a6301ef67321":"audio/final-bossfight/a6301ef67321.mp3","da54b1110622":"audio/final-bossfight/da54b1110622.mp3","dc9fe390010a":"audio/final-bossfight/dc9fe390010a.mp3","00c42c96a789":"audio/final-bossfight/00c42c96a789.mp3","0c00f1675270":"audio/final-bossfight/0c00f1675270.mp3","695a406b5156":"audio/final-bossfight/695a406b5156.mp3","aeabe69cd394":"audio/final-bossfight/aeabe69cd394.mp3","9e197fdd4d8e":"audio/final-bossfight/9e197fdd4d8e.mp3","f539c1ba96f6":"audio/final-bossfight/f539c1ba96f6.mp3","4121e47cd8ce":"audio/final-bossfight/4121e47cd8ce.mp3","4bd26ec681ab":"audio/final-bossfight/4bd26ec681ab.mp3","862a4a49255e":"audio/final-bossfight/862a4a49255e.mp3","c8ef719db027":"audio/final-bossfight/c8ef719db027.mp3","24c7ebabfffc":"audio/final-bossfight/24c7ebabfffc.mp3","0020593f02f4":"audio/final-bossfight/0020593f02f4.mp3","de0d3c598f94":"audio/final-bossfight/de0d3c598f94.mp3","156e8ff4bc6a":"audio/final-bossfight/156e8ff4bc6a.mp3","1d40288f665d":"audio/final-bossfight/1d40288f665d.mp3","f3e8cd8728ea":"audio/final-bossfight/f3e8cd8728ea.mp3","e7d2b3ad2309":"audio/final-bossfight/e7d2b3ad2309.mp3","a48fccdb31a2":"audio/final-bossfight/a48fccdb31a2.mp3","2e13232c91b3":"audio/final-bossfight/2e13232c91b3.mp3","a279ae3cdff7":"audio/final-bossfight/a279ae3cdff7.mp3","47551420119c":"audio/final-bossfight/47551420119c.mp3","398adf54d2c6":"audio/final-bossfight/398adf54d2c6.mp3","678eb2d85b11":"audio/final-bossfight/678eb2d85b11.mp3","2af9ff752290":"audio/final-bossfight/2af9ff752290.mp3","b2ecbe640b54":"audio/final-bossfight/b2ecbe640b54.mp3","d41d7367869e":"audio/final-bossfight/d41d7367869e.mp3","60ec70954eec":"audio/final-bossfight/60ec70954eec.mp3","c17b296f860e":"audio/final-bossfight/c17b296f860e.mp3","d4f1a59ca51c":"audio/final-bossfight/d4f1a59ca51c.mp3","459bb89f6a88":"audio/final-bossfight/459bb89f6a88.mp3","b808a2982b1f":"audio/final-bossfight/b808a2982b1f.mp3","4a3364ca689c":"audio/final-bossfight/4a3364ca689c.mp3","0828391b07e4":"audio/final-bossfight/0828391b07e4.mp3","68612c1b79c2":"audio/final-bossfight/68612c1b79c2.mp3","77ae91d98da2":"audio/final-bossfight/77ae91d98da2.mp3","5418ab639fbd":"audio/final-bossfight/5418ab639fbd.mp3","63d2b4100b23":"audio/final-bossfight/63d2b4100b23.mp3","4dabfca82537":"audio/final-bossfight/4dabfca82537.mp3","8c412753fa8b":"audio/final-bossfight/8c412753fa8b.mp3","0f8c2b44e91e":"audio/final-bossfight/0f8c2b44e91e.mp3","954b3bb41041":"audio/final-bossfight/954b3bb41041.mp3","2fd61ae84e10":"audio/final-bossfight/2fd61ae84e10.mp3","dafa23336548":"audio/final-bossfight/dafa23336548.mp3","33b2abdd2c0d":"audio/final-bossfight/33b2abdd2c0d.mp3","c309d21de2e9":"audio/final-bossfight/c309d21de2e9.mp3","434193e7d7d3":"audio/final-bossfight/434193e7d7d3.mp3","ebb06c5c5757":"audio/final-bossfight/ebb06c5c5757.mp3","0ca48be91e25":"audio/final-bossfight/0ca48be91e25.mp3","d997f76613a1":"audio/final-bossfight/d997f76613a1.mp3","49933bd3b5bc":"audio/final-bossfight/49933bd3b5bc.mp3","7967456a22bf":"audio/final-bossfight/7967456a22bf.mp3","5c623369af26":"audio/final-bossfight/5c623369af26.mp3","da8d89e2cea1":"audio/final-bossfight/da8d89e2cea1.mp3","7ecbf43a5e23":"audio/final-bossfight/7ecbf43a5e23.mp3","f888c9e45357":"audio/final-bossfight/f888c9e45357.mp3","7ceb73defeb2":"audio/final-bossfight/7ceb73defeb2.mp3","996fdbf1967d":"audio/final-bossfight/996fdbf1967d.mp3","2c324e92838e":"audio/final-bossfight/2c324e92838e.mp3","17d9389920c8":"audio/final-bossfight/17d9389920c8.mp3","5399fd2c5427":"audio/final-bossfight/5399fd2c5427.mp3","a674a7ff9664":"audio/final-bossfight/a674a7ff9664.mp3","f874af1795fc":"audio/final-bossfight/f874af1795fc.mp3","ddf70af0002a":"audio/final-bossfight/ddf70af0002a.mp3","7184c4277c4e":"audio/final-bossfight/7184c4277c4e.mp3","d21c2a1dd28c":"audio/final-bossfight/d21c2a1dd28c.mp3","1146481e8c2c":"audio/final-bossfight/1146481e8c2c.mp3","70368dd9de4b":"audio/final-bossfight/70368dd9de4b.mp3","01d5be2dae57":"audio/final-bossfight/01d5be2dae57.mp3","c6e8db8762cf":"audio/final-bossfight/c6e8db8762cf.mp3","12566277c57d":"audio/final-bossfight/12566277c57d.mp3","dedbc8e6efbf":"audio/final-bossfight/dedbc8e6efbf.mp3","69c07af6bd03":"audio/final-bossfight/69c07af6bd03.mp3","5756c710d20f":"audio/final-bossfight/5756c710d20f.mp3","734f40c5d8ea":"audio/final-bossfight/734f40c5d8ea.mp3","88cc9d36f821":"audio/final-bossfight/88cc9d36f821.mp3","7c056305d7ed":"audio/final-bossfight/7c056305d7ed.mp3","cb800e25a446":"audio/final-bossfight/cb800e25a446.mp3","b98a28eb3245":"audio/final-bossfight/b98a28eb3245.mp3","3978c4b6d1fa":"audio/final-bossfight/3978c4b6d1fa.mp3","434c1057abb2":"audio/final-bossfight/434c1057abb2.mp3","36d89808cd86":"audio/final-bossfight/36d89808cd86.mp3","4de459767ace":"audio/final-bossfight/4de459767ace.mp3","8fd73882cef4":"audio/final-bossfight/8fd73882cef4.mp3","d464f56cc58b":"audio/final-bossfight/d464f56cc58b.mp3","4bc055a77ae4":"audio/final-bossfight/4bc055a77ae4.mp3","2a802fd6fccb":"audio/final-bossfight/2a802fd6fccb.mp3","09abd9c4b904":"audio/final-bossfight/09abd9c4b904.mp3","69d15ac63323":"audio/final-bossfight/69d15ac63323.mp3","1551639c30e8":"audio/final-bossfight/1551639c30e8.mp3","504962a60b5d":"audio/final-bossfight/504962a60b5d.mp3","a3d9debe2e34":"audio/final-bossfight/a3d9debe2e34.mp3","cb9bfe4dda4d":"audio/final-bossfight/cb9bfe4dda4d.mp3","cdfcea2cca56":"audio/final-bossfight/cdfcea2cca56.mp3","51aa6afba6b8":"audio/final-bossfight/51aa6afba6b8.mp3","eaa6a37141c6":"audio/final-bossfight/eaa6a37141c6.mp3","6a41d7d5c929":"audio/final-bossfight/6a41d7d5c929.mp3","c24bc3053f2a":"audio/final-bossfight/c24bc3053f2a.mp3","4896babc64f3":"audio/final-bossfight/4896babc64f3.mp3","ff92fe788114":"audio/final-bossfight/ff92fe788114.mp3","0e387502e675":"audio/final-bossfight/0e387502e675.mp3","048aa5abaac4":"audio/final-bossfight/048aa5abaac4.mp3","748b793fa78f":"audio/final-bossfight/748b793fa78f.mp3","ca6dbcc98a7a":"audio/final-bossfight/ca6dbcc98a7a.mp3","30e18905ffa6":"audio/final-bossfight/30e18905ffa6.mp3","502ef33002bb":"audio/final-bossfight/502ef33002bb.mp3","03bff629589c":"audio/final-bossfight/03bff629589c.mp3","02605088e9f1":"audio/final-bossfight/02605088e9f1.mp3","a44dd26d48eb":"audio/final-bossfight/a44dd26d48eb.mp3","aa3ec1b3898c":"audio/final-bossfight/aa3ec1b3898c.mp3","ff84f4448334":"audio/final-bossfight/ff84f4448334.mp3","3a54a9f3dc49":"audio/final-bossfight/3a54a9f3dc49.mp3","411f11f3d0f9":"audio/final-bossfight/411f11f3d0f9.mp3","459ca03a487a":"audio/final-bossfight/459ca03a487a.mp3","dab1e7efaa37":"audio/final-bossfight/dab1e7efaa37.mp3","297bd82aa2fc":"audio/final-bossfight/297bd82aa2fc.mp3","f69db9aaf61d":"audio/final-bossfight/f69db9aaf61d.mp3","43e86db26170":"audio/final-bossfight/43e86db26170.mp3","4dd3d79fc9d9":"audio/final-bossfight/4dd3d79fc9d9.mp3","fbbba8247e1f":"audio/final-bossfight/fbbba8247e1f.mp3","aa0f3fa62c3e":"audio/final-bossfight/aa0f3fa62c3e.mp3","d69b44b99a29":"audio/final-bossfight/d69b44b99a29.mp3","a11ec931ba37":"audio/final-bossfight/a11ec931ba37.mp3","482e8a75cf9c":"audio/final-bossfight/482e8a75cf9c.mp3","610051be974a":"audio/final-bossfight/610051be974a.mp3","5bf8c587d4e0":"audio/final-bossfight/5bf8c587d4e0.mp3","5b87a56e4943":"audio/final-bossfight/5b87a56e4943.mp3","a692d5723a50":"audio/final-bossfight/a692d5723a50.mp3","0ad23bf2f133":"audio/final-bossfight/0ad23bf2f133.mp3","e89f743f64e6":"audio/final-bossfight/e89f743f64e6.mp3","49bfc4098535":"audio/final-bossfight/49bfc4098535.mp3","3667f7887885":"audio/final-bossfight/3667f7887885.mp3","aaa532d91de6":"audio/final-bossfight/aaa532d91de6.mp3","033c8faaaedf":"audio/final-bossfight/033c8faaaedf.mp3","077d5be318fe":"audio/final-bossfight/077d5be318fe.mp3","8408179d2ce3":"audio/final-bossfight/8408179d2ce3.mp3","3f555e25d390":"audio/final-bossfight/3f555e25d390.mp3","a8aaf7b09ff8":"audio/final-bossfight/a8aaf7b09ff8.mp3","6e092b10a6dc":"audio/final-bossfight/6e092b10a6dc.mp3","0dedeaa17308":"audio/final-bossfight/0dedeaa17308.mp3","4a2a3da62c7b":"audio/final-bossfight/4a2a3da62c7b.mp3","645f78103353":"audio/final-bossfight/645f78103353.mp3","464d1d559ce7":"audio/final-bossfight/464d1d559ce7.mp3","9e998f7913c9":"audio/final-bossfight/9e998f7913c9.mp3","8ff3b65295f4":"audio/final-bossfight/8ff3b65295f4.mp3","a08014b9332e":"audio/final-bossfight/a08014b9332e.mp3","3302cac83a20":"audio/final-bossfight/3302cac83a20.mp3","81d6350f80c8":"audio/final-bossfight/81d6350f80c8.mp3","9a25a20ae202":"audio/final-bossfight/9a25a20ae202.mp3","983c462e794c":"audio/final-bossfight/983c462e794c.mp3","574d86539160":"audio/final-bossfight/574d86539160.mp3","f7dbe4eb6c87":"audio/final-bossfight/f7dbe4eb6c87.mp3","fd4720f4052d":"audio/final-bossfight/fd4720f4052d.mp3","865635f72bc2":"audio/final-bossfight/865635f72bc2.mp3","e0aac0a16a0a":"audio/final-bossfight/e0aac0a16a0a.mp3","267db02f26a9":"audio/final-bossfight/267db02f26a9.mp3","59cb669a4a97":"audio/final-bossfight/59cb669a4a97.mp3","bd327eb879e3":"audio/final-bossfight/bd327eb879e3.mp3","77b7d1b7d8ee":"audio/final-bossfight/77b7d1b7d8ee.mp3","e2a3d1c7c678":"audio/final-bossfight/e2a3d1c7c678.mp3","67a5771eeb47":"audio/final-bossfight/67a5771eeb47.mp3","38009846f8db":"audio/final-bossfight/38009846f8db.mp3","bc3700241443":"audio/final-bossfight/bc3700241443.mp3","445e1f251dd4":"audio/final-bossfight/445e1f251dd4.mp3","d910d9759192":"audio/final-bossfight/d910d9759192.mp3","42c7e6ad8c29":"audio/final-bossfight/42c7e6ad8c29.mp3","577410fed37b":"audio/final-bossfight/577410fed37b.mp3","1af5de9ca9a5":"audio/final-bossfight/1af5de9ca9a5.mp3","ce1166a5f258":"audio/final-bossfight/ce1166a5f258.mp3","66f97e264591":"audio/final-bossfight/66f97e264591.mp3","f2df3d1607b6":"audio/final-bossfight/f2df3d1607b6.mp3","18c35d779816":"audio/final-bossfight/18c35d779816.mp3","b78fcd7f7bec":"audio/final-bossfight/b78fcd7f7bec.mp3","1c7f783f9b84":"audio/final-bossfight/1c7f783f9b84.mp3","78cb5ca0b932":"audio/final-bossfight/78cb5ca0b932.mp3","50f7d0d2e4a8":"audio/final-bossfight/50f7d0d2e4a8.mp3","983586dd388e":"audio/final-bossfight/983586dd388e.mp3","f6deac302d88":"audio/final-bossfight/f6deac302d88.mp3","daaa38a97a3a":"audio/final-bossfight/daaa38a97a3a.mp3","743f8f72eca8":"audio/final-bossfight/743f8f72eca8.mp3","4f86b6f9752f":"audio/final-bossfight/4f86b6f9752f.mp3","4c0b571c959c":"audio/final-bossfight/4c0b571c959c.mp3","53a2f582be33":"audio/final-bossfight/53a2f582be33.mp3","89d109669988":"audio/final-bossfight/89d109669988.mp3","708dddb165c2":"audio/final-bossfight/708dddb165c2.mp3","2382f5e940a0":"audio/final-bossfight/2382f5e940a0.mp3","b98d4ba687af":"audio/final-bossfight/b98d4ba687af.mp3","4577fe098e6a":"audio/final-bossfight/4577fe098e6a.mp3","f84d1f906573":"audio/final-bossfight/f84d1f906573.mp3","32444488a1bf":"audio/final-bossfight/32444488a1bf.mp3","b1fbf16d4134":"audio/final-bossfight/b1fbf16d4134.mp3","6b20d8895367":"audio/final-bossfight/6b20d8895367.mp3","2fa8eddc5035":"audio/final-bossfight/2fa8eddc5035.mp3","220ccdaa8007":"audio/final-bossfight/220ccdaa8007.mp3","7a95077fb830":"audio/final-bossfight/7a95077fb830.mp3","ac71f44f9660":"audio/final-bossfight/ac71f44f9660.mp3","d8c9bc1fa2e3":"audio/final-bossfight/d8c9bc1fa2e3.mp3","97729cd1255a":"audio/final-bossfight/97729cd1255a.mp3","9521fedbc319":"audio/final-bossfight/9521fedbc319.mp3","74f6dc81bae7":"audio/final-bossfight/74f6dc81bae7.mp3","2510f4b071e6":"audio/final-bossfight/2510f4b071e6.mp3","34c092c6645e":"audio/final-bossfight/34c092c6645e.mp3","61c048b516d5":"audio/final-bossfight/61c048b516d5.mp3","b48f2d7a27ba":"audio/final-bossfight/b48f2d7a27ba.mp3","646b581a3891":"audio/final-bossfight/646b581a3891.mp3","e8bab67fab74":"audio/final-bossfight/e8bab67fab74.mp3","c66c03341069":"audio/final-bossfight/c66c03341069.mp3","4d6098d5ba1b":"audio/final-bossfight/4d6098d5ba1b.mp3","e66cbf78f32c":"audio/final-bossfight/e66cbf78f32c.mp3","6b1a23a8bb30":"audio/final-bossfight/6b1a23a8bb30.mp3","9b7a0896a33b":"audio/final-bossfight/9b7a0896a33b.mp3","324a59539e01":"audio/final-bossfight/324a59539e01.mp3","554ba425b611":"audio/final-bossfight/554ba425b611.mp3","e68d25280eb3":"audio/final-bossfight/e68d25280eb3.mp3","aec3fb168951":"audio/final-bossfight/aec3fb168951.mp3","538c927ff9b5":"audio/final-bossfight/538c927ff9b5.mp3","cd9756ef869f":"audio/final-bossfight/cd9756ef869f.mp3","a67628d9e639":"audio/final-bossfight/a67628d9e639.mp3","50c70d549b9f":"audio/final-bossfight/50c70d549b9f.mp3","a62631bad657":"audio/final-bossfight/a62631bad657.mp3","b24a4714f019":"audio/final-bossfight/b24a4714f019.mp3","2a68b2691bdb":"audio/final-bossfight/2a68b2691bdb.mp3","27e492e66b2c":"audio/final-bossfight/27e492e66b2c.mp3","3e2ec4bbba30":"audio/final-bossfight/3e2ec4bbba30.mp3","3fb0e684b56b":"audio/final-bossfight/3fb0e684b56b.mp3","5d3ecf968f33":"audio/final-bossfight/5d3ecf968f33.mp3","cc46b01956a4":"audio/final-bossfight/cc46b01956a4.mp3","9ecd39938232":"audio/final-bossfight/9ecd39938232.mp3","16f74e0c5d26":"audio/final-bossfight/16f74e0c5d26.mp3","2fe77f37a0c3":"audio/final-bossfight/2fe77f37a0c3.mp3","2b16ed90515c":"audio/final-bossfight/2b16ed90515c.mp3","e18a189a9371":"audio/final-bossfight/e18a189a9371.mp3","8af1f0edc12c":"audio/final-bossfight/8af1f0edc12c.mp3","dfb3e4afa929":"audio/final-bossfight/dfb3e4afa929.mp3","94e720a08b92":"audio/final-bossfight/94e720a08b92.mp3","7e3a26860266":"audio/final-bossfight/7e3a26860266.mp3","26f316b90926":"audio/final-bossfight/26f316b90926.mp3","eb8f410ebaac":"audio/final-bossfight/eb8f410ebaac.mp3","0da32502ce5c":"audio/final-bossfight/0da32502ce5c.mp3","2ca7db6cbf7f":"audio/final-bossfight/2ca7db6cbf7f.mp3","e668ef2a3a0a":"audio/final-bossfight/e668ef2a3a0a.mp3","c99d423f72db":"audio/final-bossfight/c99d423f72db.mp3","793b36a19289":"audio/final-bossfight/793b36a19289.mp3","e039557c2ff5":"audio/final-bossfight/e039557c2ff5.mp3","b57ffbd9c22a":"audio/final-bossfight/b57ffbd9c22a.mp3","9d02d2c5f15f":"audio/final-bossfight/9d02d2c5f15f.mp3","846ee17cbf21":"audio/final-bossfight/846ee17cbf21.mp3","0fb7c5872eab":"audio/final-bossfight/0fb7c5872eab.mp3","36c89e150560":"audio/final-bossfight/36c89e150560.mp3","51d83da4ba32":"audio/final-bossfight/51d83da4ba32.mp3","a63d854e9b00":"audio/final-bossfight/a63d854e9b00.mp3","7995e8d7c634":"audio/final-bossfight/7995e8d7c634.mp3","b076bad0fc12":"audio/final-bossfight/b076bad0fc12.mp3","2457808d7b75":"audio/final-bossfight/2457808d7b75.mp3","544205cd1661":"audio/final-bossfight/544205cd1661.mp3","8bde37507ef9":"audio/final-bossfight/8bde37507ef9.mp3","cd6fca8e973b":"audio/final-bossfight/cd6fca8e973b.mp3","cea8a497daf5":"audio/final-bossfight/cea8a497daf5.mp3","031437d1d9c2":"audio/final-bossfight/031437d1d9c2.mp3","769da45bfb09":"audio/final-bossfight/769da45bfb09.mp3"}</script>
+<script id="dlfAudioData" type="application/json">{"616ead077e1b":"audio/final-bossfight/616ead077e1b.mp3","9e248f1977b2":"audio/final-bossfight/9e248f1977b2.mp3","adced4b0cb74":"audio/final-bossfight/adced4b0cb74.mp3","8b0f49e68f24":"audio/final-bossfight/8b0f49e68f24.mp3","a47bdde17f4a":"audio/final-bossfight/a47bdde17f4a.mp3","4c73177b8308":"audio/final-bossfight/4c73177b8308.mp3","7b4fa18571dc":"audio/final-bossfight/7b4fa18571dc.mp3","bbfbc5c87252":"audio/final-bossfight/bbfbc5c87252.mp3","e46b6992e757":"audio/final-bossfight/e46b6992e757.mp3","a6301ef67321":"audio/final-bossfight/a6301ef67321.mp3","da54b1110622":"audio/final-bossfight/da54b1110622.mp3","dc9fe390010a":"audio/final-bossfight/dc9fe390010a.mp3","00c42c96a789":"audio/final-bossfight/00c42c96a789.mp3","0c00f1675270":"audio/final-bossfight/0c00f1675270.mp3","695a406b5156":"audio/final-bossfight/695a406b5156.mp3","aeabe69cd394":"audio/final-bossfight/aeabe69cd394.mp3","9e197fdd4d8e":"audio/final-bossfight/9e197fdd4d8e.mp3","f539c1ba96f6":"audio/final-bossfight/f539c1ba96f6.mp3","4121e47cd8ce":"audio/final-bossfight/4121e47cd8ce.mp3","4bd26ec681ab":"audio/final-bossfight/4bd26ec681ab.mp3","862a4a49255e":"audio/final-bossfight/862a4a49255e.mp3","c8ef719db027":"audio/final-bossfight/c8ef719db027.mp3","24c7ebabfffc":"audio/final-bossfight/24c7ebabfffc.mp3","0020593f02f4":"audio/final-bossfight/0020593f02f4.mp3","de0d3c598f94":"audio/final-bossfight/de0d3c598f94.mp3","156e8ff4bc6a":"audio/final-bossfight/156e8ff4bc6a.mp3","1d40288f665d":"audio/final-bossfight/1d40288f665d.mp3","f3e8cd8728ea":"audio/final-bossfight/f3e8cd8728ea.mp3","e7d2b3ad2309":"audio/final-bossfight/e7d2b3ad2309.mp3","a48fccdb31a2":"audio/final-bossfight/a48fccdb31a2.mp3","2e13232c91b3":"audio/final-bossfight/2e13232c91b3.mp3","a279ae3cdff7":"audio/final-bossfight/a279ae3cdff7.mp3","47551420119c":"audio/final-bossfight/47551420119c.mp3","398adf54d2c6":"audio/final-bossfight/398adf54d2c6.mp3","678eb2d85b11":"audio/final-bossfight/678eb2d85b11.mp3","2af9ff752290":"audio/final-bossfight/2af9ff752290.mp3","b2ecbe640b54":"audio/final-bossfight/b2ecbe640b54.mp3","d41d7367869e":"audio/final-bossfight/d41d7367869e.mp3","60ec70954eec":"audio/final-bossfight/60ec70954eec.mp3","c17b296f860e":"audio/final-bossfight/c17b296f860e.mp3","d4f1a59ca51c":"audio/final-bossfight/d4f1a59ca51c.mp3","459bb89f6a88":"audio/final-bossfight/459bb89f6a88.mp3","b808a2982b1f":"audio/final-bossfight/b808a2982b1f.mp3","4a3364ca689c":"audio/final-bossfight/4a3364ca689c.mp3","0828391b07e4":"audio/final-bossfight/0828391b07e4.mp3","68612c1b79c2":"audio/final-bossfight/68612c1b79c2.mp3","77ae91d98da2":"audio/final-bossfight/77ae91d98da2.mp3","5418ab639fbd":"audio/final-bossfight/5418ab639fbd.mp3","63d2b4100b23":"audio/final-bossfight/63d2b4100b23.mp3","4dabfca82537":"audio/final-bossfight/4dabfca82537.mp3","8c412753fa8b":"audio/final-bossfight/8c412753fa8b.mp3","0f8c2b44e91e":"audio/final-bossfight/0f8c2b44e91e.mp3","954b3bb41041":"audio/final-bossfight/954b3bb41041.mp3","2fd61ae84e10":"audio/final-bossfight/2fd61ae84e10.mp3","dafa23336548":"audio/final-bossfight/dafa23336548.mp3","33b2abdd2c0d":"audio/final-bossfight/33b2abdd2c0d.mp3","c309d21de2e9":"audio/final-bossfight/c309d21de2e9.mp3","434193e7d7d3":"audio/final-bossfight/434193e7d7d3.mp3","ebb06c5c5757":"audio/final-bossfight/ebb06c5c5757.mp3","0ca48be91e25":"audio/final-bossfight/0ca48be91e25.mp3","d997f76613a1":"audio/final-bossfight/d997f76613a1.mp3","49933bd3b5bc":"audio/final-bossfight/49933bd3b5bc.mp3","7967456a22bf":"audio/final-bossfight/7967456a22bf.mp3","5c623369af26":"audio/final-bossfight/5c623369af26.mp3","da8d89e2cea1":"audio/final-bossfight/da8d89e2cea1.mp3","7ecbf43a5e23":"audio/final-bossfight/7ecbf43a5e23.mp3","f888c9e45357":"audio/final-bossfight/f888c9e45357.mp3","7ceb73defeb2":"audio/final-bossfight/7ceb73defeb2.mp3","996fdbf1967d":"audio/final-bossfight/996fdbf1967d.mp3","2c324e92838e":"audio/final-bossfight/2c324e92838e.mp3","17d9389920c8":"audio/final-bossfight/17d9389920c8.mp3","5399fd2c5427":"audio/final-bossfight/5399fd2c5427.mp3","a674a7ff9664":"audio/final-bossfight/a674a7ff9664.mp3","f874af1795fc":"audio/final-bossfight/f874af1795fc.mp3","ddf70af0002a":"audio/final-bossfight/ddf70af0002a.mp3","7184c4277c4e":"audio/final-bossfight/7184c4277c4e.mp3","d21c2a1dd28c":"audio/final-bossfight/d21c2a1dd28c.mp3","1146481e8c2c":"audio/final-bossfight/1146481e8c2c.mp3","70368dd9de4b":"audio/final-bossfight/70368dd9de4b.mp3","01d5be2dae57":"audio/final-bossfight/01d5be2dae57.mp3","c6e8db8762cf":"audio/final-bossfight/c6e8db8762cf.mp3","12566277c57d":"audio/final-bossfight/12566277c57d.mp3","dedbc8e6efbf":"audio/final-bossfight/dedbc8e6efbf.mp3","69c07af6bd03":"audio/final-bossfight/69c07af6bd03.mp3","5756c710d20f":"audio/final-bossfight/5756c710d20f.mp3","734f40c5d8ea":"audio/final-bossfight/734f40c5d8ea.mp3","88cc9d36f821":"audio/final-bossfight/88cc9d36f821.mp3","7c056305d7ed":"audio/final-bossfight/7c056305d7ed.mp3","cb800e25a446":"audio/final-bossfight/cb800e25a446.mp3","b98a28eb3245":"audio/final-bossfight/b98a28eb3245.mp3","3978c4b6d1fa":"audio/final-bossfight/3978c4b6d1fa.mp3","434c1057abb2":"audio/final-bossfight/434c1057abb2.mp3","36d89808cd86":"audio/final-bossfight/36d89808cd86.mp3","4de459767ace":"audio/final-bossfight/4de459767ace.mp3","8fd73882cef4":"audio/final-bossfight/8fd73882cef4.mp3","d464f56cc58b":"audio/final-bossfight/d464f56cc58b.mp3","4bc055a77ae4":"audio/final-bossfight/4bc055a77ae4.mp3","2a802fd6fccb":"audio/final-bossfight/2a802fd6fccb.mp3","09abd9c4b904":"audio/final-bossfight/09abd9c4b904.mp3","69d15ac63323":"audio/final-bossfight/69d15ac63323.mp3","1551639c30e8":"audio/final-bossfight/1551639c30e8.mp3","504962a60b5d":"audio/final-bossfight/504962a60b5d.mp3","a3d9debe2e34":"audio/final-bossfight/a3d9debe2e34.mp3","cb9bfe4dda4d":"audio/final-bossfight/cb9bfe4dda4d.mp3","cdfcea2cca56":"audio/final-bossfight/cdfcea2cca56.mp3","51aa6afba6b8":"audio/final-bossfight/51aa6afba6b8.mp3","eaa6a37141c6":"audio/final-bossfight/eaa6a37141c6.mp3","6a41d7d5c929":"audio/final-bossfight/6a41d7d5c929.mp3","c24bc3053f2a":"audio/final-bossfight/c24bc3053f2a.mp3","4896babc64f3":"audio/final-bossfight/4896babc64f3.mp3","ff92fe788114":"audio/final-bossfight/ff92fe788114.mp3","0e387502e675":"audio/final-bossfight/0e387502e675.mp3","048aa5abaac4":"audio/final-bossfight/048aa5abaac4.mp3","748b793fa78f":"audio/final-bossfight/748b793fa78f.mp3","ca6dbcc98a7a":"audio/final-bossfight/ca6dbcc98a7a.mp3","30e18905ffa6":"audio/final-bossfight/30e18905ffa6.mp3","502ef33002bb":"audio/final-bossfight/502ef33002bb.mp3","03bff629589c":"audio/final-bossfight/03bff629589c.mp3","02605088e9f1":"audio/final-bossfight/02605088e9f1.mp3","a44dd26d48eb":"audio/final-bossfight/a44dd26d48eb.mp3","aa3ec1b3898c":"audio/final-bossfight/aa3ec1b3898c.mp3","ff84f4448334":"audio/final-bossfight/ff84f4448334.mp3","3a54a9f3dc49":"audio/final-bossfight/3a54a9f3dc49.mp3","411f11f3d0f9":"audio/final-bossfight/411f11f3d0f9.mp3","459ca03a487a":"audio/final-bossfight/459ca03a487a.mp3","dab1e7efaa37":"audio/final-bossfight/dab1e7efaa37.mp3","297bd82aa2fc":"audio/final-bossfight/297bd82aa2fc.mp3","f69db9aaf61d":"audio/final-bossfight/f69db9aaf61d.mp3","43e86db26170":"audio/final-bossfight/43e86db26170.mp3","4dd3d79fc9d9":"audio/final-bossfight/4dd3d79fc9d9.mp3","fbbba8247e1f":"audio/final-bossfight/fbbba8247e1f.mp3","aa0f3fa62c3e":"audio/final-bossfight/aa0f3fa62c3e.mp3","d69b44b99a29":"audio/final-bossfight/d69b44b99a29.mp3","a11ec931ba37":"audio/final-bossfight/a11ec931ba37.mp3","482e8a75cf9c":"audio/final-bossfight/482e8a75cf9c.mp3","610051be974a":"audio/final-bossfight/610051be974a.mp3","5bf8c587d4e0":"audio/final-bossfight/5bf8c587d4e0.mp3","5b87a56e4943":"audio/final-bossfight/5b87a56e4943.mp3","a692d5723a50":"audio/final-bossfight/a692d5723a50.mp3","0ad23bf2f133":"audio/final-bossfight/0ad23bf2f133.mp3","e89f743f64e6":"audio/final-bossfight/e89f743f64e6.mp3","49bfc4098535":"audio/final-bossfight/49bfc4098535.mp3","3667f7887885":"audio/final-bossfight/3667f7887885.mp3","aaa532d91de6":"audio/final-bossfight/aaa532d91de6.mp3","033c8faaaedf":"audio/final-bossfight/033c8faaaedf.mp3","077d5be318fe":"audio/final-bossfight/077d5be318fe.mp3","8408179d2ce3":"audio/final-bossfight/8408179d2ce3.mp3","3f555e25d390":"audio/final-bossfight/3f555e25d390.mp3","a8aaf7b09ff8":"audio/final-bossfight/a8aaf7b09ff8.mp3","6e092b10a6dc":"audio/final-bossfight/6e092b10a6dc.mp3","0dedeaa17308":"audio/final-bossfight/0dedeaa17308.mp3","4a2a3da62c7b":"audio/final-bossfight/4a2a3da62c7b.mp3","645f78103353":"audio/final-bossfight/645f78103353.mp3","464d1d559ce7":"audio/final-bossfight/464d1d559ce7.mp3","9e998f7913c9":"audio/final-bossfight/9e998f7913c9.mp3","8ff3b65295f4":"audio/final-bossfight/8ff3b65295f4.mp3","a08014b9332e":"audio/final-bossfight/a08014b9332e.mp3","3302cac83a20":"audio/final-bossfight/3302cac83a20.mp3","81d6350f80c8":"audio/final-bossfight/81d6350f80c8.mp3","9a25a20ae202":"audio/final-bossfight/9a25a20ae202.mp3","983c462e794c":"audio/final-bossfight/983c462e794c.mp3","574d86539160":"audio/final-bossfight/574d86539160.mp3","f7dbe4eb6c87":"audio/final-bossfight/f7dbe4eb6c87.mp3","fd4720f4052d":"audio/final-bossfight/fd4720f4052d.mp3","865635f72bc2":"audio/final-bossfight/865635f72bc2.mp3","e0aac0a16a0a":"audio/final-bossfight/e0aac0a16a0a.mp3","267db02f26a9":"audio/final-bossfight/267db02f26a9.mp3","59cb669a4a97":"audio/final-bossfight/59cb669a4a97.mp3","bd327eb879e3":"audio/final-bossfight/bd327eb879e3.mp3","77b7d1b7d8ee":"audio/final-bossfight/77b7d1b7d8ee.mp3","e2a3d1c7c678":"audio/final-bossfight/e2a3d1c7c678.mp3","67a5771eeb47":"audio/final-bossfight/67a5771eeb47.mp3","38009846f8db":"audio/final-bossfight/38009846f8db.mp3","bc3700241443":"audio/final-bossfight/bc3700241443.mp3","445e1f251dd4":"audio/final-bossfight/445e1f251dd4.mp3","d910d9759192":"audio/final-bossfight/d910d9759192.mp3","42c7e6ad8c29":"audio/final-bossfight/42c7e6ad8c29.mp3","577410fed37b":"audio/final-bossfight/577410fed37b.mp3","1af5de9ca9a5":"audio/final-bossfight/1af5de9ca9a5.mp3","ce1166a5f258":"audio/final-bossfight/ce1166a5f258.mp3","66f97e264591":"audio/final-bossfight/66f97e264591.mp3","f2df3d1607b6":"audio/final-bossfight/f2df3d1607b6.mp3","18c35d779816":"audio/final-bossfight/18c35d779816.mp3","b78fcd7f7bec":"audio/final-bossfight/b78fcd7f7bec.mp3","1c7f783f9b84":"audio/final-bossfight/1c7f783f9b84.mp3","78cb5ca0b932":"audio/final-bossfight/78cb5ca0b932.mp3","50f7d0d2e4a8":"audio/final-bossfight/50f7d0d2e4a8.mp3","983586dd388e":"audio/final-bossfight/983586dd388e.mp3","f6deac302d88":"audio/final-bossfight/f6deac302d88.mp3","daaa38a97a3a":"audio/final-bossfight/daaa38a97a3a.mp3","743f8f72eca8":"audio/final-bossfight/743f8f72eca8.mp3","4f86b6f9752f":"audio/final-bossfight/4f86b6f9752f.mp3","4c0b571c959c":"audio/final-bossfight/4c0b571c959c.mp3","53a2f582be33":"audio/final-bossfight/53a2f582be33.mp3","89d109669988":"audio/final-bossfight/89d109669988.mp3","708dddb165c2":"audio/final-bossfight/708dddb165c2.mp3","2382f5e940a0":"audio/final-bossfight/2382f5e940a0.mp3","b98d4ba687af":"audio/final-bossfight/b98d4ba687af.mp3","4577fe098e6a":"audio/final-bossfight/4577fe098e6a.mp3","f84d1f906573":"audio/final-bossfight/f84d1f906573.mp3","32444488a1bf":"audio/final-bossfight/32444488a1bf.mp3","b1fbf16d4134":"audio/final-bossfight/b1fbf16d4134.mp3","6b20d8895367":"audio/final-bossfight/6b20d8895367.mp3","2fa8eddc5035":"audio/final-bossfight/2fa8eddc5035.mp3","220ccdaa8007":"audio/final-bossfight/220ccdaa8007.mp3","7a95077fb830":"audio/final-bossfight/7a95077fb830.mp3","ac71f44f9660":"audio/final-bossfight/ac71f44f9660.mp3","d8c9bc1fa2e3":"audio/final-bossfight/d8c9bc1fa2e3.mp3","97729cd1255a":"audio/final-bossfight/97729cd1255a.mp3","9521fedbc319":"audio/final-bossfight/9521fedbc319.mp3","74f6dc81bae7":"audio/final-bossfight/74f6dc81bae7.mp3","2510f4b071e6":"audio/final-bossfight/2510f4b071e6.mp3","34c092c6645e":"audio/final-bossfight/34c092c6645e.mp3","61c048b516d5":"audio/final-bossfight/61c048b516d5.mp3","b48f2d7a27ba":"audio/final-bossfight/b48f2d7a27ba.mp3","646b581a3891":"audio/final-bossfight/646b581a3891.mp3","e8bab67fab74":"audio/final-bossfight/e8bab67fab74.mp3","c66c03341069":"audio/final-bossfight/c66c03341069.mp3","4d6098d5ba1b":"audio/final-bossfight/4d6098d5ba1b.mp3","e66cbf78f32c":"audio/final-bossfight/e66cbf78f32c.mp3","6b1a23a8bb30":"audio/final-bossfight/6b1a23a8bb30.mp3","9b7a0896a33b":"audio/final-bossfight/9b7a0896a33b.mp3","324a59539e01":"audio/final-bossfight/324a59539e01.mp3","554ba425b611":"audio/final-bossfight/554ba425b611.mp3","e68d25280eb3":"audio/final-bossfight/e68d25280eb3.mp3","aec3fb168951":"audio/final-bossfight/aec3fb168951.mp3","538c927ff9b5":"audio/final-bossfight/538c927ff9b5.mp3","cd9756ef869f":"audio/final-bossfight/cd9756ef869f.mp3","a67628d9e639":"audio/final-bossfight/a67628d9e639.mp3","50c70d549b9f":"audio/final-bossfight/50c70d549b9f.mp3","a62631bad657":"audio/final-bossfight/a62631bad657.mp3","b24a4714f019":"audio/final-bossfight/b24a4714f019.mp3","2a68b2691bdb":"audio/final-bossfight/2a68b2691bdb.mp3","27e492e66b2c":"audio/final-bossfight/27e492e66b2c.mp3","3e2ec4bbba30":"audio/final-bossfight/3e2ec4bbba30.mp3","3fb0e684b56b":"audio/final-bossfight/3fb0e684b56b.mp3","5d3ecf968f33":"audio/final-bossfight/5d3ecf968f33.mp3","cc46b01956a4":"audio/final-bossfight/cc46b01956a4.mp3","9ecd39938232":"audio/final-bossfight/9ecd39938232.mp3","16f74e0c5d26":"audio/final-bossfight/16f74e0c5d26.mp3","2fe77f37a0c3":"audio/final-bossfight/2fe77f37a0c3.mp3","2b16ed90515c":"audio/final-bossfight/2b16ed90515c.mp3","e18a189a9371":"audio/final-bossfight/e18a189a9371.mp3","8af1f0edc12c":"audio/final-bossfight/8af1f0edc12c.mp3","dfb3e4afa929":"audio/final-bossfight/dfb3e4afa929.mp3","94e720a08b92":"audio/final-bossfight/94e720a08b92.mp3","7e3a26860266":"audio/final-bossfight/7e3a26860266.mp3","26f316b90926":"audio/final-bossfight/26f316b90926.mp3","eb8f410ebaac":"audio/final-bossfight/eb8f410ebaac.mp3","0da32502ce5c":"audio/final-bossfight/0da32502ce5c.mp3","2ca7db6cbf7f":"audio/final-bossfight/2ca7db6cbf7f.mp3","e668ef2a3a0a":"audio/final-bossfight/e668ef2a3a0a.mp3","c99d423f72db":"audio/final-bossfight/c99d423f72db.mp3","793b36a19289":"audio/final-bossfight/793b36a19289.mp3","e039557c2ff5":"audio/final-bossfight/e039557c2ff5.mp3","b57ffbd9c22a":"audio/final-bossfight/b57ffbd9c22a.mp3","9d02d2c5f15f":"audio/final-bossfight/9d02d2c5f15f.mp3","846ee17cbf21":"audio/final-bossfight/846ee17cbf21.mp3","0fb7c5872eab":"audio/final-bossfight/0fb7c5872eab.mp3","36c89e150560":"audio/final-bossfight/36c89e150560.mp3","51d83da4ba32":"audio/final-bossfight/51d83da4ba32.mp3","a63d854e9b00":"audio/final-bossfight/a63d854e9b00.mp3","7995e8d7c634":"audio/final-bossfight/7995e8d7c634.mp3","b076bad0fc12":"audio/final-bossfight/b076bad0fc12.mp3","2457808d7b75":"audio/final-bossfight/2457808d7b75.mp3","544205cd1661":"audio/final-bossfight/544205cd1661.mp3","8bde37507ef9":"audio/final-bossfight/8bde37507ef9.mp3","cd6fca8e973b":"audio/final-bossfight/cd6fca8e973b.mp3","cea8a497daf5":"audio/final-bossfight/cea8a497daf5.mp3","031437d1d9c2":"audio/final-bossfight/031437d1d9c2.mp3","769da45bfb09":"audio/final-bossfight/769da45bfb09.mp3","4177e1b770e4":"audio/final-bossfight/4177e1b770e4.mp3","00bf47f6fa31":"audio/final-bossfight/00bf47f6fa31.mp3","a9a10d25b3f1":"audio/final-bossfight/a9a10d25b3f1.mp3","380df8a28f4a":"audio/final-bossfight/380df8a28f4a.mp3","0819c5b567c1":"audio/final-bossfight/0819c5b567c1.mp3","4cdf0af078c4":"audio/final-bossfight/4cdf0af078c4.mp3","4c8469cce3d8":"audio/final-bossfight/4c8469cce3d8.mp3","d4d30ed3a064":"audio/final-bossfight/d4d30ed3a064.mp3","feafac1ee4da":"audio/final-bossfight/feafac1ee4da.mp3","16eb89070b25":"audio/final-bossfight/16eb89070b25.mp3","4d8af79e3e6c":"audio/final-bossfight/4d8af79e3e6c.mp3","98bb749aa09f":"audio/final-bossfight/98bb749aa09f.mp3","e7cd495117ec":"audio/final-bossfight/e7cd495117ec.mp3","1552e37849cb":"audio/final-bossfight/1552e37849cb.mp3","da27a8ba92e7":"audio/final-bossfight/da27a8ba92e7.mp3","68454f0cddbe":"audio/final-bossfight/68454f0cddbe.mp3","75969d591b66":"audio/final-bossfight/75969d591b66.mp3","165857e75608":"audio/final-bossfight/165857e75608.mp3","4d6d622ecf04":"audio/final-bossfight/4d6d622ecf04.mp3","532b4f23ef5d":"audio/final-bossfight/532b4f23ef5d.mp3","7ee292a63b96":"audio/final-bossfight/7ee292a63b96.mp3","6dafdf479d77":"audio/final-bossfight/6dafdf479d77.mp3","6df8fbf07880":"audio/final-bossfight/6df8fbf07880.mp3","089c44fe7aea":"audio/final-bossfight/089c44fe7aea.mp3","4c12bd13454e":"audio/final-bossfight/4c12bd13454e.mp3","eea85722b2c6":"audio/final-bossfight/eea85722b2c6.mp3","ec17fbbbfb08":"audio/final-bossfight/ec17fbbbfb08.mp3","4375cf5ce22f":"audio/final-bossfight/4375cf5ce22f.mp3","cef30b231345":"audio/final-bossfight/cef30b231345.mp3","dbe8a94d5310":"audio/final-bossfight/dbe8a94d5310.mp3","c477c73d123d":"audio/final-bossfight/c477c73d123d.mp3","05391b43582f":"audio/final-bossfight/05391b43582f.mp3","00fb7da3e022":"audio/final-bossfight/00fb7da3e022.mp3","4905e975bdc7":"audio/final-bossfight/4905e975bdc7.mp3","59bdea3f31be":"audio/final-bossfight/59bdea3f31be.mp3","927362bb2121":"audio/final-bossfight/927362bb2121.mp3","be305d57af6d":"audio/final-bossfight/be305d57af6d.mp3","070de4dd1bfa":"audio/final-bossfight/070de4dd1bfa.mp3","4af0e590e703":"audio/final-bossfight/4af0e590e703.mp3","c5a4582011d5":"audio/final-bossfight/c5a4582011d5.mp3","bcf8e638d504":"audio/final-bossfight/bcf8e638d504.mp3","2fbda4878804":"audio/final-bossfight/2fbda4878804.mp3","c584abca10e3":"audio/final-bossfight/c584abca10e3.mp3","b3b9a208eeb7":"audio/final-bossfight/b3b9a208eeb7.mp3","707b5e4d3323":"audio/final-bossfight/707b5e4d3323.mp3","de083a78752c":"audio/final-bossfight/de083a78752c.mp3","1c73327f6f6d":"audio/final-bossfight/1c73327f6f6d.mp3","e7b8b4ec2c27":"audio/final-bossfight/e7b8b4ec2c27.mp3","d319ea65266b":"audio/final-bossfight/d319ea65266b.mp3","059402b003f6":"audio/final-bossfight/059402b003f6.mp3","b3cd9b43f1e4":"audio/final-bossfight/b3cd9b43f1e4.mp3","5ddb292d2586":"audio/final-bossfight/5ddb292d2586.mp3","fccc30e2a2be":"audio/final-bossfight/fccc30e2a2be.mp3","32fa77d8b1c2":"audio/final-bossfight/32fa77d8b1c2.mp3","3b50c2c111f5":"audio/final-bossfight/3b50c2c111f5.mp3","b407f66fa6a9":"audio/final-bossfight/b407f66fa6a9.mp3","b7424bfae9b7":"audio/final-bossfight/b7424bfae9b7.mp3","764cc907d248":"audio/final-bossfight/764cc907d248.mp3","302db7a742d5":"audio/final-bossfight/302db7a742d5.mp3","da8392482d72":"audio/final-bossfight/da8392482d72.mp3","3113f39fa875":"audio/final-bossfight/3113f39fa875.mp3","5f8cedb463d9":"audio/final-bossfight/5f8cedb463d9.mp3","d7d015683037":"audio/final-bossfight/d7d015683037.mp3","6c4a0ef69978":"audio/final-bossfight/6c4a0ef69978.mp3","1a59793b11dc":"audio/final-bossfight/1a59793b11dc.mp3","1d5aa31f81f9":"audio/final-bossfight/1d5aa31f81f9.mp3","86f525b2bb37":"audio/final-bossfight/86f525b2bb37.mp3","2c9172673ad7":"audio/final-bossfight/2c9172673ad7.mp3","822d1a05aa84":"audio/final-bossfight/822d1a05aa84.mp3","d542fd48b878":"audio/final-bossfight/d542fd48b878.mp3","81e4dc15fb06":"audio/final-bossfight/81e4dc15fb06.mp3","3631b821fc9f":"audio/final-bossfight/3631b821fc9f.mp3","944292c8ae74":"audio/final-bossfight/944292c8ae74.mp3","da268fa400fc":"audio/final-bossfight/da268fa400fc.mp3","fd1635c2fd35":"audio/final-bossfight/fd1635c2fd35.mp3","294c5ca620f1":"audio/final-bossfight/294c5ca620f1.mp3","5b08902a87ab":"audio/final-bossfight/5b08902a87ab.mp3","4d8016a7ecec":"audio/final-bossfight/4d8016a7ecec.mp3","37ca52099ea1":"audio/final-bossfight/37ca52099ea1.mp3","ca8f9fa233a3":"audio/final-bossfight/ca8f9fa233a3.mp3","d38d5b30fa60":"audio/final-bossfight/d38d5b30fa60.mp3","eb75ed6255d1":"audio/final-bossfight/eb75ed6255d1.mp3","18b4e378233b":"audio/final-bossfight/18b4e378233b.mp3","792eea270355":"audio/final-bossfight/792eea270355.mp3","a1f3b5014914":"audio/final-bossfight/a1f3b5014914.mp3","af6ba89d9b27":"audio/final-bossfight/af6ba89d9b27.mp3","aca2b0992481":"audio/final-bossfight/aca2b0992481.mp3","66590c21d92e":"audio/final-bossfight/66590c21d92e.mp3"}</script>
 <script src="_lib/dlf-bossfight-engine.js"></script>
 <div style="position:fixed;bottom:6px;left:0;right:0;text-align:center;font-family:sans-serif;font-size:11px;color:rgba(139,148,158,0.6);pointer-events:none;z-index:9999;">© 2026 Pongpipat (PaoPao) Punyasataporn</div>
 </body>

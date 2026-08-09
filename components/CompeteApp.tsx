@@ -544,6 +544,7 @@ function TypingRace(p: { seed: number; rounds: number; level: TypingLevel; setSc
           style={{ flex: 1, minWidth: 240, fontSize: 20 }}
           value={typed}
           onChange={(e) => onChange(e.target.value)}
+          onPaste={(e) => e.preventDefault()}
           placeholder="พิมพ์ตรงนี้..."
           autoComplete="off"
           autoCorrect="off"
@@ -937,7 +938,7 @@ function ResultsView(p: { state: RoomState; meId: string; iAmHost: boolean; busy
   const top3 = sorted.slice(0, 3);
   // Podium display order is 2nd–1st–3rd (tallest block in the middle), not rank order.
   const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean) as Player[];
-  const heights: Record<number, number> = { 0: 150, 1: 190, 2: 120 };
+  const heights: Record<number, number> = { 0: 190, 1: 150, 2: 120 };   // 1st tallest, 2nd, 3rd shortest
 
   return (
     <>

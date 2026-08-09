@@ -123,6 +123,9 @@ async function synth(text) {
 //     loaded via <script src>) — the engine itself speaks a few hardcoded fallback lines
 //     ("เยี่ยมมาก!", the mute-button label, ...), and those moved out of the HTML when the
 //     engine was deduplicated into a shared file. Miss this and a re-run can never find them.
+//   * every leaf of plain static HTML text (a lesson tab's <div class="ps-desc">…</div>,
+//     never built from a JS string) — the runtime decorator speaks this by walking the
+//     live DOM, so it needs a clip exactly as much as anything else does.
 function speakableStrings(html, dir) {
   const out = new Set();
   const add = (raw) => {
@@ -144,6 +147,17 @@ function speakableStrings(html, dir) {
     const v = m[1];
     if (v.includes('${') || v.includes("'+")) continue;   // built at runtime, not a literal
     add(v.replace(/&quot;/g, '"').replace(/&amp;/g, '&'));
+  }
+  // Static HTML body text (e.g. a lesson tab's <div class="ps-desc">…</div>, never
+  // built from a JS string) was invisible to every scan above — the shared engine's
+  // decorate() finds and speaks this at runtime by walking the live DOM, but nothing
+  // ever recorded a clip for it, so it silently ran on the browser-speechSynthesis
+  // fallback forever. Approximate the same "leaf text between tags" extraction here:
+  // strip <script>/<style> blocks (CSS has no Thai, but skip it on principle) and pull
+  // Thai-containing text sitting directly between a '>' and the next '<'.
+  const bodyOnly = code.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
+  for (const m of bodyOnly.matchAll(/>([^<]*[฀-๿][^<]*)</g)) {
+    add(m[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim());
   }
   for (const m of html.matchAll(/<script src="([^"]+\.js)"/g)) {
     const jsPath = path.join(dir, m[1]);
