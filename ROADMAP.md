@@ -2,7 +2,7 @@
 
 Plain-text, editable roadmap. Edit this file directly — check items off, move dates, add rows. No special format required, just markdown checkboxes and tables.
 
-Last updated: 2026-08-09
+Last updated: 2026-08-13
 
 ---
 
@@ -25,6 +25,10 @@ The immediate punch-list — small, high-value, already scoped.
 | ✅ | Applause SFX on 3-star finish + boss-fight clear | Fires at the exact "⭐⭐⭐" moment, not on exit |
 | ✅ | Confetti/cheer crash fixed (9 games) | Missing `cols` array threw on every 2-3 star finish |
 | ✅ | Boss-fight audio migrated to Edge TTS | 270/270 clips confirmed |
+| ✅ | Removed dead `bossfight/` duplicate directory | Stale (July) fork of `public/games/*`, unreferenced by the app, diverged from the live copies — deleted (2026-08-13) |
+| ✅ | Deduplicated shared CSS across `ai0–ai9` | Extracted the byte-identical base color tokens into `public/games/_lib/theme-base.css`, linked from all 10 files instead of copy-pasted (2026-08-13) |
+| ✅ | Toned down `final-bossfight.html` glow/shadow effects | Softened stacked neon box/text-shadows on keyboard-target, mini-browser hints, and the cert panel to match the flatter look used elsewhere; one-shot hit/attack/death combat FX left as-is (2026-08-13) |
+| ✅ | Removed `.claude`/`.agents` config dirs from git tracking | Local AI-tool config, now gitignored instead of committed (2026-08-13) |
 | 🔴 | **Migrate remaining 14 games to Edge TTS** | Audit found ~1,774 clips across `unit1–9` and `ai0–5` still on the old Google TTS voice. Boss fight was the only one actually fixed. (The new `ai6–9` modules were recorded on Edge TTS from the start and are not affected.) |
 | 🔴 | **Competition mode: race doesn't end when someone wins** | `lib/compete-store.ts` requires *all* players to finish before the room closes and shows the podium. Needs to end (and show podium) as soon as *one* player finishes. Diagnosed, not yet fixed. |
 
