@@ -1,0 +1,14 @@
+/* Shared base tokens for the ai0-ai9 game modules. Each module's own <style>
+   block still sets its own --primary/--primary-light/--primary-dark (and,
+   for the fuller-theme modules, --green-l/--blue*/--purple*/--orange*/--gold/
+   --amber/--panel2/--radius/--shadow) so this file only holds what was
+   byte-identical across all ten files. */
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --paper:#F4F2EA; --card:#FFFFFF; --cream:#F7F4EC; --cream2:#F1ECE0;
+  --ink:#0F1B2D; --muted:#54677E; --muted2:#8A8172; --muted3:#B0A794;
+  --line:#EFE7D6; --line-d:#D8CDB6;
+  --red:#E4614F; --red-light:#FDECEA;
+  --bg:var(--paper); --panel:var(--card); --border:var(--line);
+  --text:var(--ink); --text2:var(--muted); --text3:var(--muted3);
+}
