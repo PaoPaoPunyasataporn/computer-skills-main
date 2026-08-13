@@ -56,7 +56,6 @@ Bigger or lower-urgency items — pull into "Next" when ready.
 | ⬜ | Broader device/browser testing pass | Especially audio autoplay behavior on iOS Safari |
 | ⬜ | Persist competition results server-side beyond room lifetime | Currently in-memory + Neon dual backend, no long-term history |
 | ✅ | Expand AI literacy modules | Expanded 6 → 10 modules (2026-08-09) on the Experience AI six-lesson arc: new `ai6` train-a-model, `ai7` bias-in-data, `ai8` real-world AI, `ai9` design-an-AI capstone; course reordered concepts → tools → applied. See `AI_CURRICULUM.md` (now mapped to the UNESCO AI Competency Framework) |
-| ⬜ | Extend `final-bossfight` to cover the new AI modules | Boss currently draws nothing from `ai6–9` (data/training, bias, real-world, design pipeline) — either add questions or build a separate AI bossfight + AI Literacy certificate |
 | ⬜ | Accessibility pass on the boss fight's desktop-simulation screens | Confirm contrast/readability holds on all sub-screens, not just the ones already checked |
 
 ---
