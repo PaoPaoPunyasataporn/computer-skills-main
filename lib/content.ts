@@ -2,7 +2,12 @@
 // (self-contained HTML served from /public/games). Progress is tracked per game
 // code (up to 3 stars each), the same way across the whole app.
 export type Game = { code: string; icon: string; th: string; desc: string; file: string };
-export type Area = { num: number; mascot: string; title: string; sub: string; games: Game[] };
+// A Module groups several lessons (still `Game`s under the hood — same file format,
+// same progress/stars tracking) under one skill area. Opening a module shows its
+// lesson list; opening a lesson runs it through the 5-step flow and ends in stars.
+// Only the AI course (area 6) uses this; every other area keeps the flat `games` list.
+export type Module = { key: string; icon: string; title: string; sub: string; games: Game[] };
+export type Area = { num: number; mascot: string; title: string; sub: string; games?: Game[]; modules?: Module[] };
 
 export const AREAS: Area[] = [
   {
@@ -51,18 +56,45 @@ export const AREAS: Area[] = [
     // Each game forces the actual skill (label real data, fix a biased
     // dataset, click the real UI, write your own prompt, design system rules)
     // instead of letting a kid pattern-match a multiple-choice answer key.
-    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ฝึกโมเดลเอง จับอคติในข้อมูล ไปจนถึงออกแบบ AI ของตัวเอง — 10 โมดูลเรียงตามลำดับ',
-    games: [
-      { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'โมดูล 0 · พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai0-ai-foundations.html' },
-      { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'โมดูล 1 · เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai6-model-trainer.html' },
-      { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'โมดูล 2 · สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai7-bias-detective.html' },
-      { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'โมดูล 3 · รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai1-ui-inspector.html' },
-      { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'โมดูล 4 · เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai2-prompt-fixer.html' },
-      { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'โมดูล 5 · เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai3-learn-with-ai.html' },
-      { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'โมดูล 6 · ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai4-gem-architect.html' },
-      { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'โมดูล 7 · ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai5-sandbox-master.html' },
-      { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'โมดูล 8 · AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร', file: '/games/ai8-ai-in-the-world.html' },
-      { code: 'g-aiquest', icon: '🏆', th: 'ภารกิจนักออกแบบ AI', desc: 'โมดูล 9 · ภารกิจสุดท้าย ออกแบบ AI แยกขยะของโรงเรียนเองครบทุกขั้นตอน', file: '/games/ai9-ai-quest.html' },
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 5 โมดูล 12 บทเรียน',
+    modules: [
+      {
+        key: 'm1-foundations', icon: '🤖', title: 'รากฐาน AI', sub: 'AI คืออะไร เรียนรู้จากข้อมูลยังไง และทำไมบางทีถึงลำเอียง',
+        games: [
+          { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai0-ai-foundations.html' },
+          { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai6-model-trainer.html' },
+          { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai7-bias-detective.html' },
+        ],
+      },
+      {
+        key: 'm2-collab', icon: '🤝', title: 'ทำงานร่วมกับ AI', sub: 'สั่งงาน AI ให้ชัดเจน ตรวจสอบก่อนเชื่อ และรู้ว่างานไหนควรใช้ AI',
+        games: [
+          { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai1-ui-inspector.html' },
+          { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai2-prompt-fixer.html' },
+          { code: 'g-discernment', icon: '🔍', th: 'นักตรวจสอบคำตอบ AI', desc: 'อ่านคำตอบของ AI อย่างเท่าทัน จับจุดที่ผิด มั่นใจเกินจริง หรือลำเอียง ก่อนเชื่อ', file: '/games/ai10-discernment.html' },
+          { code: 'g-diligence', icon: '🧾', th: 'นักใช้ AI อย่างมีความรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และผลงานยังเป็นของเราแค่ไหน', file: '/games/ai11-diligence.html' },
+        ],
+      },
+      {
+        key: 'm3-shaping', icon: '💎', title: 'ออกแบบพฤติกรรม AI', sub: 'ตั้งกฎให้ AI ผู้ช่วยของตัวเอง และปรับโทนให้เหมาะกับงาน',
+        games: [
+          { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai4-gem-architect.html' },
+          { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai5-sandbox-master.html' },
+        ],
+      },
+      {
+        key: 'm4-realworld', icon: '🌏', title: 'AI ในชีวิตจริง', sub: 'ใช้ AI ช่วยเรียนรู้จริง และรู้ว่า AI ซ่อนอยู่ที่ไหนในชีวิตประจำวัน',
+        games: [
+          { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai3-learn-with-ai.html' },
+          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร', file: '/games/ai8-ai-in-the-world.html' },
+        ],
+      },
+      {
+        key: 'm5-synthesis', icon: '🏆', title: 'ภารกิจสุดท้าย', sub: 'รวมทุกทักษะเข้าด้วยกันในภารกิจออกแบบ AI ของตัวเอง',
+        games: [
+          { code: 'g-aiquest', icon: '🏆', th: 'ภารกิจนักออกแบบ AI', desc: 'ภารกิจสุดท้าย ออกแบบ AI แยกขยะของโรงเรียนเองครบทุกขั้นตอน', file: '/games/ai9-ai-quest.html' },
+        ],
+      },
     ],
   },
 ];
@@ -71,7 +103,11 @@ export const AREAS: Area[] = [
 export const FINAL_BOSS: Game = { code: 'g-boss', icon: '🏆', th: 'บอสไฟท์สุดท้าย', desc: 'ทดสอบทักษะคอมพิวเตอร์ทุกด้านในด่านเดียว', file: '/games/final-bossfight.html' };
 
 // Every game code (area games + final boss) — for totals/progress math.
-export const ALL_GAME_CODES: string[] = [...AREAS.flatMap((a) => a.games.map((g) => g.code)), FINAL_BOSS.code];
+// Areas may hold a flat `games` list or `modules` (each holding its own `games` list).
+export const ALL_GAME_CODES: string[] = [
+  ...AREAS.flatMap((a) => (a.games ?? a.modules?.flatMap((m) => m.games) ?? []).map((g) => g.code)),
+  FINAL_BOSS.code,
+];
 
 export const DIGCOMP_AREAS = AREAS.filter((a) => a.num >= 1);
 export const areaByNum = (n: number) => AREAS.find((a) => a.num === n);

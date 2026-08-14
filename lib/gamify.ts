@@ -14,7 +14,7 @@ export function computeStats(): Stats {
     stars += e.stars || 0;
     if ((e.stars || 0) > 0) completed++;
   }
-  const totalCompetences = AREAS.reduce((s, a) => s + a.games.length, 0);
+  const totalCompetences = AREAS.reduce((s, a) => s + (a.games ?? a.modules?.flatMap((m) => m.games) ?? []).length, 0);
   return { stars, completed, xp: stars * 20, totalCompetences };
 }
 

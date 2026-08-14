@@ -26,7 +26,7 @@ export default function LessonApp({ area }: { area: Area }) {
           <div style={{ background: 'linear-gradient(135deg,#5CD35B,#3BA93C)', padding: '30px clamp(20px,5vw,90px)', display: 'flex', alignItems: 'center', gap: 22, color: '#fff', flexWrap: 'wrap' }}>
             <span style={{ width: 92, height: 92, borderRadius: '50%', background: 'rgba(255,255,255,.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 50, animation: 'csfloat 3s ease-in-out infinite' }}>{area.mascot}</span>
             <div style={{ flex: 1, minWidth: 220 }}>
-              <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 13, opacity: 0.9, marginBottom: 6 }}>{area.num === 6 ? `ทักษะพิเศษ · ${area.games.length} เกม` : `DigComp 3.0 · ด้านที่ ${area.num} · ${area.games.length} เกม`}</div>
+              <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 13, opacity: 0.9, marginBottom: 6 }}>{area.modules ? `ทักษะพิเศษ · ${area.modules.reduce((n, m) => n + m.games.length, 0)} บทเรียน` : `DigComp 3.0 · ด้านที่ ${area.num} · ${(area.games ?? []).length} เกม`}</div>
               <h2 style={{ fontWeight: 700, fontSize: 28, lineHeight: 1.15, margin: '0 0 6px' }}>{area.title}</h2>
               <p style={{ fontFamily: 'Sarabun', fontWeight: 500, fontSize: 15, opacity: 0.92, margin: 0 }}>{area.sub}</p>
             </div>
@@ -39,7 +39,7 @@ export default function LessonApp({ area }: { area: Area }) {
               {/* The play button lives in the header row rather than a footer of its own:
                   the footer used to carry a completion star, and once that went away it
                   was just a band of empty space under every card. */}
-              {area.games.map((g) => (
+              {(area.games ?? area.modules?.flatMap((m) => m.games) ?? []).map((g) => (
                 <button key={g.code} className="card3d unit gamecard" onClick={() => openGame(g)} style={{ borderBottomColor: '#D8CDB6' }}>
                   <div className="unit-top">
                     <span className="unit-orb" style={{ background: 'linear-gradient(135deg,#FFF0D6,#FFD98A)' }}>{g.icon}</span>

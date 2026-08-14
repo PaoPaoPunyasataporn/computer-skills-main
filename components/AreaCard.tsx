@@ -18,7 +18,7 @@ export const AREA_STYLE: Record<number, Style> = {
 export default function AreaCard({ area, onDirectOpen }: { area: (typeof AREAS)[number]; onDirectOpen: (area: number, game: Game) => void }) {
   const st = AREA_STYLE[area.num];
   const lbl = area.num === 0 ? 'เริ่มต้น' : area.num === 6 ? 'ทักษะพิเศษ' : `ด้านที่ ${area.num}`;
-  const directGame = area.num !== 0 && area.games.length === 1 ? area.games[0] : null;
+  const directGame = area.num !== 0 && area.games?.length === 1 ? area.games[0] : null;
 
   const inner = (
     <>

@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import TopBar from '@/components/TopBar';
-import { AREAS, type Game } from '@/lib/content';
+import { AREAS, type Game, type Module } from '@/lib/content';
 import { saveProgress } from '@/lib/progress';
 import { computeStats, recordDaily } from '@/lib/gamify';
 import GameOverlay from '@/components/GameOverlay';
 
 const AI_AREA = AREAS.find((a) => a.num === 6);
+const MODULES: Module[] = AI_AREA?.modules ?? [];
 
 // Same accent sequence as the digital-literacy AREA_STYLE (areas 0-5): blue, blue,
 // green, purple, orange, green — one AI module maps to each digital-literacy color.
@@ -22,12 +24,38 @@ const CARD_STYLE = [
 ];
 
 export default function AiHome() {
+  return (
+    <Suspense fallback={null}>
+      <AiHomeInner />
+    </Suspense>
+  );
+}
+
+function AiHomeInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const moduleKey = searchParams.get('m');
+  const openModule = MODULES.find((m) => m.key === moduleKey) ?? null;
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
   const [xp, setXp] = useState(0);
   const [quickGame, setQuickGame] = useState<{ area: number; game: Game } | null>(null);
 
   function loadStats() {
     setXp(computeStats().xp);
   }
+
+  function openModuleView(m: Module) {
+    router.push(`/ai?m=${encodeURIComponent(m.key)}`, { scroll: false });
+  }
+  function closeModuleView() {
+    router.push('/ai', { scroll: false });
+  }
+
+  // Move focus to the new section heading whenever the drilled-down module
+  // changes, so keyboard/screen-reader users aren't silently left behind on
+  // the old subtree after the grid swaps out.
+  useEffect(() => { headingRef.current?.focus(); }, [moduleKey]);
 
   function finishQuickGame() {
     if (quickGame) {
@@ -64,17 +92,66 @@ export default function AiHome() {
               </div>
             </div>
 
-            {AI_AREA && (
+            {AI_AREA && !openModule && (
               <div className="section">
                 <div className="sec-head">
                   <span className="sec-ico" style={{ background: 'linear-gradient(135deg,#FFE9C7,#FFCB8A)', boxShadow: '0 5px 0 #FFCB8A' }}>✨</span>
                   <div style={{ flex: 1 }}>
-                    <h3 className="sec-title">หลักสูตรทักษะ AI</h3>
-                    <p className="sec-desc">เล่นเกมฝึกทักษะ AI เพื่ออนาคต ตรวจสอบก่อนเชื่อ รู้ทันมิจฉาชีพ และสั่งงาน AI เป็น</p>
+                    <h3 className="sec-title" ref={headingRef} tabIndex={-1} style={{ outline: 'none' }}>หลักสูตรทักษะ AI</h3>
+                    <p className="sec-desc">เลือกโมดูล แล้วเรียนทีละบทเรียนตามลำดับ — ตรวจสอบก่อนเชื่อ รู้ทันมิจฉาชีพ และสั่งงาน AI เป็น</p>
                   </div>
                 </div>
                 <div className="grid3">
-                  {AI_AREA.games.map((g, i) => {
+                  {MODULES.map((m, i) => {
+                    const st = CARD_STYLE[i % CARD_STYLE.length];
+                    return (
+                      <button
+                        key={m.key}
+                        type="button"
+                        className="card3d unit"
+                        onClick={() => openModuleView(m)}
+                        style={{ borderBottomColor: st.edge, textAlign: 'left', cursor: 'pointer' }}
+                      >
+                        <div className="unit-top">
+                          <span className="unit-orb" style={{ background: st.orb }}>{m.icon}</span>
+                          <div>
+                            <div className="unit-lbl" style={{ color: st.accent }}>โมดูลที่ {i + 1}</div>
+                            <div className="unit-name">{m.title}</div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: 13, color: 'var(--muted2)', margin: '2px 0 14px' }}>
+                          {m.sub}
+                          <span style={{ display: 'inline-block', marginLeft: 8, padding: '1px 8px', borderRadius: 10, background: '#FFF0D6', color: '#C58A00', fontWeight: 700, fontSize: 11 }}>📖 {m.games.length} บทเรียน</span>
+                        </div>
+                        <div className="unit-foot" style={{ justifyContent: 'flex-end' }}>
+                          <span className="unit-go" style={{ background: `linear-gradient(135deg,${st.accentL},${st.accent})`, boxShadow: `0 5px 0 ${st.edge}` }}>▶</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {AI_AREA && openModule && (
+              <div className="section">
+                <button
+                  type="button"
+                  onClick={closeModuleView}
+                  className="btn-ghost3d"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 18, cursor: 'pointer' }}
+                >
+                  ← กลับไปดูโมดูลทั้งหมด
+                </button>
+                <div className="sec-head">
+                  <span className="sec-ico" style={{ background: 'linear-gradient(135deg,#FFE9C7,#FFCB8A)', boxShadow: '0 5px 0 #FFCB8A' }}>{openModule.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <h3 className="sec-title" ref={headingRef} tabIndex={-1} style={{ outline: 'none' }}>{openModule.title}</h3>
+                    <p className="sec-desc">{openModule.sub}</p>
+                  </div>
+                </div>
+                <div className="grid3">
+                  {openModule.games.map((g, i) => {
                     const st = CARD_STYLE[i % CARD_STYLE.length];
                     return (
                       <button
@@ -87,13 +164,12 @@ export default function AiHome() {
                         <div className="unit-top">
                           <span className="unit-orb" style={{ background: st.orb }}>{g.icon}</span>
                           <div>
-                            <div className="unit-lbl" style={{ color: st.accent }}>โมดูลที่ {i}</div>
+                            <div className="unit-lbl" style={{ color: st.accent }}>บทเรียนที่ {i + 1}</div>
                             <div className="unit-name">{g.th}</div>
                           </div>
                         </div>
                         <div style={{ fontSize: 13, color: 'var(--muted2)', margin: '2px 0 14px' }}>
-                          {g.desc.replace(/^โมดูล \d+\s*·\s*/, '')}
-                          <span style={{ display: 'inline-block', marginLeft: 8, padding: '1px 8px', borderRadius: 10, background: '#FFF0D6', color: '#C58A00', fontWeight: 700, fontSize: 11 }}>🎮 1 เกม</span>
+                          {g.desc}
                         </div>
                         <div className="unit-foot" style={{ justifyContent: 'flex-end' }}>
                           <span className="unit-go" style={{ background: `linear-gradient(135deg,${st.accentL},${st.accent})`, boxShadow: `0 5px 0 ${st.edge}` }}>▶</span>
