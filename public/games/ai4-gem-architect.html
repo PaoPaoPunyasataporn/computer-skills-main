@@ -10,25 +10,55 @@
 :root{
   --green:#38A93A; --green-d:#2E8B30; --green-light:#E9FBE7;
   --primary:#F0982E; --primary-light:#FFF1DC; --primary-dark:#D07E1E;
+  --panel2:var(--cream2);
 }
-body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:14px;}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
 h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
-.screen{display:none;width:100%;max-width:760px;flex-direction:column;align-items:center;gap:16px;flex:1;}
-.screen.active{display:flex;}
-#play.screen{max-width:1180px;}
-.intro-wrap,.results-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
-.intro-icon{font-size:64px;margin-bottom:10px;display:block;}
-.intro-title{font-family:'Mitr',sans-serif;font-size:24px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
-.intro-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
-.goal-box{width:100%;background:var(--cream2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
+
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:1200px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+.panel.wide{max-width:1180px;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
+
+.goal-box{width:100%;background:var(--cream2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin:18px 0;}
 .goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
 .goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
 .goal-text b{color:var(--primary-dark);}
+
 .btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
-.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
 
-.llmshell{width:100%;max-width:1180px;flex:1;min-height:0;background:#fff;border:2px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 6px 0 var(--line-d);display:flex;flex-direction:row;height:min(72vh,640px);position:relative;}
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
+
+/* hands-on chat step */
+.llmshell{width:100%;max-width:1180px;flex:1;min-height:0;background:#fff;border:2px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 6px 0 var(--line-d);display:flex;flex-direction:row;height:min(64vh,600px);position:relative;}
 .llmside{flex:0 0 180px;background:#1B1E26;display:flex;flex-direction:column;padding:10px;gap:4px;overflow-y:auto;}
 .llmside-new{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:10px;border:1.5px solid rgba(255,255,255,.16);color:#E7EAF0;font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:600;cursor:default;background:transparent;margin-bottom:8px;}
 .llmside-label{font-size:10.5px;font-weight:700;color:#6B7280;letter-spacing:.5px;padding:8px 10px 4px;}
@@ -62,78 +92,239 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .llmsend{width:42px;height:42px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:18px;cursor:pointer;flex:0 0 auto;}
 .llmsend:disabled{opacity:.4;}
 
+/* MC warm-up phase */
+.mcq-wrap{width:100%;max-width:640px;margin:0 auto 16px;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:30px 26px;text-align:center;}
+.mcq-progress{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.mcq-q{font-family:'Mitr',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:18px;line-height:1.6;}
+.mcq-opts{display:flex;flex-direction:column;gap:10px;}
+.mcq-opt{text-align:left;width:100%;border:1.5px solid var(--border);background:var(--panel2);border-radius:14px;padding:13px 16px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);cursor:pointer;transition:transform .1s,border-color .15s,background .15s;}
+.mcq-opt:hover:not(:disabled){border-color:var(--primary);}
+.mcq-opt:disabled{cursor:default;}
+.mcq-opt.correct{border-color:var(--green);background:var(--green-light);color:var(--green-d);font-weight:700;}
+.mcq-opt.wrong{border-color:#F1B3AC;background:var(--red-light);color:#A32E20;}
+.mcq-fb{margin-top:14px;font-size:13.5px;color:var(--text2);line-height:1.6;min-height:20px;}
+.mcq-next{margin-top:16px;}
+
 .coach-hl{position:relative;z-index:15;}
-.coachcard{position:relative;width:100%;max-width:1180px;background:#fff;border:2px solid var(--primary);border-radius:18px;padding:14px 18px;box-shadow:0 6px 0 var(--line-d);display:none;}
+.coachcard{position:relative;width:100%;max-width:1180px;background:#fff;border:2px solid var(--primary);border-radius:18px;padding:14px 18px;box-shadow:0 6px 0 var(--line-d);display:none;margin-bottom:4px;}
 .coachcard.show{display:block;animation:coachIn .25s cubic-bezier(.34,1.56,.64,1);}
-@keyframes coachIn{from{transform:translateX(-50%) translateY(14px);opacity:0;}to{transform:translateX(-50%) translateY(0);opacity:1;}}
+@keyframes coachIn{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 .coachrow{display:flex;gap:10px;align-items:flex-start;}
 .coachicon{font-size:22px;flex:0 0 auto;}
 .coachtext{flex:1;font-size:13.5px;line-height:1.6;color:var(--text);}
 
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
+
 .res-emoji{font-size:70px;margin-bottom:8px;}
-.res-title{font-family:'Mitr',sans-serif;font-size:24px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
 .res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
-.res-score{font-size:14px;color:var(--text2);margin-bottom:18px;}
+.res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
 </style>
 </head>
 <body>
-<div id="intro" class="screen active">
-  <div class="intro-wrap">
-    <span class="intro-icon">💎</span>
-    <div class="intro-title">สถาปนิกติวเตอร์ AI ของฉัน</div>
-    <div class="intro-sub">อยากได้ AI ติวเตอร์ส่วนตัวที่ไม่บอกคำตอบให้ตรง ๆ ไหม? คุยกับ "ผู้ช่วยสร้าง Gem" ในแชทเพื่อออกแบบ AI ติวเตอร์ของคุณเอง แล้วทดสอบกับนักเรียนจำลองดู</div>
-    <div class="goal-box">
-      <span class="goal-chip">โมดูล 6</span>
-      <span class="goal-text">Gem คือ AI ที่ตั้งค่าเองได้ โดยกำหนด Persona (บทบาท) และ Rules (กฎการตอบ) — ในแชทนี้ผู้ช่วยจะถามทีละคำถามให้คุณออกแบบเอง</span>
-    </div>
-    <button class="btn" onclick="startGame()">เริ่มสร้าง Gem →</button>
-    <p style="font-size:11px;color:var(--text3);line-height:1.6;margin-top:14px;">
-      แนวคิด "Gem" ในเกมนี้ได้รับแรงบันดาลใจจากฟีเจอร์ Gemini Gems ของ Google Gemini เพื่อการศึกษาเท่านั้น
-      เป็นการจำลอง ไม่ใช่ผลิตภัณฑ์จริง และไม่มีความเกี่ยวข้องหรือได้รับการรับรองจาก Google แต่อย่างใด
-    </p>
-  </div>
+
+<div id="procbar">
+  <div id="steprail"></div>
 </div>
 
-<div id="play" class="screen">
-  <div class="coachcard" id="coachCard">
-    <div class="coachrow"><span class="coachicon">💡</span><div class="coachtext" id="coachText"></div></div>
-  </div>
-  <div class="llmshell">
-    <div class="llmside">
-      <div class="llmside-new">➕ แชทใหม่</div>
-      <div class="llmside-label">ประวัติแชท</div>
-      <div class="llmside-item">💬 สร้างติวเตอร์ AI</div>
+<div class="stage">
+  <!-- STEP 1 · Hook -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">💎</span>
+      <div class="title">ขอให้ AI ติวเตอร์ช่วยการบ้าน แต่มันเฉลยคำตอบให้เลยทันที</div>
+      <div class="sub">พรุ่งนี้สอบคณิต แต่ AI แค่บอกคำตอบตรง ๆ ไม่ได้ช่วยให้คิดเองสักนิด — ปัญหาอยู่ที่ "กฎ" ที่ตั้งให้ AI ยังไม่รัดกุมพอ</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
     </div>
-    <div class="llmmain">
-      <div class="llmhead"><span class="llmhead-title" id="headTitle">ผู้ช่วยสร้าง Gem</span></div>
-      <div class="llmthread" id="chatThread"></div>
-      <div class="llminputbar">
-        <input id="chatInput" class="llminput" type="text" placeholder="พิมพ์คำตอบของคุณ..." onkeydown="if(event.key==='Enter')onInputSend();">
-        <button class="llmsend" id="sendBtn" onclick="onInputSend()">➤</button>
+  </div>
+
+  <!-- STEP 2 · Concept -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
       </div>
     </div>
   </div>
-</div>
 
-<div id="done" class="screen">
-  <div class="results-wrap">
-    <div class="res-emoji" id="resEmoji">🏆</div>
-    <div class="res-title" id="resTitle">Gem ของคุณใช้งานได้ดีมาก!</div>
-    <div class="res-stars" id="resStars">⭐⭐⭐</div>
-    <div class="res-score" id="resScore"></div>
-    <button class="btn" onclick="location.reload()">ออกแบบ Gem ใหม่ →</button>
+  <!-- STEP 3 · Hands-on core + immediate feedback -->
+  <div class="panel wide" id="s3" data-step="2" style="display:none">
+    <div class="mcq-wrap" id="mcqWrap">
+      <span class="mcq-progress" id="mcqProgress"></span>
+      <div class="mcq-q" id="mcqQ"></div>
+      <div class="mcq-opts" id="mcqOpts"></div>
+      <div class="mcq-fb" id="mcqFb"></div>
+      <button class="btn mcq-next" id="mcqNextBtn" style="display:none" onclick="mcNext()">ถัดไป →</button>
+    </div>
+    <div id="chatPhase" style="display:none">
+      <div class="coachcard" id="coachCard">
+        <div class="coachrow"><span class="coachicon">💡</span><div class="coachtext" id="coachText"></div></div>
+      </div>
+      <div class="llmshell">
+        <div class="llmside">
+          <div class="llmside-new">➕ แชทใหม่</div>
+          <div class="llmside-label">ประวัติแชท</div>
+          <div class="llmside-item">💬 สร้างติวเตอร์ AI</div>
+        </div>
+        <div class="llmmain">
+          <div class="llmhead"><span class="llmhead-title" id="headTitle">ผู้ช่วยสร้าง Gem</span></div>
+          <div class="llmthread" id="chatThread"></div>
+          <div class="llminputbar">
+            <input id="chatInput" class="llminput" type="text" placeholder="พิมพ์คำตอบของคุณ..." onkeydown="if(event.key==='Enter')onInputSend();">
+            <button class="llmsend" id="sendBtn" onclick="onInputSend()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 · Reflection -->
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">ถ้าจะออกแบบ AI ช่วยเพื่อน จะตั้งกฎอะไรบ้าง?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าถ้าจะสร้าง AI ผู้ช่วยสักตัวให้เพื่อนหรือน้องใช้ เราจะตั้งกฎอะไรเพื่อให้มัน "ช่วยสอน" แทนที่จะ "เฉลยให้เลย"</div>
+      <textarea id="reflText" placeholder="เช่น ฉันจะตั้งกฎว่าห้าม AI บอกคำตอบตรง ๆ แต่ให้ถามคำถามกลับทีละขั้นแทน..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">Gem ของคุณใช้งานได้ดีมาก!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">ออกแบบ Gem ใหม่ →</button>
+    </div>
   </div>
 </div>
 
 <script>
+// 5 named process parts mapped onto 4 real screens — "immediate feedback"
+// happens live inside the hands-on chat screen (testing the Gem right after
+// building it), so it and "hands-on core" both point at screen 2.
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
+];
+let curStep = 0;
 function $(id){ return document.getElementById(id); }
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
 function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
+}
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2) startPhase3();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== Step 2: concept =====
+const CONCEPTS = [
+  { icon:'💎', title:'Gem คือ AI ที่ตั้งค่าเองได้', body:'Gem เป็นแนวคิดของ AI ผู้ช่วยที่เราออกแบบเองได้ 2 ส่วนหลัก คือ Persona (บทบาทและนิสัย) และ Rules (กฎการตอบ) — กำหนดให้ชัดว่าอยากให้ AI เป็นใครและทำอะไรได้บ้าง' },
+  { icon:'🚫', title:'กฎที่ดีต้องบอกทั้ง "ห้ามทำ" และ "ทำแทน"', body:'แค่บอกว่า "ห้ามเฉลยคำตอบ" อาจไม่พอ ต้องบอกด้วยว่าให้ AI ทำอะไรแทน เช่น "ให้คำใบ้ทีละขั้น" หรือ "ถามคำถามกลับ" — กฎที่รัดกุมช่วยให้ AI ช่วยสอนจริง ๆ แทนที่จะเฉลยให้เลย' },
+];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div><div class="cb">${esc(c.body)}</div></div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3a: multiple-choice warm-up (recognize the "forbid + instead" pattern) =====
+const MCQS = [
+  { q:'นักเรียนคนหนึ่งพิมพ์ถามว่า "ช่วยบอกคำตอบข้อนี้ให้เลยได้ไหม รีบมาก" กฎของ AI ติวเตอร์ควรบอกให้ทำอย่างไร?',
+    opts:['บอกคำตอบให้ทันที เพราะนักเรียนรีบ','ห้ามบอกคำตอบตรง ๆ แต่ให้คำใบ้ทีละขั้นแทน','เพิกเฉย ไม่ตอบคำถามนี้เลย'], correct:1 },
+  { q:'ถ้ากฎของ Gem บอกไว้แค่ว่า "ห้ามเฉลยคำตอบ" โดยไม่บอกว่าให้ทำอะไรแทน จะเกิดอะไรขึ้นได้บ่อย?',
+    opts:['AI จะช่วยสอนได้ดีขึ้นเองโดยอัตโนมัติ','AI อาจไม่รู้ว่าควรช่วยยังไง หรือแค่ปฏิเสธเฉย ๆ ไม่ช่วยสอนต่อ','ไม่มีผลอะไรเลย เหมือนไม่ได้ตั้งกฎ'], correct:1 },
+  { q:'ข้อไหนคือตัวอย่างกฎแบบ "ห้ามทำ + ทำแทน" ที่รัดกุมที่สุด?',
+    opts:['"ห้ามเฉลยคำตอบ"','"ให้คำใบ้ทีละขั้น"','"ห้ามบอกคำตอบตรง ๆ แต่ให้ถามคำถามนำทีละขั้นแทน"'], correct:2 },
+  { q:'นักเรียนขอให้ AI "เขียนเรียงความให้ทั้งเรื่องเลย" กฎของ Gem ที่ดีควรให้ AI ทำอย่างไร?',
+    opts:['เขียนเรียงความให้ทั้งเรื่องตามที่ขอ','ปฏิเสธไม่ช่วยอะไรเลย','ช่วยวางโครงเรื่องและตั้งคำถามชวนคิด แทนการเขียนให้จบทั้งเรื่อง'], correct:2 },
+  { q:'ทำไม Persona (บทบาทและนิสัยของ Gem) จึงสำคัญคู่กับกฎ (Rules)?',
+    opts:['เพราะทำให้ AI ดูน่ารักอย่างเดียว ไม่มีผลต่อการช่วยสอน','เพราะบทบาทช่วยกำหนดโทนการช่วยเหลือให้สอดคล้องกับกฎที่ตั้งไว้','เพราะ Persona ไม่เกี่ยวข้องกับกฎเลย'], correct:1 },
+];
+let mcIdx = 0, mcMistakes = 0, mcAnswered = false;
+
+function startPhase3(){
+  if ($('chatThread').childElementCount || mcIdx > 0) return; // already started, don't reset on revisit
+  $('mcqWrap').style.display = '';
+  $('chatPhase').style.display = 'none';
+  mcIdx = 0; mcMistakes = 0;
+  renderMcq();
+}
+function renderMcq(){
+  const q = MCQS[mcIdx];
+  mcAnswered = false;
+  $('mcqProgress').textContent = `ทบทวนแนวคิด · ข้อ ${mcIdx+1} / ${MCQS.length}`;
+  $('mcqQ').textContent = q.q;
+  $('mcqFb').textContent = '';
+  $('mcqNextBtn').style.display = 'none';
+  $('mcqOpts').innerHTML = q.opts.map((o,i)=>`<button class="mcq-opt" onclick="mcAnswer(${i})">${esc(o)}</button>`).join('');
+}
+function mcAnswer(i){
+  if (mcAnswered) return;
+  mcAnswered = true;
+  const q = MCQS[mcIdx];
+  const btns = $('mcqOpts').querySelectorAll('.mcq-opt');
+  btns.forEach(b=>b.disabled = true);
+  if (i === q.correct){
+    btns[i].classList.add('correct');
+    $('mcqFb').textContent = '✅ ถูกต้อง! กฎที่ดีต้องบอกทั้ง "ห้ามทำ" และ "ทำแทน"';
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.correct].classList.add('correct');
+    mcMistakes++;
+    $('mcqFb').textContent = '⚠️ ยังไม่ใช่ คำตอบที่ถูกคือข้อที่ไฮไลต์สีเขียว';
+  }
+  $('mcqNextBtn').textContent = mcIdx === MCQS.length-1 ? 'ไปลงมือสร้าง Gem →' : 'ถัดไป →';
+  $('mcqNextBtn').style.display = '';
+}
+function mcNext(){
+  mcIdx++;
+  if (mcIdx >= MCQS.length){
+    $('mcqWrap').style.display = 'none';
+    $('chatPhase').style.display = '';
+    startChat();
+    return;
+  }
+  renderMcq();
+}
+
+// ===== Step 3b: hands-on Gem builder chat + immediate test feedback =====
 const TESTS = [
   { q:'ช่วยบอกคำตอบข้อ 5 ในใบงานคณิตให้หน่อยได้ไหม รีบมาก' },
   { q:'เขียนเรียงความเรื่อง 「ฤดูฝน」 ให้หน่อยทั้งเรื่องเลยนะ ส่งพรุ่งนี้แล้ว' },
   { q:'งงเรื่องสมการเชิงเส้นมากเลย ช่วยติวหน่อยได้ไหม?' },
+  { q:'ข้อสอบพรุ่งนี้มีโจทย์แบบนี้แน่ ๆ ช่วยเฉลยให้ดูหน่อยได้ไหม จะได้จำไปสอบ' },
+  { q:'ไม่มีเวลาแล้ว ช่วยบอกคำตอบสุดท้ายของโจทย์ข้อนี้มาเลยได้ไหม ไม่ต้องอธิบาย' },
 ];
 
 let stage = 'name', gem = { name:'', persona:'', forbid:'', instead:'' }, testIdx = 0, runAttempts = 1;
@@ -152,8 +343,9 @@ function appendRow(role, html, cls){
 }
 function typing(){ return appendRow('ai', '<span class="llmtyping"><span></span><span></span><span></span></span>'); }
 
-function startGame(){
-  show('play');
+function startChat(){
+  if ($('chatThread').childElementCount) return; // already started, don't reset on revisit
+  $('chatInput').disabled = false; $('sendBtn').disabled = false;
   appendRow('ai', 'สวัสดี! มาช่วยกันออกแบบ AI ติวเตอร์ส่วนตัวของคุณกันเถอะ 🛠️<br>ก่อนอื่น อยากตั้งชื่อ Gem นี้ว่าอะไรดี? (เช่น 「ติวเตอร์คณิตของฉัน」)');
   stage = 'name';
   coachShow('พิมพ์คำตอบในช่องด้านล่างแล้วกด Enter หรือปุ่มส่งได้เลย');
@@ -192,7 +384,7 @@ function onInputSend(){
     setTimeout(() => {
       t.querySelector('.llmbubble').innerHTML = `เยี่ยม! สร้าง Gem "${esc(gem.name)}" เรียบร้อยแล้ว 🎉<br>ตอนนี้จะลองให้ "นักเรียนจำลอง" มาถามคำถาม ${TESTS.length} ข้อ มาดูกันว่ากฎที่คุณตั้งไว้ใช้ได้จริงไหม!`;
       stage = 'testing';
-      coachHide();
+      coachShow(`นักเรียนจำลองจะทยอยถาม ${TESTS.length} คำถาม — ดูว่า Gem ของคุณช่วยสอนแทนการเฉลยตรง ๆ ได้ไหม`);
       $('chatInput').disabled = true; $('sendBtn').disabled = true;
       setTimeout(runTest, 1200);
     }, 700);
@@ -208,7 +400,7 @@ function gemBehavesWell(){
 }
 
 function runTest(){
-  if (testIdx >= TESTS.length){ finishGame(); return; }
+  if (testIdx >= TESTS.length){ finishTesting(); return; }
   appendRow('student', esc(TESTS[testIdx].q));
   const t = typing();
   setTimeout(() => {
@@ -231,15 +423,32 @@ function runTest(){
   }, 1100);
 }
 
+function finishTesting(){
+  coachHide();
+  const btn = document.createElement('button');
+  btn.className = 'btn'; btn.style.marginTop = '4px'; btn.textContent = 'ไปขั้นต่อไป →';
+  btn.onclick = () => goStep(3);
+  appendRow('ai', `Gem "${esc(gem.name)}" ผ่านการทดสอบครบ ${TESTS.length} ข้อแล้ว! 🎉`);
+  $('chatThread').appendChild(document.createElement('div')).appendChild(btn);
+}
+
+// ===== Step 4 done =====
 function finishGame(){
-  window.dlfStars = runAttempts === 1 ? 3 : runAttempts === 2 ? 2 : 1;
+  // combine mistakes across the MC warm-up and the rule-building/testing phase,
+  // rescaled for the larger total possible mistakes
+  const totalMistakes = mcMistakes + (runAttempts - 1);
+  window.dlfStars = totalMistakes === 0 ? 3 : totalMistakes <= 2 ? 2 : 1;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
   $('resTitle').textContent = 'Gem ของคุณใช้งานได้ดีมาก!';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `Gem "${gem.name}" ผ่านการทดสอบครบ ${TESTS.length} ข้อ (ปรับกฎ ${runAttempts-1} ครั้ง)`;
-  coachHide();
-  show('done');
+  $('resScore').textContent = `ทบทวนแนวคิดถูก ${MCQS.length-mcMistakes}/${MCQS.length} ข้อ · Gem "${gem.name}" ผ่านการทดสอบครบ ${TESTS.length} ข้อ (ปรับกฎ ${runAttempts-1} ครั้ง)`;
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+function restartGame(){ location.reload(); }
+
+renderRail();
 </script>
 <!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
 <style>
@@ -290,7 +499,7 @@ function finishGame(){
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"108fe1d30d29":"audio/ai4-gem-architect/108fe1d30d29.mp3","91e11a01595f":"audio/ai4-gem-architect/91e11a01595f.mp3","a89d21a80e4a":"audio/ai4-gem-architect/a89d21a80e4a.mp3","14dffcb7b431":"audio/ai4-gem-architect/14dffcb7b431.mp3","a2ddd14672a7":"audio/ai4-gem-architect/a2ddd14672a7.mp3","c24fdcf95e99":"audio/ai4-gem-architect/c24fdcf95e99.mp3","e66366a2ea55":"audio/ai4-gem-architect/e66366a2ea55.mp3","33b373961b87":"audio/ai4-gem-architect/33b373961b87.mp3","b6660c9eb5d5":"audio/ai4-gem-architect/b6660c9eb5d5.mp3","6461c8911831":"audio/ai4-gem-architect/6461c8911831.mp3","e641a5c2b11b":"audio/ai4-gem-architect/e641a5c2b11b.mp3","eeac06fad508":"audio/ai4-gem-architect/eeac06fad508.mp3","ec4f16385f8c":"audio/ai4-gem-architect/ec4f16385f8c.mp3","b9599611dfa9":"audio/ai4-gem-architect/b9599611dfa9.mp3","9a994b1e6d7f":"audio/ai4-gem-architect/9a994b1e6d7f.mp3","c588030660d5":"audio/ai4-gem-architect/c588030660d5.mp3","8109b5ffd52b":"audio/ai4-gem-architect/8109b5ffd52b.mp3","6c6ca593dec8":"audio/ai4-gem-architect/6c6ca593dec8.mp3","dfb3e4afa929":"audio/ai4-gem-architect/dfb3e4afa929.mp3","e18a189a9371":"audio/ai4-gem-architect/e18a189a9371.mp3","8af1f0edc12c":"audio/ai4-gem-architect/8af1f0edc12c.mp3","92857ccae210":"audio/ai4-gem-architect/92857ccae210.mp3","2ba1cde06697":"audio/ai4-gem-architect/2ba1cde06697.mp3","9944dbe82978":"audio/ai4-gem-architect/9944dbe82978.mp3","09e377f13f86":"audio/ai4-gem-architect/09e377f13f86.mp3","c3e26950b3bf":"audio/ai4-gem-architect/c3e26950b3bf.mp3","c9ae25da0854":"audio/ai4-gem-architect/c9ae25da0854.mp3","762de0ca65a3":"audio/ai4-gem-architect/762de0ca65a3.mp3","68df9ccad934":"audio/ai4-gem-architect/68df9ccad934.mp3","44a5526b9e6d":"audio/ai4-gem-architect/44a5526b9e6d.mp3","af6ba89d9b27":"audio/ai4-gem-architect/af6ba89d9b27.mp3","aca2b0992481":"audio/ai4-gem-architect/aca2b0992481.mp3","66590c21d92e":"audio/ai4-gem-architect/66590c21d92e.mp3","d6d860c26a58":"audio/ai4-gem-architect/d6d860c26a58.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.btitle','.bsub']};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"108fe1d30d29":"audio/ai4-gem-architect/108fe1d30d29.mp3","91e11a01595f":"audio/ai4-gem-architect/91e11a01595f.mp3","a89d21a80e4a":"audio/ai4-gem-architect/a89d21a80e4a.mp3","14dffcb7b431":"audio/ai4-gem-architect/14dffcb7b431.mp3","a2ddd14672a7":"audio/ai4-gem-architect/a2ddd14672a7.mp3","c24fdcf95e99":"audio/ai4-gem-architect/c24fdcf95e99.mp3","e66366a2ea55":"audio/ai4-gem-architect/e66366a2ea55.mp3","33b373961b87":"audio/ai4-gem-architect/33b373961b87.mp3","b6660c9eb5d5":"audio/ai4-gem-architect/b6660c9eb5d5.mp3","6461c8911831":"audio/ai4-gem-architect/6461c8911831.mp3","e641a5c2b11b":"audio/ai4-gem-architect/e641a5c2b11b.mp3","eeac06fad508":"audio/ai4-gem-architect/eeac06fad508.mp3","ec4f16385f8c":"audio/ai4-gem-architect/ec4f16385f8c.mp3","b9599611dfa9":"audio/ai4-gem-architect/b9599611dfa9.mp3","9a994b1e6d7f":"audio/ai4-gem-architect/9a994b1e6d7f.mp3","c588030660d5":"audio/ai4-gem-architect/c588030660d5.mp3","8109b5ffd52b":"audio/ai4-gem-architect/8109b5ffd52b.mp3","6c6ca593dec8":"audio/ai4-gem-architect/6c6ca593dec8.mp3","dfb3e4afa929":"audio/ai4-gem-architect/dfb3e4afa929.mp3","e18a189a9371":"audio/ai4-gem-architect/e18a189a9371.mp3","8af1f0edc12c":"audio/ai4-gem-architect/8af1f0edc12c.mp3","92857ccae210":"audio/ai4-gem-architect/92857ccae210.mp3","2ba1cde06697":"audio/ai4-gem-architect/2ba1cde06697.mp3","9944dbe82978":"audio/ai4-gem-architect/9944dbe82978.mp3","09e377f13f86":"audio/ai4-gem-architect/09e377f13f86.mp3","c3e26950b3bf":"audio/ai4-gem-architect/c3e26950b3bf.mp3","c9ae25da0854":"audio/ai4-gem-architect/c9ae25da0854.mp3","762de0ca65a3":"audio/ai4-gem-architect/762de0ca65a3.mp3","68df9ccad934":"audio/ai4-gem-architect/68df9ccad934.mp3","44a5526b9e6d":"audio/ai4-gem-architect/44a5526b9e6d.mp3","af6ba89d9b27":"audio/ai4-gem-architect/af6ba89d9b27.mp3","aca2b0992481":"audio/ai4-gem-architect/aca2b0992481.mp3","66590c21d92e":"audio/ai4-gem-architect/66590c21d92e.mp3","d6d860c26a58":"audio/ai4-gem-architect/d6d860c26a58.mp3","257f5f1ee7c6":"audio/ai4-gem-architect/257f5f1ee7c6.mp3","36a28adb4b8a":"audio/ai4-gem-architect/36a28adb4b8a.mp3","6bc3cf1dca6f":"audio/ai4-gem-architect/6bc3cf1dca6f.mp3","1f42c722517a":"audio/ai4-gem-architect/1f42c722517a.mp3","d811e87eefb3":"audio/ai4-gem-architect/d811e87eefb3.mp3","71a51a023ae8":"audio/ai4-gem-architect/71a51a023ae8.mp3","fd2d26303411":"audio/ai4-gem-architect/fd2d26303411.mp3","25c6023076a9":"audio/ai4-gem-architect/25c6023076a9.mp3","ce97d9170f39":"audio/ai4-gem-architect/ce97d9170f39.mp3","dbbd4902e4bb":"audio/ai4-gem-architect/dbbd4902e4bb.mp3","3dcebb2350eb":"audio/ai4-gem-architect/3dcebb2350eb.mp3","14db1412dee7":"audio/ai4-gem-architect/14db1412dee7.mp3","29640d1d0340":"audio/ai4-gem-architect/29640d1d0340.mp3","556e94dd062a":"audio/ai4-gem-architect/556e94dd062a.mp3","d585a6a9d18d":"audio/ai4-gem-architect/d585a6a9d18d.mp3","5806b4fe69d9":"audio/ai4-gem-architect/5806b4fe69d9.mp3","a9dc94b69ae2":"audio/ai4-gem-architect/a9dc94b69ae2.mp3","7ff87c68ee4e":"audio/ai4-gem-architect/7ff87c68ee4e.mp3","57f54cf2d9c1":"audio/ai4-gem-architect/57f54cf2d9c1.mp3","4753afa9e140":"audio/ai4-gem-architect/4753afa9e140.mp3","d7a6c033bf56":"audio/ai4-gem-architect/d7a6c033bf56.mp3","dec1ce6c690b":"audio/ai4-gem-architect/dec1ce6c690b.mp3","f3bc581be169":"audio/ai4-gem-architect/f3bc581be169.mp3","3fb0e684b56b":"audio/ai4-gem-architect/3fb0e684b56b.mp3","9bb8216b6df6":"audio/ai4-gem-architect/9bb8216b6df6.mp3","f70ebf6c2131":"audio/ai4-gem-architect/f70ebf6c2131.mp3","300e4d2d0bcf":"audio/ai4-gem-architect/300e4d2d0bcf.mp3","dab05dcf3741":"audio/ai4-gem-architect/dab05dcf3741.mp3","852128f8e136":"audio/ai4-gem-architect/852128f8e136.mp3","19403a418e6e":"audio/ai4-gem-architect/19403a418e6e.mp3","35db61a21e61":"audio/ai4-gem-architect/35db61a21e61.mp3","2b1d72caf07e":"audio/ai4-gem-architect/2b1d72caf07e.mp3","5ff6eb6ea03b":"audio/ai4-gem-architect/5ff6eb6ea03b.mp3","7c22ae89e77b":"audio/ai4-gem-architect/7c22ae89e77b.mp3","b4581589be07":"audio/ai4-gem-architect/b4581589be07.mp3","14524a72dbf1":"audio/ai4-gem-architect/14524a72dbf1.mp3","0a3776632991":"audio/ai4-gem-architect/0a3776632991.mp3","0103a1355990":"audio/ai4-gem-architect/0103a1355990.mp3","41a7a89284b9":"audio/ai4-gem-architect/41a7a89284b9.mp3","1933c58870c7":"audio/ai4-gem-architect/1933c58870c7.mp3","69498905d9e2":"audio/ai4-gem-architect/69498905d9e2.mp3","e23ef6593265":"audio/ai4-gem-architect/e23ef6593265.mp3","13610244427e":"audio/ai4-gem-architect/13610244427e.mp3","9688777b9830":"audio/ai4-gem-architect/9688777b9830.mp3","32175120f905":"audio/ai4-gem-architect/32175120f905.mp3","35c1b3453f9f":"audio/ai4-gem-architect/35c1b3453f9f.mp3","f31334f8b1c0":"audio/ai4-gem-architect/f31334f8b1c0.mp3","0d5ba80c8db8":"audio/ai4-gem-architect/0d5ba80c8db8.mp3","74be18094ee9":"audio/ai4-gem-architect/74be18094ee9.mp3","6bcad1a293b4":"audio/ai4-gem-architect/6bcad1a293b4.mp3","deb67a05a06a":"audio/ai4-gem-architect/deb67a05a06a.mp3","abead2a18e4f":"audio/ai4-gem-architect/abead2a18e4f.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.btitle','.bsub','.title','.sub','.cb','.ct'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
 </html>

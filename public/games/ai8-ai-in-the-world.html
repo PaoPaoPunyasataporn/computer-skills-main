@@ -11,50 +11,78 @@
   --green:#38A93A; --green-l:#5CD35B; --green-d:#2E8B30; --green-light:#E9FBE7;
   --blue:#3A82F6; --blue-l:#2E9BFF; --blue-d:#2E64D6;
   --purple:#9A5CF0; --purple-d:#7C3EE0;
-  --orange:#F0982E; --orange-d:#D07E1E; --gold:#FFC24B; --amber:#B4772E;
+  --orange:#F0982E; --orange-d:#D07E1E; --gold:#FFC24B; --amber:#B4772E; --amber-light:#FFF3D6;
+  --red:#E4614F; --red-light:#FDECEA;
   --primary:#2E9BFF; --primary-light:#E4F2FF; --primary-dark:#2277CC;
   --panel2:var(--cream2);
   --radius:16px; --shadow:none;
 }
-body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
 h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
-.screen{display:none;width:100%;max-width:620px;flex-direction:column;align-items:center;gap:16px;}
-.screen.active{display:flex;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
 
-.intro-wrap,.teach-wrap,.results-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
-.intro-icon{font-size:64px;margin-bottom:10px;display:block;}
-.intro-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
-.intro-sub{font-size:14.5px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
-.goal-box{width:100%;background:var(--panel2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px;}
-.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
-.goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
-.goal-text b{color:var(--primary-dark);}
+/* ===== same card/button/chip language as the rest of the AI course
+   (see ai10-discernment.html) — laid out full-bleed with a persistent
+   5-part process strip up top instead of a small floating box. ===== */
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
 
 .btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
-.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
 .btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
 
-.teach-slide{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
-.teach-icon{font-size:52px;}
-.teach-title{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
-.teach-body{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
-.teach-example{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:var(--text);margin-top:4px;text-align:left;max-width:480px;}
-.teach-example b{color:var(--primary-dark);}
-.teach-dots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
-.tdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
-.tdot.on{background:var(--primary);width:22px;border-radius:5px;}
-.teach-nav{display:flex;gap:10px;margin-top:14px;}
-.teach-nav .btn{flex:1;}
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.ccard .cex{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:var(--text);margin-top:4px;text-align:left;max-width:480px;}
+.ccard .cex b{color:var(--primary-dark);}
+.capps-anim{display:flex;gap:16px;justify-content:center;align-items:center;margin:6px 0 2px;}
+.capp{position:relative;width:46px;height:46px;border-radius:13px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 3px 0 var(--line-d);}
+.capp .bot{position:absolute;top:-9px;right:-11px;font-size:16px;animation:botPulse 1.6s ease-in-out infinite;}
+.capp:nth-child(2) .bot{animation-delay:.35s;}
+.capp:nth-child(3) .bot{animation-delay:.7s;}
+.capp .arrow{position:absolute;left:-15px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--primary);opacity:.7;}
+@keyframes botPulse{0%,100%{transform:scale(.82);opacity:.5;}50%{transform:scale(1.18);opacity:1;}}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
 
-.round-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-.round-tag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+/* hands-on: round head + score */
+.rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.rtag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
 .scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
 
-.part-card{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:20px;padding:22px 20px;}
-.part-title{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;color:var(--primary-dark);text-align:center;margin-bottom:4px;}
-.part-hint{font-size:12.5px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:14px;}
+/* part 0: multiple choice recognition round */
+.mcopt{width:100%;border:2px solid var(--border);border-bottom-width:4px;border-radius:14px;background:var(--panel);padding:12px 14px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;color:var(--text);line-height:1.5;cursor:pointer;text-align:left;display:block;margin-bottom:8px;transition:transform .1s,border-color .15s,background .15s;}
+.mcopt:active:not(:disabled){transform:translateY(2px);}
+.mcopt.correct{border-color:var(--green);background:var(--green-light);color:#1F6B33;animation:matchPop .35s cubic-bezier(.34,1.56,.64,1);}
+.mcopt.wrong{border-color:var(--red);background:var(--red-light);color:#A32E20;animation:matchShake .4s ease;}
+.mcopt:disabled{cursor:default;opacity:.85;}
 
+/* part 1: matching */
+.part-title{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;color:var(--primary-dark);text-align:center;margin:6px 0 4px;}
+.part-hint{font-size:12.5px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:14px;}
 .matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
 .matchcol-head{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);text-align:center;padding-bottom:2px;}
 .matchbtn{width:100%;border:2px solid var(--border);border-bottom-width:4px;border-radius:14px;background:var(--panel);padding:10px 10px;font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:600;color:var(--text);line-height:1.5;cursor:pointer;text-align:left;display:flex;gap:8px;align-items:center;transition:transform .1s,border-color .15s,background .15s;}
@@ -67,22 +95,38 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 @keyframes matchPop{0%{transform:scale(.9);}55%{transform:scale(1.06);}100%{transform:scale(1);}}
 @keyframes matchShake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-6px);}40%,80%{transform:translateX(6px);}}
 
-.statementcard{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:20px;padding:30px 26px;text-align:center;}
+/* part 2: judge smart vs risky — drag-to-sort */
+.statementcard{width:100%;text-align:center;}
 .statementcard .slbl{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);letter-spacing:.5px;margin-bottom:10px;}
-.statementcard .stext{font-size:17px;color:var(--text);line-height:1.7;font-weight:600;}
-
-.choicerow{width:100%;display:flex;gap:12px;}
-.choicebtn{flex:1;border:none;border-radius:16px;padding:16px 12px;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;color:#fff;transition:transform .1s;}
-.choicebtn:active{transform:translateY(3px);}
-.choicebtn:disabled{opacity:.5;cursor:not-allowed;}
-.choicebtn.smart{background:linear-gradient(135deg,#5CD35B,#38A93A);box-shadow:0 5px 0 #2E8B30;}
-.choicebtn.risky{background:linear-gradient(135deg,#FFB456,#F0982E);box-shadow:0 5px 0 #D07E1E;}
+.judge-card{position:relative;width:100%;max-width:420px;margin:0 auto;background:var(--panel);border:2px solid var(--border);border-bottom:5px solid var(--line-d);border-radius:18px;padding:22px 20px;cursor:grab;touch-action:none;user-select:none;box-shadow:0 3px 10px rgba(15,27,45,.06);transition:box-shadow .15s;}
+.judge-card .jc-text{font-size:16.5px;color:var(--text);line-height:1.7;font-weight:600;}
+.judge-card .jc-hint{margin-top:10px;font-size:11.5px;color:var(--text3);}
+.judge-card.dragging{cursor:grabbing;box-shadow:0 14px 30px rgba(15,27,45,.22);z-index:20;transition:none;}
+.judge-card.flying{transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .3s .25s;}
+.judge-card.answered{cursor:default;}
+.jc-badge{position:absolute;top:-14px;right:-14px;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff;opacity:0;transform:scale(.4);transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.jc-badge.show{opacity:1;transform:scale(1);}
+.jc-badge.ok{background:var(--green);}
+.jc-badge.no{background:var(--red);}
+.judge-zones{width:100%;display:flex;gap:12px;margin-top:18px;}
+.judge-zone{flex:1;border:2px dashed var(--border);border-radius:16px;padding:16px 10px;text-align:center;font-family:'Mitr',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .15s;background:var(--panel2);}
+.judge-zone .jz-icon{display:block;font-size:24px;margin-bottom:4px;}
+.judge-zone.safe{color:#2E8B30;}
+.judge-zone.risky{color:#D07E1E;}
+.judge-zone.hover.safe{border-color:var(--green);border-style:solid;background:var(--green-light);transform:scale(1.03);}
+.judge-zone.hover.risky{border-color:var(--orange);border-style:solid;background:var(--amber-light);transform:scale(1.03);}
+.judge-zone:disabled,.judge-zone.disabled{cursor:default;opacity:.6;}
 
 .explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;}
 .explainbox.show{display:block;}
 .explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
 .explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
 .explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
 
 .res-emoji{font-size:70px;margin-bottom:8px;}
 .res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
@@ -92,113 +136,235 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 </head>
 <body>
 
-<div id="intro" class="screen active">
-  <div class="intro-wrap">
-    <span class="intro-icon">🌏</span>
-    <div class="intro-title">AI รอบตัวเรา</div>
-    <div class="intro-sub">AI ซ่อนอยู่ในแอปและเครื่องมือรอบตัวมากกว่าที่คิด — มาดูกันว่ามันช่วยอะไร และต้องระวังอะไร</div>
-    <div class="goal-box">
-      <span class="goal-chip">โมดูล 8</span>
-      <span class="goal-text">สำรวจว่า AI อยู่เบื้องหลังแอปไหนบ้าง แต่ละระบบถูกฝึกจาก<b>ข้อมูล</b>แบบไหน แล้วฝึกตัดสินว่าการใช้ AI แบบไหน<b>ฉลาด</b> แบบไหน<b>ต้องระวัง</b></span>
-    </div>
-    <button class="btn" onclick="showTeach()">เริ่มเรียนรู้ →</button>
-  </div>
+<div id="procbar">
+  <div id="steprail"></div>
 </div>
 
-<div id="teach" class="screen">
-  <div class="teach-wrap">
-    <div id="teachSlides"></div>
-    <div class="teach-dots" id="teachDots"></div>
-    <div class="teach-nav">
-      <button class="btn ghost" id="teachBack" onclick="teachPrev()">← ย้อนกลับ</button>
-      <button class="btn" id="teachNext" onclick="teachNext()">ถัดไป →</button>
+<div class="stage">
+  <!-- STEP 1 · Hook -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🎭</span>
+      <div class="title">เพื่อนเกือบแชร์คลิป "ดาราดัง" ที่จริง ๆ แล้ว AI สร้างขึ้นมาทั้งหมด</div>
+      <div class="sub">AI อยู่รอบตัวเรามากกว่าที่คิด ทั้งช่วยเหลือเราและสร้างของปลอมที่แนบเนียนสุด ๆ ได้ — มาดูกันว่าจะแยกออกยังไง</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
     </div>
   </div>
-</div>
 
-<div id="match" class="screen">
-  <div class="round-head">
-    <span class="round-tag" id="matchTag">ช่วงที่ 1/2 · จับคู่</span>
-    <span class="scorepill" id="matchPill">ตอบผิด 0 ครั้ง</span>
-  </div>
-  <div class="part-card">
-    <div class="part-title">🔗 จับคู่ AI กับข้อมูลที่ใช้ฝึก</div>
-    <div class="part-hint">แตะระบบ AI หนึ่งอัน แล้วแตะข้อมูลที่คิดว่าใช้ฝึกระบบนั้น — จับคู่ให้ครบทั้ง 5 คู่</div>
-    <div class="matchgrid">
-      <div class="matchcol-head">🤖 ระบบ AI</div>
-      <div class="matchcol-head">📦 ข้อมูลที่ใช้ฝึก</div>
-      <div id="colLeft" style="display:flex;flex-direction:column;gap:8px;"></div>
-      <div id="colRight" style="display:flex;flex-direction:column;gap:8px;"></div>
+  <!-- STEP 2 · Concept -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
     </div>
   </div>
-  <div class="explainbox" id="matchExplain"></div>
-  <button class="btn" id="matchNextBtn" style="display:none;" onclick="startJudge()">ไปช่วงที่ 2 →</button>
-</div>
 
-<div id="judge" class="screen">
-  <div class="round-head">
-    <span class="round-tag" id="judgeTag">ช่วงที่ 2/2 · ข้อ 1/6</span>
-    <span class="scorepill" id="judgePill">ตอบผิด 0 ครั้ง</span>
+  <!-- STEP 3a · Hands-on part 0: multiple-choice recognition -->
+  <div class="panel" id="s3mc" data-step="2" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือทำ (1/3)</span>
+        <span class="scorepill" id="mcPill">ตอบผิด 0 ครั้ง</span>
+      </div>
+      <span class="rtag" id="mcTag" style="display:block;margin:10px 0 6px;text-align:center">ข้อที่ 1/5</span>
+      <div class="part-title" id="mcQuestion">คำถาม</div>
+      <div class="part-hint">แตะคำตอบที่คิดว่าใช่</div>
+      <div id="mcOpts"></div>
+      <div class="explainbox" id="mcExplain" style="margin-top:6px"></div>
+      <button class="btn" id="mcNextBtn" style="display:none;margin-top:14px" onclick="nextMC()">ข้อถัดไป →</button>
+    </div>
   </div>
-  <div class="statementcard">
-    <div class="slbl">🤔 ใช้ฉลาด หรือ ต้องระวัง?</div>
-    <div class="stext" id="judgeText"></div>
-  </div>
-  <div class="choicerow">
-    <button class="choicebtn smart" id="btnSmart" onclick="onJudge('smart')">✅ ใช้ฉลาด</button>
-    <button class="choicebtn risky" id="btnRisky" onclick="onJudge('risky')">⚠️ ต้องระวัง</button>
-  </div>
-  <div class="explainbox" id="judgeExplain"></div>
-  <button class="btn ghost" id="judgeNextBtn" style="display:none;" onclick="nextScenario()">ข้อถัดไป →</button>
-</div>
 
-<div id="done" class="screen">
-  <div class="results-wrap">
-    <div class="res-emoji" id="resEmoji">🏆</div>
-    <div class="res-title" id="resTitle">รู้ทัน AI รอบตัว!</div>
-    <div class="res-stars" id="resStars">⭐⭐⭐</div>
-    <div class="res-score" id="resScore"></div>
-    <button class="btn" onclick="restartGame()">เล่นอีกครั้ง →</button>
+  <!-- STEP 3b · Hands-on part 1: match AI to training data -->
+  <div class="panel" id="s3" data-step="2" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือทำ (2/3)</span>
+        <span class="scorepill" id="matchPill">ตอบผิด 0 ครั้ง</span>
+      </div>
+      <div class="part-title">🔗 จับคู่ AI กับข้อมูลที่ใช้ฝึก</div>
+      <div class="part-hint">แตะระบบ AI หนึ่งอัน แล้วแตะข้อมูลที่คิดว่าใช้ฝึกระบบนั้น — จับคู่ให้ครบทั้งหมด</div>
+      <div class="matchgrid">
+        <div class="matchcol-head">🤖 ระบบ AI</div>
+        <div class="matchcol-head">📦 ข้อมูลที่ใช้ฝึก</div>
+        <div id="colLeft" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div id="colRight" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+      <div class="explainbox" id="matchExplain" style="margin-top:14px"></div>
+      <button class="btn" id="matchNextBtn" style="display:none;margin-top:14px" onclick="startJudge()">ไปช่วงที่ 3 →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3c · Hands-on part 2 + immediate feedback: smart use vs. needs caution -->
+  <div class="panel" id="s4" data-step="2" style="display:none">
+    <div class="teach-wrap">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือทำ (3/3)</span>
+        <span class="scorepill" id="judgePill">ตอบผิด 0 ครั้ง</span>
+      </div>
+      <span class="rtag" id="judgeTag" style="display:block;margin:10px 0 6px;text-align:center">ข้อที่ 1/8</span>
+      <div class="statementcard">
+        <div class="slbl">🤔 ลากการ์ดไปไว้ในโซนที่ใช่</div>
+        <div class="judge-card" id="judgeCard">
+          <span class="jc-badge" id="judgeBadge"></span>
+          <div class="jc-text" id="judgeText"></div>
+          <div class="jc-hint">ลากการ์ด หรือแตะโซนที่คิดว่าใช่</div>
+        </div>
+        <div class="judge-zones">
+          <div class="judge-zone safe" id="zoneSmart"><span class="jz-icon">✅</span><span>ใช้ฉลาด</span></div>
+          <div class="judge-zone risky" id="zoneRisky"><span class="jz-icon">⚠️</span><span>ต้องระวัง</span></div>
+        </div>
+      </div>
+      <div class="explainbox" id="judgeExplain" style="margin-top:14px"></div>
+      <button class="btn ghost" id="judgeNextBtn" style="display:none;margin-top:14px" onclick="nextScenario()">ข้อถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 · Reflection -->
+  <div class="panel" id="s5" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">วันนี้เราเจอ AI ที่ไหนบ้าง?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — ลองนึกดูว่าวันนี้หรือเมื่อวานเราเจอ AI อยู่เบื้องหลังแอปหรือเครื่องมืออะไรบ้าง แล้วครั้งหน้าจะใช้มันให้ฉลาดขึ้นได้ยังไง</div>
+      <textarea id="reflText" placeholder="เช่น วันนี้ใช้แอปแผนที่หา AI ช่วยเลี่ยงรถติด ครั้งหน้าฉันจะ..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">รู้ทัน AI รอบตัว!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">เล่นอีกครั้ง →</button>
+    </div>
   </div>
 </div>
 
 <script>
-const TEACH_SLIDES = [
-  { icon:'📱', title:'AI อยู่เบื้องหลังแอปที่ใช้ทุกวัน', body:'หลายแอปที่เราใช้ทุกวันมี AI ทำงานอยู่เบื้องหลังโดยที่เราไม่ทันสังเกต — แผนที่นำทาง ฟีดวิดีโอที่แนะนำคลิปถัดไป ตัวกรองอีเมลขยะ และกล้องแปลภาษา ล้วนเป็น AI ทั้งนั้น',
-    example:'ตอนที่แอปแผนที่บอกว่า "เลี่ยงเส้นนี้ รถติด" นั่นคือ AI กำลังทำนายจากข้อมูลจราจรแบบเรียลไทม์' },
-  { icon:'🏥', title:'AI ช่วยงานใหญ่ ๆ ได้ด้วย', body:'AI ไม่ได้อยู่แค่ในมือถือ — มันช่วยหมอดูภาพเอกซเรย์หาจุดผิดปกติ ช่วยเกษตรกรส่องกล้องดูว่าพืชเป็นโรคอะไร และช่วยเตือนภัยน้ำท่วมล่วงหน้าให้ชุมชนเตรียมตัวทัน',
-    example:'AI ช่วยหมอ "ชี้จุดน่าสงสัย" ในฟิล์มเอกซเรย์ แต่คนที่วินิจฉัยและตัดสินใจสุดท้ายยังคงเป็นหมอเสมอ' },
-  { icon:'📦', title:'แต่ละระบบฝึกจากข้อมูลคนละแบบ', body:'ทุกระบบ AI เก่งเรื่องของมันเพราะถูกฝึกจากข้อมูลเฉพาะทาง — ระบบนำทางเรียนจากข้อมูลจราจร ระบบแปลภาษาเรียนจากคู่ประโยคสองภาษาจำนวนมหาศาล ถ้าเปลี่ยนงานมันจะทำไม่ได้เลย',
-    example:'AI ตรวจโรคพืชที่เก่งมาก เอาไปอ่านฟิล์มเอกซเรย์ไม่ได้ เพราะมันไม่เคยเห็นข้อมูลแบบนั้นตอนฝึก' },
-  { icon:'🎭', title:'AI ก็มีด้านที่ต้องระวัง', body:'AI สร้างภาพและเสียงปลอมที่เหมือนจริงมากได้ (เรียกว่า deepfake) ข่าวปลอมที่ AI ช่วยแต่งก็แพร่เร็วมาก และการเชื่อคำตอบ AI ทุกอย่างโดยไม่ตรวจสอบก็อันตรายไม่แพ้กัน',
-    example:'เห็นคลิปดาราหรือคนดังพูดอะไรแปลก ๆ อย่าเพิ่งเชื่อหรือแชร์ — อาจเป็นภาพและเสียงที่ AI สร้างขึ้นทั้งหมด' },
-  { icon:'🧭', title:'คนเป็นผู้เลือกว่าใช้ AI แบบไหน', body:'AI เป็นเครื่องมือ — จะใช้ให้เกิดประโยชน์หรือโทษขึ้นอยู่กับคนใช้ เราควรใช้ AI เป็นผู้ช่วยคิด ไม่ใช่ผู้ตัดสินแทนเราทุกเรื่อง และตรวจสอบเรื่องสำคัญด้วยตัวเองเสมอ',
-    example:'ให้ AI ช่วยอธิบายโจทย์ที่ไม่เข้าใจ = ฉลาด · ให้ AI ทำการบ้านแทนทั้งหมด = เราไม่ได้เรียนรู้อะไรเลย' },
+// The lesson has 5 SCREENS (curStep 0-3, with step 2 split across two panels
+// s3/s4), but the process has 5 named PARTS — "immediate feedback" happens
+// live inside the hands-on screens rather than being its own screen, so it
+// and "hands-on core" both point at screen 2. The header panel always shows
+// all 5 parts; each one's on/cur/upcoming status is derived from comparing
+// its screen index to curStep.
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
 ];
-let teachIdx = 0;
+let curStep = 0;
 function $(id){ return document.getElementById(id); }
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
 function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function renderTeach(){
-  const s = TEACH_SLIDES[teachIdx];
-  $('teachSlides').innerHTML = `<div class="teach-slide">
-    <span class="teach-icon">${s.icon}</span>
-    <div class="teach-title">${esc(s.title)}</div>
-    <div class="teach-body">${esc(s.body)}</div>
-    ${s.example ? `<div class="teach-example"><b>ตัวอย่าง</b> ${esc(s.example)}</div>` : ''}
-  </div>`;
-  $('teachDots').innerHTML = TEACH_SLIDES.map((_,i)=>`<span class="tdot${i===teachIdx?' on':''}"></span>`).join('');
-  $('teachBack').style.visibility = teachIdx===0 ? 'hidden' : 'visible';
-  const last = teachIdx === TEACH_SLIDES.length - 1;
-  $('teachNext').textContent = last ? 'เริ่มเล่น →' : 'ถัดไป →';
-  $('teachNext').onclick = last ? startMatch : teachNext;
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
 }
-function teachNext(){ teachIdx = Math.min(TEACH_SLIDES.length-1, teachIdx+1); renderTeach(); }
-function teachPrev(){ teachIdx = Math.max(0, teachIdx-1); renderTeach(); }
-function showTeach(){ teachIdx = 0; renderTeach(); show('teach'); }
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  if (n===2){ $('s3').style.display = 'none'; $('s4').style.display = 'none'; } // step 2 starts on MC (s3mc); match (s3) then judge (s4) show after
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2) startMC();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
-// ── Part 1: match each AI system to the data it was trained on ──
+// ===== Step 2: concept (2 essential ideas before hands-on) =====
+const CONCEPTS = [
+  { icon:'📱', title:'AI ซ่อนอยู่ในแอปที่ใช้ทุกวัน', body:'หลายแอปที่เราใช้ทุกวันมี AI ทำงานอยู่เบื้องหลัง — แผนที่นำทาง ฟีดวิดีโอที่แนะนำคลิปถัดไป ตัวกรองอีเมลขยะ กล้องแปลภาษา และแม้แต่ AI ช่วยหมออ่านฟิล์มเอกซเรย์ ล้วนถูกฝึกจากข้อมูลเฉพาะทางที่ต่างกัน',
+    ex:'ตอนที่แอปแผนที่บอกว่า "เลี่ยงเส้นนี้ รถติด" นั่นคือ AI กำลังทำนายจากข้อมูลจราจรแบบเรียลไทม์',
+    anim:'<div class="capps-anim"><div class="capp">🗺️<span class="bot">🤖</span></div><div class="capp">🎵<span class="bot">🤖</span></div><div class="capp">📷<span class="bot">🤖</span></div></div>' },
+  { icon:'🎭', title:'AI มีทั้งด้านช่วยเหลือ และด้านต้องระวัง', body:'AI ช่วยงานใหญ่ ๆ ได้จริง แต่ก็สร้างภาพและเสียงปลอมที่เหมือนจริงมากได้เช่นกัน (เรียกว่า deepfake) — คนเป็นผู้เลือกว่าจะใช้ AI แบบไหน จึงต้องตรวจสอบก่อนเชื่อหรือแชร์เสมอ',
+    ex:'ให้ AI ช่วยอธิบายโจทย์ที่ไม่เข้าใจ = ฉลาด · เห็นคลิปคนดังพูดแปลก ๆ แล้วรีบแชร์ = ต้องระวัง' },
+];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div>${c.anim || ''}<div class="cb">${esc(c.body)}</div>${c.ex ? `<div class="cex"><b>ตัวอย่าง</b> ${esc(c.ex)}</div>` : ''}</div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ── Hands-on part 0: multiple-choice recognition of AI vs. non-AI ──
+const MC_ROUNDS = [
+  { q:'ข้อไหน "ไม่ใช่" ตัวอย่างของ AI?',
+    opts:['นาฬิกาปลุกที่ดังตามเวลาที่เราตั้งไว้ทุกวัน','แอปแนะนำเพลงที่เดาว่าเราจะชอบเพลงไหนต่อไป','กล้องมือถือที่จำหน้าคนเพื่อโฟกัสภาพอัตโนมัติ','แชทบอทตอบคำถามลูกค้าในเว็บร้านค้า'],
+    correct:0, explain:'นาฬิกาปลุกทำงานตามเวลาที่ตั้งไว้ตรง ๆ ไม่มีการเรียนรู้หรือทำนายอะไร จึงไม่ใช่ AI ส่วนอีก 3 ข้อล้วนเรียนรู้จากข้อมูลเพื่อคาดเดาหรือจดจำ' },
+  { q:'แอปไหนน่าจะมี AI ทำงานอยู่เบื้องหลังมากที่สุด?',
+    opts:['เครื่องคิดเลขบวกลบเลขธรรมดา','แอปแผนที่ที่แนะนำเส้นทางเลี่ยงรถติดแบบเรียลไทม์','นาฬิกาบอกเวลา','ปฏิทินที่เตือนวันเกิดตามวันที่ตั้งไว้'],
+    correct:1, explain:'แอปแผนที่ต้องทำนายสภาพรถติดจากข้อมูลจำนวนมากแบบเรียลไทม์ นั่นคืองานที่ AI ถนัด ส่วนอีก 3 ข้อทำงานตามกฎตายตัว ไม่ต้องเรียนรู้อะไร' },
+  { q:'ข้อไหน "ไม่ใช่" ตัวอย่างของ AI?',
+    opts:['ระบบกรองอีเมลขยะที่เรียนรู้จากอีเมลที่เราเคยติดสแปม','สูตรคำนวณดอกเบี้ยธนาคารตามอัตราคงที่','แอปแปลภาษาจากรูปป้ายที่ถ่ายด้วยกล้อง','ฟีดวิดีโอที่แนะนำคลิปตามสิ่งที่เราเคยดู'],
+    correct:1, explain:'สูตรคำนวณดอกเบี้ยใช้สูตรคณิตศาสตร์คงที่ตายตัว ไม่ได้เรียนรู้จากข้อมูลหรือทำนายอะไร จึงไม่ใช่ AI' },
+  { q:'อุปกรณ์/ฟีเจอร์ไหนน่าจะมี AI ทำงานอยู่?',
+    opts:['เว็บไซต์ที่แสดงเวลาปัจจุบันของประเทศต่าง ๆ','ผู้ช่วยเสียงในมือถือที่ตอบคำถามและทำตามคำสั่งเสียง','เครื่องคิดเลขในมือถือ','นาฬิกาจับเวลาออกกำลังกาย'],
+    correct:1, explain:'ผู้ช่วยเสียงต้องฟัง แปลความหมาย และตอบสนองต่อคำพูดที่หลากหลาย ซึ่งต้องอาศัยการเรียนรู้จากข้อมูลเสียงจำนวนมาก จึงเป็น AI' },
+  { q:'ข้อไหน "ไม่ใช่" ตัวอย่างของ AI?',
+    opts:['โปรแกรมตรวจไวยากรณ์ที่เรียนรู้จากประโยคนับล้านเพื่อแนะนำคำที่เหมาะสม','เกมทายเลขที่สุ่มตัวเลขแบบง่าย ๆ ไม่มีการเรียนรู้','ระบบแนะนำสินค้าตามประวัติการซื้อของเรา','แอปจดจำใบหน้าเพื่อปลดล็อกหน้าจอมือถือ'],
+    correct:1, explain:'เกมทายเลขแบบสุ่มไม่มีการเรียนรู้หรือปรับตัวจากข้อมูลใด ๆ จึงเป็นแค่โปรแกรมสุ่มธรรมดา ไม่ใช่ AI' },
+];
+let mcIdx = 0, mcAnswered = false;
+
+function startMC(){
+  mcIdx = 0;
+  $('s3mc').style.display = ''; $('s3').style.display = 'none'; $('s4').style.display = 'none';
+  renderMC();
+}
+function renderMC(){
+  const r = MC_ROUNDS[mcIdx];
+  $('mcTag').textContent = `ข้อที่ ${mcIdx+1}/${MC_ROUNDS.length}`;
+  updatePills();
+  $('mcQuestion').textContent = r.q;
+  mcAnswered = false;
+  $('mcOpts').innerHTML = r.opts.map((o,i)=>
+    `<button type="button" class="mcopt" id="mc${i}" onclick="pickMC(${i})">${esc(o)}</button>`).join('');
+  $('mcExplain').className = 'explainbox';
+  $('mcExplain').innerHTML = '';
+  $('mcNextBtn').style.display = 'none';
+}
+function pickMC(i){
+  if (mcAnswered) return;
+  mcAnswered = true;
+  const r = MC_ROUNDS[mcIdx];
+  const correct = i === r.correct;
+  r.opts.forEach((_,j)=>{
+    const b = $('mc'+j);
+    b.disabled = true;
+    if (j === r.correct) b.classList.add('correct');
+    else if (j === i) b.classList.add('wrong');
+  });
+  if (!correct){ wrongCount++; updatePills(); } else if (window.dlf) dlf.cheer('เก่งมาก!');
+  $('mcExplain').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
+  $('mcExplain').innerHTML = `<b>${correct ? '✅ ถูกต้อง!' : '❌ ยังไม่ถูก'}</b>${esc(r.explain)}`;
+  $('mcNextBtn').style.display = 'block';
+}
+function nextMC(){
+  mcIdx++;
+  if (mcIdx >= MC_ROUNDS.length){ startMatch(); return; }
+  renderMC();
+}
+
+// ── Hands-on part 1: match each AI system to the data it was trained on ──
 const PAIRS = [
   { key:'nav',   icon:'🗺️', sys:'ระบบนำทาง',            data:'ข้อมูลจราจรและเส้นทาง',
     explain:'ระบบนำทางเรียนรู้จากข้อมูลจราจรและเส้นทางจำนวนมหาศาล เพื่อทำนายว่าเส้นไหนถึงเร็วที่สุด' },
@@ -210,18 +376,26 @@ const PAIRS = [
     explain:'ระบบเตือนน้ำท่วมเรียนรู้จากข้อมูลระดับน้ำและปริมาณฝนย้อนหลังหลายปี จึงทำนายน้ำท่วมล่วงหน้าได้' },
   { key:'trans', icon:'🈶', sys:'กล้องแปลภาษา',          data:'คู่ภาพป้ายข้อความกับคำแปล',
     explain:'กล้องแปลภาษาเรียนรู้จากคู่ภาพป้ายข้อความกับคำแปลจำนวนมหาศาล จึงอ่านป้ายแล้วแปลได้ทันที' },
+  { key:'feed',  icon:'🎬', sys:'ฟีดแนะนำวิดีโอ',        data:'ประวัติคลิปที่คนดูและกดถูกใจ',
+    explain:'ฟีดแนะนำวิดีโอเรียนรู้จากประวัติการดูและกดถูกใจของคนนับล้าน จึงเดาว่าเราจะชอบคลิปแบบไหนต่อไป' },
+  { key:'voice', icon:'🎙️', sys:'ผู้ช่วยเสียงในมือถือ',   data:'คำพูดและคำสั่งเสียงหลากหลายสำเนียง',
+    explain:'ผู้ช่วยเสียงเรียนรู้จากคำพูดและคำสั่งเสียงของคนหลากหลายสำเนียงจำนวนมาก จึงฟังและเข้าใจคำสั่งของเราได้' },
+  { key:'spam',  icon:'📧', sys:'ระบบกรองอีเมลขยะ',      data:'อีเมลที่คนเคยติดป้ายว่าเป็นสแปม',
+    explain:'ระบบกรองอีเมลขยะเรียนรู้จากอีเมลจำนวนมากที่คนเคยติดป้ายว่าเป็นสแปม จึงแยกอีเมลขยะออกจากกล่องขาเข้าได้' },
 ];
-const RIGHT_ORDER = [2,4,0,3,1]; // fixed scramble so pairs never sit side-by-side
+const RIGHT_ORDER = [2,4,0,3,6,5,7,1]; // fixed scramble so pairs never sit side-by-side
 
 let wrongCount = 0, matchedCount = 0, selL = null, selR = null, evaluating = false;
 
 function updatePills(){
+  $('mcPill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
   $('matchPill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
   $('judgePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
 }
 
 function startMatch(){
   matchedCount = 0; selL = null; selR = null; evaluating = false;
+  $('s3mc').style.display = 'none'; $('s3').style.display = ''; $('s4').style.display = 'none';
   $('matchExplain').className = 'explainbox';
   $('matchExplain').innerHTML = '';
   $('matchNextBtn').style.display = 'none';
@@ -230,7 +404,6 @@ function startMatch(){
   $('colRight').innerHTML = RIGHT_ORDER.map(i=>
     `<button type="button" class="matchbtn" id="R${i}" onclick="pickSide('R',${i})"><span class="mico">📦</span><span>${esc(PAIRS[i].data)}</span></button>`).join('');
   updatePills();
-  show('match');
 }
 
 function pickSide(side, i){
@@ -265,7 +438,7 @@ function evalPair(){
     selL = null; selR = null; evaluating = false;
     if (matchedCount >= PAIRS.length){
       $('matchNextBtn').style.display = 'block';
-      $('matchExplain').innerHTML += ' ครบทั้ง 5 คู่แล้ว ไปช่วงถัดไปกันเลย!';
+      $('matchExplain').innerHTML += ` ครบทั้ง ${PAIRS.length} คู่แล้ว ไปช่วงถัดไปกันเลย!`;
     }
   } else {
     wrongCount++;
@@ -279,7 +452,7 @@ function evalPair(){
   }
 }
 
-// ── Part 2: smart use vs. needs caution ──
+// ── Hands-on part 2 + immediate feedback: smart use vs. needs caution ──
 const SCENARIOS = [
   { text:'ใช้ AI ช่วยอธิบายโจทย์เลขที่ไม่เข้าใจ แล้วลองทำโจทย์ข้ออื่นด้วยตัวเอง', answer:'smart',
     explain:'ใช้ AI เป็น "ติวเตอร์" ช่วยให้เข้าใจ แล้วฝึกเองต่อ — แบบนี้เราได้เรียนรู้จริง ๆ ถือว่าใช้ฉลาดมาก' },
@@ -293,30 +466,98 @@ const SCENARIOS = [
     explain:'การใช้ AI แปลภาษาเพื่อสื่อสารและผูกมิตรคือการใช้เทคโนโลยีช่วยเชื่อมคน — ใช้ฉลาดเลย!' },
   { text:'กรอกชื่อจริง ที่อยู่บ้าน และเบอร์โทรให้แชทบอทที่เพิ่งเจอในเว็บไม่รู้จัก', answer:'risky',
     explain:'ข้อมูลส่วนตัวอย่างชื่อ ที่อยู่ เบอร์โทร ห้ามให้แชทบอทหรือเว็บที่ไม่รู้จักเด็ดขาด — เราไม่รู้ว่าข้อมูลจะถูกเก็บไปทำอะไร' },
+  { text:'ให้ AI ช่วยสรุปบทความยาว ๆ แล้วอ่านทวนอีกครั้งเพื่อให้แน่ใจว่าสรุปถูกต้อง', answer:'smart',
+    explain:'ใช้ AI ช่วยประหยัดเวลา แต่ยังตรวจทานเองก่อนเชื่อ — เป็นการใช้ AI เป็นผู้ช่วย ไม่ใช่ผู้ตัดสินแทนเรา ใช้ฉลาด!' },
+  { text:'เห็นรูปข่าวด่วนที่ดูสมจริงมากในโซเชียล แชร์ต่อทันทีโดยไม่เช็กว่าใครเป็นคนโพสต์', answer:'risky',
+    explain:'ภาพข่าวปลอมที่ AI ช่วยสร้างหรือแต่งขึ้นแพร่กระจายเร็วมาก ควรเช็กแหล่งข่าวที่น่าเชื่อถือก่อนแชร์ทุกครั้ง' },
+  { text:'ใช้ AI ช่วยแปลบทความภาษาอังกฤษเป็นไทย แล้วอ่านทวนเทียบกับต้นฉบับก่อนนำไปใช้จริง', answer:'smart',
+    explain:'ใช้ AI แปลเพื่อประหยัดเวลา แต่ยังตรวจสอบความถูกต้องเองก่อนเชื่อ — เป็นการใช้ AI เป็นผู้ช่วย ใช้ฉลาดมาก' },
+  { text:'ใช้ AI สร้างภาพใบหน้าเพื่อนล้อเลียนโดยไม่ได้ขออนุญาต แล้วส่งให้เพื่อนคนอื่นดูขำ ๆ', answer:'risky',
+    explain:'การสร้างภาพหรือคลิปของคนอื่นโดยไม่ได้รับอนุญาต แม้จะตั้งใจล้อเล่น ก็อาจทำร้ายความรู้สึกและผิดต่อความเป็นส่วนตัวของเขาได้ ต้องขออนุญาตก่อนเสมอ' },
 ];
 
-let judgeIdx = 0;
+let judgeIdx = 0, judgeAnswered = false, judgeDrag = null, judgeDragBound = false;
 
-function startJudge(){ judgeIdx = 0; renderScenario(); show('judge'); }
+function startJudge(){ judgeIdx = 0; $('s3').style.display = 'none'; $('s4').style.display = ''; renderScenario(); bindJudgeDrag(); }
 
 function renderScenario(){
   const s = SCENARIOS[judgeIdx];
-  $('judgeTag').textContent = `ช่วงที่ 2/2 · ข้อ ${judgeIdx+1}/${SCENARIOS.length}`;
+  $('judgeTag').textContent = `ข้อที่ ${judgeIdx+1}/${SCENARIOS.length}`;
   updatePills();
   $('judgeText').textContent = s.text;
-  $('btnSmart').disabled = false;
-  $('btnRisky').disabled = false;
+  judgeAnswered = false;
+  const card = $('judgeCard');
+  card.classList.remove('answered','flying','dragging');
+  card.style.transform = '';
+  card.style.opacity = '';
+  $('judgeBadge').className = 'jc-badge';
+  ['zoneSmart','zoneRisky'].forEach(id=>{
+    const z = $(id);
+    z.classList.remove('hover','disabled');
+  });
   $('judgeExplain').className = 'explainbox';
   $('judgeExplain').innerHTML = '';
   $('judgeNextBtn').style.display = 'none';
 }
 
+function bindJudgeDrag(){
+  if (judgeDragBound) return;
+  judgeDragBound = true;
+  const card = $('judgeCard');
+  $('zoneSmart').addEventListener('click', ()=>onJudge('smart'));
+  $('zoneRisky').addEventListener('click', ()=>onJudge('risky'));
+  card.addEventListener('pointerdown', (e)=>{
+    if (judgeAnswered) return;
+    card.setPointerCapture(e.pointerId);
+    judgeDrag = { x:e.clientX, y:e.clientY };
+    card.classList.add('dragging');
+  });
+  card.addEventListener('pointermove', (e)=>{
+    if (!judgeDrag || judgeAnswered) return;
+    const dx = e.clientX - judgeDrag.x, dy = e.clientY - judgeDrag.y;
+    card.style.transform = `translate(${dx}px,${dy}px)`;
+    ['zoneSmart','zoneRisky'].forEach(id=>{
+      const z = $(id), r = z.getBoundingClientRect();
+      const over = e.clientX>=r.left && e.clientX<=r.right && e.clientY>=r.top && e.clientY<=r.bottom;
+      z.classList.toggle('hover', over);
+    });
+  });
+  const release = (e)=>{
+    if (!judgeDrag || judgeAnswered) { judgeDrag = null; return; }
+    card.classList.remove('dragging');
+    let chosen = null;
+    ['zoneSmart','zoneRisky'].forEach(id=>{
+      const z = $(id);
+      if (z.classList.contains('hover')) chosen = (id === 'zoneSmart') ? 'smart' : 'risky';
+      z.classList.remove('hover');
+    });
+    judgeDrag = null;
+    if (chosen) onJudge(chosen);
+    else { card.style.transform = ''; }
+  };
+  card.addEventListener('pointerup', release);
+  card.addEventListener('pointercancel', release);
+}
+
 function onJudge(choice){
+  if (judgeAnswered) return;
+  judgeAnswered = true;
   const s = SCENARIOS[judgeIdx];
-  $('btnSmart').disabled = true;
-  $('btnRisky').disabled = true;
+  const card = $('judgeCard');
+  const zoneEl = $(choice === 'smart' ? 'zoneSmart' : 'zoneRisky');
+  card.classList.add('answered');
+  ['zoneSmart','zoneRisky'].forEach(id=>$(id).classList.add('disabled'));
+  // fly the card into the chosen zone
+  const cr = card.getBoundingClientRect(), zr = zoneEl.getBoundingClientRect();
+  const dx = (zr.left + zr.width/2) - (cr.left + cr.width/2);
+  const dy = (zr.top + zr.height/2) - (cr.top + cr.height/2);
+  card.classList.add('flying');
+  card.style.transform = `translate(${dx}px,${dy}px) scale(.55)`;
+  card.style.opacity = '.35';
   const correct = choice === s.answer;
   if (!correct){ wrongCount++; updatePills(); }
+  $('judgeBadge').className = 'jc-badge show ' + (correct ? 'ok' : 'no');
+  $('judgeBadge').textContent = correct ? '✓' : '✗';
   $('judgeExplain').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
   $('judgeExplain').innerHTML = `<b>${correct ? '✅ ถูกต้อง!' : '❌ ยังไม่ถูก — ข้อนี้คือ ' + (s.answer === 'smart' ? '"ใช้ฉลาด"' : '"ต้องระวัง"')}</b>${esc(s.explain)}`;
   $('judgeNextBtn').style.display = 'block';
@@ -325,20 +566,25 @@ function onJudge(choice){
 
 function nextScenario(){
   judgeIdx++;
-  if (judgeIdx >= SCENARIOS.length){ finishGame(); return; }
+  if (judgeIdx >= SCENARIOS.length){ goStep(3); return; }
   renderScenario();
 }
 
+// ===== Step 4 done =====
 function finishGame(){
-  window.dlfStars = wrongCount <= 1 ? 3 : wrongCount <= 3 ? 2 : 1;
+  const totalRounds = MC_ROUNDS.length + PAIRS.length + SCENARIOS.length;
+  window.dlfStars = wrongCount <= 3 ? 3 : wrongCount <= 8 ? 2 : 1;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
   $('resTitle').textContent = window.dlfStars === 3 ? 'รู้ทัน AI รอบตัว!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `จับคู่ครบ ${PAIRS.length} คู่ และตัดสินสถานการณ์ครบ ${SCENARIOS.length} ข้อ โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
-  show('done');
+  $('resScore').textContent = `ตอบคำถามปรนัยครบ ${MC_ROUNDS.length} ข้อ จับคู่ครบ ${PAIRS.length} คู่ และตัดสินสถานการณ์ครบ ${SCENARIOS.length} ข้อ (รวม ${totalRounds} ข้อ) โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+function restartGame(){ wrongCount = 0; goStep(0); }
 
-function restartGame(){ wrongCount = 0; startMatch(); }
+renderRail();
 </script>
 
 <!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
@@ -390,8 +636,8 @@ function restartGame(){ wrongCount = 0; startMatch(); }
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"6bb4da9a4109":"audio/ai8-ai-in-the-world/6bb4da9a4109.mp3","c98a76b53ee9":"audio/ai8-ai-in-the-world/c98a76b53ee9.mp3","f81ab1ec0201":"audio/ai8-ai-in-the-world/f81ab1ec0201.mp3","3835470ebea6":"audio/ai8-ai-in-the-world/3835470ebea6.mp3","426ec4b31a14":"audio/ai8-ai-in-the-world/426ec4b31a14.mp3","d2c77b570bb5":"audio/ai8-ai-in-the-world/d2c77b570bb5.mp3","152f09f19ce4":"audio/ai8-ai-in-the-world/152f09f19ce4.mp3","6d079209297d":"audio/ai8-ai-in-the-world/6d079209297d.mp3","f445396e22b7":"audio/ai8-ai-in-the-world/f445396e22b7.mp3","b7aa968ec9e1":"audio/ai8-ai-in-the-world/b7aa968ec9e1.mp3","3c6608b7752d":"audio/ai8-ai-in-the-world/3c6608b7752d.mp3","229feceb20b0":"audio/ai8-ai-in-the-world/229feceb20b0.mp3","36c1a22bde25":"audio/ai8-ai-in-the-world/36c1a22bde25.mp3","4a7d72a080a3":"audio/ai8-ai-in-the-world/4a7d72a080a3.mp3","ec2d13004b27":"audio/ai8-ai-in-the-world/ec2d13004b27.mp3","7accfd41683a":"audio/ai8-ai-in-the-world/7accfd41683a.mp3","d585a6a9d18d":"audio/ai8-ai-in-the-world/d585a6a9d18d.mp3","b173e9596bb2":"audio/ai8-ai-in-the-world/b173e9596bb2.mp3","c76360519f29":"audio/ai8-ai-in-the-world/c76360519f29.mp3","39c5cdb2e7e4":"audio/ai8-ai-in-the-world/39c5cdb2e7e4.mp3","32a5d0fda767":"audio/ai8-ai-in-the-world/32a5d0fda767.mp3","e7466b486f72":"audio/ai8-ai-in-the-world/e7466b486f72.mp3","992efccd291c":"audio/ai8-ai-in-the-world/992efccd291c.mp3","3b4d59ddfd39":"audio/ai8-ai-in-the-world/3b4d59ddfd39.mp3","277a369c3213":"audio/ai8-ai-in-the-world/277a369c3213.mp3","3c8ccdfce308":"audio/ai8-ai-in-the-world/3c8ccdfce308.mp3","60b1a5e02d88":"audio/ai8-ai-in-the-world/60b1a5e02d88.mp3","ad51a36fd5d4":"audio/ai8-ai-in-the-world/ad51a36fd5d4.mp3","e145c6fa6775":"audio/ai8-ai-in-the-world/e145c6fa6775.mp3","d31fa39c7269":"audio/ai8-ai-in-the-world/d31fa39c7269.mp3","d8e83df09db6":"audio/ai8-ai-in-the-world/d8e83df09db6.mp3","7ddfdc93a1f1":"audio/ai8-ai-in-the-world/7ddfdc93a1f1.mp3","a66234b845ea":"audio/ai8-ai-in-the-world/a66234b845ea.mp3","c7a8c8856db3":"audio/ai8-ai-in-the-world/c7a8c8856db3.mp3","7e6ff5686b49":"audio/ai8-ai-in-the-world/7e6ff5686b49.mp3","a48addc63884":"audio/ai8-ai-in-the-world/a48addc63884.mp3","4748cb5c567a":"audio/ai8-ai-in-the-world/4748cb5c567a.mp3","ecf33f232b1a":"audio/ai8-ai-in-the-world/ecf33f232b1a.mp3","57a1ace0f7b8":"audio/ai8-ai-in-the-world/57a1ace0f7b8.mp3","f73282e04df5":"audio/ai8-ai-in-the-world/f73282e04df5.mp3","db3637f515ec":"audio/ai8-ai-in-the-world/db3637f515ec.mp3","d3c0dcc0537f":"audio/ai8-ai-in-the-world/d3c0dcc0537f.mp3","193cbe8931ee":"audio/ai8-ai-in-the-world/193cbe8931ee.mp3","32b6be4058d4":"audio/ai8-ai-in-the-world/32b6be4058d4.mp3","34977d76393d":"audio/ai8-ai-in-the-world/34977d76393d.mp3","f85d0afa2acf":"audio/ai8-ai-in-the-world/f85d0afa2acf.mp3","7fdd46cba22b":"audio/ai8-ai-in-the-world/7fdd46cba22b.mp3","b85ae4a77001":"audio/ai8-ai-in-the-world/b85ae4a77001.mp3","eb015f75efcd":"audio/ai8-ai-in-the-world/eb015f75efcd.mp3","5ac7f981f45c":"audio/ai8-ai-in-the-world/5ac7f981f45c.mp3","bd162eaf015d":"audio/ai8-ai-in-the-world/bd162eaf015d.mp3","4780fc79462b":"audio/ai8-ai-in-the-world/4780fc79462b.mp3","dfb3e4afa929":"audio/ai8-ai-in-the-world/dfb3e4afa929.mp3","dfcc7030b8bb":"audio/ai8-ai-in-the-world/dfcc7030b8bb.mp3","4db933f902f0":"audio/ai8-ai-in-the-world/4db933f902f0.mp3","f0e57d53aedb":"audio/ai8-ai-in-the-world/f0e57d53aedb.mp3","a1a9fa94a569":"audio/ai8-ai-in-the-world/a1a9fa94a569.mp3","e04742eeacc1":"audio/ai8-ai-in-the-world/e04742eeacc1.mp3","93ff6dc01d05":"audio/ai8-ai-in-the-world/93ff6dc01d05.mp3","9eeec0920313":"audio/ai8-ai-in-the-world/9eeec0920313.mp3","3b7c8b6de864":"audio/ai8-ai-in-the-world/3b7c8b6de864.mp3","64ae9f2e7a0a":"audio/ai8-ai-in-the-world/64ae9f2e7a0a.mp3","5c7668dbcffa":"audio/ai8-ai-in-the-world/5c7668dbcffa.mp3","af6ba89d9b27":"audio/ai8-ai-in-the-world/af6ba89d9b27.mp3","aca2b0992481":"audio/ai8-ai-in-the-world/aca2b0992481.mp3","7a534c3e6f47":"audio/ai8-ai-in-the-world/7a534c3e6f47.mp3","287f6fcc7fb7":"audio/ai8-ai-in-the-world/287f6fcc7fb7.mp3","28ad605b512f":"audio/ai8-ai-in-the-world/28ad605b512f.mp3","4362cebf32f6":"audio/ai8-ai-in-the-world/4362cebf32f6.mp3","b1b9168c5493":"audio/ai8-ai-in-the-world/b1b9168c5493.mp3","eb5738652c1d":"audio/ai8-ai-in-the-world/eb5738652c1d.mp3","dec1ce6c690b":"audio/ai8-ai-in-the-world/dec1ce6c690b.mp3","3fb0e684b56b":"audio/ai8-ai-in-the-world/3fb0e684b56b.mp3","2e2a56f18f52":"audio/ai8-ai-in-the-world/2e2a56f18f52.mp3","e0293c5ef2f8":"audio/ai8-ai-in-the-world/e0293c5ef2f8.mp3","3a86ebc8a0de":"audio/ai8-ai-in-the-world/3a86ebc8a0de.mp3","66590c21d92e":"audio/ai8-ai-in-the-world/66590c21d92e.mp3","e18a189a9371":"audio/ai8-ai-in-the-world/e18a189a9371.mp3","8af1f0edc12c":"audio/ai8-ai-in-the-world/8af1f0edc12c.mp3"}</script>
-<script>window.DLF_CONFIG={extraReadSelectors:['.part-title','.stext'],extraNonDecorateSelectors:'.matchbtn'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"6bb4da9a4109":"audio/ai8-ai-in-the-world/6bb4da9a4109.mp3","c98a76b53ee9":"audio/ai8-ai-in-the-world/c98a76b53ee9.mp3","f81ab1ec0201":"audio/ai8-ai-in-the-world/f81ab1ec0201.mp3","3835470ebea6":"audio/ai8-ai-in-the-world/3835470ebea6.mp3","426ec4b31a14":"audio/ai8-ai-in-the-world/426ec4b31a14.mp3","d2c77b570bb5":"audio/ai8-ai-in-the-world/d2c77b570bb5.mp3","152f09f19ce4":"audio/ai8-ai-in-the-world/152f09f19ce4.mp3","6d079209297d":"audio/ai8-ai-in-the-world/6d079209297d.mp3","f445396e22b7":"audio/ai8-ai-in-the-world/f445396e22b7.mp3","b7aa968ec9e1":"audio/ai8-ai-in-the-world/b7aa968ec9e1.mp3","3c6608b7752d":"audio/ai8-ai-in-the-world/3c6608b7752d.mp3","229feceb20b0":"audio/ai8-ai-in-the-world/229feceb20b0.mp3","36c1a22bde25":"audio/ai8-ai-in-the-world/36c1a22bde25.mp3","4a7d72a080a3":"audio/ai8-ai-in-the-world/4a7d72a080a3.mp3","ec2d13004b27":"audio/ai8-ai-in-the-world/ec2d13004b27.mp3","7accfd41683a":"audio/ai8-ai-in-the-world/7accfd41683a.mp3","d585a6a9d18d":"audio/ai8-ai-in-the-world/d585a6a9d18d.mp3","b173e9596bb2":"audio/ai8-ai-in-the-world/b173e9596bb2.mp3","c76360519f29":"audio/ai8-ai-in-the-world/c76360519f29.mp3","39c5cdb2e7e4":"audio/ai8-ai-in-the-world/39c5cdb2e7e4.mp3","32a5d0fda767":"audio/ai8-ai-in-the-world/32a5d0fda767.mp3","e7466b486f72":"audio/ai8-ai-in-the-world/e7466b486f72.mp3","992efccd291c":"audio/ai8-ai-in-the-world/992efccd291c.mp3","3b4d59ddfd39":"audio/ai8-ai-in-the-world/3b4d59ddfd39.mp3","277a369c3213":"audio/ai8-ai-in-the-world/277a369c3213.mp3","3c8ccdfce308":"audio/ai8-ai-in-the-world/3c8ccdfce308.mp3","60b1a5e02d88":"audio/ai8-ai-in-the-world/60b1a5e02d88.mp3","ad51a36fd5d4":"audio/ai8-ai-in-the-world/ad51a36fd5d4.mp3","e145c6fa6775":"audio/ai8-ai-in-the-world/e145c6fa6775.mp3","d31fa39c7269":"audio/ai8-ai-in-the-world/d31fa39c7269.mp3","d8e83df09db6":"audio/ai8-ai-in-the-world/d8e83df09db6.mp3","7ddfdc93a1f1":"audio/ai8-ai-in-the-world/7ddfdc93a1f1.mp3","a66234b845ea":"audio/ai8-ai-in-the-world/a66234b845ea.mp3","c7a8c8856db3":"audio/ai8-ai-in-the-world/c7a8c8856db3.mp3","7e6ff5686b49":"audio/ai8-ai-in-the-world/7e6ff5686b49.mp3","a48addc63884":"audio/ai8-ai-in-the-world/a48addc63884.mp3","4748cb5c567a":"audio/ai8-ai-in-the-world/4748cb5c567a.mp3","ecf33f232b1a":"audio/ai8-ai-in-the-world/ecf33f232b1a.mp3","57a1ace0f7b8":"audio/ai8-ai-in-the-world/57a1ace0f7b8.mp3","f73282e04df5":"audio/ai8-ai-in-the-world/f73282e04df5.mp3","db3637f515ec":"audio/ai8-ai-in-the-world/db3637f515ec.mp3","d3c0dcc0537f":"audio/ai8-ai-in-the-world/d3c0dcc0537f.mp3","193cbe8931ee":"audio/ai8-ai-in-the-world/193cbe8931ee.mp3","32b6be4058d4":"audio/ai8-ai-in-the-world/32b6be4058d4.mp3","34977d76393d":"audio/ai8-ai-in-the-world/34977d76393d.mp3","f85d0afa2acf":"audio/ai8-ai-in-the-world/f85d0afa2acf.mp3","7fdd46cba22b":"audio/ai8-ai-in-the-world/7fdd46cba22b.mp3","b85ae4a77001":"audio/ai8-ai-in-the-world/b85ae4a77001.mp3","eb015f75efcd":"audio/ai8-ai-in-the-world/eb015f75efcd.mp3","5ac7f981f45c":"audio/ai8-ai-in-the-world/5ac7f981f45c.mp3","bd162eaf015d":"audio/ai8-ai-in-the-world/bd162eaf015d.mp3","4780fc79462b":"audio/ai8-ai-in-the-world/4780fc79462b.mp3","dfb3e4afa929":"audio/ai8-ai-in-the-world/dfb3e4afa929.mp3","dfcc7030b8bb":"audio/ai8-ai-in-the-world/dfcc7030b8bb.mp3","4db933f902f0":"audio/ai8-ai-in-the-world/4db933f902f0.mp3","f0e57d53aedb":"audio/ai8-ai-in-the-world/f0e57d53aedb.mp3","a1a9fa94a569":"audio/ai8-ai-in-the-world/a1a9fa94a569.mp3","e04742eeacc1":"audio/ai8-ai-in-the-world/e04742eeacc1.mp3","93ff6dc01d05":"audio/ai8-ai-in-the-world/93ff6dc01d05.mp3","9eeec0920313":"audio/ai8-ai-in-the-world/9eeec0920313.mp3","3b7c8b6de864":"audio/ai8-ai-in-the-world/3b7c8b6de864.mp3","64ae9f2e7a0a":"audio/ai8-ai-in-the-world/64ae9f2e7a0a.mp3","5c7668dbcffa":"audio/ai8-ai-in-the-world/5c7668dbcffa.mp3","af6ba89d9b27":"audio/ai8-ai-in-the-world/af6ba89d9b27.mp3","aca2b0992481":"audio/ai8-ai-in-the-world/aca2b0992481.mp3","7a534c3e6f47":"audio/ai8-ai-in-the-world/7a534c3e6f47.mp3","287f6fcc7fb7":"audio/ai8-ai-in-the-world/287f6fcc7fb7.mp3","28ad605b512f":"audio/ai8-ai-in-the-world/28ad605b512f.mp3","4362cebf32f6":"audio/ai8-ai-in-the-world/4362cebf32f6.mp3","b1b9168c5493":"audio/ai8-ai-in-the-world/b1b9168c5493.mp3","eb5738652c1d":"audio/ai8-ai-in-the-world/eb5738652c1d.mp3","dec1ce6c690b":"audio/ai8-ai-in-the-world/dec1ce6c690b.mp3","3fb0e684b56b":"audio/ai8-ai-in-the-world/3fb0e684b56b.mp3","2e2a56f18f52":"audio/ai8-ai-in-the-world/2e2a56f18f52.mp3","e0293c5ef2f8":"audio/ai8-ai-in-the-world/e0293c5ef2f8.mp3","3a86ebc8a0de":"audio/ai8-ai-in-the-world/3a86ebc8a0de.mp3","66590c21d92e":"audio/ai8-ai-in-the-world/66590c21d92e.mp3","e18a189a9371":"audio/ai8-ai-in-the-world/e18a189a9371.mp3","8af1f0edc12c":"audio/ai8-ai-in-the-world/8af1f0edc12c.mp3","61b0dc472568":"audio/ai8-ai-in-the-world/61b0dc472568.mp3","782d14269d8e":"audio/ai8-ai-in-the-world/782d14269d8e.mp3","d811e87eefb3":"audio/ai8-ai-in-the-world/d811e87eefb3.mp3","71a51a023ae8":"audio/ai8-ai-in-the-world/71a51a023ae8.mp3","fd2d26303411":"audio/ai8-ai-in-the-world/fd2d26303411.mp3","25c6023076a9":"audio/ai8-ai-in-the-world/25c6023076a9.mp3","ce97d9170f39":"audio/ai8-ai-in-the-world/ce97d9170f39.mp3","c6528c6ffb53":"audio/ai8-ai-in-the-world/c6528c6ffb53.mp3","ea772390aff5":"audio/ai8-ai-in-the-world/ea772390aff5.mp3","f163996ea4a8":"audio/ai8-ai-in-the-world/f163996ea4a8.mp3","556e94dd062a":"audio/ai8-ai-in-the-world/556e94dd062a.mp3","0fc523019ec6":"audio/ai8-ai-in-the-world/0fc523019ec6.mp3","6dc110e88376":"audio/ai8-ai-in-the-world/6dc110e88376.mp3","b4c8733315b4":"audio/ai8-ai-in-the-world/b4c8733315b4.mp3","2b66b75b0b3b":"audio/ai8-ai-in-the-world/2b66b75b0b3b.mp3","1843ca7ab5e2":"audio/ai8-ai-in-the-world/1843ca7ab5e2.mp3","33ebfdf3cec8":"audio/ai8-ai-in-the-world/33ebfdf3cec8.mp3","60a0328cc5b3":"audio/ai8-ai-in-the-world/60a0328cc5b3.mp3","57f54cf2d9c1":"audio/ai8-ai-in-the-world/57f54cf2d9c1.mp3","bccf92bde283":"audio/ai8-ai-in-the-world/bccf92bde283.mp3","996a38337d03":"audio/ai8-ai-in-the-world/996a38337d03.mp3","f3bc581be169":"audio/ai8-ai-in-the-world/f3bc581be169.mp3","8ddacb659a2c":"audio/ai8-ai-in-the-world/8ddacb659a2c.mp3","886cbc3314fc":"audio/ai8-ai-in-the-world/886cbc3314fc.mp3","43b0baf16b1c":"audio/ai8-ai-in-the-world/43b0baf16b1c.mp3","9bb8216b6df6":"audio/ai8-ai-in-the-world/9bb8216b6df6.mp3","afd1a2ad7d92":"audio/ai8-ai-in-the-world/afd1a2ad7d92.mp3","dab05dcf3741":"audio/ai8-ai-in-the-world/dab05dcf3741.mp3","fa1931c10a75":"audio/ai8-ai-in-the-world/fa1931c10a75.mp3","524933b0f142":"audio/ai8-ai-in-the-world/524933b0f142.mp3","852128f8e136":"audio/ai8-ai-in-the-world/852128f8e136.mp3","a9b70f798be4":"audio/ai8-ai-in-the-world/a9b70f798be4.mp3","ad3fb67350cf":"audio/ai8-ai-in-the-world/ad3fb67350cf.mp3","11443dc67dfe":"audio/ai8-ai-in-the-world/11443dc67dfe.mp3","45987e67c310":"audio/ai8-ai-in-the-world/45987e67c310.mp3","238daf34ec4a":"audio/ai8-ai-in-the-world/238daf34ec4a.mp3","e7c29c346387":"audio/ai8-ai-in-the-world/e7c29c346387.mp3","385275180f59":"audio/ai8-ai-in-the-world/385275180f59.mp3","9a79f79020fd":"audio/ai8-ai-in-the-world/9a79f79020fd.mp3","1477cc09fc58":"audio/ai8-ai-in-the-world/1477cc09fc58.mp3","ea199cc55239":"audio/ai8-ai-in-the-world/ea199cc55239.mp3","6f88d11f2e38":"audio/ai8-ai-in-the-world/6f88d11f2e38.mp3","076a2a058c79":"audio/ai8-ai-in-the-world/076a2a058c79.mp3","fe43cdedf0fb":"audio/ai8-ai-in-the-world/fe43cdedf0fb.mp3","44004d9005f2":"audio/ai8-ai-in-the-world/44004d9005f2.mp3","4711fe6412dc":"audio/ai8-ai-in-the-world/4711fe6412dc.mp3","d43d682f7ece":"audio/ai8-ai-in-the-world/d43d682f7ece.mp3","bd9c9a1bb4b5":"audio/ai8-ai-in-the-world/bd9c9a1bb4b5.mp3","c40bc227dfc9":"audio/ai8-ai-in-the-world/c40bc227dfc9.mp3","d91210fecbc7":"audio/ai8-ai-in-the-world/d91210fecbc7.mp3","99e252d4b33a":"audio/ai8-ai-in-the-world/99e252d4b33a.mp3","557391641179":"audio/ai8-ai-in-the-world/557391641179.mp3","5c9c599e847f":"audio/ai8-ai-in-the-world/5c9c599e847f.mp3","51f73c827b04":"audio/ai8-ai-in-the-world/51f73c827b04.mp3","adc5658068bc":"audio/ai8-ai-in-the-world/adc5658068bc.mp3","531fca172ff4":"audio/ai8-ai-in-the-world/531fca172ff4.mp3","6694f1e27b8a":"audio/ai8-ai-in-the-world/6694f1e27b8a.mp3","7582f1d3ec78":"audio/ai8-ai-in-the-world/7582f1d3ec78.mp3","4f09725f5967":"audio/ai8-ai-in-the-world/4f09725f5967.mp3","3ddb7a25ac1f":"audio/ai8-ai-in-the-world/3ddb7a25ac1f.mp3","d9783d8e7a86":"audio/ai8-ai-in-the-world/d9783d8e7a86.mp3","747b4f238c15":"audio/ai8-ai-in-the-world/747b4f238c15.mp3","fd6e44497f0b":"audio/ai8-ai-in-the-world/fd6e44497f0b.mp3","79cffea153bc":"audio/ai8-ai-in-the-world/79cffea153bc.mp3","13fb677fd875":"audio/ai8-ai-in-the-world/13fb677fd875.mp3","d4267212a199":"audio/ai8-ai-in-the-world/d4267212a199.mp3","88f08865f127":"audio/ai8-ai-in-the-world/88f08865f127.mp3","5948cab622f2":"audio/ai8-ai-in-the-world/5948cab622f2.mp3","6d32e307a5b7":"audio/ai8-ai-in-the-world/6d32e307a5b7.mp3","8c6045ce1a5b":"audio/ai8-ai-in-the-world/8c6045ce1a5b.mp3","3bffb8b7a993":"audio/ai8-ai-in-the-world/3bffb8b7a993.mp3","5cf8787b34fa":"audio/ai8-ai-in-the-world/5cf8787b34fa.mp3","a5a4ff7673c6":"audio/ai8-ai-in-the-world/a5a4ff7673c6.mp3","ce1fd9818d76":"audio/ai8-ai-in-the-world/ce1fd9818d76.mp3","f9b5fb99c1e9":"audio/ai8-ai-in-the-world/f9b5fb99c1e9.mp3","f144ee1168bb":"audio/ai8-ai-in-the-world/f144ee1168bb.mp3","6c8ccb5eea9d":"audio/ai8-ai-in-the-world/6c8ccb5eea9d.mp3","f578997819d8":"audio/ai8-ai-in-the-world/f578997819d8.mp3","c7dc64281e96":"audio/ai8-ai-in-the-world/c7dc64281e96.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.part-title','.jc-text','.sub'],extraNonDecorateSelectors:'.matchbtn,.mcopt,.judge-card,.judge-zone,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
 </html>

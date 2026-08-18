@@ -1,0 +1,234 @@
+AI LITERACY CURRICULUM
+Computer Skills Platform - AI Course
+Five modules, twelve lessons
+
+
+ABOUT THIS DOCUMENT
+
+This document lists the modules and lessons that make up the AI literacy course,
+describes what each lesson teaches, and gives the source for every factual claim
+or teaching framework the lesson content is based on. Citation numbers refer to
+the reference list at the end of this document. Lessons that do not carry a
+citation are original design work (game mechanics, scoring, scenario writing)
+and are not based on an external source.
+
+Each lesson runs through the same five parts: a short hook framing a real
+situation, a brief concept explanation, a hands-on activity with feedback after
+each step, a short reflection question, and a completion score. Lesson files
+are self-contained HTML pages stored in public/games/ and are listed by file
+name below.
+
+
+MODULE 1 - FOUNDATIONS
+
+Lesson: What AI Is and How It Works
+File: ai0-ai-foundations.html
+
+Teaches that an AI language model produces text by predicting one word (or
+word-fragment) at a time based on patterns learned from training data, rather
+than by reasoning the way a person does. Also teaches that a model can state a
+wrong answer with the same apparent confidence as a correct one, because the
+model has no built-in way to signal uncertainty. The hands-on activity has
+students sort true and false statements about AI, then match AI-related terms
+to their definitions.
+Sources: 1, 4, 5
+
+Lesson: AI Trainer
+File: ai6-model-trainer.html
+
+Teaches the basic loop behind supervised machine learning: label a set of
+examples, train a model on those labels, then test the model on new examples
+it has not seen. Also teaches that a model trained on a narrow or unbalanced
+set of examples will make mistakes or unfair predictions when it meets
+something outside that set. The hands-on activity has students label images,
+flag mislabeled data, retrain a model, and answer questions about why a
+model failed and which training set would be fairest.
+Sources: 1, 3, 4, 6
+
+Lesson: Bias Detective
+File: ai7-bias-detective.html
+
+Teaches how an unbalanced training set produces a biased model, using four
+scenarios: a fruit-sorting camera, a face-recognition door, a voice assistant,
+and a photo app that misjudges lighting on darker skin tones. In each case
+students inspect a data table, decide why the system is failing, choose or
+build a fix, and see the model retrained and retested.
+Sources: 1, 3
+
+
+MODULE 2 - WORKING WITH AI
+
+Lesson: Chat Interface Explorer
+File: ai1-ui-inspector.html
+
+Teaches the parts of a typical AI chat interface, such as the send button, the
+stop-generating button, model switching, and chat history, along with the
+concept of a token as the basic unit an AI model reads and writes text in. The
+hands-on activity is a guided tour where students perform each action in a
+mock chat interface, followed by an exercise ordering tokens correctly and a
+short quiz identifying interface elements.
+No external source cited; content is based on common conventions shared by
+mainstream AI chat products.
+
+Lesson: Prompt Fixer
+File: ai2-prompt-fixer.html
+
+Teaches that a clear instruction to an AI system generally needs three parts:
+who the AI should act as, what it should do, and what form the answer should
+take. Students first pick the better of several sample prompts, then rewrite
+weak prompts themselves and see them checked against these three parts.
+Sources: 7, 8
+
+Lesson: Discernment
+File: ai10-discernment.html
+
+Teaches students to check an AI's answer before trusting it, rather than
+trusting it because it sounds confident. The hands-on activity presents
+sixteen AI answers, some correct, some wrong, and some biased; students find
+the specific part of the answer that gives it away, then classify the answer
+as trustworthy, needing a check, or clearly wrong. One round uses a fabricated
+sprint time to illustrate a false but plausible-sounding claim. The lesson
+name follows the general use of the word "discernment" in AI literacy
+teaching, including Anthropic's AI Fluency course, which names critical
+evaluation of AI output as one of four core competencies. No text, scenario,
+or exercise from that course was copied; the lesson content here is original.
+Sources: 2, 5, 11, 12
+
+Lesson: Diligence
+File: ai11-diligence.html
+
+Teaches when it is acceptable to use AI for a task, when it is acceptable but
+must be disclosed, and when it is not acceptable, based on common academic
+integrity guidance. The hands-on activity sorts sixteen scenarios into these
+three categories and asks students to write a short disclosure sentence for
+scenarios that require one. The lesson name follows the same general use of
+the word "diligence" as Anthropic's AI Fluency course, which names
+responsible creation, transparency, and ownership of AI-assisted work as one
+of four core competencies. No text, scenario, or exercise from that course
+was copied; the lesson content here is original.
+Sources: 2, 9, 10, 12
+
+
+MODULE 3 - SHAPING AI BEHAVIOR
+
+Lesson: Gem Architect
+File: ai4-gem-architect.html
+
+Teaches how to give an AI assistant a persona and a set of rules, including
+the idea that a rule works better when it pairs something the assistant should
+not do with something it should do instead. Students answer warm-up questions
+about rule design, then build a set of rules for an AI tutor and watch it
+tested against simulated student requests.
+Sources: 7, 8
+
+Lesson: Sandbox Master
+File: ai5-sandbox-master.html
+
+Teaches that settings such as a creativity level and an assigned role change
+the tone and content of an AI's response. Students experiment freely in a
+simulated chat with a creativity slider and a role selector, then answer
+prediction questions about how a given setting would change the output.
+No external source cited; content demonstrates a general property of
+generative AI systems rather than a specific claim requiring a citation.
+
+
+MODULE 4 - AI IN EVERYDAY LIFE
+
+Lesson: Learn With AI
+File: ai3-learn-with-ai.html
+
+Teaches how to use an AI chat assistant as a study aid across school subjects.
+Students work through several topics, each combining a simulated chat
+exchange with practice questions in different formats, including multiple
+choice, fill in the blank, matching, and ordering steps.
+No external source cited; topic content (fractions, multiplication, vocabulary)
+is standard school curriculum material.
+
+Lesson: AI in the World
+File: ai8-ai-in-the-world.html
+
+Teaches that AI is present in many everyday applications, not only chatbots,
+and that some uses of AI are safe while others carry risk. Students identify
+which of several systems is not an AI example, match AI systems to the kind
+of data likely used to train them, and sort everyday scenarios into safe and
+risky categories.
+Sources: 1, 2
+
+
+MODULE 5 - CAPSTONE
+
+Lesson: AI Quest
+File: ai9-ai-quest.html
+
+A closing project that asks students to design an AI system end to end: state
+a goal, choose training data, review test results, check whether the system
+generalizes to new cases, check the system for bias, decide who should be
+told the system is in use, and launch it responsibly. This lesson combines
+the skills taught in the earlier eleven lessons rather than introducing new
+external material.
+Sources: 2, 3
+
+
+CITATIONS
+
+1. AI4K12 Initiative. "Five Big Ideas in AI." Accessed 2026.
+   https://ai4k12.org/artificial-intelligence-thinking-in-k-12/
+
+2. UNESCO. "AI Competency Framework for Students." 2024.
+   https://www.unesco.org/en/articles/ai-competency-framework-students
+
+3. Raspberry Pi Foundation and Google DeepMind. "Experience AI" curriculum.
+   https://www.raspberrypi.org/blog/a-teachers-guide-to-teaching-experience-ai-lessons/
+   https://experience-ai.org/en/units/foundations-of-ai/lessons/3
+
+4. University of Helsinki and MinnaLearn. "Elements of AI."
+   https://www.elementsofai.com/
+
+5. OpenAI. "Why language models hallucinate." 2025.
+   https://openai.com/index/why-language-models-hallucinate/
+   Kalai, A. and Nachum, O. "Why Language Models Hallucinate." arXiv:2509.04664.
+   https://arxiv.org/pdf/2509.04664
+
+6. Google. "Teachable Machine."
+   https://teachablemachine.withgoogle.com/
+
+7. Anthropic. "Prompt engineering best practices."
+   https://claude.com/blog/best-practices-for-prompt-engineering
+
+8. OpenAI. "Best practices for prompt engineering with the OpenAI API."
+   https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api
+
+9. Carnegie Mellon University, Eberly Center. "Examples of possible academic
+   integrity policies that address student use of generative AI tools."
+   https://www.cmu.edu/teaching/technology/aitools/academicintegrity/index.html
+
+10. Vanderbilt University. "Academic Integrity and Generative AI."
+    https://www.vanderbilt.edu/generative-ai/academic-integrity/
+
+11. World Athletics. Official records database, men's 100 metres.
+    https://worldathletics.org/records/by-category/world-records
+
+12. Anthropic. "AI Fluency: Framework and Foundations," developed with
+    Professor Joseph Feller (University College Cork) and Professor Rick
+    Dakan (Ringling College). Names Delegation, Description, Discernment,
+    and Diligence as the four core competencies of the framework.
+    https://www.anthropic.com/learn/claude-for-you
+    https://anthropic.skilljar.com/ai-fluency-framework-foundations
+    https://anthropic.skilljar.com/ai-fluency-for-students
+
+
+NOTE ON ORIGINALITY
+
+The lesson names "Discernment" and "Diligence" and the general idea of
+teaching critical evaluation of AI output and responsible disclosure of AI
+use are shared with Anthropic's AI Fluency course, cited above. These are
+common English words used broadly across AI literacy education, not names or
+text owned by Anthropic. No paragraph, scenario, exercise, image, or other
+material was copied, paraphrased from, or adapted out of the Anthropic
+course, the Experience AI curriculum, Elements of AI, or any other source
+listed here. All lesson text, scenarios, and game mechanics in this course
+were written independently for this platform. Every source above was checked
+directly on the publisher's own site (openai.com, anthropic.com,
+unesco.org, raspberrypi.org, elementsofai.com, teachablemachine.withgoogle.com,
+ai4k12.org, cmu.edu, vanderbilt.edu, worldathletics.org, arxiv.org) rather
+than through a secondary or unofficial mirror.

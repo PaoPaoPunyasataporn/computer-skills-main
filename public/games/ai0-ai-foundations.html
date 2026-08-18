@@ -8,65 +8,138 @@
 <link href="_lib/theme-base.css" rel="stylesheet">
 <style>
 :root{
-  --green:#38A93A; --green-l:#5CD35B; --green-d:#2E8B30; --green-light:#E9FBE7;
-  --blue:#3A82F6; --blue-l:#2E9BFF; --blue-d:#2E64D6;
-  --purple:#9A5CF0; --purple-d:#7C3EE0;
-  --orange:#F0982E; --orange-d:#D07E1E; --gold:#FFC24B; --amber:#B4772E;
   --primary:#0D9488; --primary-light:#E1F5F2; --primary-dark:#0B7A70;
+  --green:#38A93A; --green-light:#E9FBE7;
+  --amber:#C58A00; --amber-light:#FFF3D6;
+  --red:#E4614F; --red-light:#FDECEA;
   --panel2:var(--cream2);
-  --radius:16px; --shadow:none;
 }
-body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
 h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
-.screen{display:none;width:100%;max-width:620px;flex-direction:column;align-items:center;gap:16px;}
-.screen.active{display:flex;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
 
-.intro-wrap,.teach-wrap,.results-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
-.intro-icon{font-size:64px;margin-bottom:10px;display:block;}
-.intro-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
-.intro-sub{font-size:14.5px;color:var(--text2);line-height:1.7;margin-bottom:18px;}
-.goal-box{width:100%;background:var(--panel2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px;}
-.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
-.goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
-.goal-text b{color:var(--primary-dark);}
+/* ===== same card/button/chip language as the rest of the AI course, laid
+   out full-bleed with a persistent 5-part process strip up top ===== */
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+.center{text-align:center;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
 
 .btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
-.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
 .btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
 
-.teach-slide{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
-.teach-icon{font-size:52px;}
-.teach-title{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
-.teach-body{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
-.teach-example{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:var(--text);margin-top:4px;text-align:left;max-width:480px;}
-.teach-example b{color:var(--primary-dark);}
-.teach-dots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
-.tdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
-.tdot.on{background:var(--primary);width:22px;border-radius:5px;}
-.teach-nav{display:flex;gap:10px;margin-top:14px;}
-.teach-nav .btn{flex:1;}
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.ccard .cx{background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 10px 10px 0;padding:10px 14px;font-size:13.5px;color:var(--text);margin-top:4px;text-align:left;max-width:480px;}
+.ccard .cx b{color:var(--primary-dark);}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
 
-.round-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-.round-tag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+/* concept-card demo animations */
+.demo-predict{margin-top:10px;padding:14px 10px 26px;background:var(--panel2);border-radius:14px;max-width:480px;width:100%;box-sizing:border-box;}
+.dp-sentence{font-family:'Mitr',sans-serif;font-size:18px;text-align:center;min-height:26px;}
+.dp-word{opacity:0;display:inline-block;margin:0 3px;font-weight:700;color:var(--primary-dark);animation:dpCycle 4.2s ease-in-out infinite;}
+.dp-cursor{color:var(--primary);animation:dpBlink .9s step-end infinite,dpCycle 4.2s ease-in-out infinite;}
+@keyframes dpCycle{0%{opacity:0;transform:translateY(5px);}8%{opacity:1;transform:translateY(0);}88%{opacity:1;}96%{opacity:0;}100%{opacity:0;}}
+@keyframes dpBlink{50%{opacity:0;}}
+.dp-bars{display:flex;gap:14px;justify-content:center;align-items:flex-end;height:52px;margin-top:22px;}
+.dp-bar{width:32px;background:linear-gradient(180deg,color-mix(in srgb,var(--primary) 40%,white),var(--primary));border-radius:6px 6px 2px 2px;height:0;opacity:0;position:relative;animation:dpGrow 4.2s ease-in-out infinite;}
+.dp-bar span{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--text3);white-space:nowrap;font-family:'Sarabun',sans-serif;}
+@keyframes dpGrow{0%,20%{height:0;opacity:0;}30%{opacity:1;}85%{height:var(--h);opacity:1;}96%{height:0;opacity:0;}100%{height:0;opacity:0;}}
+
+.demo-conf{margin-top:10px;padding:14px 16px;background:var(--panel2);border-radius:14px;max-width:480px;width:100%;box-sizing:border-box;text-align:center;}
+.dc-q{font-size:13px;color:var(--text3);}
+.dc-meter{width:100%;max-width:280px;height:14px;border-radius:8px;background:var(--panel);margin:8px auto 6px;overflow:hidden;border:1px solid var(--border);animation:dcFlash 4.2s ease-in-out infinite;}
+.dc-fill{height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,#38A93A,#0D9488);animation:dcFill 4.2s ease-in-out infinite;}
+@keyframes dcFill{0%{width:0;}22%{width:97%;}92%{width:97%;}100%{width:97%;}}
+@keyframes dcFlash{0%{opacity:.35;}10%{opacity:1;}92%{opacity:1;}97%{opacity:0;}100%{opacity:.35;}}
+.dc-label{display:flex;justify-content:center;gap:12px;font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;}
+.dc-pct{color:var(--primary-dark);}
+.dc-x{color:#B7331E;opacity:0;animation:dcXShow 4.2s ease-in-out infinite;}
+@keyframes dcXShow{0%,25%{opacity:0;}32%{opacity:1;}92%{opacity:1;}97%{opacity:0;}100%{opacity:0;}}
+
+/* practice step: drag-and-drop sort */
+.sorthint{font-size:12.5px;color:var(--text3);text-align:center;margin:12px 0 2px;}
+.sortzone{display:flex;align-items:stretch;gap:10px;margin-top:10px;}
+.dropbin{flex:0 0 84px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;border:2.5px dashed var(--border);transition:transform .15s,box-shadow .15s;user-select:none;}
+.dropbin .bi{font-size:22px;}
+.dropbin.true{border-color:#38A93A;color:#2E8B30;background:var(--green-light);}
+.dropbin.false{border-color:#E4614F;color:#B7331E;background:var(--red-light);}
+.dropbin.hover{transform:scale(1.08);box-shadow:0 0 0 4px rgba(15,27,45,.08);}
+.dropbin.tapmode{cursor:pointer;}
+.dragcard{flex:1;background:var(--panel);border:2px solid var(--primary);border-radius:16px;padding:20px 16px;text-align:center;cursor:grab;touch-action:none;user-select:none;position:relative;box-shadow:0 4px 0 var(--primary-dark);}
+.dragcard.dragging{cursor:grabbing;box-shadow:0 12px 26px rgba(15,27,45,.22);z-index:5;transition:none;}
+.dragcard.snap{transition:transform .28s cubic-bezier(.34,1.56,.64,1);}
+.dragcard.selected{box-shadow:0 4px 0 var(--primary-dark),0 0 0 3px color-mix(in srgb,var(--primary) 45%,transparent);}
+.dragcard.fly{transition:transform .3s ease,opacity .3s ease .1s;opacity:0;}
+.dragcard .stext{font-size:16.5px;color:var(--text);line-height:1.6;font-weight:600;}
+.dragcard .dghint{font-size:11px;color:var(--text3);margin-top:8px;font-family:'Mitr',sans-serif;}
+
+/* practice step */
+.rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.rtag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
 .scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
 
-.statementcard{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:20px;padding:30px 26px;text-align:center;}
+.statementcard{width:100%;background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 14px 14px 0;padding:22px 24px;text-align:center;margin-top:12px;}
 .statementcard .slbl{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);letter-spacing:.5px;margin-bottom:10px;}
 .statementcard .stext{font-size:17px;color:var(--text);line-height:1.7;font-weight:600;}
 
-.choicerow{width:100%;display:flex;gap:12px;}
+.choicerow{width:100%;display:flex;gap:12px;margin-top:16px;}
 .choicebtn{flex:1;border:none;border-radius:16px;padding:16px 12px;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;color:#fff;transition:transform .1s;}
-.choicebtn:active{transform:translateY(3px);}
+.choicebtn:active:not(:disabled){transform:translateY(3px);}
 .choicebtn:disabled{opacity:.5;cursor:not-allowed;}
 .choicebtn.true{background:linear-gradient(135deg,#5CD35B,#38A93A);box-shadow:0 5px 0 #2E8B30;}
 .choicebtn.false{background:linear-gradient(135deg,#FF7A66,#E4614F);box-shadow:0 5px 0 #B7331E;}
 
-.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;}
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;margin-top:14px;}
 .explainbox.show{display:block;}
 .explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
 .explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
 .explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+/* phase header, shared by every hands-on sub-phase */
+.phasehead{font-family:'Mitr',sans-serif;font-size:14px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:12px;padding:9px 14px;margin-bottom:14px;text-align:center;}
+
+/* matching phase (ด่าน 2: จับคู่คำศัพท์ AI) */
+.matchhint{font-size:12.5px;color:var(--text3);text-align:center;margin:0 0 14px;}
+.matchgrid{display:flex;gap:14px;}
+.matchcol{flex:1;display:flex;flex-direction:column;gap:9px;}
+.matchchip{border:2px solid var(--border);background:var(--panel);border-radius:12px;padding:11px 12px;font-size:13.5px;line-height:1.5;cursor:pointer;text-align:left;transition:transform .1s,box-shadow .1s,border-color .1s;user-select:none;}
+.matchchip.term{font-family:'Mitr',sans-serif;font-weight:700;color:var(--primary-dark);text-align:center;}
+.matchchip:active:not(.matched):not(.locked){transform:scale(.97);}
+.matchchip.selected{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 30%,transparent);}
+.matchchip.matched{border-color:var(--green);background:var(--green-light);color:#2E8B30;cursor:default;opacity:.85;}
+.matchchip.wrongflash{animation:matchShake .35s;border-color:var(--red);}
+.matchchip.locked{opacity:.4;cursor:default;pointer-events:none;}
+@keyframes matchShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
 
 .res-emoji{font-size:70px;margin-bottom:8px;}
 .res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
@@ -76,97 +149,153 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 </head>
 <body>
 
-<div id="intro" class="screen active">
-  <div class="intro-wrap">
-    <span class="intro-icon">🤖</span>
-    <div class="intro-title">AI คืออะไร และทำงานอย่างไร</div>
-    <div class="intro-sub">ก่อนจะไปสั่งงาน AI เก่ง ๆ มารู้จักมันให้ลึกกว่านี้กันก่อน — AI คืออะไร เรียนรู้ยังไง แล้วทำไมบางทีถึงตอบผิด</div>
-    <div class="goal-box">
-      <span class="goal-chip">โมดูล 0</span>
-      <span class="goal-text">พื้นฐาน AI: มันคืออะไร เรียนรู้จากข้อมูลยังไง ทำงานโดยการ "ทาย" คำถัดไป และทำไมบางครั้งถึงตอบผิดแบบมั่นใจสุด ๆ (hallucination)</span>
-    </div>
-    <button class="btn" onclick="showTeach()">เริ่มเรียนรู้ →</button>
-  </div>
+<div id="procbar">
+  <div id="steprail"></div>
 </div>
 
-<div id="teach" class="screen">
-  <div class="teach-wrap">
-    <div id="teachSlides"></div>
-    <div class="teach-dots" id="teachDots"></div>
-    <div class="teach-nav">
-      <button class="btn ghost" id="teachBack" onclick="teachPrev()">← ย้อนกลับ</button>
-      <button class="btn" id="teachNext" onclick="teachNext()">ถัดไป →</button>
+<div class="stage">
+  <!-- STEP 1 · Hook (one line + one visual, real situation) -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🤖</span>
+      <div class="title">AI ตอบคำถามคุณได้ทันที ราวกับมันคิดเก่งเหมือนคน</div>
+      <div class="sub">แต่จริง ๆ แล้ว AI ไม่ได้ "คิด" เลยสักนิด — มันแค่ทายคำถัดไปเก่งมากจนดูเหมือนคิดได้</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
     </div>
   </div>
-</div>
 
-<div id="game" class="screen">
-  <div class="round-head">
-    <span class="round-tag" id="roundTag">ข้อที่ 1/7</span>
-    <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
+  <!-- STEP 2 · Concept -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
+    </div>
   </div>
 
-  <div class="statementcard">
-    <div class="slbl">🤔 จริงหรือมั่ว?</div>
-    <div class="stext" id="statementText"></div>
+  <!-- STEP 3 · Hands-on core (true/false with immediate feedback) -->
+  <div class="panel" id="s3" data-step="2" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือทำ</span>
+        <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
+      </div>
+
+      <div id="phaseSort">
+        <div class="phasehead">ด่าน 1: จริงหรือมั่ว?</div>
+        <span class="rtag" id="roundTag" style="display:block;margin:0 0 6px">ข้อที่ 1/13</span>
+        <div class="sorthint">🤔 ลากการ์ดไปใส่กล่องที่ถูกต้อง หรือแตะการ์ดแล้วแตะกล่อง</div>
+
+        <div class="sortzone" id="sortZone">
+          <div class="dropbin true" id="binTrue" data-ans="true"><span class="bi">✅</span>จริง</div>
+          <div class="dragcard" id="dragCard">
+            <div class="stext" id="statementText"></div>
+            <div class="dghint">ลาก ↔ หรือแตะเพื่อเลือก</div>
+          </div>
+          <div class="dropbin false" id="binFalse" data-ans="false"><span class="bi">❌</span>มั่ว</div>
+        </div>
+
+        <div class="explainbox" id="explainBox"></div>
+
+        <button class="btn" id="nextBtn" style="display:none;margin-top:14px" onclick="nextStatement()">ข้อถัดไป →</button>
+      </div>
+
+      <div id="phaseMatch" style="display:none">
+        <div class="phasehead">ด่าน 2: จับคู่คำศัพท์ AI</div>
+        <span class="rtag" id="matchTag" style="display:block;margin:0 0 6px">จับคู่แล้ว 0/6</span>
+        <div class="matchhint">🧩 แตะคำศัพท์ทางซ้าย แล้วแตะคำอธิบายทางขวาที่ตรงกัน</div>
+        <div class="matchgrid">
+          <div class="matchcol" id="matchTerms"></div>
+          <div class="matchcol" id="matchDefs"></div>
+        </div>
+        <div class="explainbox" id="matchExplainBox"></div>
+        <button class="btn" id="matchNextBtn" style="display:none;margin-top:14px" onclick="goStep(3)">ไปต่อ →</button>
+      </div>
+    </div>
   </div>
 
-  <div class="choicerow">
-    <button class="choicebtn true" id="btnTrue" onclick="onAnswer(true)">✅ จริง</button>
-    <button class="choicebtn false" id="btnFalse" onclick="onAnswer(false)">❌ มั่ว</button>
+  <!-- STEP 4 · Reflection (+ stars/completion) -->
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">ครั้งหน้าที่คุยกับ AI คุณจะสังเกตอะไรเป็นพิเศษ?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าตอนนี้เข้าใจ AI มากขึ้นยังไง แล้วครั้งหน้าจะใช้มันอย่างระวังขึ้นตรงไหนบ้าง (เช่น เรื่องที่ AI อาจมั่ว หรือเรื่องที่ต้องเช็กซ้ำ)</div>
+      <textarea id="reflText" placeholder="เช่น ครั้งหน้าถ้า AI ตอบอะไรมั่นใจมาก ๆ ฉันจะลองเช็กกับแหล่งอื่นก่อนเชื่อ..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
   </div>
 
-  <div class="explainbox" id="explainBox"></div>
-
-  <button class="btn ghost" id="nextBtn" style="display:none;" onclick="nextStatement()">ข้อถัดไป →</button>
-</div>
-
-<div id="done" class="screen">
-  <div class="results-wrap">
-    <div class="res-emoji" id="resEmoji">🏆</div>
-    <div class="res-title" id="resTitle">เข้าใจ AI ดีมาก!</div>
-    <div class="res-stars" id="resStars">⭐⭐⭐</div>
-    <div class="res-score" id="resScore"></div>
-    <button class="btn" onclick="restartGame()">เล่นอีกครั้ง →</button>
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">เข้าใจ AI ดีมาก!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">เรียนอีกครั้ง →</button>
+    </div>
   </div>
 </div>
 
 <script>
-const TEACH_SLIDES = [
-  { icon:'🤖', title:'AI คืออะไร', body:'AI (ปัญญาประดิษฐ์) คือโปรแกรมคอมพิวเตอร์ที่เรียนรู้จากข้อมูลจำนวนมหาศาล เพื่อจดจำรูปแบบและสร้างคำตอบขึ้นมา — มันไม่ใช่สิ่งมีชีวิต ไม่มีความรู้สึกจริง ๆ แม้จะพูดจาดูเหมือนเข้าใจเราก็ตาม',
-    example:'AI ไม่ได้ "คิด" แบบมนุษย์ — มันคำนวณว่าคำหรือประโยคแบบไหนน่าจะเหมาะสมที่สุดจากสิ่งที่เคยเรียนรู้มา' },
-  { icon:'🧠', title:'AI เรียนรู้ได้ยังไง', body:'AI ถูก "ฝึก" (train) ด้วยข้อความ รูปภาพ และข้อมูลจำนวนมหาศาลจากอินเทอร์เน็ตและแหล่งอื่น ๆ แล้วเรียนรู้รูปแบบของภาษาและความรู้ต่าง ๆ จากข้อมูลเหล่านั้น',
-    example:'เหมือนอ่านหนังสือมาเป็นล้าน ๆ เล่ม แล้วจดจำว่าคำไหนมักตามหลังคำไหน เรื่องไหนมักอธิบายแบบไหน' },
-  { icon:'🎲', title:'AI ตอบโดยการ "ทาย" ทีละคำ', body:'เวลา AI ตอบคำถาม มันไม่ได้คิดคำตอบทั้งหมดในทีเดียว แต่ทายคำถัดไป (token) ทีละตัวต่อเนื่องกันไปเรื่อย ๆ จนกลายเป็นประโยคที่สมบูรณ์ โดยเลือกคำที่น่าจะเหมาะสมที่สุดในแต่ละครั้ง',
-    example:'คล้ายเกม "ต่อคำ" ที่ทายคำถัดไปเรื่อย ๆ จนครบประโยค — แต่ AI ทายเก่งมากเพราะเรียนรู้จากข้อมูลมหาศาล' },
-  { icon:'⚠️', title:'AI ก็ผิดพลาดได้ (Hallucination)', body:'เพราะ AI แค่ "ทาย" คำตอบที่น่าจะใช่ ไม่ได้รู้จริงเหมือนมนุษย์ตรวจสอบข้อเท็จจริง บางครั้งมันจึงตอบผิดหรือ "มั่ว" ข้อมูลขึ้นมาแบบมั่นใจสุด ๆ ทั้งที่ไม่เป็นความจริง เรียกอาการนี้ว่า Hallucination',
-    example:'ยิ่ง AI ตอบมั่นใจแค่ไหน ก็ยิ่งต้องตรวจสอบคำตอบสำคัญ ๆ ก่อนเชื่อหรือนำไปใช้จริงเสมอ' },
-  { icon:'🧰', title:'AI มีหลายแบบ ไม่ใช่แค่แชท', body:'นอกจากแชทบอทแล้ว ยังมี AI สร้างภาพ AI แต่งเพลง AI แปลภาษา และอีกมากมาย — ทั้งหมดทำงานด้วยหลักการคล้ายกันคือเรียนรู้จากข้อมูลจำนวนมาก แล้วทายผลลัพธ์ที่ดีที่สุด',
-    example:null },
+// The lesson has 4 SCREENS (curStep 0-3), but the process has 5 named PARTS —
+// "immediate feedback" happens live inside the hands-on screen rather than
+// being its own screen, so it and "hands-on core" both point at screen 2.
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
 ];
-let teachIdx = 0;
+let curStep = 0;
 function $(id){ return document.getElementById(id); }
-function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
 function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function renderTeach(){
-  const s = TEACH_SLIDES[teachIdx];
-  $('teachSlides').innerHTML = `<div class="teach-slide">
-    <span class="teach-icon">${s.icon}</span>
-    <div class="teach-title">${esc(s.title)}</div>
-    <div class="teach-body">${esc(s.body)}</div>
-    ${s.example ? `<div class="teach-example"><b>ตัวอย่าง</b> ${esc(s.example)}</div>` : ''}
-  </div>`;
-  $('teachDots').innerHTML = TEACH_SLIDES.map((_,i)=>`<span class="tdot${i===teachIdx?' on':''}"></span>`).join('');
-  $('teachBack').style.visibility = teachIdx===0 ? 'hidden' : 'visible';
-  const last = teachIdx === TEACH_SLIDES.length - 1;
-  $('teachNext').textContent = last ? 'เริ่มเล่น →' : 'ถัดไป →';
-  $('teachNext').onclick = last ? startGame : teachNext;
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
 }
-function teachNext(){ teachIdx = Math.min(TEACH_SLIDES.length-1, teachIdx+1); renderTeach(); }
-function teachPrev(){ teachIdx = Math.max(0, teachIdx-1); renderTeach(); }
-function showTeach(){ teachIdx = 0; renderTeach(); show('teach'); }
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2) startGame();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 
+// ===== Step 2: concept (2 essential ideas, condensed from the old 5 slides) =====
+const CONCEPTS = [
+  { icon:'🧠', title:'AI คืออะไร และเรียนรู้ยังไง', body:'AI คือโปรแกรมที่ถูก "ฝึก" ด้วยข้อความและข้อมูลจำนวนมหาศาล จนจดจำรูปแบบของภาษาได้ มันไม่ใช่สิ่งมีชีวิตและไม่มีความรู้สึกจริง ๆ — เวลาตอบคำถาม มันแค่ทายคำถัดไปทีละคำที่น่าจะเหมาะสมที่สุดจากรูปแบบที่เคยเรียนรู้มา',
+    example:'คล้ายเกม "ต่อคำ" ที่ทายคำถัดไปเรื่อย ๆ จนครบประโยค แต่ AI ทายเก่งมากเพราะเรียนรู้จากข้อมูลมหาศาล',
+    demo:`<div class="demo-predict"><div class="dp-sentence"><span class="dp-word" style="animation-delay:0s">แมว</span><span class="dp-word" style="animation-delay:.5s">กิน</span><span class="dp-word dp-cursor" style="animation-delay:1s">▍</span></div><div class="dp-bars"><div class="dp-bar" style="--h:86%;animation-delay:1.1s"><span>ปลา</span></div><div class="dp-bar" style="--h:44%;animation-delay:1.1s"><span>ข้าว</span></div><div class="dp-bar" style="--h:20%;animation-delay:1.1s"><span>นม</span></div></div></div>` },
+  { icon:'⚠️', title:'AI ก็ผิดพลาดได้ และมีหลายแบบ', body:'เพราะ AI แค่ "ทาย" คำตอบที่น่าจะใช่ ไม่ได้รู้จริงเหมือนมนุษย์ตรวจสอบข้อเท็จจริง บางครั้งจึงตอบผิดหรือ "มั่ว" ข้อมูลแบบมั่นใจสุด ๆ เรียกว่า Hallucination นอกจากนี้ AI ยังมีหลายแบบ ไม่ใช่แค่แชทบอท เช่น AI สร้างภาพ หรือ AI แปลภาษา',
+    example:'ยิ่ง AI ตอบมั่นใจแค่ไหน ก็ยิ่งต้องตรวจสอบคำตอบสำคัญ ๆ ก่อนเชื่อหรือนำไปใช้จริงเสมอ',
+    demo:`<div class="demo-conf"><div class="dc-q">"น้ำแข็งลอยน้ำเพราะน้ำแข็งหนักกว่าน้ำ" — AI ตอบว่า...</div><div class="dc-meter"><div class="dc-fill"></div></div><div class="dc-label"><span class="dc-pct">มั่นใจ 97%</span><span class="dc-x">✗ แต่ผิด!</span></div></div>` },
+];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div><div class="cb">${esc(c.body)}</div>${c.example ? `<div class="cx"><b>ตัวอย่าง</b> ${esc(c.example)}</div>` : ''}${c.demo || ''}</div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มเล่น →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3: hands-on true/false round =====
 const STATEMENTS = [
   { text:'AI คิดและมีความรู้สึกเหมือนมนุษย์จริง ๆ', answer:false,
     explain:'AI เป็นโปรแกรมที่ทายรูปแบบจากข้อมูล ไม่มีความรู้สึกหรือความคิดแบบมนุษย์ แม้จะพูดจาดูเหมือนเข้าใจเราก็ตาม' },
@@ -182,30 +311,189 @@ const STATEMENTS = [
     explain:'ถูกต้อง! AI ทำได้หลายอย่างมาก ทั้งสร้างภาพ แต่งเพลง แปลภาษา ไม่ได้มีแค่แชทบอทเท่านั้น' },
   { text:'เพราะ AI ฉลาดมาก เราเลยไม่จำเป็นต้องตรวจสอบคำตอบของมันเลย', answer:false,
     explain:'ตรงข้ามเลย! ยิ่ง AI ตอบมั่นใจแค่ไหน เราก็ยิ่งต้องตรวจสอบคำตอบสำคัญ ๆ ก่อนเชื่อหรือนำไปใช้จริง' },
+  { text:'AI อาจตอบแบบลำเอียง (bias) ได้ เพราะเรียนรู้จากข้อมูลที่มนุษย์สร้างขึ้น ซึ่งอาจมีอคติปนอยู่แล้ว', answer:true,
+    explain:'ถูกต้อง! ถ้าข้อมูลที่ใช้ฝึกมีอคติ AI ก็อาจเรียนรู้อคตินั้นมาด้วย จึงต้องระวังและตรวจสอบคำตอบที่เกี่ยวกับคนหรือกลุ่มต่าง ๆ เป็นพิเศษ' },
+  { text:'ถ้า AI ตอบเรื่องเลขคำนวณหรือข้อเท็จจริงสำคัญ เราควรตรวจสอบซ้ำอีกครั้งก่อนเชื่อ', answer:true,
+    explain:'ถูกต้อง! การคำนวณเองหรือเช็กกับแหล่งอื่นก่อนเชื่อ ช่วยจับข้อผิดพลาดที่ AI อาจตอบมั่นใจผิด ๆ ได้' },
+  { text:'AI ทุกตัวถูกฝึกด้วยข้อมูลชุดเดียวกันเป๊ะ ๆ เหมือนกันหมด', answer:false,
+    explain:'ไม่จริง — AI แต่ละตัวถูกฝึกด้วยข้อมูลและวิธีการที่ต่างกัน จึงตอบไม่เหมือนกันเสมอไป แม้จะถามคำถามเดียวกัน' },
+  { text:'คำว่า "token" ในโลกของ AI หมายถึงหน่วยย่อยของคำหรือข้อความที่ AI ใช้ทายทีละหน่วย', answer:true,
+    explain:'ถูกต้อง! AI แบ่งข้อความเป็นหน่วยเล็ก ๆ เรียกว่า token แล้วทายทีละหน่วยต่อกันไปจนครบคำตอบ' },
+  { text:'AI สามารถสร้างสรรค์สิ่งใหม่ ๆ ขึ้นมาเองได้ โดยไม่ต้องอาศัยข้อมูลที่เคยเรียนรู้มาเลย', answer:false,
+    explain:'ไม่จริง — สิ่งที่ AI "สร้าง" ล้วนอิงจากรูปแบบในข้อมูลที่เคยเรียนรู้มาทั้งนั้น ไม่ได้คิดขึ้นมาลอย ๆ แบบไม่มีที่มา' },
+  { text:'ยิ่งข้อมูลที่ใช้ฝึก AI มีคุณภาพดีและหลากหลายมากเท่าไหร่ AI ก็มักจะตอบได้แม่นยำและเป็นธรรมมากขึ้นเท่านั้น', answer:true,
+    explain:'ถูกต้อง! คุณภาพและความหลากหลายของข้อมูลฝึกส่งผลโดยตรงต่อความแม่นยำและความเป็นธรรมของคำตอบ AI' },
 ];
 
 let idx = 0, wrongCount = 0;
+let answered = false, selectedTap = false, dragState = null;
 
-function startGame(){ idx = 0; wrongCount = 0; show('game'); renderStatement(); }
-function restartGame(){ startGame(); }
+let sortZoneReady = false;
+function startGame(){
+  idx = 0; wrongCount = 0; matchWrong = 0; matchedCount = 0; matchSel = null;
+  $('phaseSort').style.display = ''; $('phaseMatch').style.display = 'none';
+  if (!sortZoneReady){ setupSortZone(); sortZoneReady = true; }
+  renderStatement();
+}
+function restartGame(){ goStep(0); }
+
+// ===== Step 3, phase 2: match AI terms to plain-language definitions =====
+const TERMS = [
+  { term:'Token', def:'หน่วยย่อยของคำหรือข้อความ ที่ AI ใช้ทายทีละหน่วยต่อ ๆ กันไป' },
+  { term:'ข้อมูลฝึก (Training data)', def:'ข้อความและข้อมูลจำนวนมหาศาลที่ป้อนให้ AI เรียนรู้รูปแบบภาษา' },
+  { term:'Hallucination', def:'การที่ AI ตอบมั่นใจมาก แต่ข้อมูลนั้นมั่วหรือไม่เป็นจริง' },
+  { term:'อคติ (Bias)', def:'ความลำเอียงที่ AI อาจเรียนรู้มาจากข้อมูลฝึกที่มนุษย์สร้างขึ้น' },
+  { term:'พรอมป์ต์ (Prompt)', def:'ข้อความหรือคำสั่งที่เราพิมพ์ป้อนให้ AI เพื่อขอคำตอบ' },
+  { term:'โมเดล (Model)', def:'โปรแกรม AI ที่ผ่านการฝึกมาแล้ว พร้อมใช้ทายคำตอบจากสิ่งที่เรียนรู้มา' },
+];
+let matchWrong = 0, matchedCount = 0, matchSel = null, matchReady = false;
+
+function shuffle(arr){ const a = arr.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function startMatchPhase(){
+  $('phaseSort').style.display = 'none'; $('phaseMatch').style.display = '';
+  matchWrong = 0; matchedCount = 0; matchSel = null;
+  $('matchTag').textContent = `จับคู่แล้ว 0/${TERMS.length}`;
+  $('matchExplainBox').className = 'explainbox';
+  $('matchExplainBox').innerHTML = '';
+  $('matchNextBtn').style.display = 'none';
+
+  const termOrder = TERMS.map((t,i)=>i);
+  const defOrder = shuffle(TERMS.map((t,i)=>i));
+  $('matchTerms').innerHTML = termOrder.map(i=>`<div class="matchchip term" data-idx="${i}" data-role="term">${esc(TERMS[i].term)}</div>`).join('');
+  $('matchDefs').innerHTML = defOrder.map(i=>`<div class="matchchip" data-idx="${i}" data-role="def">${esc(TERMS[i].def)}</div>`).join('');
+
+  if (!matchReady){
+    matchReady = true;
+    document.getElementById('phaseMatch').addEventListener('click', (e)=>{
+      const chip = e.target.closest('.matchchip');
+      if (!chip || chip.classList.contains('matched')) return;
+      const role = chip.dataset.role, i = Number(chip.dataset.idx);
+      if (role === 'term'){
+        document.querySelectorAll('.matchchip.term').forEach(c=>c.classList.remove('selected'));
+        chip.classList.add('selected');
+        matchSel = i;
+        return;
+      }
+      // role === 'def'
+      if (matchSel === null) return;
+      if (matchSel === i){
+        document.querySelector(`.matchchip.term[data-idx="${i}"]`).classList.add('matched');
+        chip.classList.add('matched');
+        matchedCount++;
+        matchSel = null;
+        $('matchTag').textContent = `จับคู่แล้ว ${matchedCount}/${TERMS.length}`;
+        if (window.dlf) dlf.cheer('จับคู่ถูก!');
+        if (matchedCount >= TERMS.length){
+          $('matchExplainBox').className = 'explainbox show correct';
+          $('matchExplainBox').innerHTML = `<b>✅ จับคู่ครบทุกคำแล้ว!</b>เก่งมาก จำคำศัพท์ AI พื้นฐานได้ครบเลย`;
+          $('matchNextBtn').style.display = 'block';
+        }
+      } else {
+        matchWrong++;
+        $('scorePill').textContent = `ตอบผิด ${wrongCount + matchWrong} ครั้ง`;
+        chip.classList.add('wrongflash');
+        setTimeout(()=>chip.classList.remove('wrongflash'), 350);
+        document.querySelectorAll('.matchchip.term.selected').forEach(c=>{ c.classList.add('wrongflash'); setTimeout(()=>c.classList.remove('wrongflash'),350); });
+        matchSel = null;
+        document.querySelectorAll('.matchchip.term').forEach(c=>c.classList.remove('selected'));
+      }
+    });
+  }
+}
 
 function renderStatement(){
   const s = STATEMENTS[idx];
+  answered = false; selectedTap = false;
   $('roundTag').textContent = `ข้อที่ ${idx+1}/${STATEMENTS.length}`;
   $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
   $('statementText').textContent = s.text;
-  $('btnTrue').disabled = false;
-  $('btnFalse').disabled = false;
+  const card = $('dragCard');
+  card.className = 'dragcard';
+  card.style.transform = '';
+  card.style.opacity = '';
+  $('binTrue').classList.remove('hover');
+  $('binFalse').classList.remove('hover');
   $('explainBox').className = 'explainbox';
   $('explainBox').innerHTML = '';
   $('nextBtn').style.display = 'none';
 }
 
-function onAnswer(choice){
+// Pointer-based drag (mouse + touch, works inside iframes/tablets), with a
+// tap-then-tap-target fallback for devices where a real drag is awkward.
+function setupSortZone(){
+  const card = $('dragCard');
+  const bins = [$('binTrue'), $('binFalse')];
+  let startX=0, startY=0, dragging=false;
+
+  function binUnderPoint(x,y){
+    for (const b of bins){
+      const r = b.getBoundingClientRect();
+      if (x>=r.left && x<=r.right && y>=r.top && y<=r.bottom) return b;
+    }
+    return null;
+  }
+
+  card.addEventListener('pointerdown', (e)=>{
+    if (answered) return;
+    startX = e.clientX; startY = e.clientY; dragging = false;
+    dragState = { startX, startY };
+    card.setPointerCapture(e.pointerId);
+  });
+  card.addEventListener('pointermove', (e)=>{
+    if (answered || !dragState) return;
+    const dx = e.clientX - dragState.startX, dy = e.clientY - dragState.startY;
+    if (!dragging && Math.hypot(dx,dy) > 8){ dragging = true; card.classList.add('dragging'); card.classList.remove('snap','selected'); selectedTap = false; }
+    if (dragging){
+      card.style.transform = `translate(${dx}px,${dy}px)`;
+      const hit = binUnderPoint(e.clientX, e.clientY);
+      bins.forEach(b=>b.classList.toggle('hover', b===hit));
+    }
+  });
+  function endDrag(e){
+    if (answered || !dragState) return;
+    card.releasePointerCapture(e.pointerId);
+    if (dragging){
+      card.classList.remove('dragging');
+      card.classList.add('snap');
+      const hit = binUnderPoint(e.clientX, e.clientY);
+      bins.forEach(b=>b.classList.remove('hover'));
+      if (hit){ submitAnswer(hit.dataset.ans === 'true'); }
+      else { card.style.transform = ''; }
+    } else {
+      // plain tap: toggle selection for tap-then-tap fallback
+      selectedTap = !selectedTap;
+      card.classList.toggle('selected', selectedTap);
+    }
+    dragging = false; dragState = null;
+  }
+  card.addEventListener('pointerup', endDrag);
+  card.addEventListener('pointercancel', endDrag);
+
+  bins.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      if (answered || !selectedTap) return;
+      submitAnswer(b.dataset.ans === 'true');
+    });
+  });
+}
+
+function submitAnswer(choice){
+  if (answered) return;
+  answered = true;
   const s = STATEMENTS[idx];
-  $('btnTrue').disabled = true;
-  $('btnFalse').disabled = true;
+  const card = $('dragCard');
   const correct = choice === s.answer;
+  const targetBin = $(choice ? 'binTrue' : 'binFalse');
+  card.classList.remove('selected');
+  card.classList.add('snap');
+  const cardRect = card.getBoundingClientRect();
+  const binRect = targetBin.getBoundingClientRect();
+  const dx = (binRect.left + binRect.width/2) - (cardRect.left + cardRect.width/2);
+  const dy = (binRect.top + binRect.height/2) - (cardRect.top + cardRect.height/2);
+  card.style.transform = `translate(${dx}px,${dy}px) scale(.7)`;
+  card.classList.add('fly');
+
   if (!correct){ wrongCount++; $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`; }
   $('explainBox').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
   $('explainBox').innerHTML = `<b>${correct ? '✅ ถูกต้อง!' : '❌ ยังไม่ถูก — คำตอบคือ ' + (s.answer ? '"จริง"' : '"มั่ว"')}</b>${esc(s.explain)}`;
@@ -215,18 +503,24 @@ function onAnswer(choice){
 
 function nextStatement(){
   idx++;
-  if (idx >= STATEMENTS.length){ finishGame(); return; }
+  if (idx >= STATEMENTS.length){ startMatchPhase(); return; }
   renderStatement();
 }
 
+// ===== Step 4 done =====
 function finishGame(){
-  window.dlfStars = wrongCount <= 1 ? 3 : wrongCount <= 3 ? 2 : 1;
+  const totalWrong = wrongCount + matchWrong;
+  window.dlfStars = totalWrong <= 3 ? 3 : totalWrong <= 9 ? 2 : 1;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
   $('resTitle').textContent = window.dlfStars === 3 ? 'เข้าใจ AI ดีมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `ตอบครบ ${STATEMENTS.length} ข้อ โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
-  show('done');
+  $('resScore').textContent = `ทำครบ ${STATEMENTS.length + TERMS.length} ข้อ (จริง/มั่ว ${STATEMENTS.length} ข้อ + จับคู่คำศัพท์ ${TERMS.length} คำ) โดยตอบผิดทั้งหมด ${totalWrong} ครั้ง`;
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+renderRail();
 </script>
 
 <!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
@@ -278,8 +572,8 @@ function finishGame(){
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"7894d348539d":"audio/ai0-ai-foundations/7894d348539d.mp3","2b75803b3593":"audio/ai0-ai-foundations/2b75803b3593.mp3","913fc20c5336":"audio/ai0-ai-foundations/913fc20c5336.mp3","2a43a6c7241a":"audio/ai0-ai-foundations/2a43a6c7241a.mp3","92d4cde42ef4":"audio/ai0-ai-foundations/92d4cde42ef4.mp3","24ae56f57523":"audio/ai0-ai-foundations/24ae56f57523.mp3","7c5bd0776cc7":"audio/ai0-ai-foundations/7c5bd0776cc7.mp3","d28495d702b6":"audio/ai0-ai-foundations/d28495d702b6.mp3","d5434190130e":"audio/ai0-ai-foundations/d5434190130e.mp3","318ae759a395":"audio/ai0-ai-foundations/318ae759a395.mp3","29841feb5940":"audio/ai0-ai-foundations/29841feb5940.mp3","dc2d787e6624":"audio/ai0-ai-foundations/dc2d787e6624.mp3","7accfd41683a":"audio/ai0-ai-foundations/7accfd41683a.mp3","d585a6a9d18d":"audio/ai0-ai-foundations/d585a6a9d18d.mp3","a2c423e35ece":"audio/ai0-ai-foundations/a2c423e35ece.mp3","dcc32f564f59":"audio/ai0-ai-foundations/dcc32f564f59.mp3","396b703108c5":"audio/ai0-ai-foundations/396b703108c5.mp3","36feecf328f2":"audio/ai0-ai-foundations/36feecf328f2.mp3","e4c5f9e38e6d":"audio/ai0-ai-foundations/e4c5f9e38e6d.mp3","70c690d60cb7":"audio/ai0-ai-foundations/70c690d60cb7.mp3","9511a70fab79":"audio/ai0-ai-foundations/9511a70fab79.mp3","075de2fe6be7":"audio/ai0-ai-foundations/075de2fe6be7.mp3","7d62d2e7ae4e":"audio/ai0-ai-foundations/7d62d2e7ae4e.mp3","c641a587c0e2":"audio/ai0-ai-foundations/c641a587c0e2.mp3","0e66ec19ee8e":"audio/ai0-ai-foundations/0e66ec19ee8e.mp3","b5f9e1aee0c4":"audio/ai0-ai-foundations/b5f9e1aee0c4.mp3","6297cc83f613":"audio/ai0-ai-foundations/6297cc83f613.mp3","cc1bc49d2591":"audio/ai0-ai-foundations/cc1bc49d2591.mp3","7fdd46cba22b":"audio/ai0-ai-foundations/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai0-ai-foundations/2840223fc4a0.mp3","1b85bc4b61f1":"audio/ai0-ai-foundations/1b85bc4b61f1.mp3","c012f22cba62":"audio/ai0-ai-foundations/c012f22cba62.mp3","a66234b845ea":"audio/ai0-ai-foundations/a66234b845ea.mp3","2a28835d4111":"audio/ai0-ai-foundations/2a28835d4111.mp3","4780fc79462b":"audio/ai0-ai-foundations/4780fc79462b.mp3","dfb3e4afa929":"audio/ai0-ai-foundations/dfb3e4afa929.mp3","e18a189a9371":"audio/ai0-ai-foundations/e18a189a9371.mp3","8af1f0edc12c":"audio/ai0-ai-foundations/8af1f0edc12c.mp3","7d33fb85ff35":"audio/ai0-ai-foundations/7d33fb85ff35.mp3","34ba22f9eb33":"audio/ai0-ai-foundations/34ba22f9eb33.mp3","45f34fe48c66":"audio/ai0-ai-foundations/45f34fe48c66.mp3","0b8fbb94b57a":"audio/ai0-ai-foundations/0b8fbb94b57a.mp3","dec1ce6c690b":"audio/ai0-ai-foundations/dec1ce6c690b.mp3","3fb0e684b56b":"audio/ai0-ai-foundations/3fb0e684b56b.mp3","a074d4d96f14":"audio/ai0-ai-foundations/a074d4d96f14.mp3","e04742eeacc1":"audio/ai0-ai-foundations/e04742eeacc1.mp3","914283420458":"audio/ai0-ai-foundations/914283420458.mp3","e0293c5ef2f8":"audio/ai0-ai-foundations/e0293c5ef2f8.mp3","3a86ebc8a0de":"audio/ai0-ai-foundations/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/ai0-ai-foundations/af6ba89d9b27.mp3","aca2b0992481":"audio/ai0-ai-foundations/aca2b0992481.mp3","66590c21d92e":"audio/ai0-ai-foundations/66590c21d92e.mp3"}</script>
-<script>window.DLF_CONFIG={extraReadSelectors:['.stext']};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"7894d348539d":"audio/ai0-ai-foundations/7894d348539d.mp3","2b75803b3593":"audio/ai0-ai-foundations/2b75803b3593.mp3","913fc20c5336":"audio/ai0-ai-foundations/913fc20c5336.mp3","2a43a6c7241a":"audio/ai0-ai-foundations/2a43a6c7241a.mp3","92d4cde42ef4":"audio/ai0-ai-foundations/92d4cde42ef4.mp3","24ae56f57523":"audio/ai0-ai-foundations/24ae56f57523.mp3","7c5bd0776cc7":"audio/ai0-ai-foundations/7c5bd0776cc7.mp3","d28495d702b6":"audio/ai0-ai-foundations/d28495d702b6.mp3","d5434190130e":"audio/ai0-ai-foundations/d5434190130e.mp3","318ae759a395":"audio/ai0-ai-foundations/318ae759a395.mp3","29841feb5940":"audio/ai0-ai-foundations/29841feb5940.mp3","dc2d787e6624":"audio/ai0-ai-foundations/dc2d787e6624.mp3","7accfd41683a":"audio/ai0-ai-foundations/7accfd41683a.mp3","d585a6a9d18d":"audio/ai0-ai-foundations/d585a6a9d18d.mp3","a2c423e35ece":"audio/ai0-ai-foundations/a2c423e35ece.mp3","dcc32f564f59":"audio/ai0-ai-foundations/dcc32f564f59.mp3","396b703108c5":"audio/ai0-ai-foundations/396b703108c5.mp3","36feecf328f2":"audio/ai0-ai-foundations/36feecf328f2.mp3","e4c5f9e38e6d":"audio/ai0-ai-foundations/e4c5f9e38e6d.mp3","70c690d60cb7":"audio/ai0-ai-foundations/70c690d60cb7.mp3","9511a70fab79":"audio/ai0-ai-foundations/9511a70fab79.mp3","075de2fe6be7":"audio/ai0-ai-foundations/075de2fe6be7.mp3","7d62d2e7ae4e":"audio/ai0-ai-foundations/7d62d2e7ae4e.mp3","c641a587c0e2":"audio/ai0-ai-foundations/c641a587c0e2.mp3","0e66ec19ee8e":"audio/ai0-ai-foundations/0e66ec19ee8e.mp3","b5f9e1aee0c4":"audio/ai0-ai-foundations/b5f9e1aee0c4.mp3","6297cc83f613":"audio/ai0-ai-foundations/6297cc83f613.mp3","cc1bc49d2591":"audio/ai0-ai-foundations/cc1bc49d2591.mp3","7fdd46cba22b":"audio/ai0-ai-foundations/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai0-ai-foundations/2840223fc4a0.mp3","1b85bc4b61f1":"audio/ai0-ai-foundations/1b85bc4b61f1.mp3","c012f22cba62":"audio/ai0-ai-foundations/c012f22cba62.mp3","a66234b845ea":"audio/ai0-ai-foundations/a66234b845ea.mp3","2a28835d4111":"audio/ai0-ai-foundations/2a28835d4111.mp3","4780fc79462b":"audio/ai0-ai-foundations/4780fc79462b.mp3","dfb3e4afa929":"audio/ai0-ai-foundations/dfb3e4afa929.mp3","e18a189a9371":"audio/ai0-ai-foundations/e18a189a9371.mp3","8af1f0edc12c":"audio/ai0-ai-foundations/8af1f0edc12c.mp3","7d33fb85ff35":"audio/ai0-ai-foundations/7d33fb85ff35.mp3","34ba22f9eb33":"audio/ai0-ai-foundations/34ba22f9eb33.mp3","45f34fe48c66":"audio/ai0-ai-foundations/45f34fe48c66.mp3","0b8fbb94b57a":"audio/ai0-ai-foundations/0b8fbb94b57a.mp3","dec1ce6c690b":"audio/ai0-ai-foundations/dec1ce6c690b.mp3","3fb0e684b56b":"audio/ai0-ai-foundations/3fb0e684b56b.mp3","a074d4d96f14":"audio/ai0-ai-foundations/a074d4d96f14.mp3","e04742eeacc1":"audio/ai0-ai-foundations/e04742eeacc1.mp3","914283420458":"audio/ai0-ai-foundations/914283420458.mp3","e0293c5ef2f8":"audio/ai0-ai-foundations/e0293c5ef2f8.mp3","3a86ebc8a0de":"audio/ai0-ai-foundations/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/ai0-ai-foundations/af6ba89d9b27.mp3","aca2b0992481":"audio/ai0-ai-foundations/aca2b0992481.mp3","66590c21d92e":"audio/ai0-ai-foundations/66590c21d92e.mp3","14a944c72471":"audio/ai0-ai-foundations/14a944c72471.mp3","4cb929608baf":"audio/ai0-ai-foundations/4cb929608baf.mp3","d811e87eefb3":"audio/ai0-ai-foundations/d811e87eefb3.mp3","71a51a023ae8":"audio/ai0-ai-foundations/71a51a023ae8.mp3","fd2d26303411":"audio/ai0-ai-foundations/fd2d26303411.mp3","25c6023076a9":"audio/ai0-ai-foundations/25c6023076a9.mp3","ce97d9170f39":"audio/ai0-ai-foundations/ce97d9170f39.mp3","b8ced3ba3b3d":"audio/ai0-ai-foundations/b8ced3ba3b3d.mp3","cbc619bb3273":"audio/ai0-ai-foundations/cbc619bb3273.mp3","de9f28c31e22":"audio/ai0-ai-foundations/de9f28c31e22.mp3","c99b2d62af12":"audio/ai0-ai-foundations/c99b2d62af12.mp3","ad2f8d9b3c1f":"audio/ai0-ai-foundations/ad2f8d9b3c1f.mp3","075a7a7a47fc":"audio/ai0-ai-foundations/075a7a7a47fc.mp3","22e3dfc61a52":"audio/ai0-ai-foundations/22e3dfc61a52.mp3","a331eb835d4c":"audio/ai0-ai-foundations/a331eb835d4c.mp3","7e1b7728209d":"audio/ai0-ai-foundations/7e1b7728209d.mp3","59218a9b3ad4":"audio/ai0-ai-foundations/59218a9b3ad4.mp3","be73c71887a4":"audio/ai0-ai-foundations/be73c71887a4.mp3","e14318ea0494":"audio/ai0-ai-foundations/e14318ea0494.mp3","2556ab0a0acf":"audio/ai0-ai-foundations/2556ab0a0acf.mp3","8c73d0167009":"audio/ai0-ai-foundations/8c73d0167009.mp3","57f54cf2d9c1":"audio/ai0-ai-foundations/57f54cf2d9c1.mp3","096c8d53173e":"audio/ai0-ai-foundations/096c8d53173e.mp3","f3bc581be169":"audio/ai0-ai-foundations/f3bc581be169.mp3","4b19812e79f2":"audio/ai0-ai-foundations/4b19812e79f2.mp3","9bb8216b6df6":"audio/ai0-ai-foundations/9bb8216b6df6.mp3","4c589e10cb6f":"audio/ai0-ai-foundations/4c589e10cb6f.mp3","f19925d9e66a":"audio/ai0-ai-foundations/f19925d9e66a.mp3","dab05dcf3741":"audio/ai0-ai-foundations/dab05dcf3741.mp3","dc60fd67731f":"audio/ai0-ai-foundations/dc60fd67731f.mp3","0a044cb6c59e":"audio/ai0-ai-foundations/0a044cb6c59e.mp3","98cc49be01cd":"audio/ai0-ai-foundations/98cc49be01cd.mp3","46abc19d5112":"audio/ai0-ai-foundations/46abc19d5112.mp3","852128f8e136":"audio/ai0-ai-foundations/852128f8e136.mp3","e3a0711ebcec":"audio/ai0-ai-foundations/e3a0711ebcec.mp3","dee36b765663":"audio/ai0-ai-foundations/dee36b765663.mp3","107269e73a58":"audio/ai0-ai-foundations/107269e73a58.mp3","94c414f20602":"audio/ai0-ai-foundations/94c414f20602.mp3","5243be9319e4":"audio/ai0-ai-foundations/5243be9319e4.mp3","7fb433e4dd73":"audio/ai0-ai-foundations/7fb433e4dd73.mp3","62eae23e2dbe":"audio/ai0-ai-foundations/62eae23e2dbe.mp3","153837cf9b07":"audio/ai0-ai-foundations/153837cf9b07.mp3","b8eea8f33e14":"audio/ai0-ai-foundations/b8eea8f33e14.mp3","ab22bff85390":"audio/ai0-ai-foundations/ab22bff85390.mp3","b5bc70c95439":"audio/ai0-ai-foundations/b5bc70c95439.mp3","eca0c73f3eb2":"audio/ai0-ai-foundations/eca0c73f3eb2.mp3","a7c17a7f453a":"audio/ai0-ai-foundations/a7c17a7f453a.mp3","02fbc3de2509":"audio/ai0-ai-foundations/02fbc3de2509.mp3","bc722e0255b8":"audio/ai0-ai-foundations/bc722e0255b8.mp3","0b7576f91492":"audio/ai0-ai-foundations/0b7576f91492.mp3","beb384f3170d":"audio/ai0-ai-foundations/beb384f3170d.mp3","a6f6f1cc671c":"audio/ai0-ai-foundations/a6f6f1cc671c.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.stext','.sub'],extraNonDecorateSelectors:'textarea, .demo-predict, .demo-conf'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
 </html>
