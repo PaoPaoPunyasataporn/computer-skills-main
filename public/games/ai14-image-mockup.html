@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สร้างภาพและม็อคอัพด้วย AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="_lib/theme-base.css" rel="stylesheet">
+<style>
+:root{
+  --green:#38A93A; --green-d:#2E8B30; --green-light:#E9FBE7;
+  --primary:#B15FE0; --primary-light:#F3E8FC; --primary-dark:#8B3FBF;
+  --panel2:var(--cream2);
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#F3E8FC 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
+
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+#s3 .panel{max-width:700px;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
+
+/* hands-on: write your own image-gen prompt */
+.rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+
+.briefcard{width:100%;background:#fff;border:2px solid var(--border);border-radius:18px;padding:16px 18px;margin-bottom:14px;text-align:left;}
+.briefcard .bwho{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.briefcard .bsay{font-size:14.5px;line-height:1.65;color:var(--text);}
+.briefcard .bsubj{font-size:34px;margin-top:8px;}
+
+.promptlabel{font-family:'Mitr',sans-serif;font-size:12.5px;font-weight:700;color:var(--text2);margin-bottom:6px;display:block;text-align:left;}
+.promptbox{width:100%;min-height:70px;border-radius:14px;border:1.5px solid var(--border);padding:12px 14px;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.promptbox:focus{outline:2px solid var(--primary);}
+
+.checklist{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.chk{font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:99px;border:1.5px solid var(--line-d);color:var(--muted2);background:var(--cream);}
+.chk.on{border-color:var(--green);background:var(--green-light);color:var(--green-d);}
+
+.suggestrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;}
+.sugchip{flex:0 0 auto;white-space:nowrap;font-family:'Sarabun',sans-serif;font-size:12.5px;padding:8px 13px;border-radius:99px;border:1.5px solid var(--primary);background:var(--primary-light);color:var(--primary-dark);cursor:pointer;}
+
+.previewbox{margin-top:8px;width:100%;border-radius:18px;border:2px solid var(--border);overflow:hidden;position:relative;}
+.previewscene{width:100%;height:170px;display:flex;align-items:center;justify-content:center;transition:filter .3s,background .3s;}
+.previewsubj{font-size:64px;transition:filter .3s,box-shadow .3s,transform .3s;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18));}
+.previewsubj.blurred{filter:blur(4px) drop-shadow(0 6px 10px rgba(0,0,0,.18));}
+.previewsubj.framed{filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));}
+.previewsubj.warm{filter:sepia(.25) drop-shadow(0 6px 10px rgba(0,0,0,.18));}
+
+.genbtn{margin-top:14px;}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;margin-top:14px;text-align:left;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light,#FDECEA);border-left:4px solid #E0574B;color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:24px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14px;color:var(--text2);margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div id="procbar">
+  <div id="steprail"></div>
+</div>
+
+<div class="stage" id="stageWrap">
+  <!-- STEP 1 · Hook -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🖼️</span>
+      <div class="title">ภาพวาดธรรมดา ๆ กลายเป็นโปสเตอร์ในแกลเลอรีได้ยังไง?</div>
+      <div class="sub">AI สร้างภาพไม่ได้แค่ "วาดใหม่" แต่ยังเอาผลงานของเราไปจัดวางในฉากสมจริงได้ด้วย เรียกว่าการทำ "ม็อคอัพ" (Mockup) — วันนี้เราจะลองพิมพ์คำสั่งสร้างภาพจริง ๆ ด้วยตัวเองเหมือนใช้เครื่องมือ AI ตัวจริง</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 · Concept -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 · Hands-on core + immediate feedback -->
+  <div class="stage" id="s3" data-step="2" style="display:none;padding:20px 20px 40px">
+    <div class="panel">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · เขียนคำสั่งสร้างม็อคอัพเอง</span>
+        <span class="scorepill" id="scorePill">พลาดไป 0 ครั้ง</span>
+      </div>
+      <span class="rtag" id="roundTag" style="display:block;margin:0 0 6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text3)">รอบที่ 1/5</span>
+
+      <div class="briefcard">
+        <div class="bwho">📋 โจทย์</div>
+        <div class="bsay" id="briefText"></div>
+        <div class="bsubj" id="briefSubj"></div>
+      </div>
+
+      <span class="promptlabel">พิมพ์คำอธิบาย "ฉาก" และ "สไตล์แสง/บรรยากาศ" ที่อยากให้ AI วางภาพนี้ลงไป</span>
+      <textarea id="promptInput" class="promptbox" placeholder="เช่น วางบนผนังแกลเลอรีสีขาวเรียบ มีแสงสลัวนุ่มนวล..." oninput="onPromptInput()"></textarea>
+      <div class="checklist" id="checklist"></div>
+      <div class="suggestrow" id="suggestRow"></div>
+
+      <div class="previewbox">
+        <div class="previewscene" id="previewScene">
+          <span class="previewsubj" id="previewSubj">🖼️</span>
+        </div>
+      </div>
+
+      <button class="btn genbtn" id="genBtn" onclick="generateMockup()">✨ สร้างม็อคอัพจากคำสั่งนี้</button>
+      <div class="explainbox" id="mockExplain"></div>
+      <button class="btn ghost" id="nextRoundBtn" style="display:none;margin-top:14px" onclick="nextRound()">ข้อถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 · Reflection -->
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">อยากลองทำม็อคอัพอะไรในชีวิตจริง?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — ลองนึกดูว่ามีผลงาน สินค้า หรือไอเดียอะไรของตัวเองที่อยากลองทำม็อคอัพดูบ้าง เช่น ปกหนังสือ โปสเตอร์กิจกรรม ปกอัลบั้มเพลง หรือลายเสื้อ แล้วจะเขียนคำสั่งอธิบายฉากและสไตล์ยังไงให้ AI เข้าใจ</div>
+      <textarea id="reflText" placeholder="เช่น อยากทำม็อคอัพปกนิยายที่เขียนเอง จะพิมพ์ว่า 'วางบนโต๊ะไม้ มีแสงอุ่น ๆ ให้ดูเหมือนหนังสือจริงในร้าน'..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">ทำม็อคอัพสำเร็จ!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">ลองอีกครั้ง →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
+];
+let curStep = 0;
+
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
+}
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2) startPractice();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== Step 2: concept =====
+const CONCEPTS = [
+  { icon:'🖼️', title:'AI สร้างภาพจากคำอธิบาย', body:'เครื่องมือสร้างภาพ AI จะจัดวางสิ่งที่เราต้องการลงในฉากใหม่ โดยอ่านจากคำอธิบาย 2 ส่วนหลัก คือ ฉาก/สถานที่ และสไตล์แสง/บรรยากาศ — ยิ่งอธิบายชัดและตรงกับงานมากเท่าไหร่ ภาพที่ได้ก็ยิ่งตรงใจ' },
+  { icon:'🛍️', title:'ตอนนี้ถึงตาเราลองพิมพ์เอง', body:'ในขั้นถัดไป เราจะพิมพ์คำสั่งอธิบายฉากและสไตล์ด้วยตัวเอง เหมือนใช้เครื่องมือสร้างภาพ AI จริง ๆ — ถ้าคำสั่งกำกวมหรือไม่ตรงกับงาน ม็อคอัพก็จะออกมาไม่สวย ต้องลองแก้คำสั่งใหม่จนกว่าจะได้ภาพที่ใช่' },
+];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div><div class="cb">${esc(c.body)}</div></div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3: write-your-own image-gen prompt =====
+// Each round: learner types a free-text description of SETTING + STYLE for a
+// fixed subject. settingRe/styleRe drive the live checklist (did they mention
+// each part at all, like the role/task/format checklist in ai05-prompt-fixer).
+// matchCss/matchFilter pick a specific preview only when the setting text is
+// actually the RIGHT one for this brief — a setting that's merely present but
+// wrong (e.g. "โต๊ะปิ้งย่าง" for a gallery mockup) still passes the checklist
+// but fails the round, so learners feel the difference between "said something"
+// and "said the right thing" — the same gap real image-gen prompting has.
+const ROUNDS = [
+  { brief:'เพื่อนวาดภาพสีน้ำสวยมาก อยากทำม็อคอัพไปติดในนิทรรศการศิลปะของโรงเรียน ให้ดูเหมือนภาพจริงในแกลเลอรี',
+    subj:'🎨', subjBg:'linear-gradient(135deg,#EFEAE0,#F7F4EE)',
+    settingRe:/(แกลเลอรี|ผนัง|นิทรรศการ|ห้อง|กำแพง)/,
+    styleRe:/(แสง|สลัว|นุ่มนวล|หรู|เรียบ)/,
+    matchCss:[{re:/แกลเลอรี|นิทรรศการ|ผนัง.*(ขาว|เรียบ)/, css:'linear-gradient(180deg,#F4F4F2,#E4E2DC)'}],
+    matchFilter:[{re:/แสง|สลัว|นุ่มนวล|หรู|เรียบ/, cls:'framed'}],
+    goodWhy:'บอกทั้งฉากแกลเลอรีเรียบ ๆ และแสงนุ่มนวลชัดเจน AI จึงวางภาพวาดได้ตรงกับงานนิทรรศการจริง',
+    vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่ตรงกับงานนิทรรศการศิลปะ — ลองอธิบายฉากแกลเลอรีหรือผนังเรียบ ๆ ที่มีแสงนุ่มนวลดูสิ' },
+  { brief:'อยากถ่ายรูปรองเท้าคู่ใหม่ไปลงขายออนไลน์ ให้ดูเป็นมืออาชีพน่าซื้อ',
+    subj:'👟', subjBg:'linear-gradient(135deg,#EAF3FF,#F7FBFF)',
+    settingRe:/(พื้น|โต๊ะ|ไม้|ห้อง|บ้าน)/,
+    styleRe:/(แสง|ธรรมชาติ|มุม|นุ่ม|เรียบ)/,
+    matchCss:[{re:/พื้นไม้|โต๊ะไม้|ไม้.*มินิมอล/, css:'linear-gradient(180deg,#F1E4CE,#D9C6A3)'}],
+    matchFilter:[{re:/ธรรมชาติ|มุมเฉียง|นุ่ม/, cls:'warm'}],
+    goodWhy:'พื้นไม้เรียบกับแสงธรรมชาตินุ่ม ๆ ช่วยให้สินค้าดูสะอาดตาและน่าเชื่อถือ แบบภาพสินค้าขายออนไลน์มืออาชีพ',
+    vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่เหมาะกับภาพสินค้าขาย — ลองอธิบายพื้นไม้มินิมอลกับแสงธรรมชาตินุ่ม ๆ ดูสิ' },
+  { brief:'อยากโชว์หน้าจอแอปที่ออกแบบเองให้เพื่อนดูตอนพรีเซนต์หน้าห้อง ให้ดูสมจริงเหมือนใช้งานได้จริง',
+    subj:'📱', subjBg:'linear-gradient(135deg,#F3E8FC,#FBF5FF)',
+    settingRe:/(โต๊ะ|มือถือ|กรอบ|ห้อง|ทำงาน)/,
+    styleRe:/(แสง|ในร่ม|นวล|เรียบ)/,
+    matchCss:[{re:/โต๊ะทำงาน|กรอบมือถือ|มือถือ.*โต๊ะ/, css:'linear-gradient(180deg,#DCE6F0,#B9C9DB)'}],
+    matchFilter:[{re:/แสง|ในร่ม|นวล/, cls:'warm'}],
+    goodWhy:'การใส่กรอบมือถือจริงบนโต๊ะทำงานกับแสงในร่มนวล ๆ ทำให้เพื่อนเห็นภาพว่าแอปจะถูกใช้งานจริงยังไง',
+    vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่ช่วยให้ดูสมจริง — ลองอธิบายกรอบมือถือวางบนโต๊ะทำงานกับแสงในร่มนวล ๆ ดูสิ' },
+  { brief:'ออกแบบลายเสื้อของชมรมถ่ายภาพ อยากโชว์ให้เพื่อนดูว่าใส่จริงแล้วจะเป็นยังไง',
+    subj:'👕', subjBg:'linear-gradient(135deg,#FFF1D6,#FFF8E8)',
+    settingRe:/(สตูดิโอ|นายแบบ|คน|ห้อง|พื้นหลัง)/,
+    styleRe:/(แสง|เรียบ|มุม|ชัด)/,
+    matchCss:[{re:/สตูดิโอ|นายแบบ|คนใส่/, css:'linear-gradient(180deg,#EDEDED,#D2D2D2)'}],
+    matchFilter:[{re:/แสง|เรียบ|มุมตรง|ชัด/, cls:'framed'}],
+    goodWhy:'สตูดิโอเรียบ ๆ ที่มีคนใส่จริง กับแสงทั่วถึง ช่วยให้เพื่อนเห็นลายเสื้อชัดเจนและดูเหมือนใส่จริง',
+    vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่ช่วยโชว์ลายเสื้อ — ลองอธิบายฉากสตูดิโอที่มีคนใส่เสื้อจริง กับแสงเรียบทั่วถึงดูสิ' },
+  { brief:'อยากทำม็อคอัพภาพวาดบ้านในฝัน (โปรเจกต์วิชาศิลปะ) ไปใส่ในสไลด์นำเสนอหน้าชั้น ให้ดูน่าประทับใจ',
+    subj:'🏠', subjBg:'linear-gradient(135deg,#E9FBE7,#F5FEF3)',
+    settingRe:/(ห้องเรียน|ขาตั้ง|กรอบ|ผนัง)/,
+    styleRe:/(แสง|ชัดเจน|เรียบร้อย|สว่าง)/,
+    matchCss:[{re:/ห้องเรียน|ขาตั้ง/, css:'linear-gradient(180deg,#EAF3E4,#CFE3C4)'}],
+    matchFilter:[{re:/แสงสว่าง|ชัดเจน|สว่าง/, cls:'warm'}],
+    goodWhy:'กรอบรูปตั้งในห้องเรียนที่จัดเรียบร้อย พร้อมแสงชัดเจน ทำให้ผลงานดูน่าประทับใจตอนพรีเซนต์',
+    vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่น่าประทับใจพอ — ลองอธิบายกรอบรูปตั้งบนขาตั้งในห้องเรียนที่มีแสงสว่างชัดเจนดูสิ' },
+];
+
+let round = 0, mistakes = 0, answered = false;
+
+function startPractice(){ round = 0; mistakes = 0; $('scorePill').textContent = 'พลาดไป 0 ครั้ง'; loadRound(0); }
+
+const SUGGESTIONS = ['วางบน...', 'มีแสง...', 'บรรยากาศแบบ...'];
+
+function loadRound(i){
+  round = i; answered = false;
+  const r = ROUNDS[i];
+  $('roundTag').textContent = `รอบที่ ${i+1}/${ROUNDS.length}`;
+  $('briefText').textContent = r.brief;
+  $('briefSubj').textContent = r.subj;
+  $('promptInput').value = '';
+  $('promptInput').disabled = false;
+  $('suggestRow').innerHTML = SUGGESTIONS.map((c,idx)=>`<span class="sugchip" onclick="useSuggestion(${idx})">➕ ${esc(c)}</span>`).join('');
+  $('previewScene').style.background = r.subjBg;
+  $('previewSubj').textContent = r.subj;
+  $('previewSubj').className = 'previewsubj';
+  $('genBtn').disabled = false;
+  $('mockExplain').className = 'explainbox';
+  $('mockExplain').innerHTML = '';
+  $('nextRoundBtn').style.display = 'none';
+  renderChecklist('');
+}
+
+function useSuggestion(i){
+  const cur = $('promptInput').value;
+  $('promptInput').value = (cur ? cur + ' ' : '') + SUGGESTIONS[i];
+  onPromptInput();
+  $('promptInput').focus();
+}
+
+function checkParts(text){
+  const r = ROUNDS[round];
+  return { setting: r.settingRe.test(text), style: r.styleRe.test(text) };
+}
+function renderChecklist(text){
+  const p = checkParts(text || '');
+  $('checklist').innerHTML = `
+    <span class="chk${p.setting?' on':''}">🏞️ บอกฉาก/สถานที่</span>
+    <span class="chk${p.style?' on':''}">💡 บอกสไตล์แสง/บรรยากาศ</span>`;
+  return p;
+}
+function onPromptInput(){ renderChecklist($('promptInput').value); }
+
+function generateMockup(){
+  if (answered) return;
+  const text = $('promptInput').value.trim();
+  const r = ROUNDS[round];
+  const p = checkParts(text);
+
+  if (!p.setting || !p.style){
+    mistakes++; $('scorePill').textContent = `พลาดไป ${mistakes} ครั้ง`;
+    const missing = [!p.setting&&'ฉาก/สถานที่', !p.style&&'สไตล์แสง/บรรยากาศ'].filter(Boolean).join(' และ ');
+    $('mockExplain').className = 'explainbox show wrong';
+    $('mockExplain').innerHTML = `<b>⚠️ คำสั่งยังไม่ครบ</b>ยังไม่ได้บอก${esc(missing)} — AI จะเดาเอง แล้วมักได้ม็อคอัพทั่ว ๆ ไปไม่ตรงงาน ลองเติมให้ครบแล้วกดสร้างอีกครั้ง`;
+    $('previewSubj').className = 'previewsubj blurred';
+    return;
+  }
+
+  const cssMatch = r.matchCss.find(m=>m.re.test(text));
+  const filterMatch = r.matchFilter.find(m=>m.re.test(text));
+  const correct = !!cssMatch && !!filterMatch;
+
+  answered = true;
+  $('promptInput').disabled = true;
+  $('genBtn').disabled = true;
+
+  if (cssMatch) $('previewScene').style.background = cssMatch.css;
+  $('previewSubj').className = 'previewsubj' + (filterMatch ? ' '+filterMatch.cls : '');
+
+  if (!correct){ mistakes++; $('scorePill').textContent = `พลาดไป ${mistakes} ครั้ง`; }
+  $('mockExplain').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
+  $('mockExplain').innerHTML = `<b>${correct ? '✅ ม็อคอัพออกมาดี!' : '❌ ม็อคอัพยังไม่เหมาะกับงานนี้'}</b>${esc(correct ? r.goodWhy : r.vagueWhy)}`;
+  $('nextRoundBtn').style.display = 'block';
+  if (correct && window.dlf) dlf.cheer('เก่งมาก!');
+}
+
+function nextRound(){
+  if (round+1 >= ROUNDS.length){ goStep(3); return; }
+  loadRound(round+1);
+}
+
+// ===== Step 4 done =====
+function finishGame(){
+  window.dlfStars = mistakes <= 1 ? 3 : mistakes <= 4 ? 2 : 1;
+  document.querySelectorAll('[data-step]').forEach(p=>p.style.display='none');
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = 'ทำม็อคอัพสำเร็จ!';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = `เขียนคำสั่งสร้างม็อคอัพครบ ${ROUNDS.length} ชิ้นงาน พลาดไปรวม ${mistakes} ครั้ง`;
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function restartGame(){ goStep(0); }
+
+renderRail();
+</script>
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<script id="dlfAudioData" type="application/json">{"876c21d7949c":"audio/ai14-image-mockup/876c21d7949c.mp3","412aa7b1c422":"audio/ai14-image-mockup/412aa7b1c422.mp3","623b0e03af11":"audio/ai14-image-mockup/623b0e03af11.mp3","2e910fe6d7a9":"audio/ai14-image-mockup/2e910fe6d7a9.mp3","76ccac63d6e0":"audio/ai14-image-mockup/76ccac63d6e0.mp3","4fa091dd6c9d":"audio/ai14-image-mockup/4fa091dd6c9d.mp3","d811e87eefb3":"audio/ai14-image-mockup/d811e87eefb3.mp3","71a51a023ae8":"audio/ai14-image-mockup/71a51a023ae8.mp3","852128f8e136":"audio/ai14-image-mockup/852128f8e136.mp3","ce97d9170f39":"audio/ai14-image-mockup/ce97d9170f39.mp3","471d4a4c5c65":"audio/ai14-image-mockup/471d4a4c5c65.mp3","556e94dd062a":"audio/ai14-image-mockup/556e94dd062a.mp3","d585a6a9d18d":"audio/ai14-image-mockup/d585a6a9d18d.mp3","ffcc6ca00217":"audio/ai14-image-mockup/ffcc6ca00217.mp3","b9a6d67dec55":"audio/ai14-image-mockup/b9a6d67dec55.mp3","5433e783c22d":"audio/ai14-image-mockup/5433e783c22d.mp3","dee2b0ea6bea":"audio/ai14-image-mockup/dee2b0ea6bea.mp3","31ef13ad5f1f":"audio/ai14-image-mockup/31ef13ad5f1f.mp3","cda230a70e92":"audio/ai14-image-mockup/cda230a70e92.mp3","a8d52a4cf9fd":"audio/ai14-image-mockup/a8d52a4cf9fd.mp3","43c4e37364c4":"audio/ai14-image-mockup/43c4e37364c4.mp3","00c568392eba":"audio/ai14-image-mockup/00c568392eba.mp3","8f09cf3f99d4":"audio/ai14-image-mockup/8f09cf3f99d4.mp3","c54558dec7d2":"audio/ai14-image-mockup/c54558dec7d2.mp3","db670f64fd54":"audio/ai14-image-mockup/db670f64fd54.mp3","e93758c57b1b":"audio/ai14-image-mockup/e93758c57b1b.mp3","34983be25867":"audio/ai14-image-mockup/34983be25867.mp3","52649ceb133d":"audio/ai14-image-mockup/52649ceb133d.mp3","ef69b86d41ec":"audio/ai14-image-mockup/ef69b86d41ec.mp3","fefe9d4254cc":"audio/ai14-image-mockup/fefe9d4254cc.mp3","7df75dbeaed0":"audio/ai14-image-mockup/7df75dbeaed0.mp3","57596d6f4e38":"audio/ai14-image-mockup/57596d6f4e38.mp3","f9327e117221":"audio/ai14-image-mockup/f9327e117221.mp3","7cdccda44657":"audio/ai14-image-mockup/7cdccda44657.mp3","44a6b7caf074":"audio/ai14-image-mockup/44a6b7caf074.mp3","3b9bb3fa9e10":"audio/ai14-image-mockup/3b9bb3fa9e10.mp3","a66234b845ea":"audio/ai14-image-mockup/a66234b845ea.mp3","ea84cd88fbab":"audio/ai14-image-mockup/ea84cd88fbab.mp3","dfb3e4afa929":"audio/ai14-image-mockup/dfb3e4afa929.mp3","7f3f04a2d7d3":"audio/ai14-image-mockup/7f3f04a2d7d3.mp3","57f54cf2d9c1":"audio/ai14-image-mockup/57f54cf2d9c1.mp3","859e2d80d062":"audio/ai14-image-mockup/859e2d80d062.mp3","dec1ce6c690b":"audio/ai14-image-mockup/dec1ce6c690b.mp3","f3bc581be169":"audio/ai14-image-mockup/f3bc581be169.mp3","3fb0e684b56b":"audio/ai14-image-mockup/3fb0e684b56b.mp3","a7bc92297e7c":"audio/ai14-image-mockup/a7bc92297e7c.mp3","61478020c742":"audio/ai14-image-mockup/61478020c742.mp3","f6bd16a3d94c":"audio/ai14-image-mockup/f6bd16a3d94c.mp3","c01dece1e5f7":"audio/ai14-image-mockup/c01dece1e5f7.mp3","5ccb7284b00b":"audio/ai14-image-mockup/5ccb7284b00b.mp3","85a58dbfe9d3":"audio/ai14-image-mockup/85a58dbfe9d3.mp3","e0293c5ef2f8":"audio/ai14-image-mockup/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai14-image-mockup/9bb8216b6df6.mp3","3ca881a1905e":"audio/ai14-image-mockup/3ca881a1905e.mp3","dab05dcf3741":"audio/ai14-image-mockup/dab05dcf3741.mp3","06cce1081b61":"audio/ai14-image-mockup/06cce1081b61.mp3","af6ba89d9b27":"audio/ai14-image-mockup/af6ba89d9b27.mp3","aca2b0992481":"audio/ai14-image-mockup/aca2b0992481.mp3","66590c21d92e":"audio/ai14-image-mockup/66590c21d92e.mp3","e18a189a9371":"audio/ai14-image-mockup/e18a189a9371.mp3","8af1f0edc12c":"audio/ai14-image-mockup/8af1f0edc12c.mp3","570e87ed3a92":"audio/ai14-image-mockup/570e87ed3a92.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.bsay','.sub','.cb'],extraNonDecorateSelectors:'.sugchip,.chk,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>นักทดลองแซนด์บ็อกซ์ AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="_lib/theme-base.css" rel="stylesheet">
+<style>
+:root{
+  --green:#38A93A; --green-d:#2E8B30; --green-light:#E9FBE7;
+  --primary:#2E9A57; --primary-light:#E3F5E9; --primary-dark:#227A44;
+  --panel2:var(--cream2);
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
+
+/* ===== same card/button/chip/procbar language as ai06-discernment ===== */
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+#s3.stage{max-width:1180px;}
+.panel{width:100%;max-width:640px;}
+#s3 .panel{max-width:1180px;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
+
+.goal-box{width:100%;background:var(--cream2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;}
+.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
+.goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
+.goal-text b{color:var(--primary-dark);}
+
+/* hands-on chat shell */
+.llmshell{width:100%;max-width:1180px;flex:1;min-height:0;background:#fff;border:2px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 6px 0 var(--line-d);display:flex;flex-direction:row;height:min(70vh,640px);position:relative;}
+.llmside{flex:0 0 180px;background:#1B1E26;display:flex;flex-direction:column;padding:10px;gap:4px;overflow-y:auto;}
+.llmside-new{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:10px;border:1.5px solid rgba(255,255,255,.16);color:#E7EAF0;font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:600;cursor:default;background:transparent;margin-bottom:8px;}
+.llmside-label{font-size:10.5px;font-weight:700;color:#6B7280;letter-spacing:.5px;padding:8px 10px 4px;}
+.llmside-item{padding:9px 10px;border-radius:8px;color:#9AA1AE;font-family:'Sarabun',sans-serif;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.llmmain{flex:1;min-width:0;display:flex;flex-direction:column;}
+.llmhead{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:10px 14px;background:#22262F;}
+.llmhead-title{font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;color:#C9CEDA;}
+.controls{flex:0 0 auto;display:flex;gap:12px;align-items:center;padding:10px 14px;background:#fff;border-top:1.5px solid var(--border);flex-wrap:wrap;}
+.ctrlgroup{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;}
+.ctrlgroup label{font-size:11.5px;font-weight:700;color:var(--muted2);white-space:nowrap;}
+.slider{flex:1;accent-color:var(--primary);}
+.roleSelect{flex:1;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);font-family:'Sarabun',sans-serif;font-size:12.5px;background:#fff;}
+.llmthread{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:#F7F8FA;}
+.llmrow{display:flex;gap:8px;align-items:flex-start;max-width:92%;}
+.llmrow.user{align-self:flex-end;flex-direction:row-reverse;}
+.llmava{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.llmrow.user .llmava{background:linear-gradient(135deg,var(--primary-light),#fff);border:1.5px solid var(--primary);}
+.llmrow.ai .llmava{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 60%,white),var(--primary));color:#fff;}
+.llmbubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.65;color:var(--text);white-space:pre-wrap;}
+.llmrow.user .llmbubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px;}
+.llmrow.ai .llmbubble{background:#fff;border:1.5px solid var(--border);border-bottom-left-radius:4px;}
+.llmbubble.sys{background:#FFF6E0;border-color:#F4D9A6;color:#7A5A1E;}
+.llmbubble.win{background:var(--green-light);border-color:var(--green);}
+.llmbubble.miss{background:#FDECEA;border-color:#F1B3AC;}
+.llmtyping{display:inline-flex;gap:3px;padding:2px 4px;}
+.llmtyping span{width:6px;height:6px;border-radius:50%;background:var(--muted3);animation:llmdot 1s infinite ease-in-out;}
+.llmtyping span:nth-child(2){animation-delay:.15s;}.llmtyping span:nth-child(3){animation-delay:.3s;}
+@keyframes llmdot{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-4px);opacity:1;}}
+.llmsuggest{flex:0 0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 12px;background:#fff;border-top:1.5px solid var(--border);}
+.llmchip{flex:0 0 auto;white-space:nowrap;font-family:'Sarabun',sans-serif;font-size:12.5px;padding:8px 13px;border-radius:99px;border:1.5px solid var(--primary);background:var(--primary-light);color:var(--primary-dark);cursor:pointer;}
+.llmchip.on{background:var(--primary);color:#fff;}
+.llminputbar{flex:0 0 auto;display:flex;gap:8px;padding:12px;background:#fff;border-top:1.5px solid var(--border);}
+.llminput{flex:1;padding:12px 14px;border-radius:14px;border:1.5px solid var(--border);font-family:'Sarabun',sans-serif;font-size:14px;outline:none;}
+.llminput:focus{border-color:var(--primary);}
+.llmsend{width:42px;height:42px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:18px;cursor:pointer;flex:0 0 auto;}
+
+.coach-hl{position:relative;z-index:15;}
+.coachcard{position:relative;width:100%;max-width:1180px;background:#fff;border:2px solid var(--primary);border-radius:18px;padding:14px 18px;box-shadow:0 6px 0 var(--line-d);display:none;margin-bottom:2px;}
+.coachcard.show{display:block;animation:coachIn .25s cubic-bezier(.34,1.56,.64,1);}
+@keyframes coachIn{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.coachrow{display:flex;gap:10px;align-items:flex-start;}
+.coachicon{font-size:22px;flex:0 0 auto;}
+.coachtext{flex:1;font-size:13.5px;line-height:1.6;color:var(--text);}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
+
+/* checkpoint quiz (after free-exploration sandbox, before reflection) */
+.quiz-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:30px 28px;text-align:left;}
+.qopt{display:block;width:100%;text-align:left;padding:13px 16px;border-radius:14px;border:1.5px solid var(--border);background:#fff;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);cursor:pointer;margin-bottom:10px;transition:transform .1s,border-color .15s;}
+.qopt:hover:not(:disabled){border-color:var(--primary);transform:translateY(-1px);}
+.qopt:disabled{cursor:default;}
+.qopt.correct{background:var(--green-light);border-color:var(--green);color:var(--green-d);font-weight:700;}
+.qopt.wrong{background:#FDECEA;border-color:#F1B3AC;color:#B3261E;}
+.quiz-progress{text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text3);margin-bottom:14px;}
+.quiz-q{font-family:'Mitr',sans-serif;font-size:16.5px;font-weight:700;color:var(--primary-dark);margin-bottom:14px;line-height:1.5;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:24px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14px;color:var(--text2);margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div id="procbar">
+  <div id="steprail"></div>
+</div>
+
+<div class="stage" id="stageWrap">
+  <!-- STEP 1 · Hook -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🧪</span>
+      <div class="title">คำถามเดียวกัน AI ตอบไม่เหมือนเดิม แล้วแต่เรา "สั่ง" ยังไง</div>
+      <div class="sub">ลองพิมพ์ขอนิทานจาก AI สองครั้ง — ครั้งหนึ่งได้เรื่องแมวนักบินอวกาศบนดาวช็อกโกแลต อีกครั้งได้แค่เรื่องเด็กชายตามหาแมว ทำไมถึงต่างกันขนาดนี้?</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 · Concept -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 · Hands-on core (sandbox chat) + immediate feedback -->
+  <div class="stage" id="s3" data-step="2" style="display:none;padding:20px 20px 40px;">
+    <div class="panel" style="max-width:1180px">
+      <span class="stepstage">ขั้นที่ 3 · ลงมือทดลอง</span>
+    </div>
+    <div class="coachcard" id="coachCard">
+      <div class="coachrow"><span class="coachicon">💡</span><div class="coachtext" id="coachText"></div></div>
+    </div>
+    <div class="llmshell">
+      <div class="llmside">
+        <div class="llmside-new">➕ แชทใหม่</div>
+        <div class="llmside-label">ประวัติแชท</div>
+        <div class="llmside-item">🧪 แซนด์บ็อกซ์ AI</div>
+      </div>
+      <div class="llmmain">
+        <div class="llmhead"><span class="llmhead-title">🛡️ แซนด์บ็อกซ์ AI (มีโล่ป้องกันในตัว) · ไม่มีภารกิจตายตัว ลองอะไรก็ได้!</span></div>
+        <div class="llmthread" id="chatThread"></div>
+        <div class="llmsuggest" id="cardChips"></div>
+        <div class="controls">
+          <div class="ctrlgroup">
+            <label>🎨 ความคิดสร้างสรรค์</label>
+            <input type="range" min="0" max="1" step="0.1" value="0.5" class="slider" id="creativitySlider" oninput="onSliderChange()">
+            <span id="sliderVal" style="font-size:12px;font-weight:700;color:var(--primary-dark);width:28px;">0.5</span>
+          </div>
+          <div class="ctrlgroup">
+            <label>🎭 บทบาท</label>
+            <select class="roleSelect" id="roleSelect" onchange="onRoleChange()">
+              <option value="teacher">👩‍🏫 ครู</option>
+              <option value="pirate">🏴‍☠️ โจรสลัด</option>
+              <option value="detective">🕵️ นักสืบ</option>
+              <option value="scientist">🔬 นักวิทยาศาสตร์</option>
+              <option value="chef">👨‍🍳 เชฟ</option>
+              <option value="astronaut">🧑‍🚀 นักบินอวกาศ</option>
+            </select>
+          </div>
+        </div>
+        <div class="llminputbar">
+          <input id="chatInput" class="llminput" type="text" placeholder="แตะการ์ดโจทย์ด้านบน หรือพิมพ์คำสั่งเอง..." onkeydown="if(event.key==='Enter')sendPrompt();">
+          <button class="llmsend" onclick="sendPrompt()">➤</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel" style="max-width:1180px">
+      <button class="btn" id="doneBtn" style="margin-top:14px;display:none;" onclick="startQuiz()">✅ เสร็จแล้ว ไปเช็คความเข้าใจ →</button>
+    </div>
+
+    <!-- checkpoint quiz: "now show what you learned" after free exploration -->
+    <div class="panel" id="quizPanel" style="max-width:640px;display:none;">
+      <div class="quiz-wrap">
+        <span class="stepstage">เช็คความเข้าใจ · ทายใจ AI</span>
+        <div class="title" style="margin-bottom:4px;">ลองทายดูว่า AI จะตอบแบบไหน?</div>
+        <div class="sub" style="margin-bottom:16px;">จากที่ลองปรับตัวเลื่อนและบทบาทมาแล้ว มาเช็คความเข้าใจกันหน่อย — เลือกคำตอบที่คิดว่าใช่ที่สุด</div>
+        <div class="quiz-progress" id="quizProgress"></div>
+        <div id="quizQWrap"></div>
+        <button class="btn" id="quizNextBtn" style="margin-top:6px;display:none;" onclick="quizNext()">ข้อถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 · Reflection -->
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">ค้นพบอะไรจากการทดลองบ้าง?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าตัวเลื่อนความคิดสร้างสรรค์ หรือการเปลี่ยนบทบาท ทำให้คำตอบของ AI เปลี่ยนไปยังไงบ้าง แล้วครั้งหน้าจะลองปรับอะไรอีก</div>
+      <textarea id="reflText" placeholder="เช่น พอเลื่อนความคิดสร้างสรรค์ไปทาง 1.0 นิทานของ AI ก็สนุกและแปลกขึ้นมาก..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">สำรวจแซนด์บ็อกซ์ AI เก่งมาก!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">ลองอีกครั้ง →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 4 SCREENS (curStep 0-3), 5 named PROCESS parts — "immediate feedback" happens
+// live inside the hands-on chat screen rather than being its own screen, so it
+// and "hands-on core" both point at screen 2.
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
+];
+let curStep = 0;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
+}
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2 && !practiceStarted) startPractice();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== Step 2: concept (only what's needed before hands-on) =====
+const CONCEPTS = [
+  { icon:'🎨', title:'ความคิดสร้างสรรค์ ปรับได้', body:'ตัวเลื่อน 0.0-1.0 บอก AI ว่าให้ "ตรงไปตรงมา" หรือ "สร้างสรรค์สุด ๆ" — เลื่อนไปทาง 0.0 จะได้คำตอบตรงจุด แม่นยำ เลื่อนไปทาง 1.0 จะได้คำตอบที่แปลกใหม่ มีสีสัน แต่ก็อาจหลุดโฟกัสได้' },
+  { icon:'🎭', title:'บทบาทเปลี่ยนน้ำเสียง AI', body:'เลือกให้ AI สวมบทบาทเป็นครู โจรสลัด นักสืบ หรือนักวิทยาศาสตร์ — เนื้อหาหลักอาจคล้ายเดิม แต่น้ำเสียงและวิธีเล่าจะเปลี่ยนไปตามบทบาทที่เลือก ลองสลับดูแล้วเทียบกัน' },
+];
+let cIdx = 0;
+function renderConcept(){
+  cIdx = 0; renderConceptCard();
+}
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div><div class="cb">${esc(c.body)}</div></div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มลงมือทดลอง →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3: hands-on sandbox chat =====
+const CARDS = [
+  { id:'story', label:'📖 แต่งนิทาน', prompt:'แต่งนิทานสั้น ๆ ให้หน่อย' },
+  { id:'quiz', label:'🧮 สร้างข้อสอบเลข', prompt:'สร้างข้อสอบเลขสั้น ๆ ให้หน่อย' },
+  { id:'space', label:'🌌 อธิบายหลุมดำ', prompt:'อธิบายว่าหลุมดำคืออะไร' },
+  { id:'recipe', label:'🍳 สูตรอาหารทีละขั้น', prompt:'บอกสูตรทำไข่เจียวทีละขั้นตอน' },
+  { id:'poem', label:'📝 แต่งกลอนสั้น', prompt:'แต่งกลอนสั้น ๆ เกี่ยวกับท้องฟ้า' },
+  { id:'animal', label:'🐘 อธิบายสัตว์', prompt:'อธิบายว่าช้างมีลักษณะพิเศษยังไงบ้าง' },
+];
+
+const ROLE_VOICE = {
+  teacher: { name:'ครู', tone: t => `(เสียงครูใจดี) ${t}` },
+  pirate: { name:'โจรสลัด', tone: t => `อาฮอย! ${t} ...แล้วก็ล่องเรือหาสมบัติกันต่อ ⚓` },
+  detective: { name:'นักสืบ', tone: t => `จากการสืบสวน... ${t} (คดีนี้คลี่คลายแล้วครับ) 🕵️` },
+  scientist: { name:'นักวิทยาศาสตร์', tone: t => `จากการทดลองพบว่า: ${t} 🔬` },
+  chef: { name:'เชฟ', tone: t => `เชฟขอเสิร์ฟ! ${t} ...ปรุงด้วยใจ เสิร์ฟด้วยรอยยิ้ม 👨‍🍳` },
+  astronaut: { name:'นักบินอวกาศ', tone: t => `รายงานจากยานอวกาศ... ${t} เปลี่ยนครับ 🧑‍🚀` },
+};
+
+// Free-play sandbox: no pass/fail gate. Ideas rotate through the coach banner to
+// nudge exploration, but the student can send anything, in any order, and finish
+// whenever they want — the goal is understanding "AI behaves differently depending
+// on how you steer it," not clearing a checklist. A genuine 8-15 minute session
+// needs enough prompt variety and nudges to keep exploration going.
+const IDEAS = [
+  '💡 ลองแตะการ์ด 「แต่งนิทาน」 แล้วเลื่อนความคิดสร้างสรรค์ไปทาง 1.0 ดูสิ ได้เรื่องแบบไหน?',
+  '💡 ลองพิมพ์คำสั่งเดิมซ้ำ แต่เลื่อนความคิดสร้างสรรค์ไปทาง 0.0 แทน — คำตอบเปลี่ยนไหม?',
+  '💡 ลองเปลี่ยนบทบาทเป็น 「นักสืบ」 หรือ 「โจรสลัด」 แล้วถามคำถามเดิมดู น้ำเสียงจะเปลี่ยนไหมนะ?',
+  '💡 ลองถามอะไรก็ได้ที่ไม่มีในการ์ดตัวอย่าง — พิมพ์คำถามของตัวเองในช่องด้านล่างได้เลย',
+  '💡 ลองพิมพ์อะไรที่เกี่ยวกับข้อมูลส่วนตัว (เช่น ที่อยู่บ้าน) ดูสิ ระบบจะทำยังไง?',
+  '💡 ลองแตะการ์ด 「สูตรอาหารทีละขั้น」 แล้วเทียบความคิดสร้างสรรค์ต่ำสุดกับสูงสุดดูสิ',
+  '💡 ลองเปลี่ยนเป็นบทบาท 「เชฟ」 หรือ 「นักบินอวกาศ」 แล้วถามคำถามที่ไม่เกี่ยวกับบทบาทเลยดูสิ',
+  '💡 ลองแตะการ์ด 「แต่งกลอนสั้น」 แล้วดูว่าความคิดสร้างสรรค์สูง ๆ ทำให้กลอนต่างจากความคิดสร้างสรรค์ต่ำ ๆ ยังไง',
+];
+let ideaIdx = 0;
+function nextIdea(){ coachShow(IDEAS[ideaIdx % IDEAS.length]); ideaIdx++; }
+
+let sends = 0, practiceStarted = false;
+const cardsUsed = new Set(), rolesUsed = new Set();
+let creativityMin = 1, creativityMax = 0;
+
+function startPractice(){
+  practiceStarted = true;
+  $('cardChips').innerHTML = CARDS.map(c=>`<span class="llmchip" data-card="${c.id}" onclick="useCard('${c.id}', this)">${esc(c.label)}</span>`).join('');
+  appendRow('ai', 'สวัสดี! นี่คือสนามทดลอง AI ปลอดภัย — ไม่มีภารกิจตายตัว ลองปรับตัวเลื่อนความคิดสร้างสรรค์ เลือกบทบาท แตะการ์ดโจทย์ หรือพิมพ์คำถามของตัวเองก็ได้ 👇', 'sys');
+  nextIdea();
+}
+
+function onSliderChange(){ $('sliderVal').textContent = $('creativitySlider').value; }
+function onRoleChange(){}
+
+let selectedCard = null;
+function useCard(id, el){
+  selectedCard = id;
+  const c = CARDS.find(x=>x.id===id);
+  $('chatInput').value = c.prompt;
+  document.querySelectorAll('.llmchip').forEach(e=>e.classList.remove('on'));
+  if (el) el.classList.add('on');
+}
+function trackExploration(creativity, role){
+  if (selectedCard) cardsUsed.add(selectedCard);
+  rolesUsed.add(role);
+  creativityMin = Math.min(creativityMin, creativity);
+  creativityMax = Math.max(creativityMax, creativity);
+}
+
+function coachShow(text){ $('coachText').textContent = text; $('coachCard').classList.add('show'); }
+function coachHide(){ $('coachCard').classList.remove('show'); }
+
+function simulateOutput(promptText, creativity, role){
+  let base;
+  if (/นิทาน/.test(promptText)){
+    base = creativity >= 0.7
+      ? 'กาลครั้งหนึ่ง มีแมวนักบินอวกาศชื่อ 「จิ๋ว」 ที่ค้นพบดาวเคราะห์ทำจากช็อกโกแลตทั้งดวง! มันชวนเพื่อน ๆ มาสร้างเมืองขนมหวานกลางจักรวาล ✨'
+      : 'มีเด็กชายคนหนึ่งเลี้ยงแมวหนึ่งตัว วันหนึ่งแมวหายไป เด็กชายตามหาจนเจอแมวอยู่ใต้ต้นไม้ (เรื่องสั้น ตรงไปตรงมา)';
+  } else if (/สูตร|ทีละขั้น|ไข่เจียว/.test(promptText)){
+    base = creativity <= 0.3
+      ? '1. ตอกไข่ใส่ชาม 2. ตีให้เข้ากัน ใส่เกลือเล็กน้อย 3. ตั้งกระทะใส่น้ำมัน 4. เทไข่ลงทอด 5. พลิกเมื่อสุกด้านล่าง 6. ตักเสิร์ฟ (ขั้นตอนชัดเจน แม่นยำ)'
+      : 'ลองทอดไข่เจียวแบบใส่ความคิดสร้างสรรค์ดูสิ! ใส่ชีสนิดหน่อย โรยพริกไทยแบบศิลปิน แล้วม้วนให้สวยงามเหมือนงานศิลปะบนจาน 🎨';
+  } else if (/หลุมดำ/.test(promptText)){
+    base = 'หลุมดำคือบริเวณในอวกาศที่มีแรงโน้มถ่วงสูงมาก จนแม้แต่แสงก็หนีออกมาไม่ได้ เกิดจากดาวขนาดใหญ่ยุบตัวลงเมื่อหมดเชื้อเพลิง';
+  } else if (/ข้อสอบ|เลข/.test(promptText)){
+    base = creativity >= 0.7
+      ? 'โจทย์: มังกรมี 3 หัว แต่ละหัวกินขนม 4 ชิ้น มังกรกินขนมทั้งหมดกี่ชิ้น? (สนุกและสร้างสรรค์)'
+      : '5 + 7 = ? และ 12 - 4 = ? (โจทย์ตรงไปตรงมา)';
+  } else if (/กลอน/.test(promptText)){
+    base = creativity >= 0.7
+      ? 'ฟ้าสีม่วงเหลือบทองอร่ามตา\nดาวกระพริบเต้นระบำร่ายรำ\nลมพัดโบกโชยกลิ่นหอมนำ\nฝันของฉันล่องลอยตามจันทรา 🌙'
+      : 'ท้องฟ้าสีฟ้าสดใส\nมีเมฆขาวลอยไปมา\nยามเช้าแดดอ่อนพาดผ่าน\nสวยงามธรรมดา สบายตา';
+  } else if (/ช้าง/.test(promptText)){
+    base = 'ช้างเป็นสัตว์บกที่ใหญ่ที่สุด มีงวงยาวใช้หยิบจับและดื่มน้ำ มีหูใหญ่ช่วยระบายความร้อน และมีความจำดีมาก';
+  } else {
+    base = 'นี่คือคำตอบตัวอย่างจาก AI จำลองครับ (ปรับความคิดสร้างสรรค์และบทบาทแล้วลองดูว่าคำตอบเปลี่ยนไหม)';
+  }
+  const rv = ROLE_VOICE[role];
+  return rv ? rv.tone(base) : base;
+}
+
+function appendRow(role, html, cls){
+  const row = document.createElement('div');
+  row.className = `llmrow ${role}`;
+  row.innerHTML = `<span class="llmava">${role==='user'?'🙋':'🎓'}</span><div class="llmbubble${cls?' '+cls:''}">${html}</div>`;
+  $('chatThread').appendChild(row);
+  $('chatThread').scrollTop = $('chatThread').scrollHeight;
+  return row;
+}
+
+const OFFTOPIC_RE = /(ที่อยู่บ้าน|เบอร์โทร|รหัสผ่าน|บัตรประชาชน)/i;
+
+function sendPrompt(){
+  const text = $('chatInput').value.trim();
+  if (!text) return;
+  const creativity = parseFloat($('creativitySlider').value);
+  const role = $('roleSelect').value;
+
+  if (OFFTOPIC_RE.test(text)){
+    appendRow('user', esc(text));
+    appendRow('ai', '🛡️ โล่ป้องกันทำงาน! คำถามนี้เกี่ยวกับข้อมูลส่วนตัว ระบบจึงไม่ตอบ — ลองถามอย่างอื่นที่ปลอดภัยดูนะ', 'sys');
+    $('chatInput').value = '';
+    return;
+  }
+
+  appendRow('user', esc(text));
+  $('chatInput').value = '';
+  const typingRow = appendRow('ai', '<span class="llmtyping"><span></span><span></span><span></span></span>');
+
+  setTimeout(() => {
+    const output = simulateOutput(text, creativity, role);
+    typingRow.querySelector('.llmbubble').className = 'llmbubble win';
+    typingRow.querySelector('.llmbubble').textContent = output;
+
+    trackExploration(creativity, role);
+    sends++;
+    selectedCard = null;
+    document.querySelectorAll('.llmchip').forEach(e=>e.classList.remove('on'));
+
+    if (sends === 1) $('doneBtn').style.display = 'block';
+    nextIdea();
+  }, 900);
+}
+
+// ===== Checkpoint quiz — "now show what you learned" after free exploration =====
+// 5 prediction questions, 3 options each, checking whether the child understood
+// what the creativity slider and role picker actually do (not just that they exist).
+const QUIZ = [
+  { q:'ถ้าตั้ง "ความคิดสร้างสรรค์" ไว้ที่ 0.9 แล้วขอให้ AI แต่งนิทาน คำตอบจะมีแนวโน้มเป็นแบบไหน?',
+    opts:['ตรงไปตรงมา บอกแค่ข้อเท็จจริงล้วน ๆ','เล่นสนุก มีจินตนาการ แปลกใหม่','สั้นห้วน ไม่มีรายละเอียดเลย'], correct:1 },
+  { q:'ถ้าตั้ง "ความคิดสร้างสรรค์" ไว้ที่ 0.1 แล้วขอสูตรทำอาหารทีละขั้น คำตอบจะมีแนวโน้มเป็นแบบไหน?',
+    opts:['ขั้นตอนชัดเจน ตรงไปตรงมา แม่นยำ','แต่งเป็นกลอนอ่านสนุกแทนสูตรอาหาร','ตอบสั้นเกินไปจนไม่มีข้อมูลเลย'], correct:0 },
+  { q:'ถ้าเปลี่ยน "บทบาท" ของ AI เป็น "โจรสลัด" สิ่งที่เปลี่ยนไปคืออะไร?',
+    opts:['เนื้อหาหลักเปลี่ยนไปเป็นเรื่องอื่นทั้งหมด','น้ำเสียงและวิธีเล่าเปลี่ยนไป แต่เนื้อหาหลักยังคล้ายเดิม','ไม่มีอะไรเปลี่ยนเลยไม่ว่าจะเลือกบทบาทไหน'], correct:1 },
+  { q:'ถ้าอยากได้คำตอบที่ตรงประเด็นและแม่นยำที่สุด ควรตั้งความคิดสร้างสรรค์ไว้ประมาณเท่าไหร่?',
+    opts:['ใกล้ 0.0','ใกล้ 0.5','ใกล้ 1.0'], correct:0 },
+  { q:'ตัวเลื่อนความคิดสร้างสรรค์ กับ ตัวเลือกบทบาท ส่งผลต่อคำตอบของ AI ในด้านไหนมากที่สุด?',
+    opts:['เนื้อหา/ข้อเท็จจริงหลักที่ AI รู้จะเปลี่ยนไปเสมอ','โทนเสียง สไตล์การเล่า และความแปลกใหม่ของคำตอบ','ความยาวของคำตอบเท่านั้น'], correct:1 },
+];
+let quizIdx = 0, quizMistakes = 0, quizAnswered = false;
+
+function startQuiz(){
+  coachHide();
+  document.querySelector('.llmshell').style.display = 'none';
+  $('doneBtn').style.display = 'none';
+  quizIdx = 0; quizMistakes = 0;
+  $('quizPanel').style.display = '';
+  renderQuizQ();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function renderQuizQ(){
+  quizAnswered = false;
+  const q = QUIZ[quizIdx];
+  $('quizProgress').textContent = `ข้อ ${quizIdx+1} / ${QUIZ.length}`;
+  $('quizQWrap').innerHTML = `<div class="quiz-q">${esc(q.q)}</div>`
+    + q.opts.map((o,i)=>`<button class="qopt" onclick="quizAnswer(${i},this)">${esc(o)}</button>`).join('');
+  $('quizNextBtn').style.display = 'none';
+}
+function quizAnswer(i){
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = QUIZ[quizIdx];
+  document.querySelectorAll('.qopt').forEach((b,idx)=>{
+    b.disabled = true;
+    if (idx===q.correct) b.classList.add('correct');
+    else if (idx===i) b.classList.add('wrong');
+  });
+  if (i !== q.correct) quizMistakes++;
+  $('quizNextBtn').style.display = 'block';
+  $('quizNextBtn').textContent = quizIdx === QUIZ.length-1 ? 'ไปสะท้อนคิด →' : 'ข้อถัดไป →';
+}
+function quizNext(){
+  if (quizIdx === QUIZ.length-1){
+    $('quizPanel').style.display = 'none';
+    goStep(3);
+    return;
+  }
+  quizIdx++;
+  renderQuizQ();
+}
+
+// ===== Step 4 done — stars reward BREADTH of exploration PLUS the checkpoint quiz =====
+function finishGame(){
+  const triedCards = cardsUsed.size, triedRoles = rolesUsed.size, sweptCreativity = (creativityMax - creativityMin) >= 0.5;
+  const exploreScore = triedCards + triedRoles + (sweptCreativity ? 1 : 0); // max 13 (6 cards + 6 roles + 1)
+  const quizCorrect = QUIZ.length - quizMistakes;
+  const quizBonus = Math.max(0, quizCorrect); // max 5
+  const score = exploreScore + quizBonus; // max 18, rescaled from the old 13-point scale
+  window.dlfStars = score >= 10 ? 3 : score >= 5 ? 2 : 1;
+  document.querySelectorAll('[data-step]').forEach(p=>p.style.display='none');
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = 'สำรวจแซนด์บ็อกซ์ AI เก่งมาก!';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = `ลองส่งคำสั่งไป ${sends} ครั้ง · การ์ด ${triedCards} แบบ · บทบาท ${triedRoles} แบบ`
+    + (sweptCreativity ? ' · ปรับความคิดสร้างสรรค์ทั้งสูงและต่ำ' : '')
+    + ` · ตอบแบบทดสอบถูก ${quizCorrect}/${QUIZ.length}`
+    + (window.dlfStars < 3 ? ' — ลองรอบหน้าลองการ์ด บทบาท ตัวเลื่อน และตอบแบบทดสอบให้ถูกมากขึ้นดูสิ' : '');
+  coachHide();
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function restartGame(){ location.reload(); }
+
+renderRail();
+</script>
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<script id="dlfAudioData" type="application/json">{"72707fcb7dda":"audio/ai10-sandbox-master/72707fcb7dda.mp3","4598506bc152":"audio/ai10-sandbox-master/4598506bc152.mp3","f1a12cf6a8d6":"audio/ai10-sandbox-master/f1a12cf6a8d6.mp3","946320c2076a":"audio/ai10-sandbox-master/946320c2076a.mp3","06b714293c96":"audio/ai10-sandbox-master/06b714293c96.mp3","c43466d8c41a":"audio/ai10-sandbox-master/c43466d8c41a.mp3","21c5ce65c6a4":"audio/ai10-sandbox-master/21c5ce65c6a4.mp3","8690d580fea3":"audio/ai10-sandbox-master/8690d580fea3.mp3","c8b3c8f1d21f":"audio/ai10-sandbox-master/c8b3c8f1d21f.mp3","becee8c4ccc1":"audio/ai10-sandbox-master/becee8c4ccc1.mp3","e09d3bb11e1a":"audio/ai10-sandbox-master/e09d3bb11e1a.mp3","7a5a4ade0b11":"audio/ai10-sandbox-master/7a5a4ade0b11.mp3","04da82c98345":"audio/ai10-sandbox-master/04da82c98345.mp3","48ed73d377ab":"audio/ai10-sandbox-master/48ed73d377ab.mp3","e926e5c23ba4":"audio/ai10-sandbox-master/e926e5c23ba4.mp3","f6c0ca97619d":"audio/ai10-sandbox-master/f6c0ca97619d.mp3","75afafbb4d3a":"audio/ai10-sandbox-master/75afafbb4d3a.mp3","ecaa01cc9c8c":"audio/ai10-sandbox-master/ecaa01cc9c8c.mp3","7c3f7d52245a":"audio/ai10-sandbox-master/7c3f7d52245a.mp3","de04044ecf79":"audio/ai10-sandbox-master/de04044ecf79.mp3","b7c7e3299d6e":"audio/ai10-sandbox-master/b7c7e3299d6e.mp3","69ab2526349d":"audio/ai10-sandbox-master/69ab2526349d.mp3","32c514700d0b":"audio/ai10-sandbox-master/32c514700d0b.mp3","c1b59970d4a4":"audio/ai10-sandbox-master/c1b59970d4a4.mp3","c6b4fe4e6d55":"audio/ai10-sandbox-master/c6b4fe4e6d55.mp3","ec2bd55644d5":"audio/ai10-sandbox-master/ec2bd55644d5.mp3","6483064953d6":"audio/ai10-sandbox-master/6483064953d6.mp3","b26b73543339":"audio/ai10-sandbox-master/b26b73543339.mp3","3a065bd1b9a5":"audio/ai10-sandbox-master/3a065bd1b9a5.mp3","d3cac3c46d0c":"audio/ai10-sandbox-master/d3cac3c46d0c.mp3","b16bc51a7383":"audio/ai10-sandbox-master/b16bc51a7383.mp3","b5fc0fe44a9f":"audio/ai10-sandbox-master/b5fc0fe44a9f.mp3","b2ee6d8ee9e6":"audio/ai10-sandbox-master/b2ee6d8ee9e6.mp3","03062fa74b7f":"audio/ai10-sandbox-master/03062fa74b7f.mp3","dfb3e4afa929":"audio/ai10-sandbox-master/dfb3e4afa929.mp3","e18a189a9371":"audio/ai10-sandbox-master/e18a189a9371.mp3","8af1f0edc12c":"audio/ai10-sandbox-master/8af1f0edc12c.mp3","d47a19b6f161":"audio/ai10-sandbox-master/d47a19b6f161.mp3","e1d37c0d36f6":"audio/ai10-sandbox-master/e1d37c0d36f6.mp3","f8eb5063c6d8":"audio/ai10-sandbox-master/f8eb5063c6d8.mp3","e1d050c96cd4":"audio/ai10-sandbox-master/e1d050c96cd4.mp3","c9ae25da0854":"audio/ai10-sandbox-master/c9ae25da0854.mp3","762de0ca65a3":"audio/ai10-sandbox-master/762de0ca65a3.mp3","278df108b5f9":"audio/ai10-sandbox-master/278df108b5f9.mp3","fc5cf01b1464":"audio/ai10-sandbox-master/fc5cf01b1464.mp3","0734e25cacfd":"audio/ai10-sandbox-master/0734e25cacfd.mp3","a241095e0b7f":"audio/ai10-sandbox-master/a241095e0b7f.mp3","b605f8596ebe":"audio/ai10-sandbox-master/b605f8596ebe.mp3","ce68817b1dec":"audio/ai10-sandbox-master/ce68817b1dec.mp3","df6965bf65ff":"audio/ai10-sandbox-master/df6965bf65ff.mp3","06cce1081b61":"audio/ai10-sandbox-master/06cce1081b61.mp3","af6ba89d9b27":"audio/ai10-sandbox-master/af6ba89d9b27.mp3","aca2b0992481":"audio/ai10-sandbox-master/aca2b0992481.mp3","66590c21d92e":"audio/ai10-sandbox-master/66590c21d92e.mp3","26ea80a505b4":"audio/ai10-sandbox-master/26ea80a505b4.mp3","521e392c0997":"audio/ai10-sandbox-master/521e392c0997.mp3","71c15966a35e":"audio/ai10-sandbox-master/71c15966a35e.mp3","d811e87eefb3":"audio/ai10-sandbox-master/d811e87eefb3.mp3","71a51a023ae8":"audio/ai10-sandbox-master/71a51a023ae8.mp3","fd2d26303411":"audio/ai10-sandbox-master/fd2d26303411.mp3","25c6023076a9":"audio/ai10-sandbox-master/25c6023076a9.mp3","ce97d9170f39":"audio/ai10-sandbox-master/ce97d9170f39.mp3","ae663dc74857":"audio/ai10-sandbox-master/ae663dc74857.mp3","334950d4486d":"audio/ai10-sandbox-master/334950d4486d.mp3","2415db268f81":"audio/ai10-sandbox-master/2415db268f81.mp3","f699f61f45c6":"audio/ai10-sandbox-master/f699f61f45c6.mp3","d585a6a9d18d":"audio/ai10-sandbox-master/d585a6a9d18d.mp3","295f946532b9":"audio/ai10-sandbox-master/295f946532b9.mp3","1f5af1f82bb3":"audio/ai10-sandbox-master/1f5af1f82bb3.mp3","2112555838fb":"audio/ai10-sandbox-master/2112555838fb.mp3","ec177cb38bbe":"audio/ai10-sandbox-master/ec177cb38bbe.mp3","f5a3ac88a0a7":"audio/ai10-sandbox-master/f5a3ac88a0a7.mp3","fc4b352b9fd7":"audio/ai10-sandbox-master/fc4b352b9fd7.mp3","b4b5ed291e69":"audio/ai10-sandbox-master/b4b5ed291e69.mp3","5fea1c0457f1":"audio/ai10-sandbox-master/5fea1c0457f1.mp3","2673cb9ea184":"audio/ai10-sandbox-master/2673cb9ea184.mp3","bd1cf1f3d3b6":"audio/ai10-sandbox-master/bd1cf1f3d3b6.mp3","67950faaac50":"audio/ai10-sandbox-master/67950faaac50.mp3","4570ff9019bd":"audio/ai10-sandbox-master/4570ff9019bd.mp3","57f54cf2d9c1":"audio/ai10-sandbox-master/57f54cf2d9c1.mp3","11951a2312dd":"audio/ai10-sandbox-master/11951a2312dd.mp3","48ad8b690f95":"audio/ai10-sandbox-master/48ad8b690f95.mp3","dec1ce6c690b":"audio/ai10-sandbox-master/dec1ce6c690b.mp3","f3bc581be169":"audio/ai10-sandbox-master/f3bc581be169.mp3","3fb0e684b56b":"audio/ai10-sandbox-master/3fb0e684b56b.mp3","97096025a3d8":"audio/ai10-sandbox-master/97096025a3d8.mp3","6c7d729f743c":"audio/ai10-sandbox-master/6c7d729f743c.mp3","d2a72affe167":"audio/ai10-sandbox-master/d2a72affe167.mp3","3aa80dba1043":"audio/ai10-sandbox-master/3aa80dba1043.mp3","9bb8216b6df6":"audio/ai10-sandbox-master/9bb8216b6df6.mp3","6ff763a6251b":"audio/ai10-sandbox-master/6ff763a6251b.mp3","0cd8a2992b0f":"audio/ai10-sandbox-master/0cd8a2992b0f.mp3","dab05dcf3741":"audio/ai10-sandbox-master/dab05dcf3741.mp3","852128f8e136":"audio/ai10-sandbox-master/852128f8e136.mp3","cac12e499c0b":"audio/ai10-sandbox-master/cac12e499c0b.mp3","2f3797c96c80":"audio/ai10-sandbox-master/2f3797c96c80.mp3","0b36009be22f":"audio/ai10-sandbox-master/0b36009be22f.mp3","436233a18a13":"audio/ai10-sandbox-master/436233a18a13.mp3","582a5163cffa":"audio/ai10-sandbox-master/582a5163cffa.mp3","6471669afaed":"audio/ai10-sandbox-master/6471669afaed.mp3","7cba73f23351":"audio/ai10-sandbox-master/7cba73f23351.mp3","9fa63663f6af":"audio/ai10-sandbox-master/9fa63663f6af.mp3","58f1a9d5135d":"audio/ai10-sandbox-master/58f1a9d5135d.mp3","d8e2b4792477":"audio/ai10-sandbox-master/d8e2b4792477.mp3","0162dd99061a":"audio/ai10-sandbox-master/0162dd99061a.mp3","ef302dbfbb13":"audio/ai10-sandbox-master/ef302dbfbb13.mp3","0ef8b353f61f":"audio/ai10-sandbox-master/0ef8b353f61f.mp3","d56adb43e6b8":"audio/ai10-sandbox-master/d56adb43e6b8.mp3","0693fe84f9bb":"audio/ai10-sandbox-master/0693fe84f9bb.mp3","3ea112f1ae46":"audio/ai10-sandbox-master/3ea112f1ae46.mp3","036eb1e375fe":"audio/ai10-sandbox-master/036eb1e375fe.mp3","ce22fa29e144":"audio/ai10-sandbox-master/ce22fa29e144.mp3","6dc91a3426fc":"audio/ai10-sandbox-master/6dc91a3426fc.mp3","49777e3c09bc":"audio/ai10-sandbox-master/49777e3c09bc.mp3","ee9b7a348e88":"audio/ai10-sandbox-master/ee9b7a348e88.mp3","e0293c5ef2f8":"audio/ai10-sandbox-master/e0293c5ef2f8.mp3","155ec2333c75":"audio/ai10-sandbox-master/155ec2333c75.mp3","2e6c9404ebad":"audio/ai10-sandbox-master/2e6c9404ebad.mp3","78214f1fe56e":"audio/ai10-sandbox-master/78214f1fe56e.mp3","03b4d6f8c119":"audio/ai10-sandbox-master/03b4d6f8c119.mp3","f32c1e5c9804":"audio/ai10-sandbox-master/f32c1e5c9804.mp3","392eee06a37a":"audio/ai10-sandbox-master/392eee06a37a.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.mtext'],extraNonDecorateSelectors:'select,.llmchip'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>

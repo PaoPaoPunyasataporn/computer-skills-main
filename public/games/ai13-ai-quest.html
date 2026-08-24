@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ภารกิจใช้ AI อย่างมือโปร</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="_lib/theme-base.css" rel="stylesheet">
+<style>
+:root{
+  --green:#38A93A; --green-l:#5CD35B; --green-d:#2E8B30; --green-light:#E9FBE7;
+  --blue:#3A82F6; --blue-l:#2E9BFF; --blue-d:#2E64D6;
+  --purple:#9A5CF0; --purple-d:#7C3EE0;
+  --orange:#F0982E; --orange-d:#D07E1E; --gold:#FFC24B; --amber:#B4772E;
+  --primary:#C58A00; --primary-light:#FFF3D6; --primary-dark:#9A6C00;
+  --panel2:var(--cream2);
+  --radius:16px; --shadow:none;
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#FFF6DE 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
+
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
+
+.botrow{width:100%;display:flex;gap:12px;align-items:flex-start;}
+.botavatar{flex:0 0 auto;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#FFD87A,#C58A00);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 0 var(--primary-dark);}
+.botbubble{flex:1;background:var(--panel2);border:1.5px solid var(--border);border-radius:4px 16px 16px 16px;padding:14px 16px;font-size:14.5px;color:var(--text);line-height:1.7;text-align:left;}
+
+.round-head{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.round-tag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+
+/* mission progress rail */
+.rail{width:100%;display:flex;gap:4px;align-items:flex-start;justify-content:space-between;background:var(--panel);border:2px solid var(--border);border-radius:16px;padding:12px 10px;margin-bottom:4px;}
+.rstep{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;}
+.rdot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--panel2);border:2px solid var(--line-d);transition:all .2s;}
+.rstep.cur .rdot{background:var(--primary-light);border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 25%,transparent);}
+.rstep.done .rdot{background:var(--green-light);border-color:var(--green);}
+.rlbl{font-family:'Mitr',sans-serif;font-size:10px;font-weight:600;color:var(--text3);white-space:nowrap;}
+.rstep.cur .rlbl{color:var(--primary-dark);}
+.rstep.done .rlbl{color:var(--green-d);}
+
+.stagecard{width:100%;background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 14px 14px 0;padding:20px 20px;text-align:center;}
+.stage-lbl{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);letter-spacing:.5px;margin-bottom:8px;}
+.stage-title{font-family:'Mitr',sans-serif;font-size:17px;color:var(--text);line-height:1.6;font-weight:600;margin-bottom:6px;}
+.stage-note{font-size:13px;color:var(--text2);line-height:1.65;}
+
+.choices{width:100%;display:flex;flex-direction:column;gap:10px;}
+.choicebtn{width:100%;text-align:left;background:var(--panel);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;padding:13px 16px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);cursor:pointer;transition:transform .08s;line-height:1.6;}
+.choicebtn:active{transform:translateY(2px);}
+.choicebtn:disabled{cursor:default;}
+.choicebtn.correct{background:var(--green-light);border-color:var(--green);color:#1F6B33;}
+.choicebtn.wrong{background:var(--red-light);border-color:var(--red);color:#A32E20;}
+
+/* dataset cards */
+.dsgrid{width:100%;display:flex;flex-direction:column;gap:10px;}
+.dscard{width:100%;display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;padding:13px 16px;cursor:pointer;font-family:'Sarabun',sans-serif;transition:transform .08s;}
+.dscard:active{transform:translateY(2px);}
+.dscard:disabled{cursor:default;}
+.dscard.correct{background:var(--green-light);border-color:var(--green);}
+.dscard.wrong{background:var(--red-light);border-color:var(--red);}
+.ds-emoji{flex:0 0 auto;font-size:24px;letter-spacing:2px;background:var(--panel2);border-radius:10px;padding:8px 10px;}
+.ds-name{font-family:'Mitr',sans-serif;font-weight:700;font-size:13.5px;color:var(--primary-dark);margin-bottom:2px;}
+.ds-desc{font-size:13px;color:var(--text2);line-height:1.55;}
+
+/* multi-select checklist */
+.chklist{width:100%;display:flex;flex-direction:column;gap:10px;}
+.chk{width:100%;display:flex;gap:12px;align-items:center;text-align:left;background:var(--panel);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;padding:12px 16px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--text);line-height:1.55;transition:transform .08s;}
+.chk:active{transform:translateY(2px);}
+.chk .box{flex:0 0 auto;width:24px;height:24px;border-radius:8px;border:2px solid var(--line-d);background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;transition:all .15s;}
+.chk.on{border-color:var(--primary);background:var(--primary-light);}
+.chk.on .box{background:var(--primary);border-color:var(--primary-dark);}
+.chk.good{background:var(--green-light);border-color:var(--green);}
+.chk.good .box{background:var(--green);border-color:var(--green-d);}
+.chk.bad{background:var(--red-light);border-color:var(--red);}
+.chk.bad .box{background:var(--red);border-color:#B7331E;}
+.chk:disabled{cursor:default;}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;text-align:left;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+/* launch finale */
+.launchwrap{width:100%;background:transparent;border:none;padding:0;text-align:center;}
+.launch-icon{font-size:64px;display:block;margin-bottom:8px;}
+.launch-title{font-family:'Mitr',sans-serif;font-size:24px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.launch-sub{font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:16px;}
+.statlist{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.statitem{background:var(--panel2);border:1.5px solid var(--border);border-left:4px solid var(--green);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--text);text-align:left;opacity:0;transform:translateY(12px);transition:all .45s cubic-bezier(.34,1.56,.64,1);}
+.statitem.pop{opacity:1;transform:translateY(0);}
+.badgecard{display:inline-flex;align-items:center;gap:10px;background:var(--primary-light);border:2px solid var(--primary);border-radius:99px;padding:10px 22px;font-family:'Mitr',sans-serif;font-weight:700;font-size:15px;color:var(--primary-dark);margin-bottom:16px;opacity:0;transform:scale(.6);transition:all .5s cubic-bezier(.34,1.56,.64,1);}
+.badgecard.pop{opacity:1;transform:scale(1);}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
+.res-badge{font-family:'Mitr',sans-serif;font-size:15px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border:1.5px solid var(--primary);border-radius:99px;padding:8px 20px;display:inline-block;margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<div id="procbar">
+  <div id="steprail"></div>
+</div>
+
+<div class="stage">
+  <!-- STEP 1 · Hook -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🏆</span>
+      <div class="title">ภารกิจสุดท้าย! ใช้ AI ช่วยทำงานจริงให้โรงเรียน ตั้งแต่ต้นจนจบ</div>
+      <div class="sub">คราวนี้ไม่มีใครบอกคำตอบ — เราต้องรวมทุกทักษะที่เรียนมา (ตั้งคำถามดี ตรวจสอบ ปกป้องความเป็นส่วนตัว ปรับโทน ใช้อย่างรับผิดชอบ) มาใช้กับงานจริงชิ้นเดียว</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">รับภารกิจ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 · Concept (brief recap, not new teaching) -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 · Hands-on core + immediate feedback (ai9's original 5-stage capstone builder, kept intact) -->
+  <div class="panel" id="s3" data-step="2" style="display:none">
+
+    <div id="briefCard">
+      <div class="botrow">
+        <span class="botavatar">🧑‍🏫</span>
+        <div class="botbubble"><b>ผอ.โรงเรียน:</b> "สวัสดี! อีก 2 สัปดาห์โรงเรียนจะจัด 'วันสิ่งแวดล้อม' ครูอยากให้หนูช่วยใช้ AI ทำประกาศประชาสัมพันธ์กิจกรรมนี้ให้เพื่อน ๆ และผู้ปกครองได้รู้ — ลองใช้ AI ช่วยตั้งแต่ร่างข้อความจนถึงพร้อมเผยแพร่จริงเลยนะ!"</div>
+      </div>
+      <button class="btn" style="margin-top:14px" onclick="startMission()">เริ่มภารกิจ! 🚀</button>
+    </div>
+
+    <div id="missionArea" style="display:none;width:100%;flex-direction:column;gap:14px;align-items:center;">
+      <div class="rail" id="rail"></div>
+      <div class="round-head">
+        <span class="round-tag" id="stageTag">ขั้นที่ 1/5</span>
+        <span class="scorepill" id="scorePill">พลาด 0 ครั้ง</span>
+      </div>
+      <div id="stageArea" style="width:100%;display:flex;flex-direction:column;gap:14px;align-items:center;"></div>
+      <div class="explainbox" id="explainBox"></div>
+      <button class="btn" id="stageNextBtn" style="display:none;" onclick="nextStage()">ขั้นถัดไป →</button>
+    </div>
+
+    <div id="finaleCard" style="display:none">
+      <div class="launchwrap">
+        <span class="launch-icon" id="launchIcon">🚀</span>
+        <div class="launch-title">ประกาศพร้อมเผยแพร่แล้ว!</div>
+        <div class="launch-sub">ใช้ AI ช่วยทำงานจริงผ่านทุกด่าน: ตั้งคำถามชัดเจน ตรวจสอบก่อนเชื่อ ปกป้องความเป็นส่วนตัว ปรับโทนให้ตรงกลุ่มผู้อ่าน และยังเป็นงานของเราเอง</div>
+        <button class="btn" id="launchBtn" onclick="doLaunch()">เผยแพร่ประกาศ! ⚡</button>
+        <div class="statlist" id="statList" style="display:none;">
+          <div class="statitem">📣 ประกาศไปถึงผู้ปกครองและนักเรียนกว่า 300 คน</div>
+          <div class="statitem">👍 คุณครูชมว่าอ่านง่าย น่าเชื่อถือ และไม่มีตัวเลขมั่ว ๆ หลุดออกไป</div>
+          <div class="statitem">🔒 ไม่มีเบอร์โทรหรือข้อมูลส่วนตัวของใครหลุดไปกับประกาศเลย</div>
+        </div>
+        <div class="badgecard" id="badgeCard">🎖️ ได้รับตรา "นักใช้ AI มืออาชีพ"</div>
+        <button class="btn" id="finReportBtn" style="display:none;" onclick="goStep(3)">ไปสะท้อนคิด →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 4 · Reflection -->
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">ตอนนี้ใช้ AI ทำงานจริงได้ครบทุกขั้นแล้ว — ขั้นไหนสำคัญที่สุดสำหรับคุณ?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าขั้นไหนของภารกิจ (ตั้งคำถามดี / ตรวจสอบ / ปกป้องความเป็นส่วนตัว / ปรับโทน / ใช้อย่างรับผิดชอบ) ที่คุณคิดว่าสำคัญที่สุด แล้วจะเอาไปใช้กับงานจริงเรื่องอะไรต่อ</div>
+      <textarea id="reflText" placeholder="เช่น ขั้นตรวจสอบก่อนเชื่อสำคัญที่สุด เพราะเกือบเอาตัวเลขมั่ว ๆ ไปพิมพ์ลงป้ายจริง..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นภารกิจ →</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">ภารกิจสำเร็จ!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-badge">🎖️ นักใช้ AI มืออาชีพ</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">เล่นอีกครั้ง →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 4 SCREENS (curStep 0-3), 5 named PROCESS parts — "immediate feedback" lives
+// inside the hands-on screen rather than being its own screen, so it and
+// "hands-on core" both point at screen 2.
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
+];
+let curStep = 0;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderRailProc(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
+}
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRailProc();
+  if (n===1) renderConcept();
+  if (n===2) resetMissionScreen();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== Step 2: concept (brief recap) =====
+const CONCEPTS = [
+  { icon:'🧭', title:'เส้นทางของนักใช้ AI มืออาชีพ', body:'ตั้งคำถามให้ชัดเจน → ตรวจสอบก่อนเชื่อ → ปกป้องความเป็นส่วนตัว → ปรับโทนให้ตรงคนอ่าน → อ่านทวนและใช้อย่างรับผิดชอบ — ข้ามขั้นไหนไป งานที่ได้ก็อาจผิดพลาดหรือเป็นอันตรายได้' },
+  { icon:'🏆', title:'ถึงเวลาลงมือแล้ว!', body:'วันนี้เราจะรวมทุกทักษะที่เรียนมาไว้ในภารกิจเดียว: ใช้ AI ช่วยทำประกาศกิจกรรมจริงให้โรงเรียน ตั้งแต่ร่างข้อความจนถึงพร้อมเผยแพร่ พร้อมไหม?' },
+];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div><div class="cb">${esc(c.body)}</div></div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'รับภารกิจจาก ผอ. →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3: hands-on capstone builder (original mechanic, unchanged) =====
+const RAIL_STEPS = [
+  { icon:'💬', lbl:'ตั้งคำถาม' },
+  { icon:'🔍', lbl:'ตรวจสอบ' },
+  { icon:'🔒', lbl:'ความเป็นส่วนตัว' },
+  { icon:'🎭', lbl:'ปรับโทน' },
+  { icon:'✅', lbl:'ใช้อย่างเข้าใจ' },
+];
+
+// stage types: mcq | dataset | multiselect
+const STAGES = [
+  { type:'dataset', lbl:'ขั้นที่ 1 · ตั้งคำถามให้ชัดเจน',
+    title:'ผอ. ขอให้ช่วยแต่งข้อความประชาสัมพันธ์ "วันสิ่งแวดล้อม" ควรพิมพ์คำสั่งแบบไหนให้ AI ช่วยได้ตรงจุดที่สุด?',
+    note:'ทบทวนสูตรคำสั่งดี: ใคร (Role) ทำอะไร (Task) ตอบแบบไหน (Format)',
+    choices:[
+      { emoji:'💬', name:'คำสั่ง A', text:'ช่วยแต่งข้อความหน่อย', ok:false,
+        explain:'กำกวมเกินไป — ไม่บอกว่าเรื่องอะไร ใครอ่าน หรือยาวแค่ไหน AI เลยต้องเดาเอง' },
+      { emoji:'🎯', name:'คำสั่ง B', text:'สวมบทบาทเป็นฝ่ายประชาสัมพันธ์โรงเรียน ช่วยเขียนประกาศ "วันสิ่งแวดล้อม" วันที่ 15 นี้ สั้น ๆ 4-5 ประโยค อ่านง่าย เหมาะติดบอร์ดให้นักเรียนและผู้ปกครองเห็น', ok:true,
+        explain:'ครบ 3 ส่วน! บอกทั้งบทบาท (ฝ่ายประชาสัมพันธ์) งาน (เขียนประกาศ พร้อมวันที่) และรูปแบบ (สั้น อ่านง่าย เหมาะติดบอร์ด) — AI จึงช่วยได้ตรงจุด' },
+      { emoji:'🌍', name:'คำสั่ง C', text:'เขียนอะไรก็ได้เกี่ยวกับสิ่งแวดล้อม', ok:false,
+        explain:'ยังกว้างเกินไป — ไม่บอกว่าเป็นประกาศกิจกรรม ไม่บอกวันที่ หรือใครเป็นคนอ่าน' },
+    ]},
+  { type:'mcq', lbl:'ขั้นที่ 2 · ตรวจสอบก่อนเชื่อ',
+    title:'AI แต่งประกาศให้แล้ว มีประโยคหนึ่งเขียนว่า "จากงานวิจัยของสถาบันสิ่งแวดล้อมโลก การแยกขยะช่วยลดขยะฝังกลบได้ถึง 73%" ก่อนพิมพ์ลงบอร์ดจริง ควรทำยังไง?',
+    note:'ตัวเลขและชื่อสถาบันที่เจาะจงมาก ๆ แบบนี้ คือสัญญาณที่ AI มักมั่วขึ้นมาเอง',
+    choices:[
+      { text:'เชื่อเลย เอาไปติดบอร์ดได้ทันที ฟังดูน่าเชื่อถือดี', ok:false,
+        explain:'อันตราย — AI มักแต่งชื่อสถาบันและตัวเลขที่ฟังดูน่าเชื่อขึ้นมาเองได้ ถ้าติดบอร์ดไปทั้งที่ไม่จริง โรงเรียนจะเผยแพร่ข้อมูลผิด' },
+      { text:'เช็กว่างานวิจัยนี้มีอยู่จริงไหมก่อน ถ้าหาไม่เจอ ให้ตัดตัวเลขออกหรือเปลี่ยนเป็นข้อความที่ไม่ต้องอ้างอิงตัวเลข', ok:true,
+        explain:'ถูกต้อง! ยิ่ง AI ให้รายละเอียดเฉพาะเจาะจง (ชื่อสถาบัน + ตัวเลขแม่นยำ) ยิ่งต้องตรวจสอบก่อนเผยแพร่จริงเสมอ' },
+      { text:'ลบทุกตัวเลขในประกาศทิ้งหมด เพราะ AI มั่วได้เสมอ ไม่ต้องใช้ตัวเลขอะไรเลย', ok:false,
+        explain:'ทำเกินไปหน่อย — ไม่ต้องตัดข้อมูลที่มีประโยชน์ทั้งหมด แค่ตรวจสอบสิ่งที่ AI อ้างอิงเฉพาะเจาะจงก่อนเชื่อก็พอ' },
+    ]},
+  { type:'mcq', lbl:'ขั้นที่ 3 · ปกป้องความเป็นส่วนตัว',
+    title:'AI แต่งประกาศโดยใส่ "สอบถามเพิ่มเติมโทร 08X-XXX-XXXX (ครูสมหญิง)" ไว้ท้ายประกาศ ควรทำยังไงก่อนเผยแพร่?',
+    note:'ประกาศนี้จะถูกติดบอร์ดสาธารณะที่ใคร ๆ ก็เห็นได้',
+    choices:[
+      { text:'เผยแพร่ตามที่ AI เขียนมาเลย สะดวกดี ไม่ต้องแก้อะไร', ok:false,
+        explain:'ไม่ควร — เบอร์โทรส่วนตัวของครูจะถูกเปิดเผยต่อสาธารณะโดยที่อาจไม่ได้ขออนุญาตครูก่อน' },
+      { text:'เปลี่ยนเป็นช่องทางกลางของโรงเรียน (เช่น เบอร์ห้องธุรการ) หรือถามครูสมหญิงก่อนว่าโอเคให้ใส่เบอร์ส่วนตัวไหม', ok:true,
+        explain:'ถูกต้อง! ข้อมูลติดต่อที่เป็นส่วนตัวของคนอื่นต้องขออนุญาตก่อน หรือใช้ช่องทางกลางที่ปลอดภัยกว่าแทน' },
+      { text:'เพิ่มที่อยู่บ้านของนักเรียนที่จัดกิจกรรมเข้าไปด้วย เผื่อมีคนอยากมาช่วย', ok:false,
+        explain:'อันตรายมาก — ที่อยู่บ้านของนักเรียนไม่ควรเปิดเผยต่อสาธารณะเด็ดขาด' },
+    ]},
+  { type:'dataset', lbl:'ขั้นที่ 4 · ปรับโทนให้ตรงคนอ่าน',
+    title:'ประกาศเดียวกันต้องส่งให้ทั้งคุณครู (ทางการ) และเพื่อนในห้อง (สนุก อยากชวนมาร่วม) ควรทำยังไง?',
+    note:'เนื้อหาหลัก (วันที่ สถานที่ กิจกรรม) ต้องเหมือนกัน แค่ปรับน้ำเสียง',
+    choices:[
+      { emoji:'📋', name:'วิธี A', text:'ใช้ข้อความทางการชุดเดียว ส่งให้ทั้งครูและเพื่อนเหมือนกันหมด', ok:false,
+        explain:'ใช้ได้ แต่ไม่ตรงกลุ่มผู้อ่าน — ข้อความทางการเกินไปอาจทำให้เพื่อน ๆ ในห้องไม่อยากอ่านหรือไม่รู้สึกอยากมาร่วม' },
+      { emoji:'🎭', name:'วิธี B', text:'ขอให้ AI ปรับโทน 2 แบบจากเนื้อหาเดียวกัน: ทางการสำหรับครู และสนุก กระตุ้นอยากมาร่วมสำหรับเพื่อนในห้อง', ok:true,
+        explain:'ถูกต้อง! ข้อเท็จจริงหลักเหมือนเดิม แค่ปรับโทนให้เหมาะกับผู้อ่านแต่ละกลุ่ม — เป็นการใช้ AI แบบที่ได้เรียนมาจากบทฝึกปรับโทน/บทบาท' },
+      { emoji:'🎲', name:'วิธี C', text:'ให้ AI เลือกเองว่าจะส่งให้กลุ่มไหนก่อน แล้วค่อยว่ากันทีหลัง', ok:false,
+        explain:'ไม่ตรงโจทย์ — ปัญหาคือต้องปรับโทนให้เหมาะกับผู้อ่านสองกลุ่ม ไม่ใช่เรื่องลำดับการส่ง' },
+    ]},
+  { type:'multiselect', lbl:'ขั้นที่ 5 · ใช้อย่างเข้าใจและรับผิดชอบ',
+    title:'ก่อนกดเผยแพร่ประกาศจริง ควรทำอะไรบ้าง? เลือกแนวทางที่ดี 3 ข้อ',
+    note:'แตะเลือกให้ครบ 3 ข้อที่ควรทำ แล้วกดยืนยัน',
+    options:[
+      { text:'อ่านทวนทั้งหมดที่ AI ช่วยเขียน แล้วปรับสำนวนบางส่วนให้เป็นของตัวเอง', ok:true,
+        why:'อ่านทวนและปรับเป็นสำนวนตัวเองก่อนเสมอ — ยังถือว่างานชิ้นนี้เป็นของเรา ไม่ใช่แค่ก็อบวางจาก AI' },
+      { text:'บอกครูตามตรงว่าใช้ AI ช่วยร่างข้อความ แล้วเราแก้ไขต่อเอง', ok:true,
+        why:'ความโปร่งใสสำคัญ — บอกตามตรงว่าใช้ AI ช่วยตรงไหนบ้าง' },
+      { text:'เชื่อ AI 100% ไม่ต้องอ่านทวนอะไรทั้งนั้น ประหยัดเวลาดี', ok:false,
+        why:'อันตราย — AI อาจยังมีข้อมูลผิดหรือข้อมูลส่วนตัวหลงเหลืออยู่ ต้องอ่านทวนทุกครั้งก่อนเผยแพร่จริง' },
+      { text:'ตรวจให้แน่ใจว่าไม่มีเบอร์โทร/ข้อมูลส่วนตัวที่ไม่จำเป็นหลงเหลืออยู่ในประกาศ', ok:true,
+        why:'เช็กความเป็นส่วนตัวเป็นด่านสุดท้ายเสมอ ก่อนเผยแพร่สู่สาธารณะ' },
+      { text:'คัดลอกข้อความจาก AI ทั้งหมดไปติดบอร์ดโดยไม่บอกใครว่าใช้ AI ช่วย', ok:false,
+        why:'ไม่ตรงไปตรงมา — ควรบอกตามตรงว่าใช้ AI ช่วยร่าง เหมือนที่ได้ฝึกมาในบทเรียนเรื่องความรับผิดชอบ' },
+    ]},
+];
+
+let stageIdx = 0, wrongCount = 0, launched = false;
+
+function resetMissionScreen(){
+  stageIdx = 0; wrongCount = 0; launched = false;
+  $('briefCard').style.display = '';
+  $('missionArea').style.display = 'none';
+  $('finaleCard').style.display = 'none';
+}
+function startMission(){
+  stageIdx = 0; wrongCount = 0; launched = false;
+  $('briefCard').style.display = 'none';
+  $('finaleCard').style.display = 'none';
+  $('missionArea').style.display = 'flex';
+  renderStage();
+}
+function restartGame(){ curStep = 0; goStep(0); }
+
+function renderRail(){
+  $('rail').innerHTML = RAIL_STEPS.map((s,i)=>{
+    const cls = i < stageIdx ? 'done' : i === stageIdx ? 'cur' : '';
+    return `<div class="rstep ${cls}"><span class="rdot">${i < stageIdx ? '✅' : s.icon}</span><span class="rlbl">${esc(s.lbl)}</span></div>`;
+  }).join('');
+}
+
+function updatePills(){
+  $('stageTag').textContent = `ขั้นที่ ${stageIdx+1}/${STAGES.length}`;
+  $('scorePill').textContent = `พลาด ${wrongCount} ครั้ง`;
+}
+
+function clearExplain(){ $('explainBox').className = 'explainbox'; $('explainBox').innerHTML = ''; }
+function showExplain(correct, title, body){
+  $('explainBox').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
+  $('explainBox').innerHTML = `<b>${correct ? '✅ ' : '❌ '}${esc(title)}</b>${esc(body)}`;
+}
+
+function renderStage(){
+  const st = STAGES[stageIdx];
+  renderRail(); updatePills(); clearExplain();
+  $('stageNextBtn').style.display = 'none';
+  $('stageNextBtn').textContent = stageIdx === STAGES.length-1 ? 'ไปเปิดใช้งาน! →' : 'ขั้นถัดไป →';
+
+  let inner = `<div class="stagecard">
+    <div class="stage-lbl">${esc(st.lbl)}</div>
+    <div class="stage-title">${esc(st.title)}</div>
+    ${st.note ? `<div class="stage-note">${esc(st.note)}</div>` : ''}
+  </div>`;
+
+  if (st.type === 'mcq'){
+    inner += `<div class="choices">` + st.choices.map((c,i)=>
+      `<button class="choicebtn" data-i="${i}" onclick="onChoice(${i})">${esc(c.text)}</button>`
+    ).join('') + `</div>`;
+  } else if (st.type === 'dataset'){
+    inner += `<div class="dsgrid">` + st.choices.map((c,i)=>
+      `<button class="dscard" data-i="${i}" onclick="onChoice(${i})">
+        <span class="ds-emoji">${c.emoji}</span>
+        <span><span class="ds-name">${esc(c.name)}</span><span class="ds-desc">${esc(c.text)}</span></span>
+      </button>`
+    ).join('') + `</div>`;
+  } else if (st.type === 'multiselect'){
+    inner += `<div class="chklist">` + st.options.map((o,i)=>
+      `<button class="chk" data-i="${i}" onclick="toggleChk(${i})"><span class="box"></span><span>${esc(o.text)}</span></button>`
+    ).join('') + `</div>
+    <button class="btn" id="msConfirmBtn" onclick="confirmMulti()">ยืนยันแผนใช้งาน ✔️</button>`;
+  }
+
+  $('stageArea').innerHTML = inner;
+}
+
+function stageButtons(){ return document.querySelectorAll('#stageArea .choicebtn, #stageArea .dscard'); }
+
+function onChoice(i){
+  const st = STAGES[stageIdx];
+  const c = st.choices[i];
+  const btns = stageButtons();
+  if (c.ok){
+    btns.forEach(b=>{ b.disabled = true; if (Number(b.getAttribute('data-i'))===i) b.classList.add('correct'); });
+    showExplain(true, 'ถูกต้อง!', c.explain);
+    if (window.dlf) dlf.cheer('เก่งมาก!');
+    $('stageNextBtn').style.display = 'block';
+  } else {
+    wrongCount++; updatePills();
+    btns.forEach(b=>{ if (Number(b.getAttribute('data-i'))===i){ b.classList.add('wrong'); b.disabled = true; } });
+    showExplain(false, 'ยังไม่ใช่ ลองคิดดูอีกที', c.explain);
+  }
+}
+
+// stage 5: multi-select
+const picked = new Set();
+function toggleChk(i){
+  const btn = document.querySelector(`#stageArea .chk[data-i="${i}"]`);
+  if (!btn || btn.disabled) return;
+  if (picked.has(i)){ picked.delete(i); btn.classList.remove('on'); btn.querySelector('.box').textContent = ''; }
+  else { picked.add(i); btn.classList.add('on'); btn.querySelector('.box').textContent = '✓'; }
+}
+function confirmMulti(){
+  const st = STAGES[stageIdx];
+  const goodSet = st.options.map((o,i)=>o.ok?i:-1).filter(i=>i>=0);
+  const allGood = goodSet.every(i=>picked.has(i)) && picked.size === goodSet.length;
+  const chks = document.querySelectorAll('#stageArea .chk');
+  if (allGood){
+    chks.forEach(b=>{ b.disabled = true; const i = Number(b.getAttribute('data-i')); if (st.options[i].ok) b.classList.add('good'); });
+    const btn = $('msConfirmBtn'); if (btn) btn.style.display = 'none';
+    showExplain(true, 'ครบทั้ง 3 ข้อ!', 'อ่านทวน บอกตามตรง และปกป้องความเป็นส่วนตัว — นี่แหละแผนใช้งานของนักใช้ AI มืออาชีพ');
+    if (window.dlf) dlf.cheer('สุดยอด!');
+    $('stageNextBtn').style.display = 'block';
+  } else {
+    wrongCount++; updatePills();
+    const wrongPicked = [...picked].filter(i=>!st.options[i].ok);
+    const missing = goodSet.filter(i=>!picked.has(i));
+    let msg = '';
+    if (wrongPicked.length){ msg += 'ข้อที่ยังไม่เหมาะ: ' + wrongPicked.map(i=>`"${st.options[i].text}" — ${st.options[i].why}`).join(' · '); }
+    if (missing.length){ msg += (msg?' ':'') + 'และยังขาดอีก ' + missing.length + ' ข้อดี ๆ ที่ควรเลือก ลองอ่านอีกรอบนะ'; }
+    if (!msg) msg = 'ต้องเลือกให้ครบ 3 ข้อพอดีนะ';
+    showExplain(false, 'เกือบแล้ว ลองปรับดูอีกนิด', msg);
+  }
+}
+
+function nextStage(){
+  const st = STAGES[stageIdx];
+  if (st.type === 'multiselect') picked.clear();
+  stageIdx++;
+  clearExplain();
+  if (stageIdx >= STAGES.length){ showFinale(); return; }
+  renderStage();
+}
+
+function showFinale(){
+  launched = false;
+  $('missionArea').style.display = 'none';
+  $('launchIcon').textContent = '🚀';
+  $('launchBtn').style.display = 'block';
+  $('statList').style.display = 'none';
+  document.querySelectorAll('#statList .statitem').forEach(el=>el.classList.remove('pop'));
+  $('badgeCard').classList.remove('pop');
+  $('finReportBtn').style.display = 'none';
+  $('finaleCard').style.display = 'block';
+}
+
+function doLaunch(){
+  if (launched) return;
+  launched = true;
+  $('launchBtn').style.display = 'none';
+  $('launchIcon').textContent = '♻️';
+  $('statList').style.display = 'flex';
+  const items = document.querySelectorAll('#statList .statitem');
+  items.forEach((el,i)=> setTimeout(()=>el.classList.add('pop'), 350 + i*600));
+  setTimeout(()=>{
+    $('badgeCard').classList.add('pop');
+    if (window.dlf) dlf.cheer('ภารกิจสำเร็จ!');
+  }, 350 + items.length*600);
+  setTimeout(()=>{ $('finReportBtn').style.display = 'block'; }, 700 + items.length*600);
+}
+
+// ===== Step 4: reflection + completion =====
+function finishGame(){
+  window.dlfStars = wrongCount <= 2 ? 3 : wrongCount <= 4 ? 2 : 1;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = window.dlfStars === 3 ? 'ภารกิจสำเร็จสมบูรณ์แบบ!' : 'ภารกิจสำเร็จ! รอบหน้าเอาให้เนี้ยบกว่าเดิม';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = `ใช้ AI ช่วยทำงานจริงครบทั้ง ${STAGES.length} ขั้นตอน โดยพลาดไป ${wrongCount} ครั้ง — ตอนนี้ใช้ AI ได้อย่างมั่นใจ ตั้งแต่ตั้งคำถามดี ตรวจสอบ ปกป้องความเป็นส่วนตัว ปรับโทน ไปจนถึงใช้อย่างรับผิดชอบ`;
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+renderRailProc();
+</script>
+
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<script id="dlfAudioData" type="application/json">{"720a3af03dbc":"audio/ai13-ai-quest/720a3af03dbc.mp3","1160869608d2":"audio/ai13-ai-quest/1160869608d2.mp3","61f802d89ab3":"audio/ai13-ai-quest/61f802d89ab3.mp3","d135d2990329":"audio/ai13-ai-quest/d135d2990329.mp3","a6444aca03d5":"audio/ai13-ai-quest/a6444aca03d5.mp3","042cfdcd117c":"audio/ai13-ai-quest/042cfdcd117c.mp3","aa4b94de1a79":"audio/ai13-ai-quest/aa4b94de1a79.mp3","dea31103bd13":"audio/ai13-ai-quest/dea31103bd13.mp3","d73325b95284":"audio/ai13-ai-quest/d73325b95284.mp3","5ee4123b9a9e":"audio/ai13-ai-quest/5ee4123b9a9e.mp3","da2d52874169":"audio/ai13-ai-quest/da2d52874169.mp3","7df2bb0cbb59":"audio/ai13-ai-quest/7df2bb0cbb59.mp3","1101e7219171":"audio/ai13-ai-quest/1101e7219171.mp3","5f06610bd83d":"audio/ai13-ai-quest/5f06610bd83d.mp3","d585a6a9d18d":"audio/ai13-ai-quest/d585a6a9d18d.mp3","0b25f9d44ca8":"audio/ai13-ai-quest/0b25f9d44ca8.mp3","28ad605b512f":"audio/ai13-ai-quest/28ad605b512f.mp3","2f4fe5e693c5":"audio/ai13-ai-quest/2f4fe5e693c5.mp3","d64571c58a10":"audio/ai13-ai-quest/d64571c58a10.mp3","d2b25dcd6a5b":"audio/ai13-ai-quest/d2b25dcd6a5b.mp3","c1dd47f93fa3":"audio/ai13-ai-quest/c1dd47f93fa3.mp3","b1910b16acfa":"audio/ai13-ai-quest/b1910b16acfa.mp3","bc1a747e15a3":"audio/ai13-ai-quest/bc1a747e15a3.mp3","cf25b6618869":"audio/ai13-ai-quest/cf25b6618869.mp3","fb3e0ff63483":"audio/ai13-ai-quest/fb3e0ff63483.mp3","b513d205ba77":"audio/ai13-ai-quest/b513d205ba77.mp3","c066020ac37d":"audio/ai13-ai-quest/c066020ac37d.mp3","b0fe6ec761ad":"audio/ai13-ai-quest/b0fe6ec761ad.mp3","a830bbd7e90f":"audio/ai13-ai-quest/a830bbd7e90f.mp3","985cfc5703c0":"audio/ai13-ai-quest/985cfc5703c0.mp3","01392e1d6e06":"audio/ai13-ai-quest/01392e1d6e06.mp3","4d3fdfd7c95c":"audio/ai13-ai-quest/4d3fdfd7c95c.mp3","1b762aa55789":"audio/ai13-ai-quest/1b762aa55789.mp3","07c0d649f609":"audio/ai13-ai-quest/07c0d649f609.mp3","5ad862cb2fe5":"audio/ai13-ai-quest/5ad862cb2fe5.mp3","8dbf75e12ca9":"audio/ai13-ai-quest/8dbf75e12ca9.mp3","bbd5c9c29170":"audio/ai13-ai-quest/bbd5c9c29170.mp3","30015f029a9f":"audio/ai13-ai-quest/30015f029a9f.mp3","84cfdd4fae39":"audio/ai13-ai-quest/84cfdd4fae39.mp3","6232eb9f9954":"audio/ai13-ai-quest/6232eb9f9954.mp3","226a69eb9f0c":"audio/ai13-ai-quest/226a69eb9f0c.mp3","c060d3158660":"audio/ai13-ai-quest/c060d3158660.mp3","33164e7f933d":"audio/ai13-ai-quest/33164e7f933d.mp3","ccc8e8970692":"audio/ai13-ai-quest/ccc8e8970692.mp3","be2b441fd42d":"audio/ai13-ai-quest/be2b441fd42d.mp3","fbab5a68d644":"audio/ai13-ai-quest/fbab5a68d644.mp3","c74265d3811c":"audio/ai13-ai-quest/c74265d3811c.mp3","2c3fc05dbe8b":"audio/ai13-ai-quest/2c3fc05dbe8b.mp3","d91e14a64f46":"audio/ai13-ai-quest/d91e14a64f46.mp3","24fd1cd0767e":"audio/ai13-ai-quest/24fd1cd0767e.mp3","824898ffedd4":"audio/ai13-ai-quest/824898ffedd4.mp3","0dce9cc82a8d":"audio/ai13-ai-quest/0dce9cc82a8d.mp3","6b70fe63109e":"audio/ai13-ai-quest/6b70fe63109e.mp3","f9a28304b66d":"audio/ai13-ai-quest/f9a28304b66d.mp3","9d4ab94e30bc":"audio/ai13-ai-quest/9d4ab94e30bc.mp3","ef643fb53229":"audio/ai13-ai-quest/ef643fb53229.mp3","26275dd11742":"audio/ai13-ai-quest/26275dd11742.mp3","9c7b6879297c":"audio/ai13-ai-quest/9c7b6879297c.mp3","62747468631b":"audio/ai13-ai-quest/62747468631b.mp3","23b3a2068ad1":"audio/ai13-ai-quest/23b3a2068ad1.mp3","b7b866915db7":"audio/ai13-ai-quest/b7b866915db7.mp3","823371503621":"audio/ai13-ai-quest/823371503621.mp3","72d536d6bb51":"audio/ai13-ai-quest/72d536d6bb51.mp3","05ebedd76a9f":"audio/ai13-ai-quest/05ebedd76a9f.mp3","65ede8e6458e":"audio/ai13-ai-quest/65ede8e6458e.mp3","daae23a777d4":"audio/ai13-ai-quest/daae23a777d4.mp3","21bb3d14a7aa":"audio/ai13-ai-quest/21bb3d14a7aa.mp3","5beaa5c30719":"audio/ai13-ai-quest/5beaa5c30719.mp3","a6c7344d7279":"audio/ai13-ai-quest/a6c7344d7279.mp3","412e006fb44e":"audio/ai13-ai-quest/412e006fb44e.mp3","9ba8fc024542":"audio/ai13-ai-quest/9ba8fc024542.mp3","223ec70060c5":"audio/ai13-ai-quest/223ec70060c5.mp3","ecf3d568a22b":"audio/ai13-ai-quest/ecf3d568a22b.mp3","2a78a47c764b":"audio/ai13-ai-quest/2a78a47c764b.mp3","c81fa10d328d":"audio/ai13-ai-quest/c81fa10d328d.mp3","4192719741c8":"audio/ai13-ai-quest/4192719741c8.mp3","b876c6c2504c":"audio/ai13-ai-quest/b876c6c2504c.mp3","a4c5d0a6df04":"audio/ai13-ai-quest/a4c5d0a6df04.mp3","7fdd46cba22b":"audio/ai13-ai-quest/7fdd46cba22b.mp3","a66234b845ea":"audio/ai13-ai-quest/a66234b845ea.mp3","29979023505f":"audio/ai13-ai-quest/29979023505f.mp3","f990fb2fd751":"audio/ai13-ai-quest/f990fb2fd751.mp3","a787a27fe802":"audio/ai13-ai-quest/a787a27fe802.mp3","4824204ef4b9":"audio/ai13-ai-quest/4824204ef4b9.mp3","ec16d6c0907b":"audio/ai13-ai-quest/ec16d6c0907b.mp3","25b03701a753":"audio/ai13-ai-quest/25b03701a753.mp3","346fc82ed88e":"audio/ai13-ai-quest/346fc82ed88e.mp3","b4ea43d17163":"audio/ai13-ai-quest/b4ea43d17163.mp3","fe6b74ac923f":"audio/ai13-ai-quest/fe6b74ac923f.mp3","01f6c7517459":"audio/ai13-ai-quest/01f6c7517459.mp3","6b06e4d72580":"audio/ai13-ai-quest/6b06e4d72580.mp3","dcb37dc0da6d":"audio/ai13-ai-quest/dcb37dc0da6d.mp3","3b473fae4e86":"audio/ai13-ai-quest/3b473fae4e86.mp3","dfb3e4afa929":"audio/ai13-ai-quest/dfb3e4afa929.mp3","d70a5ae6d3ab":"audio/ai13-ai-quest/d70a5ae6d3ab.mp3","0c4f4ab984ff":"audio/ai13-ai-quest/0c4f4ab984ff.mp3","b7b71ce3d471":"audio/ai13-ai-quest/b7b71ce3d471.mp3","f0685773fa3c":"audio/ai13-ai-quest/f0685773fa3c.mp3","011eb972cab5":"audio/ai13-ai-quest/011eb972cab5.mp3","7fef4a6936ee":"audio/ai13-ai-quest/7fef4a6936ee.mp3","79d5024ef181":"audio/ai13-ai-quest/79d5024ef181.mp3","ba9a049cb861":"audio/ai13-ai-quest/ba9a049cb861.mp3","cb3d36a5ce12":"audio/ai13-ai-quest/cb3d36a5ce12.mp3","9182072204b1":"audio/ai13-ai-quest/9182072204b1.mp3","632ef1304c02":"audio/ai13-ai-quest/632ef1304c02.mp3","297727e55dae":"audio/ai13-ai-quest/297727e55dae.mp3","af6ba89d9b27":"audio/ai13-ai-quest/af6ba89d9b27.mp3","aca2b0992481":"audio/ai13-ai-quest/aca2b0992481.mp3","336dd737a02c":"audio/ai13-ai-quest/336dd737a02c.mp3","8b25a629d7e9":"audio/ai13-ai-quest/8b25a629d7e9.mp3","df456fa47aa3":"audio/ai13-ai-quest/df456fa47aa3.mp3","383070519f67":"audio/ai13-ai-quest/383070519f67.mp3","ddf551f993dd":"audio/ai13-ai-quest/ddf551f993dd.mp3","be79aeae733c":"audio/ai13-ai-quest/be79aeae733c.mp3","7cdccda44657":"audio/ai13-ai-quest/7cdccda44657.mp3","52a56b9c6174":"audio/ai13-ai-quest/52a56b9c6174.mp3","1b9c62647a3a":"audio/ai13-ai-quest/1b9c62647a3a.mp3","3fb0e684b56b":"audio/ai13-ai-quest/3fb0e684b56b.mp3","4dbd7e3c6d73":"audio/ai13-ai-quest/4dbd7e3c6d73.mp3","b6bbc03fc9be":"audio/ai13-ai-quest/b6bbc03fc9be.mp3","a9a05f9a5a4b":"audio/ai13-ai-quest/a9a05f9a5a4b.mp3","ef5054473f04":"audio/ai13-ai-quest/ef5054473f04.mp3","7281baa6ada4":"audio/ai13-ai-quest/7281baa6ada4.mp3","0422d5972991":"audio/ai13-ai-quest/0422d5972991.mp3","3a86ebc8a0de":"audio/ai13-ai-quest/3a86ebc8a0de.mp3","66590c21d92e":"audio/ai13-ai-quest/66590c21d92e.mp3","e18a189a9371":"audio/ai13-ai-quest/e18a189a9371.mp3","8af1f0edc12c":"audio/ai13-ai-quest/8af1f0edc12c.mp3","1e6b3cae3bb8":"audio/ai13-ai-quest/1e6b3cae3bb8.mp3","d811e87eefb3":"audio/ai13-ai-quest/d811e87eefb3.mp3","71a51a023ae8":"audio/ai13-ai-quest/71a51a023ae8.mp3","fd2d26303411":"audio/ai13-ai-quest/fd2d26303411.mp3","25c6023076a9":"audio/ai13-ai-quest/25c6023076a9.mp3","ce97d9170f39":"audio/ai13-ai-quest/ce97d9170f39.mp3","4ab80ad1bab7":"audio/ai13-ai-quest/4ab80ad1bab7.mp3","1a1633bc2554":"audio/ai13-ai-quest/1a1633bc2554.mp3","57f54cf2d9c1":"audio/ai13-ai-quest/57f54cf2d9c1.mp3","74d9658a2ee4":"audio/ai13-ai-quest/74d9658a2ee4.mp3","5268eb5c81b1":"audio/ai13-ai-quest/5268eb5c81b1.mp3","f3bc581be169":"audio/ai13-ai-quest/f3bc581be169.mp3","ee9b7a348e88":"audio/ai13-ai-quest/ee9b7a348e88.mp3","9bb8216b6df6":"audio/ai13-ai-quest/9bb8216b6df6.mp3","b6efb9f1c548":"audio/ai13-ai-quest/b6efb9f1c548.mp3","377186822292":"audio/ai13-ai-quest/377186822292.mp3","012a8f6bc721":"audio/ai13-ai-quest/012a8f6bc721.mp3","852128f8e136":"audio/ai13-ai-quest/852128f8e136.mp3","27cfd5708b36":"audio/ai13-ai-quest/27cfd5708b36.mp3","262a7abbc7fa":"audio/ai13-ai-quest/262a7abbc7fa.mp3","2538d1024d17":"audio/ai13-ai-quest/2538d1024d17.mp3","5cdb87ba62fd":"audio/ai13-ai-quest/5cdb87ba62fd.mp3","ac37b38c4ea6":"audio/ai13-ai-quest/ac37b38c4ea6.mp3","21bbc440a7d0":"audio/ai13-ai-quest/21bbc440a7d0.mp3","9267988987d2":"audio/ai13-ai-quest/9267988987d2.mp3","d9659dafa9ca":"audio/ai13-ai-quest/d9659dafa9ca.mp3","154359a5b72d":"audio/ai13-ai-quest/154359a5b72d.mp3","04d59ecaab0e":"audio/ai13-ai-quest/04d59ecaab0e.mp3","11c1666e8b51":"audio/ai13-ai-quest/11c1666e8b51.mp3","936504e9fe78":"audio/ai13-ai-quest/936504e9fe78.mp3","95e84c785d30":"audio/ai13-ai-quest/95e84c785d30.mp3","2da245a50b6b":"audio/ai13-ai-quest/2da245a50b6b.mp3","bd954c827262":"audio/ai13-ai-quest/bd954c827262.mp3","24de2d9c882c":"audio/ai13-ai-quest/24de2d9c882c.mp3","e1a523d8f332":"audio/ai13-ai-quest/e1a523d8f332.mp3","b4333744f12d":"audio/ai13-ai-quest/b4333744f12d.mp3","d75f90feaadd":"audio/ai13-ai-quest/d75f90feaadd.mp3","893be800e46b":"audio/ai13-ai-quest/893be800e46b.mp3","d158ce90b1ab":"audio/ai13-ai-quest/d158ce90b1ab.mp3","13228570f6dc":"audio/ai13-ai-quest/13228570f6dc.mp3","dce4b9624012":"audio/ai13-ai-quest/dce4b9624012.mp3","d184cdbb1b91":"audio/ai13-ai-quest/d184cdbb1b91.mp3","3556ac202437":"audio/ai13-ai-quest/3556ac202437.mp3","9a4b4af6bfa5":"audio/ai13-ai-quest/9a4b4af6bfa5.mp3","a079176002e3":"audio/ai13-ai-quest/a079176002e3.mp3","7e48f08ba329":"audio/ai13-ai-quest/7e48f08ba329.mp3","7222ba414d4f":"audio/ai13-ai-quest/7222ba414d4f.mp3","a107eacc9152":"audio/ai13-ai-quest/a107eacc9152.mp3","4abfd39fbbc1":"audio/ai13-ai-quest/4abfd39fbbc1.mp3","784574c7bf9c":"audio/ai13-ai-quest/784574c7bf9c.mp3","6c6e206b2d73":"audio/ai13-ai-quest/6c6e206b2d73.mp3","b9d1dca4e664":"audio/ai13-ai-quest/b9d1dca4e664.mp3","83cbbc0ecce3":"audio/ai13-ai-quest/83cbbc0ecce3.mp3","edc23c058156":"audio/ai13-ai-quest/edc23c058156.mp3","4725e6402db8":"audio/ai13-ai-quest/4725e6402db8.mp3","5ca584e9d463":"audio/ai13-ai-quest/5ca584e9d463.mp3","364ce6683f6e":"audio/ai13-ai-quest/364ce6683f6e.mp3","39ccc5c7970c":"audio/ai13-ai-quest/39ccc5c7970c.mp3","28ea42f16c2f":"audio/ai13-ai-quest/28ea42f16c2f.mp3","212bdd61696a":"audio/ai13-ai-quest/212bdd61696a.mp3","46abe96307f3":"audio/ai13-ai-quest/46abe96307f3.mp3","9c08bce3a776":"audio/ai13-ai-quest/9c08bce3a776.mp3","4672a3abc90e":"audio/ai13-ai-quest/4672a3abc90e.mp3","9991c26d012e":"audio/ai13-ai-quest/9991c26d012e.mp3","5a79194315b3":"audio/ai13-ai-quest/5a79194315b3.mp3","3133c5416bf2":"audio/ai13-ai-quest/3133c5416bf2.mp3","abc1b412a8f7":"audio/ai13-ai-quest/abc1b412a8f7.mp3","cd55d9e0f8fd":"audio/ai13-ai-quest/cd55d9e0f8fd.mp3","24e7a3337639":"audio/ai13-ai-quest/24e7a3337639.mp3","0a746f26067b":"audio/ai13-ai-quest/0a746f26067b.mp3","ce25994ea341":"audio/ai13-ai-quest/ce25994ea341.mp3","07d24b3fed37":"audio/ai13-ai-quest/07d24b3fed37.mp3","8cc87b9d0de9":"audio/ai13-ai-quest/8cc87b9d0de9.mp3","4a90767f5a8d":"audio/ai13-ai-quest/4a90767f5a8d.mp3","b05d8afcc60f":"audio/ai13-ai-quest/b05d8afcc60f.mp3","cdb176270c0e":"audio/ai13-ai-quest/cdb176270c0e.mp3","3659d00fa194":"audio/ai13-ai-quest/3659d00fa194.mp3","ed9ef75bc3a3":"audio/ai13-ai-quest/ed9ef75bc3a3.mp3","788039b8afbe":"audio/ai13-ai-quest/788039b8afbe.mp3","8b083d84bd44":"audio/ai13-ai-quest/8b083d84bd44.mp3","d0aa668d9eb2":"audio/ai13-ai-quest/d0aa668d9eb2.mp3","b86cdffe21c0":"audio/ai13-ai-quest/b86cdffe21c0.mp3","95cbcf207429":"audio/ai13-ai-quest/95cbcf207429.mp3","57ddcaace062":"audio/ai13-ai-quest/57ddcaace062.mp3","52032e4d56de":"audio/ai13-ai-quest/52032e4d56de.mp3","58dc40cf7a28":"audio/ai13-ai-quest/58dc40cf7a28.mp3","755cfa76743f":"audio/ai13-ai-quest/755cfa76743f.mp3","5cab4bd32315":"audio/ai13-ai-quest/5cab4bd32315.mp3","6a5563846162":"audio/ai13-ai-quest/6a5563846162.mp3","69053a930a51":"audio/ai13-ai-quest/69053a930a51.mp3","851df292a256":"audio/ai13-ai-quest/851df292a256.mp3","9a78fa9d05f6":"audio/ai13-ai-quest/9a78fa9d05f6.mp3","d8b17b144ce0":"audio/ai13-ai-quest/d8b17b144ce0.mp3","0f3b5f305a7d":"audio/ai13-ai-quest/0f3b5f305a7d.mp3","505e076f1658":"audio/ai13-ai-quest/505e076f1658.mp3","36986c8b0384":"audio/ai13-ai-quest/36986c8b0384.mp3","402017710c3d":"audio/ai13-ai-quest/402017710c3d.mp3","d6ca107a112e":"audio/ai13-ai-quest/d6ca107a112e.mp3","34a75dae74aa":"audio/ai13-ai-quest/34a75dae74aa.mp3","e5324d771d6f":"audio/ai13-ai-quest/e5324d771d6f.mp3","05d8f3411ba7":"audio/ai13-ai-quest/05d8f3411ba7.mp3","9d2d44565843":"audio/ai13-ai-quest/9d2d44565843.mp3","5fb224fd857e":"audio/ai13-ai-quest/5fb224fd857e.mp3","98306ce2f07e":"audio/ai13-ai-quest/98306ce2f07e.mp3","6f10d7776409":"audio/ai13-ai-quest/6f10d7776409.mp3","d3a9ee82ba74":"audio/ai13-ai-quest/d3a9ee82ba74.mp3","0c176b9f47f4":"audio/ai13-ai-quest/0c176b9f47f4.mp3","36d1beca0763":"audio/ai13-ai-quest/36d1beca0763.mp3","412f22961382":"audio/ai13-ai-quest/412f22961382.mp3","355e845f2aba":"audio/ai13-ai-quest/355e845f2aba.mp3","ce61fd116715":"audio/ai13-ai-quest/ce61fd116715.mp3","c2f708e3b6c6":"audio/ai13-ai-quest/c2f708e3b6c6.mp3","329fb5a936bd":"audio/ai13-ai-quest/329fb5a936bd.mp3","0b3ee5926759":"audio/ai13-ai-quest/0b3ee5926759.mp3","4d3596afbf68":"audio/ai13-ai-quest/4d3596afbf68.mp3","90fcbe34555e":"audio/ai13-ai-quest/90fcbe34555e.mp3","5451313264f1":"audio/ai13-ai-quest/5451313264f1.mp3","86339c45db0a":"audio/ai13-ai-quest/86339c45db0a.mp3","35301d7a7d07":"audio/ai13-ai-quest/35301d7a7d07.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.stage-title','.stage-note'],extraNonDecorateSelectors:'.choicebtn,.dscard,.chk,.rstep,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>

@@ -56,43 +56,40 @@ export const AREAS: Area[] = [
     // Each game forces the actual skill (label real data, fix a biased
     // dataset, click the real UI, write your own prompt, design system rules)
     // instead of letting a kid pattern-match a multiple-choice answer key.
-    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 5 โมดูล 12 บทเรียน',
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 4 โมดูล 14 บทเรียน',
     modules: [
       {
-        key: 'm1-foundations', icon: '🤖', title: 'รากฐาน AI', sub: 'AI คืออะไร เรียนรู้จากข้อมูลยังไง และทำไมบางทีถึงลำเอียง',
+        key: 'm1-foundations', icon: '🤖', title: 'รากฐาน AI', sub: 'AI คืออะไร เรียนรู้จากข้อมูลยังไง ทำไมบางทีถึงลำเอียง และ AI ซ่อนอยู่ที่ไหนในชีวิตจริง',
         games: [
-          { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai0-ai-foundations.html' },
-          { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai6-model-trainer.html' },
-          { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai7-bias-detective.html' },
+          { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai01-foundations.html' },
+          { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai02-model-trainer.html' },
+          { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai03-bias-detective.html' },
+          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร', file: '/games/ai12-ai-in-the-world.html' },
         ],
       },
       {
         key: 'm2-collab', icon: '🤝', title: 'ทำงานร่วมกับ AI', sub: 'สั่งงาน AI ให้ชัดเจน ตรวจสอบก่อนเชื่อ และรู้ว่างานไหนควรใช้ AI',
         games: [
-          { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai1-ui-inspector.html' },
-          { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai2-prompt-fixer.html' },
-          { code: 'g-discernment', icon: '🔍', th: 'นักตรวจสอบคำตอบ AI', desc: 'อ่านคำตอบของ AI อย่างเท่าทัน จับจุดที่ผิด มั่นใจเกินจริง หรือลำเอียง ก่อนเชื่อ', file: '/games/ai10-discernment.html' },
-          { code: 'g-diligence', icon: '🧾', th: 'นักใช้ AI อย่างมีความรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และผลงานยังเป็นของเราแค่ไหน', file: '/games/ai11-diligence.html' },
+          { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai04-ui-inspector.html' },
+          { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai05-prompt-fixer.html' },
+          { code: 'g-discernment', icon: '🔍', th: 'นักตรวจสอบคำตอบ AI', desc: 'อ่านคำตอบของ AI อย่างเท่าทัน จับจุดที่ผิด มั่นใจเกินจริง หรือลำเอียง ก่อนเชื่อ', file: '/games/ai06-discernment.html' },
+          { code: 'g-diligence', icon: '🧾', th: 'นักใช้ AI อย่างมีความรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และผลงานยังเป็นของเราแค่ไหน', file: '/games/ai07-diligence.html' },
+          { code: 'g-privacy', icon: '🔒', th: 'รู้ทันความเป็นส่วนตัวกับ AI', desc: 'เช็กก่อนพิมพ์ว่าข้อมูลไหนปลอดภัย ข้อมูลไหนควรถามผู้ใหญ่ก่อน และข้อมูลไหนไม่ควรพิมพ์ให้ AI', file: '/games/ai08-privacy.html' },
+          { code: 'g-imagemockup', icon: '🖼️', th: 'สร้างภาพและม็อคอัพด้วย AI', desc: 'เอาผลงานหรือสินค้าของตัวเองไปจัดวางในฉากสมจริง ให้ดูเป็นมืออาชีพ', file: '/games/ai14-image-mockup.html' },
         ],
       },
       {
-        key: 'm3-shaping', icon: '💎', title: 'ออกแบบพฤติกรรม AI', sub: 'ตั้งกฎให้ AI ผู้ช่วยของตัวเอง และปรับโทนให้เหมาะกับงาน',
+        key: 'm3-shaping', icon: '💎', title: 'ออกแบบพฤติกรรม AI แล้วใช้เรียนรู้', sub: 'ตั้งกฎให้ AI ผู้ช่วยของตัวเอง ปรับโทนให้เหมาะกับงาน แล้วใช้ AI ติวเตอร์ที่ออกแบบเองช่วยเรียนรู้เรื่องใหม่จริง ๆ',
         games: [
-          { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai4-gem-architect.html' },
-          { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai5-sandbox-master.html' },
+          { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai09-gem-architect.html' },
+          { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai10-sandbox-master.html' },
+          { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai11-learn-with-ai.html' },
         ],
       },
       {
-        key: 'm4-realworld', icon: '🌏', title: 'AI ในชีวิตจริง', sub: 'ใช้ AI ช่วยเรียนรู้จริง และรู้ว่า AI ซ่อนอยู่ที่ไหนในชีวิตประจำวัน',
+        key: 'm5-synthesis', icon: '🏆', title: 'ภารกิจสุดท้าย', sub: 'รวมทุกทักษะเข้าด้วยกันในภารกิจใช้ AI ช่วยทำงานจริง',
         games: [
-          { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai3-learn-with-ai.html' },
-          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร', file: '/games/ai8-ai-in-the-world.html' },
-        ],
-      },
-      {
-        key: 'm5-synthesis', icon: '🏆', title: 'ภารกิจสุดท้าย', sub: 'รวมทุกทักษะเข้าด้วยกันในภารกิจออกแบบ AI ของตัวเอง',
-        games: [
-          { code: 'g-aiquest', icon: '🏆', th: 'ภารกิจนักออกแบบ AI', desc: 'ภารกิจสุดท้าย ออกแบบ AI แยกขยะของโรงเรียนเองครบทุกขั้นตอน', file: '/games/ai9-ai-quest.html' },
+          { code: 'g-aiquest', icon: '🏆', th: 'ภารกิจใช้ AI อย่างมือโปร', desc: 'ภารกิจสุดท้าย ใช้ AI ช่วยทำประกาศกิจกรรมจริงให้โรงเรียน ตั้งคำถามดี ตรวจสอบ ปกป้องความเป็นส่วนตัว ปรับโทน และใช้อย่างรับผิดชอบ', file: '/games/ai13-ai-quest.html' },
         ],
       },
     ],

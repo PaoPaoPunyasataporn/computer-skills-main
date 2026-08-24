@@ -49,7 +49,13 @@ function AiHomeInner() {
     router.push(`/ai?m=${encodeURIComponent(m.key)}`, { scroll: false });
   }
   function closeModuleView() {
-    router.push('/ai', { scroll: false });
+    // router.push('/ai') alone silently no-ops here: this page is statically
+    // prerendered, and dropping a search param via router.push/replace hits a
+    // known Next.js 16.2+ App Router regression where the client route cache
+    // restores the stale query string instead of navigating
+    // (vercel/next.js#92187). A hard navigation sidesteps the buggy cache
+    // entirely and is the only combination that reliably lands on plain /ai.
+    window.location.href = '/ai';
   }
 
   // Move focus to the new section heading whenever the drilled-down module

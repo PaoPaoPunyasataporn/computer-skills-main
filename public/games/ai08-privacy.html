@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รู้ทันความเป็นส่วนตัวกับ AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="_lib/theme-base.css" rel="stylesheet">
+<style>
+:root{
+  --primary:#3E7CB8; --primary-light:#E4F0FB; --primary-dark:#2B5C8C;
+  --green:#38A93A; --green-light:#E9FBE7;
+  --red:#E4614F; --red-light:#FDECEA;
+  --panel2:var(--cream2);
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#DCEBFA 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FDF1E4 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
+
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:var(--panel);border-bottom:1.5px solid var(--border);padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+.center{text-align:center;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.canim{margin:2px auto 4px;}
+.canim-flow{stroke-dasharray:8 6;animation:canimDash 1.2s linear infinite;}
+@keyframes canimDash{to{stroke-dashoffset:-28;}}
+.canim-pulse{animation:canimPulse 1.6s ease-in-out infinite;}
+@keyframes canimPulse{0%,100%{r:5;opacity:1;}50%{r:8;opacity:.5;}}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
+
+/* checklist mini-visual inside concept 2 */
+.clist{list-style:none;margin:10px 0 0;padding:0;text-align:left;max-width:420px;width:100%;}
+.clist li{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--text2);line-height:1.6;padding:6px 0;border-top:1px dashed var(--border);}
+.clist li:first-child{border-top:none;}
+.clist .qn{font-family:'Mitr',sans-serif;font-weight:700;color:var(--primary-dark);flex:0 0 auto;}
+
+/* practice step */
+.rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.rtag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+.taskcard{width:100%;background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 14px 14px 0;padding:16px 18px;text-align:left;}
+.taskcard .who{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.taskcard .say{font-size:15px;color:var(--text);line-height:1.7;}
+
+/* drag-to-sort hands-on core */
+.taskcard.draggable{cursor:grab;user-select:none;touch-action:none;position:relative;box-shadow:0 3px 0 var(--line-d);}
+.taskcard.draggable:active{cursor:grabbing;}
+.taskcard.armed{box-shadow:0 0 0 3px var(--primary),0 3px 0 var(--line-d);transform:translateY(-2px);}
+.taskcard.dragging{transition:none;box-shadow:0 14px 26px rgba(15,27,45,.22);}
+.taskcard.settling{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;}
+.taskcard.answered{pointer-events:none;}
+.draghint{font-size:11.5px;color:var(--text3);margin:8px 0 2px;text-align:center;}
+.dropzones{width:100%;display:flex;gap:8px;margin:14px 0 4px;}
+.dropzone{flex:1;min-height:92px;border:2px dashed var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:var(--panel2);transition:border-color .15s,background .15s,transform .15s;cursor:pointer;}
+.dropzone .zi{font-size:22px;}
+.dropzone:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+.dropzone.over{border-style:solid;border-color:var(--primary);background:var(--primary-light);transform:scale(1.045);}
+.dropzone.correct{border-style:solid;border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.dropzone.wrong{border-style:solid;border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.dropzone.disabled{pointer-events:none;opacity:.6;}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
+</style>
+</head>
+<body>
+
+<div id="procbar">
+  <div id="steprail"></div>
+</div>
+
+<div class="stage">
+  <!-- STEP 1 · Hook -->
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🏠</span>
+      <div class="title">น้องพิมพ์ชื่อโรงเรียน บ้านเลขที่ และเบอร์โทรพ่อแม่ ให้ AI ช่วยหาเส้นทางเดินกลับบ้าน</div>
+      <div class="sub">AI ตอบได้จริง แต่น้องรู้ไหมว่าข้อมูลที่พิมพ์ไปนั้น "จำเป็นต้องบอก" แค่ไหน และมันไปอยู่ที่ไหนต่อ?</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 · Concept -->
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 · Hands-on core -->
+  <div class="panel" id="s3" data-step="2" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือตัดสินใจ</span>
+        <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
+      </div>
+      <span class="rtag" id="roundTag" style="display:block;margin:10px 0 6px">ข้อที่ 1/6</span>
+      <div class="taskcard draggable" id="taskCard"><div class="who">📋 ข้อความที่จะพิมพ์ให้ AI — ลากการ์ดนี้ไปวางในกล่องคำตอบ</div><div class="say" id="taskSay"></div></div>
+      <div class="draghint" id="dragHint">👉 ลากการ์ดไปวางในกล่องที่ใช่ หรือแตะการ์ดแล้วแตะกล่องคำตอบ</div>
+      <div class="dropzones" id="dropZones"></div>
+      <div class="explainbox" id="explainBox" style="margin-top:14px"></div>
+      <button class="btn" id="nextRoundBtn" style="display:none;margin-top:14px" onclick="nextRound()">ข้อถัดไป →</button>
+
+      <div id="disclosureSection" style="display:none">
+        <div class="rtag" id="discTag" style="display:block;margin:10px 0 6px"></div>
+        <div class="taskcard" id="discTaskCard"><div class="who">📝 ฝึกเขียนใหม่ให้ปลอดภัยขึ้น</div><div class="say" id="discSay"></div></div>
+        <div class="draghint">✍️ พิมพ์ประโยคที่ถามคำถามเดิม แต่ตัดข้อมูลส่วนตัวที่ไม่จำเป็นออก</div>
+        <textarea id="discInput" rows="2" style="width:100%;border-radius:14px;border:1.5px solid var(--border);padding:12px;font-family:'Sarabun',sans-serif;font-size:14.5px;margin-top:10px;box-sizing:border-box;"></textarea>
+        <button class="btn" id="discSubmitBtn" style="margin-top:12px" onclick="submitDisclosure()">ส่งคำตอบ →</button>
+        <div class="explainbox" id="discExplain" style="margin-top:14px"></div>
+        <button class="btn" id="discNextBtn" style="display:none;margin-top:14px" onclick="nextDisclosure()">ข้อถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 · Reflection (+ stars/completion) -->
+  <div class="panel" id="s5" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">ครั้งหน้าจะเช็กอะไรก่อนพิมพ์อะไรให้ AI?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าครั้งต่อไปก่อนพิมพ์ข้อความให้ AI เราจะเช็กอะไรก่อนเพื่อปกป้องความเป็นส่วนตัวของตัวเองและคนรอบตัว</div>
+      <textarea id="reflText" placeholder="เช่น ก่อนพิมพ์อะไรให้ AI ฉันจะถามตัวเองก่อนว่า..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">รู้ทันความเป็นส่วนตัวกับ AI เก่งมาก!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">เรียนอีกครั้ง →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
+];
+let curStep = 0;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+  }).join('');
+}
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2) startPractice();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== Step 2: concept =====
+const CONCEPT_ANIM = `<div class="canim" aria-hidden="true"><svg viewBox="0 0 160 100" width="130" height="82">
+  <rect x="6" y="34" width="40" height="32" rx="8" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
+  <text x="26" y="54" text-anchor="middle" font-size="18">🧑</text>
+  <rect x="114" y="34" width="40" height="32" rx="8" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2"/>
+  <text x="134" y="54" text-anchor="middle" font-size="18">🤖</text>
+  <path class="canim-flow" d="M48 50 H112" fill="none" stroke="var(--primary)" stroke-width="3"/>
+  <circle class="canim-pulse" cx="80" cy="50" r="5" fill="var(--primary-dark)"/>
+  <text x="80" y="26" text-anchor="middle" font-size="10" font-weight="700" font-family="Mitr,sans-serif" fill="var(--primary-dark)">ข้อความที่พิมพ์ไป</text>
+  <text x="80" y="86" text-anchor="middle" font-size="9" font-family="Sarabun,sans-serif" fill="var(--text3)">อาจถูกเก็บ/ใช้ฝึกระบบต่อ</text>
+</svg></div>`;
+const CONCEPTS = [
+  { icon:'💾', title:'สิ่งที่พิมพ์ให้ AI ไม่ได้หายไปไหน', body:'ข้อความที่เราพิมพ์คุยกับ AI อาจถูกบันทึกไว้ในระบบของบริษัทที่สร้าง AI ตัวนั้น บางครั้งอาจถูกนำไปใช้ปรับปรุงระบบ หรือมีคนตรวจสอบดูได้ ต่างจากการพูดคุยกับเพื่อนที่พูดแล้วจบ — จึงควรพิมพ์เฉพาะสิ่งที่จำเป็นจริง ๆ เท่านั้น', anim:true },
+  { icon:'✅', title:'เช็ก 3 ข้อ ก่อนพิมพ์อะไรให้ AI', body:'', anim:false, checklist:[
+      { q:'1', t:'จำเป็นไหม?', d:'คำถามนี้ตอบได้โดยไม่ต้องบอกชื่อเต็ม ที่อยู่ บ้านเลขที่ เบอร์โทร หรือรหัสผ่านหรือเปล่า?' },
+      { q:'2', t:'เป็นของฉันคนเดียวไหม?', d:'ถ้าข้อมูลนั้นเป็นของเพื่อนหรือครอบครัว ต้องขออนุญาตเขาก่อนพิมพ์ให้ AI' },
+      { q:'3', t:'ถ้าคนแปลกหน้าเห็นได้ไหม?', d:'ถ้าไม่อยากให้คนแปลกหน้าเห็นข้อมูลนี้ ก็ไม่ควรพิมพ์ให้ AI เช่นกัน' },
+    ] },
+];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  const body = c.checklist
+    ? `<ul class="clist">${c.checklist.map(item=>`<li><span class="qn">${esc(item.q)}</span><span><b>${esc(item.t)}</b><br>${esc(item.d)}</span></li>`).join('')}</ul>`
+    : `<div class="cb">${esc(c.body)}</div>`;
+  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div>${c.anim ? CONCEPT_ANIM : ''}${body}</div>`;
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3: practice =====
+const VERDICTS = [
+  { key:'ok', label:'✅ พิมพ์ได้เลย', emoji:'✅', short:'พิมพ์ได้เลย' },
+  { key:'ask', label:'🙋 ถามผู้ใหญ่ก่อน', emoji:'🙋', short:'ถามผู้ใหญ่ก่อน' },
+  { key:'no', label:'🚫 ไม่ควรพิมพ์', emoji:'🚫', short:'ไม่ควรพิมพ์' },
+];
+const ROUNDS = [
+  { task:'"ช่วยแนะนำหนังสือแนวผจญภัยสนุก ๆ ให้หน่อย"', answer:'ok',
+    explain:'ไม่มีข้อมูลส่วนตัวใด ๆ เลย เป็นคำถามทั่วไปเกี่ยวกับความสนใจ พิมพ์ได้ตามปกติ' },
+  { task:'"ฉันชื่อ ด.ญ. พิมพ์ลดา อยู่บ้านเลขที่ 45/2 ซอยสุขใจ 7 เบอร์โทรพ่อคือ 08X-XXX-XXXX ช่วยหาเส้นทางเดินกลับบ้านให้หน่อย"', answer:'no',
+    explain:'มีทั้งชื่อเต็ม ที่อยู่บ้าน และเบอร์โทรผู้ปกครองรวมอยู่ในข้อความเดียว ถ้าข้อมูลนี้หลุดออกไปอาจเป็นอันตรายต่อความปลอดภัยได้ ควรตัดออกทั้งหมด' },
+  { task:'"พ่อแม่จะไปทำงานต่างจังหวัด 3 วัน ฉันจะอยู่บ้านคนเดียว ช่วยแนะนำวิธีทำอาหารง่าย ๆ กินเองหน่อย"', answer:'ask',
+    explain:'การบอกว่า "อยู่บ้านคนเดียวช่วงไหน" กับระบบภายนอกมีความเสี่ยง ควรถามผู้ใหญ่ก่อนว่าจะพิมพ์คำถามแบบนี้ได้ไหม หรือเปลี่ยนคำถามให้ไม่ระบุว่าจะอยู่คนเดียว' },
+  { task:'"ช่วยอธิบายว่าเศษส่วนบวกกันยังไง ยกตัวอย่างง่าย ๆ ให้หน่อย"', answer:'ok',
+    explain:'เป็นคำถามเรื่องการเรียนล้วน ๆ ไม่มีข้อมูลส่วนตัวเข้ามาเกี่ยวข้องเลย พิมพ์ได้ตามปกติ' },
+  { task:'"นี่คือรหัสผ่านอีเมลของฉัน: Passw0rd123! ช่วยเช็กให้หน่อยว่ารหัสนี้ปลอดภัยไหม"', answer:'no',
+    explain:'ห้ามพิมพ์รหัสผ่านจริงให้ใครหรือระบบไหนเด็ดขาด แม้จะถามแค่ "ปลอดภัยไหม" ก็ตาม — ให้ถามหลักการทั่วไปแทน เช่น "รหัสผ่านที่ดีควรมีอะไรบ้าง"' },
+  { task:'"เพื่อนสนิทของฉันชื่อจริงนามสกุลจริงคือ ... เขาป่วยเป็นโรค ... ช่วยหาข้อมูลโรคนี้ให้หน่อย"', answer:'ask',
+    explain:'นี่คือข้อมูลส่วนตัวและข้อมูลสุขภาพของ "คนอื่น" ไม่ใช่ของเรา ควรถามเพื่อนหรือผู้ใหญ่ก่อนว่าโอเคไหมที่จะพิมพ์ชื่อจริงและอาการป่วยของเขาไปให้ระบบภายนอก หรือถามแบบไม่ระบุชื่อแทน' },
+  { task:'"ช่วยแปลประโยคนี้เป็นภาษาอังกฤษหน่อย: วันนี้อากาศดีมาก อยากไปเดินเล่นที่สวนสาธารณะ"', answer:'ok',
+    explain:'เป็นการขอความช่วยเหลือด้านภาษา ไม่มีข้อมูลส่วนตัวหรือข้อมูลที่ระบุตัวตนได้ พิมพ์ได้ตามปกติ' },
+  { task:'"นี่คือรูปหน้าบัตรประชาชนของฉัน ช่วยอ่านเลขบัตรให้หน่อยว่าถูกไหม" (พร้อมแนบรูปบัตร)', answer:'no',
+    explain:'บัตรประชาชนมีข้อมูลระบุตัวตนที่สำคัญมาก (เลขบัตร ที่อยู่ วันเกิด) ไม่ควรอัปโหลดรูปเอกสารราชการให้ระบบ AI ใด ๆ เด็ดขาด' },
+  { task:'"ช่วยแต่งกลอนสั้น ๆ เกี่ยวกับฤดูฝนให้หน่อย"', answer:'ok',
+    explain:'เป็นคำขอเชิงสร้างสรรค์ล้วน ๆ ไม่มีข้อมูลส่วนตัวเข้ามาเกี่ยวข้อง พิมพ์ได้ตามปกติ' },
+  { task:'"ช่วยเขียนข้อความให้ครูประจำชั้นของฉัน (ครูสมหญิง เลขเบอร์โทร 09X-XXX-XXXX) ว่าฉันจะขาดเรียนพรุ่งนี้"', answer:'ask',
+    explain:'เบอร์โทรของครูเป็นข้อมูลส่วนตัวของ "คนอื่น" ไม่ควรพิมพ์ระบุเบอร์โทรเข้าไปในข้อความ ควรถามผู้ปกครองก่อน หรือเขียนแค่เนื้อหาข้อความโดยไม่ใส่เบอร์โทร' },
+  { task:'"ฉันสอบตกวิชาคณิตศาสตร์ กลัวพ่อแม่ดุ ควรทำยังไงดี รู้สึกเครียดมาก"', answer:'ok',
+    explain:'เป็นการขอคำแนะนำเรื่องความรู้สึกทั่วไป ไม่มีข้อมูลที่ระบุตัวตนได้ (ชื่อ ที่อยู่ เบอร์โทร) พิมพ์ได้ตามปกติ แต่ถ้ารู้สึกเครียดมากควรคุยกับผู้ใหญ่ที่ไว้ใจได้ด้วย' },
+  { task:'"ช่วยตั้งชื่อทีมสำหรับการแข่งกีฬาสีให้เท่ ๆ หน่อย"', answer:'ok',
+    explain:'คำถามทั่วไปไม่มีข้อมูลส่วนตัวเกี่ยวข้อง พิมพ์ได้ตามปกติ' },
+  { task:'"ช่วยดูให้หน่อยว่าเส้นทาง GPS นี้ปลอดภัยไหม" (พร้อมแนบภาพหน้าจอแผนที่ที่ปักหมุดบ้านตัวเองพร้อมชื่อถนนและเลขที่ชัดเจน)', answer:'no',
+    explain:'ภาพหน้าจอที่ปักหมุดตำแหน่งบ้านจริงพร้อมรายละเอียดที่อยู่ ถือเป็นการเปิดเผยตำแหน่งบ้านของเราให้ระบบภายนอกรู้อย่างแม่นยำ ไม่ควรแนบภาพแบบนี้' },
+  { task:'"ช่วยอธิบายว่าทำไมท้องฟ้าถึงเป็นสีฟ้าให้หน่อย"', answer:'ok',
+    explain:'คำถามเชิงความรู้ทั่วไป ไม่มีข้อมูลส่วนตัวเข้ามาเกี่ยวข้องเลย พิมพ์ได้ตามปกติ' },
+  { task:'"น้องชายของฉันอายุ 6 ขวบ ชื่อ ... เรียนอยู่โรงเรียน ... ห้อง ... ช่วยแนะนำของขวัญวันเกิดให้หน่อย"', answer:'ask',
+    explain:'ชื่อ โรงเรียน และห้องเรียนของน้องรวมกันสามารถระบุตัวตนของน้องได้ชัดเจน ควรถามผู้ปกครองก่อน หรือถามแบบไม่ระบุชื่อ/โรงเรียน เช่น "น้องชายอายุ 6 ขวบ ชอบไดโนเสาร์ ควรซื้อของขวัญอะไรดี"' },
+  { task:'"ช่วยสรุปเนื้อหาบทที่ 3 ของหนังสือเรียนวิทยาศาสตร์ให้หน่อย เอาแบบเข้าใจง่าย"', answer:'ok',
+    explain:'เป็นคำขอความช่วยเหลือด้านการเรียนล้วน ๆ ไม่มีข้อมูลส่วนตัว พิมพ์ได้ตามปกติ' },
+];
+let rIdx = 0, wrongCount = 0, answered = false, dragState = null;
+
+function startPractice(){ rIdx = 0; wrongCount = 0; renderRound(); }
+function renderRound(){
+  const r = ROUNDS[rIdx];
+  answered = false; dragState = null;
+  $('taskCard').style.display = '';
+  $('dragHint').style.display = '';
+  $('dropZones').style.display = '';
+  $('disclosureSection').style.display = 'none';
+  $('roundTag').textContent = `ข้อที่ ${rIdx+1}/${ROUNDS.length}`;
+  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
+  $('taskSay').textContent = r.task;
+  const card = $('taskCard');
+  card.className = 'taskcard draggable';
+  card.style.transform = '';
+  card.style.opacity = '';
+  $('dropZones').innerHTML = VERDICTS.map(v=>
+    `<div class="dropzone" data-key="${v.key}" tabindex="0" role="button" aria-label="${esc(v.label)}"><span class="zi">${v.emoji}</span><span>${esc(v.short)}</span></div>`
+  ).join('');
+  document.querySelectorAll('.dropzone').forEach(z=>{
+    z.onclick = ()=>submitVerdict(z.dataset.key);
+    z.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); submitVerdict(z.dataset.key); } };
+  });
+  $('explainBox').className = 'explainbox';
+  $('explainBox').innerHTML = '';
+  $('nextRoundBtn').style.display = 'none';
+  attachDrag();
+}
+function zoneRects(){
+  return Array.from(document.querySelectorAll('.dropzone')).map(z=>({el:z,rect:z.getBoundingClientRect()}));
+}
+function zoneUnder(x,y){
+  return zoneRects().find(({rect})=>x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom);
+}
+function attachDrag(){
+  const card = $('taskCard');
+  card.onpointerdown = (e)=>{
+    if (answered) return;
+    dragState = { startX:e.clientX, startY:e.clientY, moved:false };
+    try{ card.setPointerCapture(e.pointerId); }catch(err){}
+    card.classList.remove('settling');
+    card.classList.add('dragging');
+  };
+  card.onpointermove = (e)=>{
+    if (!dragState || answered) return;
+    const dx = e.clientX - dragState.startX, dy = e.clientY - dragState.startY;
+    if (Math.abs(dx)+Math.abs(dy) > 6) dragState.moved = true;
+    card.style.transform = `translate(${dx}px,${dy}px) rotate(${Math.max(-8,Math.min(8,dx/14))}deg)`;
+    document.querySelectorAll('.dropzone').forEach(z=>z.classList.remove('over'));
+    const hit = zoneUnder(e.clientX, e.clientY);
+    if (hit) hit.el.classList.add('over');
+  };
+  card.onpointerup = (e)=>{
+    if (!dragState || answered) return;
+    card.classList.remove('dragging');
+    document.querySelectorAll('.dropzone').forEach(z=>z.classList.remove('over'));
+    const hit = zoneUnder(e.clientX, e.clientY);
+    if (hit && dragState.moved){
+      dragState = null;
+      submitVerdict(hit.el.dataset.key);
+    } else {
+      card.style.transform = '';
+      card.classList.toggle('armed');
+      dragState = null;
+    }
+  };
+}
+function submitVerdict(key){
+  if (answered) return;
+  answered = true;
+  const r = ROUNDS[rIdx];
+  const card = $('taskCard');
+  card.classList.add('answered');
+  card.classList.remove('armed');
+  document.querySelectorAll('.dropzone').forEach(z=>{ if(z.dataset.key!==key) z.classList.add('disabled'); });
+  const correct = key === r.answer;
+  const chosenZone = document.querySelector(`.dropzone[data-key="${key}"]`);
+  const targetZone = document.querySelector(`.dropzone[data-key="${r.answer}"]`);
+  if (chosenZone) chosenZone.classList.add(correct ? 'correct' : 'wrong');
+  if (!correct && targetZone) targetZone.classList.add('correct');
+  if (chosenZone){
+    const cr = card.getBoundingClientRect(), zr = chosenZone.getBoundingClientRect();
+    const dx = (zr.left+zr.width/2) - (cr.left+cr.width/2);
+    const dy = (zr.top+zr.height/2) - (cr.top+cr.height/2);
+    card.classList.add('settling');
+    card.style.transform = `translate(${dx}px,${dy}px) scale(.35)`;
+    card.style.opacity = '0';
+  }
+  if (!correct){ wrongCount++; }
+  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
+  setTimeout(()=>{
+    $('explainBox').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
+    const rightLbl = VERDICTS.find(v=>v.key===r.answer).label;
+    $('explainBox').innerHTML = `<b>${correct ? '✅ ถูกต้อง!' : '❌ ยังไม่ถูก — คำตอบคือ ' + rightLbl}</b>${esc(r.explain)}`;
+    $('nextRoundBtn').style.display = 'block';
+  }, 260);
+  if (correct && window.dlf) dlf.cheer('เก่งมาก!');
+}
+function nextRound(){
+  rIdx++;
+  if (rIdx >= ROUNDS.length){ startDisclosure(); return; }
+  renderRound();
+}
+
+// ===== Step 3b: typed "rewrite it safely" practice =====
+const DISCLOSURE_ITEMS = [
+  { task:'"ฉันชื่อ ด.ญ. พิมพ์ลดา อยู่บ้านเลขที่ 45/2 ซอยสุขใจ 7 ช่วยหาเส้นทางเดินกลับบ้านให้หน่อย" — ลองพิมพ์คำถามใหม่ที่ถามเรื่องเดิม (หาเส้นทาง) แต่ไม่ต้องบอกชื่อและที่อยู่จริง' },
+  { task:'"นี่คือรหัสผ่านอีเมลของฉัน: Passw0rd123! ช่วยเช็กให้หน่อยว่าปลอดภัยไหม" — ลองพิมพ์คำถามใหม่ที่ถามหลักการตั้งรหัสผ่านที่ดี โดยไม่ต้องบอกรหัสผ่านจริง' },
+  { task:'"เพื่อนสนิทของฉันชื่อ ... ป่วยเป็นโรค ... ช่วยหาข้อมูลโรคนี้ให้หน่อย" — ลองพิมพ์คำถามใหม่ที่ถามข้อมูลโรคเดิม โดยไม่ต้องระบุชื่อเพื่อน' },
+];
+let dIdx = 0;
+function startDisclosure(){
+  dIdx = 0;
+  $('taskCard').style.display = 'none';
+  $('dragHint').style.display = 'none';
+  $('dropZones').style.display = 'none';
+  $('explainBox').className = 'explainbox';
+  $('explainBox').innerHTML = '';
+  $('nextRoundBtn').style.display = 'none';
+  $('disclosureSection').style.display = '';
+  $('roundTag').textContent = 'แบบฝึกเพิ่มเติม: ฝึกเขียนใหม่ให้ปลอดภัย';
+  renderDisclosure();
+}
+function renderDisclosure(){
+  const d = DISCLOSURE_ITEMS[dIdx];
+  $('discTag').textContent = `ฝึกเขียนใหม่ — ข้อที่ ${dIdx+1}/${DISCLOSURE_ITEMS.length}`;
+  $('discSay').textContent = d.task;
+  $('discInput').value = '';
+  $('discInput').disabled = false;
+  $('discSubmitBtn').style.display = 'block';
+  $('discExplain').className = 'explainbox';
+  $('discExplain').innerHTML = '';
+  $('discNextBtn').style.display = 'none';
+}
+function checkDisclosure(text){
+  const t = (text||'').trim();
+  const d = DISCLOSURE_ITEMS[dIdx];
+  const unedited = !!d && t === d.task.trim();
+  const tooShort = t.length < 8;
+  // Address/phone keywords next to a digit run — a generic number elsewhere (e.g. "at least 12
+  // characters") shouldn't trip this, so "รหัส" (password) is deliberately NOT in this list;
+  // real password leaks are caught by hasCredentialToken below instead.
+  const hasContactInfo = /(บ้านเลขที่|เบอร์|โทร|password)/i.test(t) && /\d{2,}/.test(t);
+  // A real credential reads as one mixed letters+digits token (e.g. "Passw0rd123"), unlike an
+  // incidental number sitting near an unrelated word — this avoids flagging safe answers that
+  // just mention a length requirement (e.g. "at least 12 characters") as a leak.
+  const hasCredentialToken = /(?=[A-Za-z\d]*\d)(?=[A-Za-z\d]*[A-Za-z])[A-Za-z\d]{6,}/.test(t);
+  const hasFullName = /(ด\.ญ\.|ด\.ช\.|นาย|นาง|นางสาว)\s*\S+/i.test(t) && t.length < 40;
+  const ok = !unedited && !tooShort && !hasContactInfo && !hasCredentialToken && !hasFullName;
+  return ok;
+}
+function submitDisclosure(){
+  const text = $('discInput').value;
+  const ok = checkDisclosure(text);
+  $('discInput').disabled = true;
+  $('discSubmitBtn').style.display = 'none';
+  $('discExplain').className = 'explainbox show ' + (ok ? 'correct' : 'wrong');
+  $('discExplain').innerHTML = ok
+    ? '<b>✅ เยี่ยม!</b>ประโยคของเราถามคำถามเดิมได้ครบ โดยไม่ต้องเปิดเผยข้อมูลที่ระบุตัวตนได้ — แบบนี้แหละที่ปลอดภัยกว่า'
+    : '<b>💡 ลองอีกนิด</b>ประโยคที่ปลอดภัยไม่ควรมีชื่อเต็ม ที่อยู่ เบอร์โทร หรือรหัสผ่านจริงอยู่ในนั้น ลองตัดส่วนที่เป็นข้อมูลส่วนตัวออก แล้วถามแค่สิ่งที่จำเป็นจริง ๆ';
+  $('discNextBtn').style.display = 'block';
+  if (ok && window.dlf) dlf.cheer('เก่งมาก!');
+}
+function nextDisclosure(){
+  dIdx++;
+  if (dIdx >= DISCLOSURE_ITEMS.length){ goStep(3); return; }
+  renderDisclosure();
+}
+
+// ===== Step 4 done =====
+function finishGame(){
+  window.dlfStars = wrongCount <= 3 ? 3 : wrongCount <= 8 ? 2 : 1;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = window.dlfStars === 3 ? 'รู้ทันความเป็นส่วนตัวกับ AI เก่งมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = `ตอบครบ ${ROUNDS.length} ข้อ โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function restartGame(){ goStep(0); }
+
+renderRail();
+</script>
+
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<script id="dlfAudioData" type="application/json">{"602ae70d0193":"audio/ai08-privacy/602ae70d0193.mp3","5d22f52033ce":"audio/ai08-privacy/5d22f52033ce.mp3","d811e87eefb3":"audio/ai08-privacy/d811e87eefb3.mp3","71a51a023ae8":"audio/ai08-privacy/71a51a023ae8.mp3","852128f8e136":"audio/ai08-privacy/852128f8e136.mp3","ce97d9170f39":"audio/ai08-privacy/ce97d9170f39.mp3","8129545227ec":"audio/ai08-privacy/8129545227ec.mp3","8436128610b4":"audio/ai08-privacy/8436128610b4.mp3","a911b3dfbe09":"audio/ai08-privacy/a911b3dfbe09.mp3","d602caa5b8be":"audio/ai08-privacy/d602caa5b8be.mp3","91792bfa66b0":"audio/ai08-privacy/91792bfa66b0.mp3","2c045329c86e":"audio/ai08-privacy/2c045329c86e.mp3","1be84771a278":"audio/ai08-privacy/1be84771a278.mp3","1ff2ad56cd35":"audio/ai08-privacy/1ff2ad56cd35.mp3","556e94dd062a":"audio/ai08-privacy/556e94dd062a.mp3","d585a6a9d18d":"audio/ai08-privacy/d585a6a9d18d.mp3","6f8fbf3ae148":"audio/ai08-privacy/6f8fbf3ae148.mp3","522e06b5cdb0":"audio/ai08-privacy/522e06b5cdb0.mp3","5863b046a029":"audio/ai08-privacy/5863b046a029.mp3","46fa4e69d0f3":"audio/ai08-privacy/46fa4e69d0f3.mp3","f2cfe0d3d75f":"audio/ai08-privacy/f2cfe0d3d75f.mp3","4064b41118c0":"audio/ai08-privacy/4064b41118c0.mp3","a95587d45c0e":"audio/ai08-privacy/a95587d45c0e.mp3","e493e941fc0e":"audio/ai08-privacy/e493e941fc0e.mp3","559808140e3a":"audio/ai08-privacy/559808140e3a.mp3","794c3ac807ee":"audio/ai08-privacy/794c3ac807ee.mp3","333441295bdb":"audio/ai08-privacy/333441295bdb.mp3","d131e6acfa57":"audio/ai08-privacy/d131e6acfa57.mp3","a7ae68624ea6":"audio/ai08-privacy/a7ae68624ea6.mp3","e631543f5849":"audio/ai08-privacy/e631543f5849.mp3","a7e7fb8815de":"audio/ai08-privacy/a7e7fb8815de.mp3","305fba3665b4":"audio/ai08-privacy/305fba3665b4.mp3","e5b978b364f4":"audio/ai08-privacy/e5b978b364f4.mp3","4b969e33b398":"audio/ai08-privacy/4b969e33b398.mp3","6c4673de7c09":"audio/ai08-privacy/6c4673de7c09.mp3","03d46a5750b0":"audio/ai08-privacy/03d46a5750b0.mp3","6aaf5291416b":"audio/ai08-privacy/6aaf5291416b.mp3","0fae26b9c0a8":"audio/ai08-privacy/0fae26b9c0a8.mp3","d8c7a791f484":"audio/ai08-privacy/d8c7a791f484.mp3","fa13f2bdd3ec":"audio/ai08-privacy/fa13f2bdd3ec.mp3","2998db8a698f":"audio/ai08-privacy/2998db8a698f.mp3","69c939221038":"audio/ai08-privacy/69c939221038.mp3","00f2948f97b1":"audio/ai08-privacy/00f2948f97b1.mp3","dd1db792b1b2":"audio/ai08-privacy/dd1db792b1b2.mp3","7fdd46cba22b":"audio/ai08-privacy/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai08-privacy/2840223fc4a0.mp3","a66234b845ea":"audio/ai08-privacy/a66234b845ea.mp3","210e958e772a":"audio/ai08-privacy/210e958e772a.mp3","fb9bb9479268":"audio/ai08-privacy/fb9bb9479268.mp3","541d8318dd9b":"audio/ai08-privacy/541d8318dd9b.mp3","f09c73b90ad8":"audio/ai08-privacy/f09c73b90ad8.mp3","c96be38b34ef":"audio/ai08-privacy/c96be38b34ef.mp3","4780fc79462b":"audio/ai08-privacy/4780fc79462b.mp3","dfb3e4afa929":"audio/ai08-privacy/dfb3e4afa929.mp3","57f54cf2d9c1":"audio/ai08-privacy/57f54cf2d9c1.mp3","cf03486e3200":"audio/ai08-privacy/cf03486e3200.mp3","406b1ef29426":"audio/ai08-privacy/406b1ef29426.mp3","dec1ce6c690b":"audio/ai08-privacy/dec1ce6c690b.mp3","f3bc581be169":"audio/ai08-privacy/f3bc581be169.mp3","3fb0e684b56b":"audio/ai08-privacy/3fb0e684b56b.mp3","42b34b1c98e1":"audio/ai08-privacy/42b34b1c98e1.mp3","e04742eeacc1":"audio/ai08-privacy/e04742eeacc1.mp3","1e2367efeff9":"audio/ai08-privacy/1e2367efeff9.mp3","004034d821ca":"audio/ai08-privacy/004034d821ca.mp3","e0293c5ef2f8":"audio/ai08-privacy/e0293c5ef2f8.mp3","6b1f4436d1b4":"audio/ai08-privacy/6b1f4436d1b4.mp3","deedda9529ba":"audio/ai08-privacy/deedda9529ba.mp3","0d1b14969c55":"audio/ai08-privacy/0d1b14969c55.mp3","9bb8216b6df6":"audio/ai08-privacy/9bb8216b6df6.mp3","829797601d01":"audio/ai08-privacy/829797601d01.mp3","b50bfbd1270d":"audio/ai08-privacy/b50bfbd1270d.mp3","dab05dcf3741":"audio/ai08-privacy/dab05dcf3741.mp3","dc60fd67731f":"audio/ai08-privacy/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai08-privacy/af6ba89d9b27.mp3","aca2b0992481":"audio/ai08-privacy/aca2b0992481.mp3","66590c21d92e":"audio/ai08-privacy/66590c21d92e.mp3","e18a189a9371":"audio/ai08-privacy/e18a189a9371.mp3","8af1f0edc12c":"audio/ai08-privacy/8af1f0edc12c.mp3","450d814e8573":"audio/ai08-privacy/450d814e8573.mp3","00e4ce0b5657":"audio/ai08-privacy/00e4ce0b5657.mp3","f172dca3996f":"audio/ai08-privacy/f172dca3996f.mp3","580cfe40f119":"audio/ai08-privacy/580cfe40f119.mp3","a0b4decfccdc":"audio/ai08-privacy/a0b4decfccdc.mp3","75e10f1dcac0":"audio/ai08-privacy/75e10f1dcac0.mp3","00d039c287e6":"audio/ai08-privacy/00d039c287e6.mp3","8ed5bb51ab72":"audio/ai08-privacy/8ed5bb51ab72.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.say','.tx','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>
