@@ -82,6 +82,11 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .balcount{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--primary-dark);flex:0 0 44px;text-align:right;}
 .balance-hint{font-size:12.5px;color:var(--text2);margin-bottom:10px;line-height:1.6;}
 .balance-actions{display:flex;flex-direction:column;gap:10px;}
+.balslider{width:100%;height:8px;border-radius:99px;accent-color:var(--primary);margin:4px 0 14px;cursor:pointer;}
+.heatrow{display:flex;gap:10px;}
+.heatcell{flex:1;border:2px solid var(--border);border-radius:12px;padding:12px 10px;text-align:center;background:var(--panel2);transition:background .3s,border-color .3s;}
+.heatcell .hlabel{display:block;font-size:11.5px;color:var(--text2);margin-bottom:4px;}
+.heatcell .hpct{font-family:'Mitr',sans-serif;font-weight:700;font-size:18px;color:var(--text);}
 .optbtn.right{background:var(--green-light);border-color:var(--green);color:var(--green-d);}
 .explainbox.info{background:var(--panel2);border-left:4px solid var(--primary);color:var(--text);}
 
@@ -517,11 +522,14 @@ function renderStep(s){
           <div class="balrow"><span class="ballabel">${bf.redEmoji} ${esc(bf.redLabel)}</span><span class="baltrack"><span class="balbar" style="width:100%"></span></span><span class="balcount">× ${bf.redCount}</span></div>
           <div class="balrow"><span class="ballabel">${bf.greenEmoji} ${esc(bf.greenLabel)}</span><span class="baltrack"><span class="balbar green" id="balGreenBar" style="width:${bf.greenCount/bf.redCount*100}%"></span></span><span class="balcount" id="balGreenCount">× ${bf.greenCount}</span></div>
         </div>
-        <div class="balance-hint">กดปุ่มเพื่อเติมรูป${esc(bf.greenLabel)} ทีละรูป จนกว่าจำนวนจะสมดุลกับฝั่ง${esc(bf.redLabel)}</div>
-        <div class="balance-actions">
-          <button type="button" class="optbtn" id="balAddGreen" onclick="onBalanceAdd('green')">➕ เติมรูป${esc(bf.greenLabel)}</button>
-          <button type="button" class="optbtn" id="balAddRed" onclick="onBalanceAdd('red')">➕ เติมรูป${esc(bf.redLabel)} เพิ่มอีก</button>
-        </div>`;
+        <div class="balance-hint">ลาก slider เพื่อเติมรูป${esc(bf.greenLabel)} จนกว่าจำนวนจะสมดุลกับฝั่ง${esc(bf.redLabel)} — ดูฮีตแมปความแม่นยำแต่ละกลุ่มที่อัปเดตสดด้านล่าง</div>
+        <input type="range" id="balSlider" class="balslider" min="${bf.greenStart}" max="${bf.redCount}" value="${bf.greenStart}" oninput="onBalanceSlide(this.value)">
+        <div class="heatrow">
+          <div class="heatcell" id="heatRed"><span class="hlabel">${esc(bf.redLabel)}</span><span class="hpct">100%</span></div>
+          <div class="heatcell" id="heatGreen"><span class="hlabel">${esc(bf.greenLabel)}</span><span class="hpct" id="heatGreenPct">${Math.round(bf.greenCount/bf.redCount*100)}%</span></div>
+        </div>
+        <button class="btn" id="balConfirmBtn" style="margin-top:12px" onclick="onBalanceConfirm()">✅ ใช้ข้อมูลนี้ฝึก AI ใหม่</button>`;
+      onBalanceSlide(bf.greenCount);
     } else {
       $('caseCard').innerHTML = `
         <span class="step-chip">ขั้นที่ 3 · แก้ข้อมูล</span>
@@ -588,36 +596,45 @@ function onOpt(kind, i){
   }
 }
 
-function onBalanceAdd(kind){
+// Live bias heatmap: as the student drags the slider, both the data-balance bars
+// AND a per-group accuracy estimate recalculate instantly (no need to press train
+// first) — the under-represented group's "accuracy" scales with how much data it
+// now has, capped at 100% once the two groups are balanced.
+function onBalanceSlide(val){
   const c = CASES[caseIdx];
   const bf = c.balanceFix;
-  const addGreenBtn = $('balAddGreen'), addRedBtn = $('balAddRed');
-  if (!bf || !addGreenBtn || addGreenBtn.disabled) return;
-  if (kind === 'red'){
-    wrongCount++;
-    updateHead();
-    $('explainBox').className = 'explainbox show wrong';
-    $('explainBox').innerHTML = `<b>❌ ยังไม่ใช่ ลองใหม่อีกครั้ง</b>${esc(bf.addRedEx)}`;
-    return;
-  }
-  bf.greenCount = Math.min(bf.redCount, bf.greenCount + 1);
+  if (!bf) return;
+  bf.greenCount = Number(val);
   const pct = bf.greenCount / bf.redCount * 100;
   const bar = $('balGreenBar'), cnt = $('balGreenCount');
   if (bar) bar.style.width = pct + '%';
   if (cnt) cnt.textContent = '× ' + bf.greenCount;
-  if (bf.greenCount >= bf.redCount){
-    addGreenBtn.disabled = true;
-    addRedBtn.disabled = true;
-    addGreenBtn.classList.add('right');
-    $('explainBox').className = 'explainbox show correct';
-    $('explainBox').innerHTML = `<b>✅ ถูกต้อง!</b>${esc(bf.successEx)}`;
-    if (window.dlf) dlf.cheer('เก่งมาก นักสืบ!');
-    $('nextBtn').textContent = 'เริ่มฝึก AI ใหม่ →';
-    $('nextBtn').style.display = 'block';
-  } else {
-    $('explainBox').className = 'explainbox show info';
-    $('explainBox').innerHTML = `<b>🟡 ใกล้แล้ว!</b>เติมอีก ${bf.redCount - bf.greenCount} รูป ให้เท่ากับฝั่ง${esc(bf.redLabel)}`;
+  const greenAcc = Math.round(pct);
+  const heatGreen = $('heatGreen'), heatGreenPct = $('heatGreenPct');
+  if (heatGreenPct) heatGreenPct.textContent = greenAcc + '%';
+  if (heatGreen) heatGreen.style.background = greenAcc >= 95 ? 'var(--green-light)' : greenAcc >= 60 ? 'var(--amber-light)' : 'var(--red-light)';
+  if (heatGreen) heatGreen.style.borderColor = greenAcc >= 95 ? 'var(--green)' : greenAcc >= 60 ? 'var(--amber)' : 'var(--red)';
+}
+function onBalanceConfirm(){
+  const c = CASES[caseIdx];
+  const bf = c.balanceFix;
+  const btn = $('balConfirmBtn');
+  if (!bf || !btn || btn.disabled) return;
+  if (bf.greenCount < bf.redCount){
+    wrongCount++;
+    updateHead();
+    $('explainBox').className = 'explainbox show wrong';
+    $('explainBox').innerHTML = `<b>❌ ยังไม่สมดุลพอ</b>${esc(bf.addRedEx)} ลากต่อจนกว่าฮีตแมปทั้งสองฝั่งจะขึ้น 100% เท่ากัน`;
+    return;
   }
+  btn.disabled = true;
+  $('balSlider').disabled = true;
+  btn.classList.add('right');
+  $('explainBox').className = 'explainbox show correct';
+  $('explainBox').innerHTML = `<b>✅ ถูกต้อง!</b>${esc(bf.successEx)}`;
+  if (window.dlf) dlf.cheer('เก่งมาก นักสืบ!');
+  $('nextBtn').textContent = 'เริ่มฝึก AI ใหม่ →';
+  $('nextBtn').style.display = 'block';
 }
 
 function onNext(){

@@ -113,14 +113,19 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .testcard.no .tpred{color:#A32E20;}
 @keyframes mtShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px) rotate(-2deg);}75%{transform:translateX(5px) rotate(2deg);}}
 
-.datagrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0;}
-@media (max-width:480px){.datagrid{grid-template-columns:repeat(2,1fr);}}
-.datacard{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--cream);border:2px solid var(--border);border-radius:14px;padding:12px 8px;cursor:pointer;transition:all .15s;}
+.datagrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:14px 0;}
+@media (max-width:600px){.datagrid{grid-template-columns:repeat(3,1fr);}}
+.datacard{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--cream);border:2px solid var(--border);border-radius:12px;padding:8px 4px;cursor:pointer;transition:all .15s;}
 .datacard:active{transform:scale(.95);}
-.datacard .demo{font-size:36px;}
-.datacard .dlbl{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border-radius:8px;padding:2px 10px;}
-.datacard.bad{border-color:var(--red);background:var(--red-light);}
-.datacard.bad::after{content:'❌';position:absolute;top:-8px;right:-6px;font-size:16px;}
+.datacard .demo{font-size:26px;}
+.datacard .dlbl{font-family:'Mitr',sans-serif;font-size:9.5px;font-weight:700;color:var(--primary-dark);background:var(--primary-light);border-radius:8px;padding:1px 6px;}
+.datacard.bad{border-color:var(--red);background:var(--red-light);opacity:.55;}
+.datacard .trashmark{position:absolute;top:-8px;right:-6px;font-size:15px;}
+.livemeter{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;}
+.livemeter-label{font-size:12px;color:var(--text2);}
+.livemeter-pct{font-family:'Mitr',sans-serif;font-weight:700;font-size:14px;color:var(--primary-dark);}
+.livebar{width:100%;height:10px;background:var(--cream2);border:1.5px solid var(--border);border-radius:99px;overflow:hidden;margin-top:4px;}
+.livefill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#FF7A66,#E4614F);transition:width .3s ease,background .3s ease;}
 
 .choicecol{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
 .choiceopt{border:2px solid var(--border);border-bottom:5px solid var(--line-d);border-radius:16px;background:var(--panel);padding:14px 16px;font-family:'Sarabun',sans-serif;font-size:14.5px;font-weight:600;color:var(--text);cursor:pointer;text-align:left;line-height:1.6;transition:transform .1s;}
@@ -419,18 +424,19 @@ function r1Summary(nOK){
   $('r1Next').style.display = 'block';
 }
 
-// ── round 2: catch the bad data ──
+// ── round 2: catch the bad data — a bigger 30-card grid (~15% mislabeled), with
+// a live accuracy meter that recalculates instantly on every tap, before training ──
 const R2_SET = [
-  { e:'🍎', lbl:'แอปเปิล', ok:true  },
-  { e:'🍌', lbl:'กล้วย',  ok:true  },
-  { e:'🍌', lbl:'แอปเปิล', ok:false },
-  { e:'🍎', lbl:'กล้วย',  ok:false },
-  { e:'🍌', lbl:'กล้วย',  ok:true  },
-  { e:'🍎', lbl:'แอปเปิล', ok:true  },
-  { e:'🍌', lbl:'แอปเปิล', ok:false },
-  { e:'🍎', lbl:'แอปเปิล', ok:true  },
-  { e:'🍇', lbl:'องุ่น',   ok:true  },
-  { e:'🍇', lbl:'กล้วย',  ok:false },
+  { e:'🍎', lbl:'แอปเปิล', ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍇', lbl:'องุ่น',   ok:true  },
+  { e:'🍎', lbl:'แอปเปิล', ok:true  }, { e:'🍌', lbl:'แอปเปิล', ok:false }, { e:'🍇', lbl:'องุ่น',   ok:true  },
+  { e:'🍎', lbl:'แอปเปิล', ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'กล้วย',  ok:false },
+  { e:'🍇', lbl:'องุ่น',   ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍇', lbl:'กล้วย',  ok:false }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍇', lbl:'องุ่น',   ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍇', lbl:'องุ่น',   ok:true  }, { e:'🍌', lbl:'แอปเปิล', ok:false }, { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍇', lbl:'องุ่น',   ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'แอปเปิล', ok:true  },
+  { e:'🍇', lbl:'องุ่น',   ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'องุ่น',   ok:false },
+  { e:'🍇', lbl:'องุ่น',   ok:true  }, { e:'🍌', lbl:'กล้วย',  ok:true  }, { e:'🍎', lbl:'แอปเปิล', ok:true  },
 ];
 let r2Sel = [];
 
@@ -439,7 +445,9 @@ function startRound2(){
   updHead('รอบที่ 2/4 · จับผิดข้อมูลเสีย');
   stage().innerHTML = `<div class="taskcard">
     <div class="round-title">🕵️ จับผิดข้อมูลเสียก่อนฝึกโมเดล!</div>
-    <div class="round-note">มีคนติดป้ายผิดปนอยู่ในข้อมูลฝึกชุดนี้ — แตะการ์ดที่ป้าย "ไม่ตรงกับรูป" ให้ครบทุกใบ แล้วกดฝึกโมเดล</div>
+    <div class="round-note">มีคนติดป้ายผิดปนอยู่ในข้อมูลฝึกชุดนี้ประมาณ 15% — แตะการ์ดที่ป้าย "ไม่ตรงกับรูป" เพื่อโยนทิ้งถังขยะ ให้ครบทุกใบ แล้วกดฝึกโมเดล</div>
+    <div class="livemeter"><span class="livemeter-label">📊 ความแม่นยำโดยประมาณของชุดข้อมูล (อัปเดตสด)</span><span class="livemeter-pct" id="r2Acc">0%</span></div>
+    <div class="livebar"><div class="livefill" id="r2AccFill"></div></div>
     <div class="datagrid" id="r2Grid"></div>
     <div class="explainbox" id="r2Explain"></div>
     <button class="btn" id="r2TrainBtn" style="margin-top:8px;" onclick="r2Train()">🚀 ฝึกโมเดล</button>
@@ -448,10 +456,25 @@ function startRound2(){
 }
 function r2RenderGrid(){
   $('r2Grid').innerHTML = R2_SET.map((c,i)=>
-    `<div class="datacard${r2Sel[i]?' bad':''}" onclick="r2Toggle(${i})"><span class="demo">${c.e}</span><span class="dlbl">${esc(c.lbl)}</span></div>`
+    `<div class="datacard${r2Sel[i]?' bad':''}" onclick="r2Toggle(${i})"><span class="demo">${c.e}</span><span class="dlbl">${esc(c.lbl)}</span>${r2Sel[i]?'<span class="trashmark">🗑️</span>':''}</div>`
   ).join('');
+  r2UpdateAccuracy();
 }
 function r2Toggle(i){ r2Sel[i] = !r2Sel[i]; r2RenderGrid(); }
+// Live accuracy meter: simulates "if we trained right now with this exact kept/removed
+// set, what fraction of the dataset would be correctly-labeled?" — recalculated on every
+// tap, before any actual training happens, so students see the effect of their choices instantly.
+function r2UpdateAccuracy(){
+  let correct = 0;
+  R2_SET.forEach((c,i)=>{
+    const kept = !r2Sel[i];
+    if ((c.ok && kept) || (!c.ok && !kept)) correct++;
+  });
+  const pct = Math.round((correct / R2_SET.length) * 100);
+  $('r2Acc').textContent = pct + '%';
+  $('r2AccFill').style.width = pct + '%';
+  $('r2AccFill').style.background = pct >= 95 ? 'linear-gradient(90deg,#5CD35B,#38A93A)' : pct >= 80 ? 'linear-gradient(90deg,var(--gold),var(--orange))' : 'linear-gradient(90deg,#FF7A66,#E4614F)';
+}
 function r2Train(){
   const missedBad = [], wrongGood = [];
   R2_SET.forEach((c,i)=>{

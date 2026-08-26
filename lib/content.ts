@@ -56,7 +56,7 @@ export const AREAS: Area[] = [
     // Each game forces the actual skill (label real data, fix a biased
     // dataset, click the real UI, write your own prompt, design system rules)
     // instead of letting a kid pattern-match a multiple-choice answer key.
-    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 4 โมดูล 14 บทเรียน',
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 4 โมดูล 13 บทเรียน',
     modules: [
       {
         key: 'm1-foundations', icon: '🤖', title: 'รากฐาน AI', sub: 'AI คืออะไร เรียนรู้จากข้อมูลยังไง ทำไมบางทีถึงลำเอียง และ AI ซ่อนอยู่ที่ไหนในชีวิตจริง',
@@ -64,14 +64,13 @@ export const AREAS: Area[] = [
           { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai01-foundations.html' },
           { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai02-model-trainer.html' },
           { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai03-bias-detective.html' },
-          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร', file: '/games/ai12-ai-in-the-world.html' },
+          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร พร้อม 25 ข้อเปรียบเทียบของจริงกับ AI (คลิป/ภาพ/บทความ)', file: '/games/ai12-ai-in-the-world.html' },
         ],
       },
       {
         key: 'm2-collab', icon: '🤝', title: 'ทำงานร่วมกับ AI', sub: 'สั่งงาน AI ให้ชัดเจน ตรวจสอบก่อนเชื่อ และรู้ว่างานไหนควรใช้ AI',
         games: [
-          { code: 'g-ui-inspector', icon: '🖥️', th: 'นักสำรวจหน้าจอ AI', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI และคำว่า "token" คืออะไร', file: '/games/ai04-ui-inspector.html' },
-          { code: 'g-promptfixer', icon: '🧩', th: 'ช่างซ่อมคำสั่ง AI', desc: 'เติมบล็อกที่ขาดหายให้คำสั่ง AI ชัดเจนขึ้น', file: '/games/ai05-prompt-fixer.html' },
+          { code: 'g-ui-inspector', icon: '🖥️', th: 'หน้าจอแชท AI และการสั่งงานให้ชัดเจน', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI คำว่า "token" คืออะไร และเขียนคำสั่งให้ครบ 3 ส่วน (ใคร/ทำอะไร/ตอบแบบไหน)', file: '/games/ai04-ui-inspector.html' },
           { code: 'g-discernment', icon: '🔍', th: 'นักตรวจสอบคำตอบ AI', desc: 'อ่านคำตอบของ AI อย่างเท่าทัน จับจุดที่ผิด มั่นใจเกินจริง หรือลำเอียง ก่อนเชื่อ', file: '/games/ai06-discernment.html' },
           { code: 'g-diligence', icon: '🧾', th: 'นักใช้ AI อย่างมีความรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และผลงานยังเป็นของเราแค่ไหน', file: '/games/ai07-diligence.html' },
           { code: 'g-privacy', icon: '🔒', th: 'รู้ทันความเป็นส่วนตัวกับ AI', desc: 'เช็กก่อนพิมพ์ว่าข้อมูลไหนปลอดภัย ข้อมูลไหนควรถามผู้ใหญ่ก่อน และข้อมูลไหนไม่ควรพิมพ์ให้ AI', file: '/games/ai08-privacy.html' },
@@ -82,7 +81,7 @@ export const AREAS: Area[] = [
         key: 'm3-shaping', icon: '💎', title: 'ออกแบบพฤติกรรม AI แล้วใช้เรียนรู้', sub: 'ตั้งกฎให้ AI ผู้ช่วยของตัวเอง ปรับโทนให้เหมาะกับงาน แล้วใช้ AI ติวเตอร์ที่ออกแบบเองช่วยเรียนรู้เรื่องใหม่จริง ๆ',
         games: [
           { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai09-gem-architect.html' },
-          { code: 'g-sandboxmaster', icon: '🧪', th: 'นักทดลองแซนด์บ็อกซ์ AI', desc: 'ปรับความคิดสร้างสรรค์และบทบาท ทำภารกิจให้สำเร็จ', file: '/games/ai10-sandbox-master.html' },
+          { code: 'g-sandboxmaster', icon: '📚', th: 'สถาปนิกข้อมูลอ้างอิงของ AI', desc: 'แนบเอกสารจริงให้ AI ดูก่อนตอบ (RAG) เปรียบเทียบคำตอบที่มั่วเองกับคำตอบที่อ้างอิงเอกสารจริง', file: '/games/ai10-sandbox-master.html' },
           { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai11-learn-with-ai.html' },
         ],
       },

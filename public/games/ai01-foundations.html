@@ -82,6 +82,29 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .dc-x{color:#B7331E;opacity:0;animation:dcXShow 4.2s ease-in-out infinite;}
 @keyframes dcXShow{0%,25%{opacity:0;}32%{opacity:1;}92%{opacity:1;}97%{opacity:0;}100%{opacity:0;}}
 
+/* phase 1: live token predictor */
+.tokeninput{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text);margin-top:8px;box-sizing:border-box;}
+.tokeninput:focus{outline:2px solid var(--primary);}
+.tokenchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.tokenchip{border:1.5px solid var(--border);background:var(--panel2);border-radius:99px;padding:5px 12px;font-size:12.5px;color:var(--text2);cursor:pointer;}
+.tokenchip:active{transform:scale(.95);}
+.tokenchart{margin-top:16px;min-height:120px;display:flex;flex-direction:column;gap:10px;justify-content:center;}
+.tokenrow{display:flex;align-items:center;gap:10px;}
+.tokenrow .tword{width:64px;font-family:'Mitr',sans-serif;font-weight:700;font-size:13.5px;color:var(--primary-dark);text-align:right;flex:0 0 auto;}
+.tokenrow .tbarwrap{flex:1;height:18px;background:var(--panel2);border-radius:9px;overflow:hidden;}
+.tokenrow .tbar{height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,color-mix(in srgb,var(--primary) 55%,white),var(--primary));transition:width .5s cubic-bezier(.34,1.2,.64,1);}
+.tokenrow .tpct{width:38px;font-size:12px;color:var(--text3);flex:0 0 auto;}
+.tokenempty{font-size:12.5px;color:var(--text3);text-align:center;padding:20px 0;}
+
+/* phase 2: hallucination inspector — tap the wrong word */
+.hallubox{width:100%;background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 14px 14px 0;padding:18px 20px;text-align:left;margin-top:10px;}
+.hallubox .hwho{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.halluword{display:inline;padding:2px 3px;border-radius:5px;cursor:pointer;font-size:15.5px;line-height:2.1;color:var(--text);}
+.halluword:hover{background:rgba(46,154,87,.12);}
+.halluword.badhit{background:var(--red);color:#fff;box-shadow:0 0 0 4px rgba(228,97,79,.35);animation:halluPop .3s ease;}
+.halluword.goodhit{background:var(--red-light);color:#A32E20;text-decoration:line-through;}
+@keyframes halluPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+
 /* practice step: drag-and-drop sort */
 .sorthint{font-size:12.5px;color:var(--text3);text-align:center;margin:12px 0 2px;}
 .sortzone{display:flex;align-items:stretch;gap:10px;margin-top:10px;}
@@ -187,8 +210,26 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
         <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
       </div>
 
-      <div id="phaseSort">
-        <div class="phasehead">ด่าน 1: จริงหรือมั่ว?</div>
+      <div id="phaseToken">
+        <div class="phasehead">ด่าน 1: ทำนายคำถัดไป</div>
+        <div class="sorthint">⌨️ พิมพ์คำในกล่อง แล้วดู AI ทายคำถัดไป 3 อันดับแบบสด ๆ — ลองพิมพ์คำในชิปด้านล่างดูก่อนก็ได้</div>
+        <input type="text" id="tokenInput" class="tokeninput" placeholder="พิมพ์คำ เช่น แมว ฉัน วันนี้..." oninput="onTokenType()">
+        <div class="tokenchips" id="tokenChips"></div>
+        <div class="tokenchart" id="tokenChart"></div>
+        <button class="btn" style="margin-top:16px" onclick="startHalluPhase()">ไปด่านถัดไป →</button>
+      </div>
+
+      <div id="phaseHallu" style="display:none">
+        <div class="phasehead">ด่าน 2: จับผิดคำที่ AI มั่ว</div>
+        <span class="rtag" id="halluTag" style="display:block;margin:0 0 6px">ข้อที่ 1/5</span>
+        <div class="sorthint">🔎 อ่านคำตอบของ AI แล้วแตะคำที่คิดว่า AI "มั่ว" ขึ้นมาเอง (ข้อมูลผิดจากความจริง)</div>
+        <div class="hallubox" id="halluBox"></div>
+        <div class="explainbox" id="halluExplainBox"></div>
+        <button class="btn" id="halluNextBtn" style="display:none;margin-top:14px" onclick="nextHallu()">ข้อถัดไป →</button>
+      </div>
+
+      <div id="phaseSort" style="display:none">
+        <div class="phasehead">ด่าน 3: จริงหรือมั่ว?</div>
         <span class="rtag" id="roundTag" style="display:block;margin:0 0 6px">ข้อที่ 1/13</span>
         <div class="sorthint">🤔 ลากการ์ดไปใส่กล่องที่ถูกต้อง หรือแตะการ์ดแล้วแตะกล่อง</div>
 
@@ -207,7 +248,7 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
       </div>
 
       <div id="phaseMatch" style="display:none">
-        <div class="phasehead">ด่าน 2: จับคู่คำศัพท์ AI</div>
+        <div class="phasehead">ด่าน 4: จับคู่คำศัพท์ AI</div>
         <span class="rtag" id="matchTag" style="display:block;margin:0 0 6px">จับคู่แล้ว 0/6</span>
         <div class="matchhint">🧩 แตะคำศัพท์ทางซ้าย แล้วแตะคำอธิบายทางขวาที่ตรงกัน</div>
         <div class="matchgrid">
@@ -331,12 +372,107 @@ let answered = false, selectedTap = false, dragState = null;
 
 let sortZoneReady = false;
 function startGame(){
-  idx = 0; wrongCount = 0; matchWrong = 0; matchedCount = 0; matchSel = null;
-  $('phaseSort').style.display = ''; $('phaseMatch').style.display = 'none';
+  idx = 0; wrongCount = 0; matchWrong = 0; matchedCount = 0; matchSel = null; halluWrong = 0;
+  $('phaseToken').style.display = ''; $('phaseHallu').style.display = 'none';
+  $('phaseSort').style.display = 'none'; $('phaseMatch').style.display = 'none';
   if (!sortZoneReady){ setupSortZone(); sortZoneReady = true; }
-  renderStatement();
+  $('tokenInput').value = ''; renderTokenChart(null);
 }
 function restartGame(){ goStep(0); }
+
+// ===== Step 3, phase 1: live token predictor =====
+// A small hardcoded "model": for each trigger word, the 3 most likely next
+// words and their made-up probabilities, purely to demonstrate the *idea* of
+// next-token prediction interactively — not a real language model.
+const TOKEN_DICT = {
+  'แมว':[['กิน',68],['นอน',22],['วิ่ง',10]],
+  'ฉัน':[['ชอบ',52],['อยาก',31],['ไป',17]],
+  'วันนี้':[['อากาศ',58],['ฉัน',27],['เป็น',15]],
+  'พรุ่งนี้':[['จะ',49],['มี',32],['ไป',19]],
+  'เขา':[['บอกว่า',44],['ชอบ',35],['เป็น',21]],
+  'น้ำ':[['เดือด',41],['ท่วม',34],['ไหล',25]],
+};
+function onTokenType(){
+  const val = $('tokenInput').value.trim();
+  const words = val.split(/\s+/);
+  const lastWord = words[words.length-1];
+  renderTokenChart(TOKEN_DICT[lastWord] || null);
+}
+function renderTokenChart(candidates){
+  if (!candidates){
+    $('tokenChart').innerHTML = `<div class="tokenempty">พิมพ์คำจากชิปด้านล่างเพื่อดู AI ทายคำถัดไป</div>`;
+    return;
+  }
+  $('tokenChart').innerHTML = candidates.map(([w,p])=>`
+    <div class="tokenrow">
+      <span class="tword">${esc(w)}</span>
+      <div class="tbarwrap"><div class="tbar" style="width:${p}%"></div></div>
+      <span class="tpct">${p}%</span>
+    </div>`).join('');
+}
+function useTokenChip(w){
+  $('tokenInput').value = w;
+  onTokenType();
+  $('tokenInput').focus();
+}
+$('tokenChips').innerHTML = Object.keys(TOKEN_DICT).map(w=>`<button type="button" class="tokenchip" onclick="useTokenChip('${w}')">${esc(w)}</button>`).join('');
+
+// ===== Step 3, phase 2: hallucination inspector — tap the exact wrong word =====
+const HALLU_ROUNDS = [
+  { tokens:['นักวิ่งชื่อดัง','Usain','Bolt','ทำสถิติโลกวิ่ง','100','เมตร','ด้วยเวลา','5.2','วินาที'], bad:'5.2',
+    explain:'สถิติโลกจริงของ Usain Bolt คือ 9.58 วินาที ไม่ใช่ 5.2 วินาที ซึ่งเร็วเกินความเป็นไปได้ของมนุษย์มาก — AI มั่วตัวเลขนี้ขึ้นมาเอง' },
+  { tokens:['ดาวอังคาร','มี','ดวงจันทร์บริวาร','ทั้งหมด','7','ดวง'], bad:'7',
+    explain:'ดาวอังคารมีดวงจันทร์บริวารแค่ 2 ดวง (โฟบอสและไดมอส) ไม่ใช่ 7 ดวง — AI มั่วตัวเลขนี้ขึ้นมาเอง' },
+  { tokens:['แสง','เดินทาง','ด้วยความเร็ว','ประมาณ','3,000','กิโลเมตรต่อวินาที'], bad:'3,000',
+    explain:'ความเร็วแสงจริงคือประมาณ 300,000 กิโลเมตรต่อวินาที ไม่ใช่ 3,000 กิโลเมตรต่อวินาที — AI มั่วตัวเลขนี้ขึ้นมาเอง' },
+  { tokens:['ร่างกาย','มนุษย์ผู้ใหญ่','มี','กระดูก','ทั้งหมด','350','ชิ้น'], bad:'350',
+    explain:'ผู้ใหญ่มีกระดูกจริง 206 ชิ้น ไม่ใช่ 350 ชิ้น — AI มั่วตัวเลขนี้ขึ้นมาเอง' },
+  { tokens:['เรือ','ไททานิก','จมลง','ใน','ปี','1925','หลังชนภูเขาน้ำแข็ง'], bad:'1925',
+    explain:'เรือไททานิกจมลงในปี 1912 ไม่ใช่ 1925 — AI มั่วปีนี้ขึ้นมาเอง' },
+];
+let halluIdx = 0, halluWrong = 0, halluAnswered = false;
+
+function startHalluPhase(){
+  $('phaseToken').style.display = 'none'; $('phaseHallu').style.display = '';
+  halluIdx = 0; halluWrong = 0;
+  renderHallu();
+}
+function renderHallu(){
+  const r = HALLU_ROUNDS[halluIdx];
+  halluAnswered = false;
+  $('halluTag').textContent = `ข้อที่ ${halluIdx+1}/${HALLU_ROUNDS.length}`;
+  $('halluBox').innerHTML = `<div class="hwho">🤖 AI ตอบว่า</div>` +
+    r.tokens.map((w,i)=>`<span class="halluword" data-i="${i}" onclick="onHalluTap(${i})">${esc(w)}</span> `).join('');
+  $('halluExplainBox').className = 'explainbox';
+  $('halluExplainBox').innerHTML = '';
+  $('halluNextBtn').style.display = 'none';
+}
+function onHalluTap(i){
+  if (halluAnswered) return;
+  const r = HALLU_ROUNDS[halluIdx];
+  const word = r.tokens[i];
+  const correct = word === r.bad;
+  if (correct){
+    halluAnswered = true;
+    document.querySelectorAll('#halluBox .halluword').forEach(el=>{
+      if (el.textContent.trim() === r.bad) el.classList.add('badhit');
+    });
+    $('halluExplainBox').className = 'explainbox show correct';
+    $('halluExplainBox').innerHTML = `<b>✅ ถูกต้อง! เจอจุดที่ AI มั่วแล้ว</b>${esc(r.explain)}`;
+    $('halluNextBtn').style.display = 'block';
+    if (window.dlf) dlf.cheer('เก่งมาก!');
+  } else {
+    halluWrong++;
+    $('scorePill').textContent = `ตอบผิด ${wrongCount + halluWrong + matchWrong} ครั้ง`;
+    const el = document.querySelector(`#halluBox .halluword[data-i="${i}"]`);
+    el.classList.add('goodhit');
+  }
+}
+function nextHallu(){
+  halluIdx++;
+  if (halluIdx >= HALLU_ROUNDS.length){ $('phaseHallu').style.display='none'; $('phaseSort').style.display=''; renderStatement(); return; }
+  renderHallu();
+}
 
 // ===== Step 3, phase 2: match AI terms to plain-language definitions =====
 const TERMS = [
@@ -392,7 +528,7 @@ function startMatchPhase(){
         }
       } else {
         matchWrong++;
-        $('scorePill').textContent = `ตอบผิด ${wrongCount + matchWrong} ครั้ง`;
+        $('scorePill').textContent = `ตอบผิด ${wrongCount + halluWrong + matchWrong} ครั้ง`;
         chip.classList.add('wrongflash');
         setTimeout(()=>chip.classList.remove('wrongflash'), 350);
         document.querySelectorAll('.matchchip.term.selected').forEach(c=>{ c.classList.add('wrongflash'); setTimeout(()=>c.classList.remove('wrongflash'),350); });
@@ -407,7 +543,7 @@ function renderStatement(){
   const s = STATEMENTS[idx];
   answered = false; selectedTap = false;
   $('roundTag').textContent = `ข้อที่ ${idx+1}/${STATEMENTS.length}`;
-  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
+  $('scorePill').textContent = `ตอบผิด ${wrongCount + halluWrong} ครั้ง`;
   $('statementText').textContent = s.text;
   const card = $('dragCard');
   card.className = 'dragcard';
@@ -495,7 +631,7 @@ function submitAnswer(choice){
   card.style.transform = `translate(${dx}px,${dy}px) scale(.7)`;
   card.classList.add('fly');
 
-  if (!correct){ wrongCount++; $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`; }
+  if (!correct){ wrongCount++; $('scorePill').textContent = `ตอบผิด ${wrongCount + halluWrong} ครั้ง`; }
   $('explainBox').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
   $('explainBox').innerHTML = `<b>${correct ? '✅ ถูกต้อง!' : '❌ ยังไม่ถูก — คำตอบคือ ' + (s.answer ? '"จริง"' : '"มั่ว"')}</b>${esc(s.explain)}`;
   $('nextBtn').style.display = 'block';
@@ -510,13 +646,13 @@ function nextStatement(){
 
 // ===== Step 4 done =====
 function finishGame(){
-  const totalWrong = wrongCount + matchWrong;
-  window.dlfStars = totalWrong <= 3 ? 3 : totalWrong <= 9 ? 2 : 1;
+  const totalWrong = wrongCount + halluWrong + matchWrong;
+  window.dlfStars = totalWrong <= 4 ? 3 : totalWrong <= 11 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
   $('resTitle').textContent = window.dlfStars === 3 ? 'เข้าใจ AI ดีมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `ทำครบ ${STATEMENTS.length + TERMS.length} ข้อ (จริง/มั่ว ${STATEMENTS.length} ข้อ + จับคู่คำศัพท์ ${TERMS.length} คำ) โดยตอบผิดทั้งหมด ${totalWrong} ครั้ง`;
+  $('resScore').textContent = `ทำครบ ${HALLU_ROUNDS.length + STATEMENTS.length + TERMS.length} ข้อ (จับผิดคำมั่ว ${HALLU_ROUNDS.length} ข้อ + จริง/มั่ว ${STATEMENTS.length} ข้อ + จับคู่คำศัพท์ ${TERMS.length} คำ) โดยตอบผิดทั้งหมด ${totalWrong} ครั้ง`;
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -573,8 +709,8 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"7894d348539d":"audio/ai01-foundations/7894d348539d.mp3","2b75803b3593":"audio/ai01-foundations/2b75803b3593.mp3","913fc20c5336":"audio/ai01-foundations/913fc20c5336.mp3","2a43a6c7241a":"audio/ai01-foundations/2a43a6c7241a.mp3","92d4cde42ef4":"audio/ai01-foundations/92d4cde42ef4.mp3","24ae56f57523":"audio/ai01-foundations/24ae56f57523.mp3","7c5bd0776cc7":"audio/ai01-foundations/7c5bd0776cc7.mp3","d28495d702b6":"audio/ai01-foundations/d28495d702b6.mp3","d5434190130e":"audio/ai01-foundations/d5434190130e.mp3","318ae759a395":"audio/ai01-foundations/318ae759a395.mp3","29841feb5940":"audio/ai01-foundations/29841feb5940.mp3","dc2d787e6624":"audio/ai01-foundations/dc2d787e6624.mp3","7accfd41683a":"audio/ai01-foundations/7accfd41683a.mp3","d585a6a9d18d":"audio/ai01-foundations/d585a6a9d18d.mp3","a2c423e35ece":"audio/ai01-foundations/a2c423e35ece.mp3","dcc32f564f59":"audio/ai01-foundations/dcc32f564f59.mp3","396b703108c5":"audio/ai01-foundations/396b703108c5.mp3","36feecf328f2":"audio/ai01-foundations/36feecf328f2.mp3","e4c5f9e38e6d":"audio/ai01-foundations/e4c5f9e38e6d.mp3","70c690d60cb7":"audio/ai01-foundations/70c690d60cb7.mp3","9511a70fab79":"audio/ai01-foundations/9511a70fab79.mp3","075de2fe6be7":"audio/ai01-foundations/075de2fe6be7.mp3","7d62d2e7ae4e":"audio/ai01-foundations/7d62d2e7ae4e.mp3","c641a587c0e2":"audio/ai01-foundations/c641a587c0e2.mp3","0e66ec19ee8e":"audio/ai01-foundations/0e66ec19ee8e.mp3","b5f9e1aee0c4":"audio/ai01-foundations/b5f9e1aee0c4.mp3","6297cc83f613":"audio/ai01-foundations/6297cc83f613.mp3","cc1bc49d2591":"audio/ai01-foundations/cc1bc49d2591.mp3","7fdd46cba22b":"audio/ai01-foundations/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai01-foundations/2840223fc4a0.mp3","1b85bc4b61f1":"audio/ai01-foundations/1b85bc4b61f1.mp3","c012f22cba62":"audio/ai01-foundations/c012f22cba62.mp3","a66234b845ea":"audio/ai01-foundations/a66234b845ea.mp3","2a28835d4111":"audio/ai01-foundations/2a28835d4111.mp3","4780fc79462b":"audio/ai01-foundations/4780fc79462b.mp3","dfb3e4afa929":"audio/ai01-foundations/dfb3e4afa929.mp3","e18a189a9371":"audio/ai01-foundations/e18a189a9371.mp3","8af1f0edc12c":"audio/ai01-foundations/8af1f0edc12c.mp3","7d33fb85ff35":"audio/ai01-foundations/7d33fb85ff35.mp3","34ba22f9eb33":"audio/ai01-foundations/34ba22f9eb33.mp3","45f34fe48c66":"audio/ai01-foundations/45f34fe48c66.mp3","0b8fbb94b57a":"audio/ai01-foundations/0b8fbb94b57a.mp3","dec1ce6c690b":"audio/ai01-foundations/dec1ce6c690b.mp3","3fb0e684b56b":"audio/ai01-foundations/3fb0e684b56b.mp3","a074d4d96f14":"audio/ai01-foundations/a074d4d96f14.mp3","e04742eeacc1":"audio/ai01-foundations/e04742eeacc1.mp3","914283420458":"audio/ai01-foundations/914283420458.mp3","e0293c5ef2f8":"audio/ai01-foundations/e0293c5ef2f8.mp3","3a86ebc8a0de":"audio/ai01-foundations/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/ai01-foundations/af6ba89d9b27.mp3","aca2b0992481":"audio/ai01-foundations/aca2b0992481.mp3","66590c21d92e":"audio/ai01-foundations/66590c21d92e.mp3","14a944c72471":"audio/ai01-foundations/14a944c72471.mp3","4cb929608baf":"audio/ai01-foundations/4cb929608baf.mp3","d811e87eefb3":"audio/ai01-foundations/d811e87eefb3.mp3","71a51a023ae8":"audio/ai01-foundations/71a51a023ae8.mp3","fd2d26303411":"audio/ai01-foundations/fd2d26303411.mp3","25c6023076a9":"audio/ai01-foundations/25c6023076a9.mp3","ce97d9170f39":"audio/ai01-foundations/ce97d9170f39.mp3","b8ced3ba3b3d":"audio/ai01-foundations/b8ced3ba3b3d.mp3","cbc619bb3273":"audio/ai01-foundations/cbc619bb3273.mp3","de9f28c31e22":"audio/ai01-foundations/de9f28c31e22.mp3","c99b2d62af12":"audio/ai01-foundations/c99b2d62af12.mp3","ad2f8d9b3c1f":"audio/ai01-foundations/ad2f8d9b3c1f.mp3","075a7a7a47fc":"audio/ai01-foundations/075a7a7a47fc.mp3","22e3dfc61a52":"audio/ai01-foundations/22e3dfc61a52.mp3","a331eb835d4c":"audio/ai01-foundations/a331eb835d4c.mp3","7e1b7728209d":"audio/ai01-foundations/7e1b7728209d.mp3","59218a9b3ad4":"audio/ai01-foundations/59218a9b3ad4.mp3","be73c71887a4":"audio/ai01-foundations/be73c71887a4.mp3","e14318ea0494":"audio/ai01-foundations/e14318ea0494.mp3","2556ab0a0acf":"audio/ai01-foundations/2556ab0a0acf.mp3","8c73d0167009":"audio/ai01-foundations/8c73d0167009.mp3","57f54cf2d9c1":"audio/ai01-foundations/57f54cf2d9c1.mp3","096c8d53173e":"audio/ai01-foundations/096c8d53173e.mp3","f3bc581be169":"audio/ai01-foundations/f3bc581be169.mp3","4b19812e79f2":"audio/ai01-foundations/4b19812e79f2.mp3","9bb8216b6df6":"audio/ai01-foundations/9bb8216b6df6.mp3","4c589e10cb6f":"audio/ai01-foundations/4c589e10cb6f.mp3","f19925d9e66a":"audio/ai01-foundations/f19925d9e66a.mp3","dab05dcf3741":"audio/ai01-foundations/dab05dcf3741.mp3","dc60fd67731f":"audio/ai01-foundations/dc60fd67731f.mp3","0a044cb6c59e":"audio/ai01-foundations/0a044cb6c59e.mp3","98cc49be01cd":"audio/ai01-foundations/98cc49be01cd.mp3","46abc19d5112":"audio/ai01-foundations/46abc19d5112.mp3","852128f8e136":"audio/ai01-foundations/852128f8e136.mp3","e3a0711ebcec":"audio/ai01-foundations/e3a0711ebcec.mp3","dee36b765663":"audio/ai01-foundations/dee36b765663.mp3","107269e73a58":"audio/ai01-foundations/107269e73a58.mp3","94c414f20602":"audio/ai01-foundations/94c414f20602.mp3","5243be9319e4":"audio/ai01-foundations/5243be9319e4.mp3","7fb433e4dd73":"audio/ai01-foundations/7fb433e4dd73.mp3","62eae23e2dbe":"audio/ai01-foundations/62eae23e2dbe.mp3","153837cf9b07":"audio/ai01-foundations/153837cf9b07.mp3","b8eea8f33e14":"audio/ai01-foundations/b8eea8f33e14.mp3","ab22bff85390":"audio/ai01-foundations/ab22bff85390.mp3","b5bc70c95439":"audio/ai01-foundations/b5bc70c95439.mp3","eca0c73f3eb2":"audio/ai01-foundations/eca0c73f3eb2.mp3","a7c17a7f453a":"audio/ai01-foundations/a7c17a7f453a.mp3","02fbc3de2509":"audio/ai01-foundations/02fbc3de2509.mp3","bc722e0255b8":"audio/ai01-foundations/bc722e0255b8.mp3","0b7576f91492":"audio/ai01-foundations/0b7576f91492.mp3","beb384f3170d":"audio/ai01-foundations/beb384f3170d.mp3","a6f6f1cc671c":"audio/ai01-foundations/a6f6f1cc671c.mp3"}</script>
-<script>window.DLF_CONFIG={extraReadSelectors:['.stext','.sub'],extraNonDecorateSelectors:'textarea, .demo-predict, .demo-conf'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"7894d348539d":"audio/ai01-foundations/7894d348539d.mp3","2b75803b3593":"audio/ai01-foundations/2b75803b3593.mp3","913fc20c5336":"audio/ai01-foundations/913fc20c5336.mp3","2a43a6c7241a":"audio/ai01-foundations/2a43a6c7241a.mp3","92d4cde42ef4":"audio/ai01-foundations/92d4cde42ef4.mp3","24ae56f57523":"audio/ai01-foundations/24ae56f57523.mp3","7c5bd0776cc7":"audio/ai01-foundations/7c5bd0776cc7.mp3","d28495d702b6":"audio/ai01-foundations/d28495d702b6.mp3","d5434190130e":"audio/ai01-foundations/d5434190130e.mp3","318ae759a395":"audio/ai01-foundations/318ae759a395.mp3","29841feb5940":"audio/ai01-foundations/29841feb5940.mp3","dc2d787e6624":"audio/ai01-foundations/dc2d787e6624.mp3","7accfd41683a":"audio/ai01-foundations/7accfd41683a.mp3","d585a6a9d18d":"audio/ai01-foundations/d585a6a9d18d.mp3","a2c423e35ece":"audio/ai01-foundations/a2c423e35ece.mp3","dcc32f564f59":"audio/ai01-foundations/dcc32f564f59.mp3","396b703108c5":"audio/ai01-foundations/396b703108c5.mp3","36feecf328f2":"audio/ai01-foundations/36feecf328f2.mp3","e4c5f9e38e6d":"audio/ai01-foundations/e4c5f9e38e6d.mp3","70c690d60cb7":"audio/ai01-foundations/70c690d60cb7.mp3","9511a70fab79":"audio/ai01-foundations/9511a70fab79.mp3","075de2fe6be7":"audio/ai01-foundations/075de2fe6be7.mp3","7d62d2e7ae4e":"audio/ai01-foundations/7d62d2e7ae4e.mp3","c641a587c0e2":"audio/ai01-foundations/c641a587c0e2.mp3","0e66ec19ee8e":"audio/ai01-foundations/0e66ec19ee8e.mp3","b5f9e1aee0c4":"audio/ai01-foundations/b5f9e1aee0c4.mp3","6297cc83f613":"audio/ai01-foundations/6297cc83f613.mp3","cc1bc49d2591":"audio/ai01-foundations/cc1bc49d2591.mp3","7fdd46cba22b":"audio/ai01-foundations/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai01-foundations/2840223fc4a0.mp3","1b85bc4b61f1":"audio/ai01-foundations/1b85bc4b61f1.mp3","c012f22cba62":"audio/ai01-foundations/c012f22cba62.mp3","a66234b845ea":"audio/ai01-foundations/a66234b845ea.mp3","2a28835d4111":"audio/ai01-foundations/2a28835d4111.mp3","4780fc79462b":"audio/ai01-foundations/4780fc79462b.mp3","dfb3e4afa929":"audio/ai01-foundations/dfb3e4afa929.mp3","e18a189a9371":"audio/ai01-foundations/e18a189a9371.mp3","8af1f0edc12c":"audio/ai01-foundations/8af1f0edc12c.mp3","7d33fb85ff35":"audio/ai01-foundations/7d33fb85ff35.mp3","34ba22f9eb33":"audio/ai01-foundations/34ba22f9eb33.mp3","45f34fe48c66":"audio/ai01-foundations/45f34fe48c66.mp3","0b8fbb94b57a":"audio/ai01-foundations/0b8fbb94b57a.mp3","dec1ce6c690b":"audio/ai01-foundations/dec1ce6c690b.mp3","3fb0e684b56b":"audio/ai01-foundations/3fb0e684b56b.mp3","a074d4d96f14":"audio/ai01-foundations/a074d4d96f14.mp3","e04742eeacc1":"audio/ai01-foundations/e04742eeacc1.mp3","914283420458":"audio/ai01-foundations/914283420458.mp3","e0293c5ef2f8":"audio/ai01-foundations/e0293c5ef2f8.mp3","3a86ebc8a0de":"audio/ai01-foundations/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/ai01-foundations/af6ba89d9b27.mp3","aca2b0992481":"audio/ai01-foundations/aca2b0992481.mp3","66590c21d92e":"audio/ai01-foundations/66590c21d92e.mp3","14a944c72471":"audio/ai01-foundations/14a944c72471.mp3","4cb929608baf":"audio/ai01-foundations/4cb929608baf.mp3","d811e87eefb3":"audio/ai01-foundations/d811e87eefb3.mp3","71a51a023ae8":"audio/ai01-foundations/71a51a023ae8.mp3","fd2d26303411":"audio/ai01-foundations/fd2d26303411.mp3","25c6023076a9":"audio/ai01-foundations/25c6023076a9.mp3","ce97d9170f39":"audio/ai01-foundations/ce97d9170f39.mp3","b8ced3ba3b3d":"audio/ai01-foundations/b8ced3ba3b3d.mp3","cbc619bb3273":"audio/ai01-foundations/cbc619bb3273.mp3","de9f28c31e22":"audio/ai01-foundations/de9f28c31e22.mp3","c99b2d62af12":"audio/ai01-foundations/c99b2d62af12.mp3","ad2f8d9b3c1f":"audio/ai01-foundations/ad2f8d9b3c1f.mp3","075a7a7a47fc":"audio/ai01-foundations/075a7a7a47fc.mp3","22e3dfc61a52":"audio/ai01-foundations/22e3dfc61a52.mp3","a331eb835d4c":"audio/ai01-foundations/a331eb835d4c.mp3","7e1b7728209d":"audio/ai01-foundations/7e1b7728209d.mp3","59218a9b3ad4":"audio/ai01-foundations/59218a9b3ad4.mp3","be73c71887a4":"audio/ai01-foundations/be73c71887a4.mp3","e14318ea0494":"audio/ai01-foundations/e14318ea0494.mp3","2556ab0a0acf":"audio/ai01-foundations/2556ab0a0acf.mp3","8c73d0167009":"audio/ai01-foundations/8c73d0167009.mp3","57f54cf2d9c1":"audio/ai01-foundations/57f54cf2d9c1.mp3","096c8d53173e":"audio/ai01-foundations/096c8d53173e.mp3","f3bc581be169":"audio/ai01-foundations/f3bc581be169.mp3","4b19812e79f2":"audio/ai01-foundations/4b19812e79f2.mp3","9bb8216b6df6":"audio/ai01-foundations/9bb8216b6df6.mp3","4c589e10cb6f":"audio/ai01-foundations/4c589e10cb6f.mp3","f19925d9e66a":"audio/ai01-foundations/f19925d9e66a.mp3","dab05dcf3741":"audio/ai01-foundations/dab05dcf3741.mp3","dc60fd67731f":"audio/ai01-foundations/dc60fd67731f.mp3","0a044cb6c59e":"audio/ai01-foundations/0a044cb6c59e.mp3","98cc49be01cd":"audio/ai01-foundations/98cc49be01cd.mp3","46abc19d5112":"audio/ai01-foundations/46abc19d5112.mp3","852128f8e136":"audio/ai01-foundations/852128f8e136.mp3","e3a0711ebcec":"audio/ai01-foundations/e3a0711ebcec.mp3","dee36b765663":"audio/ai01-foundations/dee36b765663.mp3","107269e73a58":"audio/ai01-foundations/107269e73a58.mp3","94c414f20602":"audio/ai01-foundations/94c414f20602.mp3","5243be9319e4":"audio/ai01-foundations/5243be9319e4.mp3","7fb433e4dd73":"audio/ai01-foundations/7fb433e4dd73.mp3","62eae23e2dbe":"audio/ai01-foundations/62eae23e2dbe.mp3","153837cf9b07":"audio/ai01-foundations/153837cf9b07.mp3","b8eea8f33e14":"audio/ai01-foundations/b8eea8f33e14.mp3","ab22bff85390":"audio/ai01-foundations/ab22bff85390.mp3","b5bc70c95439":"audio/ai01-foundations/b5bc70c95439.mp3","eca0c73f3eb2":"audio/ai01-foundations/eca0c73f3eb2.mp3","a7c17a7f453a":"audio/ai01-foundations/a7c17a7f453a.mp3","02fbc3de2509":"audio/ai01-foundations/02fbc3de2509.mp3","bc722e0255b8":"audio/ai01-foundations/bc722e0255b8.mp3","0b7576f91492":"audio/ai01-foundations/0b7576f91492.mp3","beb384f3170d":"audio/ai01-foundations/beb384f3170d.mp3","a6f6f1cc671c":"audio/ai01-foundations/a6f6f1cc671c.mp3","71f0fb7bddc3":"audio/ai01-foundations/71f0fb7bddc3.mp3","010217000a43":"audio/ai01-foundations/010217000a43.mp3","9ad12d40756f":"audio/ai01-foundations/9ad12d40756f.mp3","7f9449600344":"audio/ai01-foundations/7f9449600344.mp3","cfe94dfce69d":"audio/ai01-foundations/cfe94dfce69d.mp3","a1c0cc4409c1":"audio/ai01-foundations/a1c0cc4409c1.mp3","f537b59a07ac":"audio/ai01-foundations/f537b59a07ac.mp3","e20d6e0f3763":"audio/ai01-foundations/e20d6e0f3763.mp3","4a9d32be4d69":"audio/ai01-foundations/4a9d32be4d69.mp3","0491ea8ae879":"audio/ai01-foundations/0491ea8ae879.mp3","500944c43eaa":"audio/ai01-foundations/500944c43eaa.mp3","348d5df454e5":"audio/ai01-foundations/348d5df454e5.mp3","ffb26205c0f3":"audio/ai01-foundations/ffb26205c0f3.mp3","becefb2a113d":"audio/ai01-foundations/becefb2a113d.mp3","45ea26eb4078":"audio/ai01-foundations/45ea26eb4078.mp3","f58a2be950f6":"audio/ai01-foundations/f58a2be950f6.mp3","871df451a890":"audio/ai01-foundations/871df451a890.mp3","02741259141d":"audio/ai01-foundations/02741259141d.mp3","ab5621de64fc":"audio/ai01-foundations/ab5621de64fc.mp3","d1a99203dc5b":"audio/ai01-foundations/d1a99203dc5b.mp3","0a6e438b0ccf":"audio/ai01-foundations/0a6e438b0ccf.mp3","78a94882658c":"audio/ai01-foundations/78a94882658c.mp3","882cb68dd1bf":"audio/ai01-foundations/882cb68dd1bf.mp3","7458d542eef8":"audio/ai01-foundations/7458d542eef8.mp3","8c39a461f048":"audio/ai01-foundations/8c39a461f048.mp3","112276253d64":"audio/ai01-foundations/112276253d64.mp3","4cdca4e5aea0":"audio/ai01-foundations/4cdca4e5aea0.mp3","e20874c333af":"audio/ai01-foundations/e20874c333af.mp3","74722219d621":"audio/ai01-foundations/74722219d621.mp3","7b2535d8a0b4":"audio/ai01-foundations/7b2535d8a0b4.mp3","bd5d572df006":"audio/ai01-foundations/bd5d572df006.mp3","1c1ec9750159":"audio/ai01-foundations/1c1ec9750159.mp3","3827f4b18e16":"audio/ai01-foundations/3827f4b18e16.mp3","0a31cba7606f":"audio/ai01-foundations/0a31cba7606f.mp3","b4894aadb7ae":"audio/ai01-foundations/b4894aadb7ae.mp3","c9fe5c790906":"audio/ai01-foundations/c9fe5c790906.mp3","e66be8804bcb":"audio/ai01-foundations/e66be8804bcb.mp3","b909fbc61584":"audio/ai01-foundations/b909fbc61584.mp3","05f9224e300c":"audio/ai01-foundations/05f9224e300c.mp3","2b1ee026961f":"audio/ai01-foundations/2b1ee026961f.mp3","07a721b51815":"audio/ai01-foundations/07a721b51815.mp3","951a37ff0991":"audio/ai01-foundations/951a37ff0991.mp3","ad6aa5ca0ed7":"audio/ai01-foundations/ad6aa5ca0ed7.mp3","1bc441a94495":"audio/ai01-foundations/1bc441a94495.mp3","0f7326a422b5":"audio/ai01-foundations/0f7326a422b5.mp3","b4173214ca48":"audio/ai01-foundations/b4173214ca48.mp3","e459e4b2e6e8":"audio/ai01-foundations/e459e4b2e6e8.mp3","20d277f414e9":"audio/ai01-foundations/20d277f414e9.mp3","187f8813bd01":"audio/ai01-foundations/187f8813bd01.mp3","c989b6309e78":"audio/ai01-foundations/c989b6309e78.mp3","4071b7be693c":"audio/ai01-foundations/4071b7be693c.mp3","05753523ff74":"audio/ai01-foundations/05753523ff74.mp3","8b940a98b0f1":"audio/ai01-foundations/8b940a98b0f1.mp3","e226d42cb629":"audio/ai01-foundations/e226d42cb629.mp3","bab1c6e1ebb1":"audio/ai01-foundations/bab1c6e1ebb1.mp3","b69e0bf6db85":"audio/ai01-foundations/b69e0bf6db85.mp3","ce1fd9818d76":"audio/ai01-foundations/ce1fd9818d76.mp3","4dfcb4786244":"audio/ai01-foundations/4dfcb4786244.mp3","7dd615370e3e":"audio/ai01-foundations/7dd615370e3e.mp3","ee7837b10af2":"audio/ai01-foundations/ee7837b10af2.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.stext','.sub','.hwho'],extraNonDecorateSelectors:'textarea, .demo-predict, .demo-conf, .tokeninput, .tokenchip, .halluword, .tokenchart'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
 </html>

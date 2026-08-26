@@ -81,6 +81,11 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .taskcard.settling{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;}
 .taskcard.answered{pointer-events:none;}
 .draghint{font-size:11.5px;color:var(--text3);margin:8px 0 2px;text-align:center;}
+.hlword{display:inline;padding:2px 3px;border-radius:5px;cursor:pointer;}
+.hlword:hover{background:rgba(208,126,30,.14);}
+.hlword.hlhit{background:var(--green);color:#fff;animation:hlPop .3s ease;}
+.hlword.hlmiss{background:var(--red-light);color:#A32E20;text-decoration:line-through;}
+@keyframes hlPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
 .dropzones{width:100%;display:flex;gap:8px;margin:14px 0 4px;}
 .dropzone{flex:1;min-height:92px;border:2px dashed var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:var(--panel2);transition:border-color .15s,background .15s,transform .15s;cursor:pointer;}
 .dropzone .zi{font-size:22px;}
@@ -160,6 +165,14 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
         <button class="btn" id="discSubmitBtn" style="margin-top:12px" onclick="submitDisclosure()">ส่งคำตอบ →</button>
         <div class="explainbox" id="discExplain" style="margin-top:14px"></div>
         <button class="btn" id="discNextBtn" style="display:none;margin-top:14px" onclick="nextDisclosure()">ข้อถัดไป →</button>
+      </div>
+
+      <div id="hlSection" style="display:none">
+        <div class="rtag" id="hlTag" style="display:block;margin:10px 0 6px">🖍️ โหมดไฮไลต์: แตะข้อมูลอ่อนไหวข้อที่ 1/5</div>
+        <div class="draghint">แตะทุกคำ/ข้อความในประโยคที่เป็นข้อมูลส่วนตัวอ่อนไหว (รหัสผ่าน เลขบัตรประชาชน เบอร์โทร ที่อยู่) ให้ครบ</div>
+        <div class="taskcard"><div class="who">💬 ข้อความที่จะพิมพ์ให้ AI</div><div class="say" id="hlText"></div></div>
+        <div class="explainbox" id="hlExplain" style="margin-top:14px"></div>
+        <button class="btn" id="hlNextBtn" style="display:none;margin-top:14px" onclick="nextHl()">ข้อถัดไป →</button>
       </div>
     </div>
   </div>
@@ -456,8 +469,67 @@ function submitDisclosure(){
 }
 function nextDisclosure(){
   dIdx++;
-  if (dIdx >= DISCLOSURE_ITEMS.length){ goStep(3); return; }
+  if (dIdx >= DISCLOSURE_ITEMS.length){ startHlPhase(); return; }
   renderDisclosure();
+}
+
+// ── PII Redaction Tool (highlighter mode): tap every sensitive token in a sample
+// message before it "gets sent" — passwords, Thai ID numbers, phone numbers, addresses. ──
+const HL_ITEMS = [
+  { tokens:['ฉัน','ชื่อ','พิมพ์ลดา','เบอร์โทร','คือ','081-234-5678','ช่วย','แนะนำ','ร้านอาหาร','แถวบ้าน','ให้หน่อย'],
+    bad:['พิมพ์ลดา','081-234-5678'],
+    explain:'ชื่อจริงและเบอร์โทรศัพท์เป็นข้อมูลที่ระบุตัวตนได้ ไม่ควรพิมพ์รวมไปกับคำถามทั่วไปแบบนี้' },
+  { tokens:['เลข','บัตรประชาชน','ของ','ฉัน','คือ','1-2345-67890-12-3','ช่วย','เช็ก','ว่า','พิมพ์','ถูกไหม'],
+    bad:['1-2345-67890-12-3'],
+    explain:'เลขบัตรประชาชนเป็นข้อมูลระบุตัวตนที่สำคัญที่สุดอย่างหนึ่ง ห้ามพิมพ์ให้ AI หรือระบบใด ๆ เด็ดขาด' },
+  { tokens:['รหัสผ่าน','อีเมล','ของ','ฉัน','คือ','Sunshine99!','ช่วย','เช็ก','ว่า','ปลอดภัย','ไหม'],
+    bad:['Sunshine99!'],
+    explain:'ห้ามพิมพ์รหัสผ่านจริงให้ใครหรือระบบไหนเด็ดขาด แม้จะถามแค่ว่า "ปลอดภัยไหม" ก็ตาม' },
+  { tokens:['ฉัน','อยู่','บ้านเลขที่','45/2','ซอยสุขใจ','7','ช่วย','บอก','เส้นทาง','กลับบ้าน','ให้หน่อย'],
+    bad:['บ้านเลขที่','45/2','ซอยสุขใจ','7'],
+    explain:'รายละเอียดที่อยู่บ้านที่ชัดเจนสามารถบอกตำแหน่งบ้านจริงของเราได้ ไม่ควรพิมพ์รวมกับคำถามให้ระบบภายนอก' },
+  { tokens:['ช่วย','แนะนำ','หนังสือ','แนว','ผจญภัย','สนุก','ๆ','ให้','หน่อย'], bad:[],
+    explain:'ข้อความนี้ไม่มีข้อมูลอ่อนไหวเลย — ปลอดภัยที่จะพิมพ์ได้ตามปกติ ไม่ต้องแตะคำไหนเลย' },
+];
+let hlIdx = 0, hlFound = new Set();
+function startHlPhase(){
+  $('disclosureSection').style.display = 'none';
+  $('hlSection').style.display = '';
+  hlIdx = 0;
+  renderHl();
+}
+function renderHl(){
+  const it = HL_ITEMS[hlIdx];
+  hlFound = new Set();
+  $('hlTag').textContent = `🖍️ โหมดไฮไลต์: แตะข้อมูลอ่อนไหวข้อที่ ${hlIdx+1}/${HL_ITEMS.length}`;
+  $('hlText').innerHTML = it.tokens.map((w,i)=>`<span class="hlword" data-i="${i}" onclick="onHlTap(${i})">${esc(w)}</span> `).join('');
+  $('hlExplain').className = 'explainbox';
+  $('hlExplain').innerHTML = '';
+  $('hlNextBtn').style.display = it.bad.length ? 'none' : 'block';
+}
+function onHlTap(i){
+  const it = HL_ITEMS[hlIdx];
+  const el = document.querySelector(`#hlText .hlword[data-i="${i}"]`);
+  if (el.classList.contains('hlhit') || el.classList.contains('hlmiss')) return;
+  const word = it.tokens[i];
+  if (it.bad.includes(word)){
+    el.classList.add('hlhit');
+    hlFound.add(word);
+    if (hlFound.size >= it.bad.length){
+      $('hlExplain').className = 'explainbox show correct';
+      $('hlExplain').innerHTML = `<b>✅ เจอครบทุกจุดแล้ว!</b>${esc(it.explain)}`;
+      $('hlNextBtn').style.display = 'block';
+      if (window.dlf) dlf.cheer('เก่งมาก!');
+    }
+  } else {
+    el.classList.add('hlmiss');
+    wrongCount++; updateHead();
+  }
+}
+function nextHl(){
+  hlIdx++;
+  if (hlIdx >= HL_ITEMS.length){ goStep(3); return; }
+  renderHl();
 }
 
 // ===== Step 4 done =====
@@ -525,7 +597,7 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"602ae70d0193":"audio/ai08-privacy/602ae70d0193.mp3","5d22f52033ce":"audio/ai08-privacy/5d22f52033ce.mp3","d811e87eefb3":"audio/ai08-privacy/d811e87eefb3.mp3","71a51a023ae8":"audio/ai08-privacy/71a51a023ae8.mp3","852128f8e136":"audio/ai08-privacy/852128f8e136.mp3","ce97d9170f39":"audio/ai08-privacy/ce97d9170f39.mp3","8129545227ec":"audio/ai08-privacy/8129545227ec.mp3","8436128610b4":"audio/ai08-privacy/8436128610b4.mp3","a911b3dfbe09":"audio/ai08-privacy/a911b3dfbe09.mp3","d602caa5b8be":"audio/ai08-privacy/d602caa5b8be.mp3","91792bfa66b0":"audio/ai08-privacy/91792bfa66b0.mp3","2c045329c86e":"audio/ai08-privacy/2c045329c86e.mp3","1be84771a278":"audio/ai08-privacy/1be84771a278.mp3","1ff2ad56cd35":"audio/ai08-privacy/1ff2ad56cd35.mp3","556e94dd062a":"audio/ai08-privacy/556e94dd062a.mp3","d585a6a9d18d":"audio/ai08-privacy/d585a6a9d18d.mp3","6f8fbf3ae148":"audio/ai08-privacy/6f8fbf3ae148.mp3","522e06b5cdb0":"audio/ai08-privacy/522e06b5cdb0.mp3","5863b046a029":"audio/ai08-privacy/5863b046a029.mp3","46fa4e69d0f3":"audio/ai08-privacy/46fa4e69d0f3.mp3","f2cfe0d3d75f":"audio/ai08-privacy/f2cfe0d3d75f.mp3","4064b41118c0":"audio/ai08-privacy/4064b41118c0.mp3","a95587d45c0e":"audio/ai08-privacy/a95587d45c0e.mp3","e493e941fc0e":"audio/ai08-privacy/e493e941fc0e.mp3","559808140e3a":"audio/ai08-privacy/559808140e3a.mp3","794c3ac807ee":"audio/ai08-privacy/794c3ac807ee.mp3","333441295bdb":"audio/ai08-privacy/333441295bdb.mp3","d131e6acfa57":"audio/ai08-privacy/d131e6acfa57.mp3","a7ae68624ea6":"audio/ai08-privacy/a7ae68624ea6.mp3","e631543f5849":"audio/ai08-privacy/e631543f5849.mp3","a7e7fb8815de":"audio/ai08-privacy/a7e7fb8815de.mp3","305fba3665b4":"audio/ai08-privacy/305fba3665b4.mp3","e5b978b364f4":"audio/ai08-privacy/e5b978b364f4.mp3","4b969e33b398":"audio/ai08-privacy/4b969e33b398.mp3","6c4673de7c09":"audio/ai08-privacy/6c4673de7c09.mp3","03d46a5750b0":"audio/ai08-privacy/03d46a5750b0.mp3","6aaf5291416b":"audio/ai08-privacy/6aaf5291416b.mp3","0fae26b9c0a8":"audio/ai08-privacy/0fae26b9c0a8.mp3","d8c7a791f484":"audio/ai08-privacy/d8c7a791f484.mp3","fa13f2bdd3ec":"audio/ai08-privacy/fa13f2bdd3ec.mp3","2998db8a698f":"audio/ai08-privacy/2998db8a698f.mp3","69c939221038":"audio/ai08-privacy/69c939221038.mp3","00f2948f97b1":"audio/ai08-privacy/00f2948f97b1.mp3","dd1db792b1b2":"audio/ai08-privacy/dd1db792b1b2.mp3","7fdd46cba22b":"audio/ai08-privacy/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai08-privacy/2840223fc4a0.mp3","a66234b845ea":"audio/ai08-privacy/a66234b845ea.mp3","210e958e772a":"audio/ai08-privacy/210e958e772a.mp3","fb9bb9479268":"audio/ai08-privacy/fb9bb9479268.mp3","541d8318dd9b":"audio/ai08-privacy/541d8318dd9b.mp3","f09c73b90ad8":"audio/ai08-privacy/f09c73b90ad8.mp3","c96be38b34ef":"audio/ai08-privacy/c96be38b34ef.mp3","4780fc79462b":"audio/ai08-privacy/4780fc79462b.mp3","dfb3e4afa929":"audio/ai08-privacy/dfb3e4afa929.mp3","57f54cf2d9c1":"audio/ai08-privacy/57f54cf2d9c1.mp3","cf03486e3200":"audio/ai08-privacy/cf03486e3200.mp3","406b1ef29426":"audio/ai08-privacy/406b1ef29426.mp3","dec1ce6c690b":"audio/ai08-privacy/dec1ce6c690b.mp3","f3bc581be169":"audio/ai08-privacy/f3bc581be169.mp3","3fb0e684b56b":"audio/ai08-privacy/3fb0e684b56b.mp3","42b34b1c98e1":"audio/ai08-privacy/42b34b1c98e1.mp3","e04742eeacc1":"audio/ai08-privacy/e04742eeacc1.mp3","1e2367efeff9":"audio/ai08-privacy/1e2367efeff9.mp3","004034d821ca":"audio/ai08-privacy/004034d821ca.mp3","e0293c5ef2f8":"audio/ai08-privacy/e0293c5ef2f8.mp3","6b1f4436d1b4":"audio/ai08-privacy/6b1f4436d1b4.mp3","deedda9529ba":"audio/ai08-privacy/deedda9529ba.mp3","0d1b14969c55":"audio/ai08-privacy/0d1b14969c55.mp3","9bb8216b6df6":"audio/ai08-privacy/9bb8216b6df6.mp3","829797601d01":"audio/ai08-privacy/829797601d01.mp3","b50bfbd1270d":"audio/ai08-privacy/b50bfbd1270d.mp3","dab05dcf3741":"audio/ai08-privacy/dab05dcf3741.mp3","dc60fd67731f":"audio/ai08-privacy/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai08-privacy/af6ba89d9b27.mp3","aca2b0992481":"audio/ai08-privacy/aca2b0992481.mp3","66590c21d92e":"audio/ai08-privacy/66590c21d92e.mp3","e18a189a9371":"audio/ai08-privacy/e18a189a9371.mp3","8af1f0edc12c":"audio/ai08-privacy/8af1f0edc12c.mp3","450d814e8573":"audio/ai08-privacy/450d814e8573.mp3","00e4ce0b5657":"audio/ai08-privacy/00e4ce0b5657.mp3","f172dca3996f":"audio/ai08-privacy/f172dca3996f.mp3","580cfe40f119":"audio/ai08-privacy/580cfe40f119.mp3","a0b4decfccdc":"audio/ai08-privacy/a0b4decfccdc.mp3","75e10f1dcac0":"audio/ai08-privacy/75e10f1dcac0.mp3","00d039c287e6":"audio/ai08-privacy/00d039c287e6.mp3","8ed5bb51ab72":"audio/ai08-privacy/8ed5bb51ab72.mp3"}</script>
+<script id="dlfAudioData" type="application/json">{"602ae70d0193":"audio/ai08-privacy/602ae70d0193.mp3","5d22f52033ce":"audio/ai08-privacy/5d22f52033ce.mp3","d811e87eefb3":"audio/ai08-privacy/d811e87eefb3.mp3","71a51a023ae8":"audio/ai08-privacy/71a51a023ae8.mp3","852128f8e136":"audio/ai08-privacy/852128f8e136.mp3","ce97d9170f39":"audio/ai08-privacy/ce97d9170f39.mp3","8129545227ec":"audio/ai08-privacy/8129545227ec.mp3","8436128610b4":"audio/ai08-privacy/8436128610b4.mp3","a911b3dfbe09":"audio/ai08-privacy/a911b3dfbe09.mp3","d602caa5b8be":"audio/ai08-privacy/d602caa5b8be.mp3","91792bfa66b0":"audio/ai08-privacy/91792bfa66b0.mp3","2c045329c86e":"audio/ai08-privacy/2c045329c86e.mp3","1be84771a278":"audio/ai08-privacy/1be84771a278.mp3","1ff2ad56cd35":"audio/ai08-privacy/1ff2ad56cd35.mp3","556e94dd062a":"audio/ai08-privacy/556e94dd062a.mp3","d585a6a9d18d":"audio/ai08-privacy/d585a6a9d18d.mp3","6f8fbf3ae148":"audio/ai08-privacy/6f8fbf3ae148.mp3","522e06b5cdb0":"audio/ai08-privacy/522e06b5cdb0.mp3","5863b046a029":"audio/ai08-privacy/5863b046a029.mp3","46fa4e69d0f3":"audio/ai08-privacy/46fa4e69d0f3.mp3","f2cfe0d3d75f":"audio/ai08-privacy/f2cfe0d3d75f.mp3","4064b41118c0":"audio/ai08-privacy/4064b41118c0.mp3","a95587d45c0e":"audio/ai08-privacy/a95587d45c0e.mp3","e493e941fc0e":"audio/ai08-privacy/e493e941fc0e.mp3","559808140e3a":"audio/ai08-privacy/559808140e3a.mp3","794c3ac807ee":"audio/ai08-privacy/794c3ac807ee.mp3","333441295bdb":"audio/ai08-privacy/333441295bdb.mp3","d131e6acfa57":"audio/ai08-privacy/d131e6acfa57.mp3","a7ae68624ea6":"audio/ai08-privacy/a7ae68624ea6.mp3","e631543f5849":"audio/ai08-privacy/e631543f5849.mp3","a7e7fb8815de":"audio/ai08-privacy/a7e7fb8815de.mp3","305fba3665b4":"audio/ai08-privacy/305fba3665b4.mp3","e5b978b364f4":"audio/ai08-privacy/e5b978b364f4.mp3","4b969e33b398":"audio/ai08-privacy/4b969e33b398.mp3","6c4673de7c09":"audio/ai08-privacy/6c4673de7c09.mp3","03d46a5750b0":"audio/ai08-privacy/03d46a5750b0.mp3","6aaf5291416b":"audio/ai08-privacy/6aaf5291416b.mp3","0fae26b9c0a8":"audio/ai08-privacy/0fae26b9c0a8.mp3","d8c7a791f484":"audio/ai08-privacy/d8c7a791f484.mp3","fa13f2bdd3ec":"audio/ai08-privacy/fa13f2bdd3ec.mp3","2998db8a698f":"audio/ai08-privacy/2998db8a698f.mp3","69c939221038":"audio/ai08-privacy/69c939221038.mp3","00f2948f97b1":"audio/ai08-privacy/00f2948f97b1.mp3","dd1db792b1b2":"audio/ai08-privacy/dd1db792b1b2.mp3","7fdd46cba22b":"audio/ai08-privacy/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai08-privacy/2840223fc4a0.mp3","a66234b845ea":"audio/ai08-privacy/a66234b845ea.mp3","210e958e772a":"audio/ai08-privacy/210e958e772a.mp3","fb9bb9479268":"audio/ai08-privacy/fb9bb9479268.mp3","541d8318dd9b":"audio/ai08-privacy/541d8318dd9b.mp3","f09c73b90ad8":"audio/ai08-privacy/f09c73b90ad8.mp3","c96be38b34ef":"audio/ai08-privacy/c96be38b34ef.mp3","4780fc79462b":"audio/ai08-privacy/4780fc79462b.mp3","dfb3e4afa929":"audio/ai08-privacy/dfb3e4afa929.mp3","57f54cf2d9c1":"audio/ai08-privacy/57f54cf2d9c1.mp3","cf03486e3200":"audio/ai08-privacy/cf03486e3200.mp3","406b1ef29426":"audio/ai08-privacy/406b1ef29426.mp3","dec1ce6c690b":"audio/ai08-privacy/dec1ce6c690b.mp3","f3bc581be169":"audio/ai08-privacy/f3bc581be169.mp3","3fb0e684b56b":"audio/ai08-privacy/3fb0e684b56b.mp3","42b34b1c98e1":"audio/ai08-privacy/42b34b1c98e1.mp3","e04742eeacc1":"audio/ai08-privacy/e04742eeacc1.mp3","1e2367efeff9":"audio/ai08-privacy/1e2367efeff9.mp3","004034d821ca":"audio/ai08-privacy/004034d821ca.mp3","e0293c5ef2f8":"audio/ai08-privacy/e0293c5ef2f8.mp3","6b1f4436d1b4":"audio/ai08-privacy/6b1f4436d1b4.mp3","deedda9529ba":"audio/ai08-privacy/deedda9529ba.mp3","0d1b14969c55":"audio/ai08-privacy/0d1b14969c55.mp3","9bb8216b6df6":"audio/ai08-privacy/9bb8216b6df6.mp3","829797601d01":"audio/ai08-privacy/829797601d01.mp3","b50bfbd1270d":"audio/ai08-privacy/b50bfbd1270d.mp3","dab05dcf3741":"audio/ai08-privacy/dab05dcf3741.mp3","dc60fd67731f":"audio/ai08-privacy/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai08-privacy/af6ba89d9b27.mp3","aca2b0992481":"audio/ai08-privacy/aca2b0992481.mp3","66590c21d92e":"audio/ai08-privacy/66590c21d92e.mp3","e18a189a9371":"audio/ai08-privacy/e18a189a9371.mp3","8af1f0edc12c":"audio/ai08-privacy/8af1f0edc12c.mp3","450d814e8573":"audio/ai08-privacy/450d814e8573.mp3","00e4ce0b5657":"audio/ai08-privacy/00e4ce0b5657.mp3","f172dca3996f":"audio/ai08-privacy/f172dca3996f.mp3","580cfe40f119":"audio/ai08-privacy/580cfe40f119.mp3","a0b4decfccdc":"audio/ai08-privacy/a0b4decfccdc.mp3","75e10f1dcac0":"audio/ai08-privacy/75e10f1dcac0.mp3","00d039c287e6":"audio/ai08-privacy/00d039c287e6.mp3","8ed5bb51ab72":"audio/ai08-privacy/8ed5bb51ab72.mp3","a1c0cc4409c1":"audio/ai08-privacy/a1c0cc4409c1.mp3","5e7758679ff6":"audio/ai08-privacy/5e7758679ff6.mp3","03752400a998":"audio/ai08-privacy/03752400a998.mp3","d0736ecfee6f":"audio/ai08-privacy/d0736ecfee6f.mp3","d998bd300c85":"audio/ai08-privacy/d998bd300c85.mp3","5343f250568d":"audio/ai08-privacy/5343f250568d.mp3","5269436ae9f0":"audio/ai08-privacy/5269436ae9f0.mp3","d1c9852b7ce4":"audio/ai08-privacy/d1c9852b7ce4.mp3","850c2c434ee7":"audio/ai08-privacy/850c2c434ee7.mp3","33c5a6655896":"audio/ai08-privacy/33c5a6655896.mp3","1e760768b456":"audio/ai08-privacy/1e760768b456.mp3","d47bfd9fbe6e":"audio/ai08-privacy/d47bfd9fbe6e.mp3","1de98fac288e":"audio/ai08-privacy/1de98fac288e.mp3","7f21bb49030a":"audio/ai08-privacy/7f21bb49030a.mp3","6aabf41938b5":"audio/ai08-privacy/6aabf41938b5.mp3","4d6368dbab05":"audio/ai08-privacy/4d6368dbab05.mp3","e9e1cfad1af7":"audio/ai08-privacy/e9e1cfad1af7.mp3","a2fdd36cc99c":"audio/ai08-privacy/a2fdd36cc99c.mp3","aed8da15ddb7":"audio/ai08-privacy/aed8da15ddb7.mp3","971103646c29":"audio/ai08-privacy/971103646c29.mp3","6df8fbf07880":"audio/ai08-privacy/6df8fbf07880.mp3","1d383b7f8678":"audio/ai08-privacy/1d383b7f8678.mp3","511484398d04":"audio/ai08-privacy/511484398d04.mp3","a009424531bb":"audio/ai08-privacy/a009424531bb.mp3","28d0f10a2898":"audio/ai08-privacy/28d0f10a2898.mp3","6402ea727166":"audio/ai08-privacy/6402ea727166.mp3","94a182ec8e55":"audio/ai08-privacy/94a182ec8e55.mp3","c2b4a1795a41":"audio/ai08-privacy/c2b4a1795a41.mp3","07aa2a8b11f2":"audio/ai08-privacy/07aa2a8b11f2.mp3","232bf56d9b59":"audio/ai08-privacy/232bf56d9b59.mp3","1afab3db7317":"audio/ai08-privacy/1afab3db7317.mp3","6915b0997e41":"audio/ai08-privacy/6915b0997e41.mp3","e2b9a8e82eac":"audio/ai08-privacy/e2b9a8e82eac.mp3","710cdf9a682a":"audio/ai08-privacy/710cdf9a682a.mp3","70d0a844b850":"audio/ai08-privacy/70d0a844b850.mp3","72159e7375bc":"audio/ai08-privacy/72159e7375bc.mp3","92b804032193":"audio/ai08-privacy/92b804032193.mp3","f2623918e547":"audio/ai08-privacy/f2623918e547.mp3","3f59ae113033":"audio/ai08-privacy/3f59ae113033.mp3","a83ae74ebc52":"audio/ai08-privacy/a83ae74ebc52.mp3","769f77774f4d":"audio/ai08-privacy/769f77774f4d.mp3"}</script>
 <script>window.DLF_CONFIG={extraReadSelectors:['.say','.tx','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>

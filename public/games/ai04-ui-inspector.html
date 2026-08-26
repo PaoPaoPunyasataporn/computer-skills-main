@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>นักสำรวจหน้าจอ AI</title>
+<title>หน้าจอแชท AI และการสั่งงานให้ชัดเจน</title>
 <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="_lib/theme-base.css" rel="stylesheet">
 <style>
@@ -165,19 +165,31 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .tokex-chip{padding:12px 20px;border-radius:14px;border:1.5px solid var(--primary);background:var(--primary-light);color:var(--primary-dark);font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:transform .1s;}
 .tokex-chip:active{transform:translateY(2px);}
 .tokex-chip.used{visibility:hidden;}
+.tokhl-wrap{width:100%;max-width:480px;margin-top:10px;padding-top:18px;border-top:1.5px dashed var(--border);}
+.tokhl-title{font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.tokhl-input{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);box-sizing:border-box;}
+.tokhl-input:focus{outline:2px solid var(--primary);}
+.tokhl-out{margin-top:10px;min-height:40px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
+.tokhl-tok{display:inline-block;padding:3px 6px;border-radius:6px;font-size:14px;font-family:'Sarabun',sans-serif;color:#1a1a1a;}
 
-/* multiple-choice "what does this button do?" quiz (new hands-on round,
-   runs after the token-order exercise, before the reflection step) */
-.quizex{width:100%;max-width:1180px;min-height:min(72vh,640px);background:#fff;border:2px solid var(--border);border-radius:20px;box-shadow:0 6px 0 var(--line-d);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:32px 20px;text-align:center;}
-.quizex.show{display:flex;}
-.quizex-mock{display:flex;align-items:center;justify-content:center;min-height:56px;pointer-events:none;}
-.quizex-q{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;color:var(--primary-dark);max-width:520px;}
+/* prompt-structuring round (new hands-on round, replaces the old separate
+   "what does this button do?" quiz — runs after the token-order exercise,
+   before the reflection step). MC warm-up sub-phase reuses .quizex-q/-opts;
+   the typed-fixing sub-phase reuses the .llmthread/.llmsuggest/.llminputbar
+   chat-shell classes already defined above, in a single-column layout. */
+.promptex{width:100%;max-width:900px;min-height:min(72vh,640px);background:#fff;border:2px solid var(--border);border-radius:20px;box-shadow:0 6px 0 var(--line-d);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px;}
+.promptex.show{display:flex;}
+.quizex-q{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;color:var(--primary-dark);max-width:520px;text-align:center;}
 .quizex-opts{display:flex;flex-direction:column;gap:10px;width:100%;max-width:420px;}
 .quizex-opt{padding:13px 18px;border-radius:14px;border:1.5px solid var(--border);background:var(--cream2);color:var(--text);font-family:'Sarabun',sans-serif;font-size:14.5px;font-weight:600;cursor:pointer;text-align:left;transition:transform .1s;}
 .quizex-opt:hover{border-color:var(--primary);}
 .quizex-opt:active{transform:translateY(2px);}
 .quizex-opt.correct{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
 .quizex-opt.wrong{border-color:var(--red);background:#FFEAEA;color:#B23A3A;}
+.pfhint{font-size:13px;color:var(--text2);text-align:center;max-width:560px;}
+.checklist{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;justify-content:center;}
+.chk{font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:99px;border:1.5px solid var(--line-d);color:var(--muted2);background:var(--cream);}
+.chk.on{border-color:var(--green);background:var(--green-light);color:var(--green-d);}
 
 .res-emoji{font-size:70px;margin-bottom:8px;}
 .res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
@@ -199,8 +211,8 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
     <div class="intro-wrap">
       <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
       <span class="big-icon">🖥️</span>
-      <div class="title">เพื่อนเปิดแชท AI ครั้งแรก แล้วงงว่าจะพิมพ์ตรงไหน หยุดยังไง</div>
-      <div class="sub">ไม่ว่าจะ ChatGPT, Gemini หรือแชท AI เจ้าไหน ปุ่มต่าง ๆ ก็หน้าตาคล้ายกันหมด — ลองมาสำรวจของจริงกันเลย</div>
+      <div class="title">เพื่อนเปิดแชท AI ครั้งแรก แล้วงงว่าจะพิมพ์ตรงไหน หยุดยังไง แถมพิมพ์คำสั่งไปก็ได้คำตอบมั่ว ๆ</div>
+      <div class="sub">ไม่ว่าจะ ChatGPT, Gemini หรือแชท AI เจ้าไหน ปุ่มต่าง ๆ ก็หน้าตาคล้ายกันหมด และการเขียนคำสั่งให้ AI เข้าใจก็มีหลักง่าย ๆ เหมือนกัน — ลองมาสำรวจของจริงกันเลย</div>
       <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
     </div>
   </div>
@@ -265,12 +277,28 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
       <div class="tokex-word">แตะชิ้นส่วนด้านล่างตามลำดับที่ถูกต้อง</div>
       <div class="tokex-slots" id="tokexSlots"></div>
       <div class="tokex-pool" id="tokexPool"></div>
+      <div class="tokhl-wrap">
+        <div class="tokhl-title">🖍️ ลองพิมพ์อะไรก็ได้ ดูว่า AI ตัด token ยังไง (1 คำ ≠ 1 token เสมอไป)</div>
+        <input type="text" id="tokhlInput" class="tokhl-input" placeholder="พิมพ์ประโยคของตัวเอง..." oninput="onTokHlType()">
+        <div class="tokhl-out" id="tokhlOut"></div>
+      </div>
     </div>
 
-    <div class="quizex" id="quizExercise">
-      <div class="quizex-mock" id="quizMock"></div>
-      <div class="quizex-q" id="quizQ"></div>
-      <div class="quizex-opts" id="quizOpts"></div>
+    <div class="promptex" id="promptExercise">
+      <div class="pfmc" id="pfMc" style="display:none;flex-direction:column;align-items:center;gap:16px;width:100%;">
+        <div class="quizex-q" id="pfMcQ"></div>
+        <div class="quizex-opts" id="pfMcOpts"></div>
+      </div>
+      <div class="pffix" id="pfFix" style="display:none;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:640px;">
+        <div class="pfhint" id="pfHint"></div>
+        <div class="llmthread" id="pfThread" style="width:100%;max-height:260px;border:1.5px solid var(--border);border-radius:14px;"></div>
+        <div class="checklist" id="pfChecklist"></div>
+        <div class="llmsuggest" id="pfChips" style="width:100%;background:transparent;border:none;padding:0;"></div>
+        <div class="llminputbar" style="width:100%;background:transparent;border:none;padding:0;">
+          <input id="pfInput" class="llminput" type="text" oninput="onPfTyping()" onkeydown="if(event.key==='Enter')sendPf();">
+          <button class="llmsend" id="pfSend" onclick="sendPf()">➤</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -278,9 +306,9 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
   <div class="panel" id="s4" data-step="3" style="display:none">
     <div class="refl-wrap">
       <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
-      <div class="title" style="margin-top:2px">ครั้งหน้าจะใช้ปุ่มไหนก่อน?</div>
-      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าครั้งต่อไปที่เปิดแชท AI น้องจะสังเกตหรือใช้ปุ่มไหนก่อน (เช่น ปุ่มหยุดตอบ ปุ่มเปลี่ยนรุ่น หรือปุ่มล้างแชท) และทำไม</div>
-      <textarea id="reflText" placeholder="เช่น ครั้งหน้าถ้า AI พิมพ์ยาวเกินไป ฉันจะลองกดปุ่มหยุดตอบดู..."></textarea>
+      <div class="title" style="margin-top:2px">ครั้งหน้าจะใช้ปุ่มไหน และจะเขียนคำสั่งยังไง?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าครั้งต่อไปที่เปิดแชท AI น้องจะสังเกตหรือใช้ปุ่มไหนก่อน (เช่น ปุ่มหยุดตอบ ปุ่มเปลี่ยนรุ่น หรือปุ่มล้างแชท) แล้วจะเขียนคำสั่งให้ครบ 3 ส่วน (ใคร/ทำอะไร/ตอบแบบไหน) ยังไงกับเรื่องอะไรในชีวิตจริง</div>
+      <textarea id="reflText" placeholder="เช่น ครั้งหน้าถ้า AI พิมพ์ยาวเกินไป ฉันจะลองกดปุ่มหยุดตอบดู และถ้าจะให้ช่วยทำการบ้าน ฉันจะบอกว่าอยู่ระดับชั้นไหนด้วย..."></textarea>
       <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
     </div>
   </div>
@@ -347,6 +375,7 @@ const CONCEPTS = [
       <rect class="tokchip" x="260" y="30" width="90" height="34" rx="8" fill="var(--primary-light)" stroke="var(--primary)" stroke-width="2"/>
       <text x="305" y="52" text-anchor="middle" font-family="Sarabun,sans-serif" font-size="15" fill="var(--primary-dark)">รู้</text>
     </svg>` },
+  { icon:'🧱', title:'คำสั่งดีมี 3 ส่วน', body:'พอรู้จักปุ่มต่าง ๆ แล้ว ทีนี้มาดูสิ่งที่สำคัญกว่านั้น: บอก AI ว่ามันเป็น "ใคร" (Role) เช่น ติวเตอร์วิทย์, "ทำอะไร" (Task) เช่น อธิบาย/เขียน/สรุป และ "ตอบแบบไหน" (Format) เช่น สั้น ๆ ระดับชั้นไหน — ขาดส่วนไหนไป AI จะเดาเอง แล้วมักเดาไม่ตรงใจ' },
 ];
 let cIdx = 0;
 function renderConcept(){
@@ -373,7 +402,7 @@ function startPractice(){
   $('scorePill').textContent = 'พลาดไป 0 ครั้ง';
   $('chatThread').innerHTML = '';
   $('tokExercise').classList.remove('show');
-  $('quizExercise').classList.remove('show');
+  $('promptExercise').classList.remove('show');
   $('shell').style.display = '';
   $('modelMenu').classList.remove('show');
   document.querySelectorAll('.llmside-item').forEach(e=>e.classList.remove('on'));
@@ -386,9 +415,9 @@ function startPractice(){
 
 // 9 named coach steps: input+send · stop · full answer+copy · model switch ·
 // history · clear chat(+token explain) · token-order drag exercise ·
-// "what does this button do?" multiple-choice quiz (6 questions) · finish —
-// enough hands-on rounds for a real 8-15 minute session, each with its own
-// immediate feedback message.
+// prompt-structuring round (MC warm-up + typed role/task/format fixing) ·
+// finish — enough hands-on rounds for a real 8-15 minute session, each with
+// its own immediate feedback message.
 const STEP_COUNT = 9;
 function coachShow(text, opts){
   opts = opts || {};
@@ -403,6 +432,32 @@ function highlight(id){
   if (id) $(id).classList.add('coach-hl');
 }
 function bumpRetry(){ retries++; $('scorePill').textContent = `พลาดไป ${retries} ครั้ง`; }
+
+// ── Visual token highlighter: splits whatever the student types into pseudo-token
+// chunks and color-codes them live, to make "1 word ≠ 1 token" visible and concrete.
+// This is a simplified illustrative heuristic (real tokenizers use learned subword
+// vocabularies), not an actual model's tokenizer — short words/pieces stay whole,
+// longer words get split into 2-3 pieces the way subword tokenization often would.
+const TOKHL_COLORS = ['#FFE1A8','#B8E6D5','#C9D9FF','#FFD1DC','#D9C9FF','#C9F0FF','#FFE1C9'];
+function fakeTokenize(text){
+  const words = text.split(/(\s+)/).filter(w=>w.length);
+  const tokens = [];
+  words.forEach(w=>{
+    if (/^\s+$/.test(w)){ return; } // skip whitespace, keep words visually separate via gap
+    if (w.length <= 3){ tokens.push(w); return; }
+    const cut1 = Math.ceil(w.length/3);
+    const cut2 = Math.ceil(w.length*2/3);
+    tokens.push(w.slice(0,cut1), w.slice(cut1,cut2), w.slice(cut2));
+  });
+  return tokens.filter(t=>t.length);
+}
+function onTokHlType(){
+  const text = $('tokhlInput').value;
+  const tokens = fakeTokenize(text);
+  $('tokhlOut').innerHTML = tokens.map((t,i)=>
+    `<span class="tokhl-tok" style="background:${TOKHL_COLORS[i%TOKHL_COLORS.length]}">${esc(t)}</span>`
+  ).join('');
+}
 
 function setStep(n){
   step = n;
@@ -432,7 +487,7 @@ function setStep(n){
   } else if (n === 7){
     highlight(null);
     coachHide();
-    startQuiz();
+    startPromptEx();
   } else if (n === 8){
     highlight(null);
     goStep(3);
@@ -479,53 +534,159 @@ function checkTokEx(){
   }
 }
 
-// ── "what does this button do?" multiple-choice quiz (new round type,
-//    runs after the token-order exercise) — mocks a single real UI element
-//    from the chat shell above and asks what it does, 3-4 choices each ──
-const QUIZ_QUESTIONS = [
-  { mock:'<button class="llmsend" style="position:static">➤</button>', q:'ปุ่มนี้ทำหน้าที่อะไร?', choices:['ส่งข้อความให้ AI','หยุด AI ไม่ให้ตอบต่อ','ลบแชททั้งหมด','เปลี่ยนรุ่น AI'], correct:0 },
-  { mock:'<button class="llmsend stop" style="position:static">⏹</button>', q:'ปุ่มสีแดงนี้ (โผล่ตอน AI กำลังตอบ) ทำหน้าที่อะไร?', choices:['ส่งข้อความใหม่','หยุด AI ไม่ให้พิมพ์ต่อ','คัดลอกคำตอบ','ลบประวัติแชท'], correct:1 },
-  { mock:'<button class="llmcopy" style="position:static">📋 คัดลอกคำตอบ</button>', q:'ปุ่มนี้ (โผล่ใต้คำตอบที่ตอบจบแล้ว) ทำหน้าที่อะไร?', choices:['ลบคำตอบทิ้ง','ให้ AI ตอบใหม่อีกครั้ง','คัดลอกข้อความคำตอบไปใช้ที่อื่น','แชร์คำตอบให้เพื่อน'], correct:2 },
-  { mock:'<div class="llmmodel" style="position:static;display:inline-flex">✨ AI รุ่นเร็ว ▾</div>', q:'ปุ่มนี้บนหัวแชททำหน้าที่อะไร?', choices:['เปลี่ยนภาษาที่ใช้พิมพ์','เปลี่ยนรุ่น/โมเดล AI ที่ใช้ตอบ','ปรับระดับเสียงพูด','ตั้งเวลาแจ้งเตือน'], correct:1 },
-  { mock:'<div class="llmside-item on" style="position:static;color:#222;background:#eef1f6">💬 ทำไมท้องฟ้าเป็นสีฟ้า? (เมื่อวาน)</div>', q:'รายการนี้ในแถบด้านซ้ายคืออะไร?', choices:['โฆษณา','บทสนทนาเก่าที่เคยคุยไว้ก่อนหน้า','การตั้งค่าบัญชี','รายชื่อเพื่อน'], correct:1 },
-  { mock:'<button class="llmside-new" style="position:static;color:#222;border-color:#ccc">➕ แชทใหม่</button>', q:'ปุ่มนี้ทำหน้าที่อะไร?', choices:['ลบบัญชีผู้ใช้ถาวร','เริ่มบทสนทนาใหม่โดยไม่เอาข้อความเก่ามาปน','ปิดโปรแกรม','เปลี่ยนธีมสี'], correct:1 },
+// ── prompt-structuring round (new round type, runs after the token-order
+//    exercise): a short "spot the better prompt" MC warm-up, then a few
+//    rounds of retyping a vague prompt into one with role+task+format.
+//    Ported from the old standalone ai05-prompt-fixer.html and trimmed
+//    (5→3 MC rounds, 6→4 typed rounds) since it's now the second half of
+//    one merged lesson rather than a full lesson on its own. ──
+const PF_MC_ROUNDS = [
+  { scenario:'น้องอยากให้ AI ช่วยแนะนำหนังสือการ์ตูนสนุก ๆ อ่านช่วงปิดเทอม เหมาะกับเด็ก ป.5',
+    options:[
+      { text:'แนะนำหนังสือหน่อย', ok:false, why:'ไม่บอกว่าประเภทไหน อายุเท่าไหร่ หรืออยากได้กี่เล่ม AI ต้องเดาเอง' },
+      { text:'สวมบทบาทบรรณารักษ์เด็ก ช่วยแนะนำการ์ตูน 3 เรื่องที่สนุก อ่านง่าย เหมาะกับเด็ก ป.5 ช่วงปิดเทอม', ok:true, why:'ครบทั้งใคร (บรรณารักษ์เด็ก) ทำอะไร (แนะนำการ์ตูน 3 เรื่อง) และตอบแบบไหน (สนุก อ่านง่าย เหมาะ ป.5) — AI จึงตอบตรงใจ' },
+      { text:'มีหนังสือดี ๆ ไหม', ok:false, why:'สั้นเกินไป ไม่มีทั้งบทบาท งาน หรือรูปแบบคำตอบเลย' },
+    ] },
+  { scenario:'น้องอยากได้แผนออกกำลังกายง่าย ๆ ทำที่บ้าน 10 นาทีก่อนไปโรงเรียน',
+    options:[
+      { text:'ในฐานะเทรนเนอร์เด็ก ช่วยวางแผนออกกำลังกาย 10 นาทีที่ทำที่บ้านได้ ไม่ต้องใช้อุปกรณ์ เป็นขั้นตอนสั้น ๆ', ok:true, why:'บอกครบว่าใคร (เทรนเนอร์เด็ก) ทำอะไร (วางแผน 10 นาที ไม่ใช้อุปกรณ์) และตอบแบบไหน (ขั้นตอนสั้น ๆ)' },
+      { text:'ช่วยแนะนำการออกกำลังกายหน่อย', ok:false, why:'ไม่บอกเวลา สถานที่ หรืออุปกรณ์ AI จึงตอบกว้าง ๆ ใช้ไม่ได้จริง' },
+      { text:'อยากฟิตหน่อย', ok:false, why:'กำกวมมาก ไม่มีทั้งบทบาท งาน หรือรูปแบบคำตอบ' },
+    ] },
+  { scenario:'น้องอยากได้คำอธิบายเรื่องระบบสุริยะ สั้น ๆ เข้าใจง่าย สำหรับทำการ์ดความรู้ติดผนังห้อง',
+    options:[
+      { text:'สวมบทบาทติวเตอร์วิทยาศาสตร์ อธิบายระบบสุริยะเป็นข้อ ๆ สั้น ๆ 5 ข้อ เข้าใจง่าย เหมาะทำการ์ดความรู้ติดผนัง', ok:true, why:'บอกครบว่าใคร (ติวเตอร์วิทย์) ทำอะไร (อธิบายระบบสุริยะ) และตอบแบบไหน (5 ข้อ สั้น เข้าใจง่าย)' },
+      { text:'ระบบสุริยะคืออะไร', ok:false, why:'เป็นคำถามกว้าง ๆ ไม่บอกความยาวหรือจุดประสงค์ที่จะใช้' },
+      { text:'อยากรู้เรื่องดาวเคราะห์', ok:false, why:'กำกวม ไม่บอกรูปแบบคำตอบหรือจะเอาไปใช้ทำอะไร' },
+    ] },
 ];
-let quizIdx = 0;
-function startQuiz(){
+let pfMcIdx = 0;
+function startPromptEx(){
   $('shell').style.display = 'none';
-  quizIdx = 0;
-  renderQuizQ();
-  $('quizExercise').classList.add('show');
+  pfMcIdx = 0;
+  $('pfFix').style.display = 'none';
+  $('pfMc').style.display = 'flex';
+  renderPfMcQ();
+  $('promptExercise').classList.add('show');
 }
-function renderQuizQ(){
-  const item = QUIZ_QUESTIONS[quizIdx];
-  $('quizMock').innerHTML = item.mock;
-  $('quizQ').textContent = `คำถามที่ ${quizIdx+1}/${QUIZ_QUESTIONS.length}: ${item.q}`;
-  $('quizOpts').innerHTML = item.choices.map((c,i)=>`<button class="quizex-opt" onclick="quizAnswer(${i})">${esc(c)}</button>`).join('');
+function renderPfMcQ(){
+  const item = PF_MC_ROUNDS[pfMcIdx];
+  $('pfMcQ').textContent = `สถานการณ์: ${item.scenario} — คำสั่งไหนดีที่สุด? (${pfMcIdx+1}/${PF_MC_ROUNDS.length})`;
+  $('pfMcOpts').innerHTML = item.options.map((o,i)=>`<button class="quizex-opt" onclick="pfMcAnswer(${i})">${esc(o.text)}</button>`).join('');
 }
-function quizAnswer(i){
-  const item = QUIZ_QUESTIONS[quizIdx];
-  const opts = document.querySelectorAll('#quizOpts .quizex-opt');
+function pfMcAnswer(i){
+  const item = PF_MC_ROUNDS[pfMcIdx];
+  const opt = item.options[i];
+  const opts = document.querySelectorAll('#pfMcOpts .quizex-opt');
   opts.forEach(o => o.onclick = null);
-  if (i === item.correct){
+  const correctIdx = item.options.findIndex(o=>o.ok);
+  if (opt.ok){
     opts[i].classList.add('correct');
-    setTimeout(nextQuizQ, 700);
+    if (window.dlf) dlf.cheer('เก่งมาก!');
+    setTimeout(nextPfMcQ, 900);
   } else {
     opts[i].classList.add('wrong');
-    opts[item.correct].classList.add('correct');
+    opts[correctIdx].classList.add('correct');
     bumpRetry();
-    setTimeout(nextQuizQ, 1100);
+    setTimeout(nextPfMcQ, 1400);
   }
 }
-function nextQuizQ(){
-  quizIdx++;
-  if (quizIdx >= QUIZ_QUESTIONS.length){
-    $('quizExercise').classList.remove('show');
-    $('shell').style.display = '';
-    setStep(8);
-  } else {
-    renderQuizQ();
-  }
+function nextPfMcQ(){
+  pfMcIdx++;
+  if (pfMcIdx >= PF_MC_ROUNDS.length){ startPfFix(); }
+  else { renderPfMcQ(); }
+}
+
+const PF_ROUNDS = [
+  { scenario:'น้องอยากได้เรียงความเรื่องสัตว์เลี้ยงที่รัก ส่งครูภาษาไทยพรุ่งนี้', weak:'ช่วยเขียนเรียงความหน่อย',
+    good:'ได้เลย! นี่คือเรียงความ 3 ย่อหน้าเรื่อง "สัตว์เลี้ยงที่ฉันรัก" ใช้ภาษาง่าย ๆ อ่านสนุก เหมาะกับการส่งครูภาษาไทยพรุ่งนี้เลยครับ 📝',
+    vague:'ได้ครับ นี่คือเรียงความสั้น ๆ... (แต่ AI ไม่รู้ว่าเรื่องอะไร ยาวแค่ไหน หรือควรใช้โทนแบบไหน เลยเขียนแบบกว้าง ๆ ไม่ตรงใจ)' },
+  { scenario:'น้องกำลังอ่านหนังสือสอบวิทยาศาสตร์ ป.6 พรุ่งนี้ งงเรื่องการสังเคราะห์แสง', weak:'อธิบายโฟโตซินเทซิสหน่อย',
+    good:'สวมบทบาทติวเตอร์วิทย์ ป.6 ให้เลยนะ! การสังเคราะห์แสงคือการที่พืชใช้แสงแดด น้ำ และคาร์บอนไดออกไซด์มาสร้างอาหารเอง แล้วปล่อยออกซิเจนออกมา ✅',
+    vague:'การสังเคราะห์แสง (Photosynthesis) เป็นกระบวนการทางชีวเคมีที่ซับซ้อน... (AI ตอบแบบวิชาการเกินไป ไม่รู้ว่าน้องอยู่ระดับไหน อ่านไม่ค่อยเข้าใจ)' },
+  { scenario:'น้องอยากสรุปเนื้อหาบทเรียนประวัติศาสตร์ยาว ๆ ให้เหลือแค่หัวข้อสั้น ๆ ท่องสอบ', weak:'สรุปบทนี้หน่อย',
+    good:'สวมบทบาทติวเตอร์ประวัติศาสตร์ ให้เลย! สรุปเป็น bullet 5 ข้อสั้น ๆ พร้อมปี พ.ศ. สำคัญ เหมาะสำหรับท่องสอบ ป.6 เลยครับ ✅',
+    vague:'บทนี้พูดถึงเหตุการณ์สำคัญหลายอย่าง เริ่มจาก... (AI สรุปยาวเป็นย่อหน้า ไม่รู้ว่าน้องอยากได้แบบสั้นเป็นข้อ ๆ หรือกี่ข้อ)' },
+  { scenario:'น้องอยากได้คำบรรยายภาพสั้น ๆ สนุก ๆ โพสต์อวดผลงานศิลปะในห้องเรียนออนไลน์', weak:'ช่วยแต่งแคปชั่นหน่อย',
+    good:'สวมบทบาทเพื่อนขี้เล่นในห้องเรียน ให้เลย! "ผลงานชิ้นนี้ใช้เวลาคิดนานกว่าการบ้านคณิตอีก 😆🎨 ภูมิใจสุด ๆ" สั้น กวน ๆ พร้อมโพสต์เลยครับ',
+    vague:'นี่คือแคปชั่นสำหรับโพสต์ผลงานศิลปะ... (AI ไม่รู้ว่าอยากได้โทนสนุกหรือจริงจัง ยาวแค่ไหน เลยแต่งแบบทางการเกินไป)' },
+];
+const PF_ROLE_RE = /(สวมบทบาท|ในฐานะ|เป็นครู|เป็นติวเตอร์|เป็นผู้เชี่ยวชาญ|เป็นเชฟ|เป็นเพื่อน|role|ทำหน้าที่เป็น)/i;
+const PF_TASK_RE = /(เขียน|อธิบาย|สรุป|แต่ง|แนะนำ|ช่วย.*ให้|task)/i;
+const PF_FMT_RE = /(ย่อหน้า|กี่บรรทัด|ระดับชั้น|ป\.\d|ม\.\d|ง่าย ๆ|สั้น|ตาราง|bullet|format|คำ|ประโยค|ขั้นตอน|ข้อ)/i;
+let pfRound = 0;
+function checkPfParts(text){ return { role: PF_ROLE_RE.test(text), task: PF_TASK_RE.test(text), fmt: PF_FMT_RE.test(text) }; }
+function renderPfChecklist(text){
+  const p = checkPfParts(text || '');
+  $('pfChecklist').innerHTML = `
+    <span class="chk${p.role?' on':''}">🎭 ใคร (Role)</span>
+    <span class="chk${p.task?' on':''}">📋 ทำอะไร (Task)</span>
+    <span class="chk${p.fmt?' on':''}">📐 แบบไหน (Format)</span>`;
+  return p;
+}
+function onPfTyping(){ renderPfChecklist($('pfInput').value); }
+const PF_CHIPS = ['สวมบทบาทเป็น...', 'อธิบาย/เขียน/สรุป...ให้หน่อย', 'ตอบแบบ... (สั้น/ย่อหน้า/ระดับชั้น)'];
+function usePfChip(i){
+  const cur = $('pfInput').value;
+  $('pfInput').value = (cur ? cur + ' ' : '') + PF_CHIPS[i];
+  onPfTyping();
+  $('pfInput').focus();
+}
+function appendPfRow(role, html, cls){
+  const row = document.createElement('div');
+  row.className = `llmrow ${role}`;
+  row.innerHTML = `<span class="llmava">${role==='user'?'🙋':'🎓'}</span><div class="llmbubble${cls?' '+cls:''}">${html}</div>`;
+  $('pfThread').appendChild(row);
+  $('pfThread').scrollTop = $('pfThread').scrollHeight;
+  return row;
+}
+function startPfFix(){
+  $('pfMc').style.display = 'none';
+  $('pfFix').style.display = 'flex';
+  loadPfRound(0);
+}
+function loadPfRound(i){
+  pfRound = i;
+  const r = PF_ROUNDS[i];
+  $('pfThread').innerHTML = '';
+  appendPfRow('ai', `สถานการณ์ (${i+1}/${PF_ROUNDS.length}): ${esc(r.scenario)}`, 'sys');
+  appendPfRow('user', esc(r.weak), 'weak');
+  appendPfRow('ai', esc(r.vague));
+  $('pfInput').value = '';
+  $('pfChips').innerHTML = PF_CHIPS.map((c,idx)=>`<span class="llmchip" onclick="usePfChip(${idx})">➕ ${esc(c)}</span>`).join('');
+  renderPfChecklist('');
+  $('pfHint').textContent = `คำสั่งแรก "${r.weak}" ทำให้ AI ตอบแบบงง ๆ — พิมพ์คำสั่งใหม่ในช่องด้านล่างให้ครบทั้ง 3 ส่วนที่ติ๊กถูกด้านบน`;
+}
+function sendPf(){
+  const text = $('pfInput').value.trim();
+  if (!text) return;
+  $('pfInput').value = '';
+  renderPfChecklist('');
+  appendPfRow('user', esc(text));
+  const typingRow = appendPfRow('ai', '<span class="llmtyping"><span></span><span></span><span></span></span>');
+  setTimeout(() => {
+    const r = PF_ROUNDS[pfRound];
+    const p = checkPfParts(text);
+    const complete = p.role && p.task && p.fmt;
+    if (complete){
+      typingRow.querySelector('.llmbubble').innerHTML = esc(r.good);
+      if (window.dlf) dlf.cheer('เก่งมาก!');
+      if (pfRound === PF_ROUNDS.length - 1){
+        setTimeout(() => {
+          $('promptExercise').classList.remove('show');
+          $('shell').style.display = '';
+          setStep(8);
+        }, 1200);
+      } else {
+        setTimeout(() => loadPfRound(pfRound + 1), 1200);
+      }
+    } else {
+      bumpRetry();
+      const missing = [!p.role&&'ใคร (Role)', !p.task&&'ทำอะไร (Task)', !p.fmt&&'แบบไหน (Format)'].filter(Boolean).join(', ');
+      typingRow.querySelector('.llmbubble').innerHTML = esc(r.vague);
+      $('pfHint').textContent = `ยังไม่ครบนะ — คำสั่งขาด: ${missing} ลองแตะปุ่มตัวอย่างด้านล่างเพื่อเติมให้ครบ แล้วส่งอีกครั้ง`;
+    }
+  }, 900);
 }
 
 function skipStop(){
@@ -634,13 +795,14 @@ function clearChat(){
 // ===== Step 4 done =====
 function finishGame(){
   // total mistakes now come from the coach tour + token-order exercise + the
-  // 6-question quiz, so thresholds are rescaled up from the old 0/1-2/3+ scale
-  window.dlfStars = retries === 0 ? 3 : retries <= 3 ? 2 : 1;
+  // prompt-structuring round (MC warm-up + typed fixing), so thresholds are
+  // rescaled up from the old 0/1-2/3+ scale
+  window.dlfStars = retries <= 1 ? 3 : retries <= 5 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
   $('resTitle').textContent = window.dlfStars === 3 ? 'สำรวจหน้าจอ AI เก่งมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = 'คุณลองใช้ครบทุกปุ่ม (พิมพ์-ส่ง, หยุดตอบ, คัดลอกคำตอบ, เปลี่ยนรุ่น, ประวัติแชท, ล้างแชท) เรียงคำเป็น token ถูก และตอบคำถามปรนัยครบ 6 ข้อ';
+  $('resScore').textContent = `คุณลองใช้ครบทุกปุ่ม (พิมพ์-ส่ง, หยุดตอบ, คัดลอกคำตอบ, เปลี่ยนรุ่น, ประวัติแชท, ล้างแชท) เรียงคำเป็น token ถูก เลือกคำสั่งที่ดีที่สุดครบ ${PF_MC_ROUNDS.length} ข้อ และซ่อมคำสั่งด้วยตัวเองครบ ${PF_ROUNDS.length} รอบ`;
   coachHide();
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -698,7 +860,7 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"71db7efd5caa":"audio/ai04-ui-inspector/71db7efd5caa.mp3","c5a42b4d31d2":"audio/ai04-ui-inspector/c5a42b4d31d2.mp3","b1f1ffbcab14":"audio/ai04-ui-inspector/b1f1ffbcab14.mp3","0bf3c441e722":"audio/ai04-ui-inspector/0bf3c441e722.mp3","782a277f26be":"audio/ai04-ui-inspector/782a277f26be.mp3","8a7f1d3a8eff":"audio/ai04-ui-inspector/8a7f1d3a8eff.mp3","11c68201fd50":"audio/ai04-ui-inspector/11c68201fd50.mp3","cdeecee3d072":"audio/ai04-ui-inspector/cdeecee3d072.mp3","52faa1080ec4":"audio/ai04-ui-inspector/52faa1080ec4.mp3","5bf2f44577d0":"audio/ai04-ui-inspector/5bf2f44577d0.mp3","da2628b1da34":"audio/ai04-ui-inspector/da2628b1da34.mp3","10ef72704ca5":"audio/ai04-ui-inspector/10ef72704ca5.mp3","35959e6332f3":"audio/ai04-ui-inspector/35959e6332f3.mp3","35960687c2fa":"audio/ai04-ui-inspector/35960687c2fa.mp3","aea946cac8e5":"audio/ai04-ui-inspector/aea946cac8e5.mp3","dfb3e4afa929":"audio/ai04-ui-inspector/dfb3e4afa929.mp3","e18a189a9371":"audio/ai04-ui-inspector/e18a189a9371.mp3","8af1f0edc12c":"audio/ai04-ui-inspector/8af1f0edc12c.mp3","cca3d369ac4a":"audio/ai04-ui-inspector/cca3d369ac4a.mp3","5da8088ff147":"audio/ai04-ui-inspector/5da8088ff147.mp3","f8c2518f959a":"audio/ai04-ui-inspector/f8c2518f959a.mp3","75810bcd2c63":"audio/ai04-ui-inspector/75810bcd2c63.mp3","24dfa0b0fe2b":"audio/ai04-ui-inspector/24dfa0b0fe2b.mp3","c9ae25da0854":"audio/ai04-ui-inspector/c9ae25da0854.mp3","762de0ca65a3":"audio/ai04-ui-inspector/762de0ca65a3.mp3","862123fe2be1":"audio/ai04-ui-inspector/862123fe2be1.mp3","bda0e2ab51e6":"audio/ai04-ui-inspector/bda0e2ab51e6.mp3","3451967f4c1c":"audio/ai04-ui-inspector/3451967f4c1c.mp3","ddb421ef70b4":"audio/ai04-ui-inspector/ddb421ef70b4.mp3","55d0bdd7cf20":"audio/ai04-ui-inspector/55d0bdd7cf20.mp3","06cce1081b61":"audio/ai04-ui-inspector/06cce1081b61.mp3","af6ba89d9b27":"audio/ai04-ui-inspector/af6ba89d9b27.mp3","aca2b0992481":"audio/ai04-ui-inspector/aca2b0992481.mp3","66590c21d92e":"audio/ai04-ui-inspector/66590c21d92e.mp3","677cb5d62bc1":"audio/ai04-ui-inspector/677cb5d62bc1.mp3","6618f3b8cc5c":"audio/ai04-ui-inspector/6618f3b8cc5c.mp3","d811e87eefb3":"audio/ai04-ui-inspector/d811e87eefb3.mp3","71a51a023ae8":"audio/ai04-ui-inspector/71a51a023ae8.mp3","fd2d26303411":"audio/ai04-ui-inspector/fd2d26303411.mp3","25c6023076a9":"audio/ai04-ui-inspector/25c6023076a9.mp3","ce97d9170f39":"audio/ai04-ui-inspector/ce97d9170f39.mp3","2cd55ba1dd9a":"audio/ai04-ui-inspector/2cd55ba1dd9a.mp3","bb30945ce0c4":"audio/ai04-ui-inspector/bb30945ce0c4.mp3","556e94dd062a":"audio/ai04-ui-inspector/556e94dd062a.mp3","d585a6a9d18d":"audio/ai04-ui-inspector/d585a6a9d18d.mp3","fefe9d4254cc":"audio/ai04-ui-inspector/fefe9d4254cc.mp3","6dc5a6cbeaca":"audio/ai04-ui-inspector/6dc5a6cbeaca.mp3","cd8c1c62e09a":"audio/ai04-ui-inspector/cd8c1c62e09a.mp3","08f795fa0f87":"audio/ai04-ui-inspector/08f795fa0f87.mp3","dbb763c531fa":"audio/ai04-ui-inspector/dbb763c531fa.mp3","4780fc79462b":"audio/ai04-ui-inspector/4780fc79462b.mp3","9d143b63b709":"audio/ai04-ui-inspector/9d143b63b709.mp3","57f54cf2d9c1":"audio/ai04-ui-inspector/57f54cf2d9c1.mp3","0883821651c0":"audio/ai04-ui-inspector/0883821651c0.mp3","c556aaeb85c9":"audio/ai04-ui-inspector/c556aaeb85c9.mp3","dec1ce6c690b":"audio/ai04-ui-inspector/dec1ce6c690b.mp3","f3bc581be169":"audio/ai04-ui-inspector/f3bc581be169.mp3","3fb0e684b56b":"audio/ai04-ui-inspector/3fb0e684b56b.mp3","9bb8216b6df6":"audio/ai04-ui-inspector/9bb8216b6df6.mp3","af93a4a1253d":"audio/ai04-ui-inspector/af93a4a1253d.mp3","dae85fea6441":"audio/ai04-ui-inspector/dae85fea6441.mp3","dab05dcf3741":"audio/ai04-ui-inspector/dab05dcf3741.mp3","dc60fd67731f":"audio/ai04-ui-inspector/dc60fd67731f.mp3","23a4b62e4a90":"audio/ai04-ui-inspector/23a4b62e4a90.mp3","127e3ccc78f4":"audio/ai04-ui-inspector/127e3ccc78f4.mp3","852128f8e136":"audio/ai04-ui-inspector/852128f8e136.mp3","bc8dacd62d03":"audio/ai04-ui-inspector/bc8dacd62d03.mp3","422f4310175a":"audio/ai04-ui-inspector/422f4310175a.mp3","61b085e8d194":"audio/ai04-ui-inspector/61b085e8d194.mp3","e4b67abbdf28":"audio/ai04-ui-inspector/e4b67abbdf28.mp3","5fd98d8652bc":"audio/ai04-ui-inspector/5fd98d8652bc.mp3","3750418128c2":"audio/ai04-ui-inspector/3750418128c2.mp3","e92914e2d183":"audio/ai04-ui-inspector/e92914e2d183.mp3","28acf87bf838":"audio/ai04-ui-inspector/28acf87bf838.mp3","b9bf87237e15":"audio/ai04-ui-inspector/b9bf87237e15.mp3","2f93d6a0cb73":"audio/ai04-ui-inspector/2f93d6a0cb73.mp3","8f7ad152ae7a":"audio/ai04-ui-inspector/8f7ad152ae7a.mp3","6144b9febc32":"audio/ai04-ui-inspector/6144b9febc32.mp3","179d160ac71f":"audio/ai04-ui-inspector/179d160ac71f.mp3","dc0b127fb60f":"audio/ai04-ui-inspector/dc0b127fb60f.mp3","a13825d7b4a4":"audio/ai04-ui-inspector/a13825d7b4a4.mp3","bfa1b62b1d68":"audio/ai04-ui-inspector/bfa1b62b1d68.mp3","c8d756e97035":"audio/ai04-ui-inspector/c8d756e97035.mp3","031eb96d9d13":"audio/ai04-ui-inspector/031eb96d9d13.mp3","5d5f05e3a464":"audio/ai04-ui-inspector/5d5f05e3a464.mp3","f44e5154c88e":"audio/ai04-ui-inspector/f44e5154c88e.mp3","dec590901e64":"audio/ai04-ui-inspector/dec590901e64.mp3","3b86a6f3cb9d":"audio/ai04-ui-inspector/3b86a6f3cb9d.mp3","6e907a9ea1b1":"audio/ai04-ui-inspector/6e907a9ea1b1.mp3","cfab5df41ad1":"audio/ai04-ui-inspector/cfab5df41ad1.mp3","14aca681385b":"audio/ai04-ui-inspector/14aca681385b.mp3","3385404f0986":"audio/ai04-ui-inspector/3385404f0986.mp3","ae4edc092caa":"audio/ai04-ui-inspector/ae4edc092caa.mp3","8b92bed02c5b":"audio/ai04-ui-inspector/8b92bed02c5b.mp3","1d8c976ac3e4":"audio/ai04-ui-inspector/1d8c976ac3e4.mp3","5c61cd3e292d":"audio/ai04-ui-inspector/5c61cd3e292d.mp3","923f252d3486":"audio/ai04-ui-inspector/923f252d3486.mp3","cd3e7f94eba3":"audio/ai04-ui-inspector/cd3e7f94eba3.mp3","ed9ed3821dcf":"audio/ai04-ui-inspector/ed9ed3821dcf.mp3","76d672f27e54":"audio/ai04-ui-inspector/76d672f27e54.mp3","ce7889573a0a":"audio/ai04-ui-inspector/ce7889573a0a.mp3","4887c1128430":"audio/ai04-ui-inspector/4887c1128430.mp3","6fbc75bae354":"audio/ai04-ui-inspector/6fbc75bae354.mp3","512fdbe08c22":"audio/ai04-ui-inspector/512fdbe08c22.mp3","b4dadd4ca696":"audio/ai04-ui-inspector/b4dadd4ca696.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.mtext','.sub'],extraNonDecorateSelectors:'.hotspot,.llmmodelopt,.llmside-item,.llmside-new,.llmchip,.coachbtn,.llmcopy,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"71db7efd5caa":"audio/ai04-ui-inspector/71db7efd5caa.mp3","c5a42b4d31d2":"audio/ai04-ui-inspector/c5a42b4d31d2.mp3","b1f1ffbcab14":"audio/ai04-ui-inspector/b1f1ffbcab14.mp3","0bf3c441e722":"audio/ai04-ui-inspector/0bf3c441e722.mp3","782a277f26be":"audio/ai04-ui-inspector/782a277f26be.mp3","8a7f1d3a8eff":"audio/ai04-ui-inspector/8a7f1d3a8eff.mp3","11c68201fd50":"audio/ai04-ui-inspector/11c68201fd50.mp3","cdeecee3d072":"audio/ai04-ui-inspector/cdeecee3d072.mp3","52faa1080ec4":"audio/ai04-ui-inspector/52faa1080ec4.mp3","5bf2f44577d0":"audio/ai04-ui-inspector/5bf2f44577d0.mp3","da2628b1da34":"audio/ai04-ui-inspector/da2628b1da34.mp3","10ef72704ca5":"audio/ai04-ui-inspector/10ef72704ca5.mp3","35959e6332f3":"audio/ai04-ui-inspector/35959e6332f3.mp3","35960687c2fa":"audio/ai04-ui-inspector/35960687c2fa.mp3","aea946cac8e5":"audio/ai04-ui-inspector/aea946cac8e5.mp3","dfb3e4afa929":"audio/ai04-ui-inspector/dfb3e4afa929.mp3","e18a189a9371":"audio/ai04-ui-inspector/e18a189a9371.mp3","8af1f0edc12c":"audio/ai04-ui-inspector/8af1f0edc12c.mp3","cca3d369ac4a":"audio/ai04-ui-inspector/cca3d369ac4a.mp3","5da8088ff147":"audio/ai04-ui-inspector/5da8088ff147.mp3","f8c2518f959a":"audio/ai04-ui-inspector/f8c2518f959a.mp3","75810bcd2c63":"audio/ai04-ui-inspector/75810bcd2c63.mp3","24dfa0b0fe2b":"audio/ai04-ui-inspector/24dfa0b0fe2b.mp3","c9ae25da0854":"audio/ai04-ui-inspector/c9ae25da0854.mp3","762de0ca65a3":"audio/ai04-ui-inspector/762de0ca65a3.mp3","862123fe2be1":"audio/ai04-ui-inspector/862123fe2be1.mp3","bda0e2ab51e6":"audio/ai04-ui-inspector/bda0e2ab51e6.mp3","3451967f4c1c":"audio/ai04-ui-inspector/3451967f4c1c.mp3","ddb421ef70b4":"audio/ai04-ui-inspector/ddb421ef70b4.mp3","55d0bdd7cf20":"audio/ai04-ui-inspector/55d0bdd7cf20.mp3","06cce1081b61":"audio/ai04-ui-inspector/06cce1081b61.mp3","af6ba89d9b27":"audio/ai04-ui-inspector/af6ba89d9b27.mp3","aca2b0992481":"audio/ai04-ui-inspector/aca2b0992481.mp3","66590c21d92e":"audio/ai04-ui-inspector/66590c21d92e.mp3","677cb5d62bc1":"audio/ai04-ui-inspector/677cb5d62bc1.mp3","6618f3b8cc5c":"audio/ai04-ui-inspector/6618f3b8cc5c.mp3","d811e87eefb3":"audio/ai04-ui-inspector/d811e87eefb3.mp3","71a51a023ae8":"audio/ai04-ui-inspector/71a51a023ae8.mp3","fd2d26303411":"audio/ai04-ui-inspector/fd2d26303411.mp3","25c6023076a9":"audio/ai04-ui-inspector/25c6023076a9.mp3","ce97d9170f39":"audio/ai04-ui-inspector/ce97d9170f39.mp3","2cd55ba1dd9a":"audio/ai04-ui-inspector/2cd55ba1dd9a.mp3","bb30945ce0c4":"audio/ai04-ui-inspector/bb30945ce0c4.mp3","556e94dd062a":"audio/ai04-ui-inspector/556e94dd062a.mp3","d585a6a9d18d":"audio/ai04-ui-inspector/d585a6a9d18d.mp3","fefe9d4254cc":"audio/ai04-ui-inspector/fefe9d4254cc.mp3","6dc5a6cbeaca":"audio/ai04-ui-inspector/6dc5a6cbeaca.mp3","cd8c1c62e09a":"audio/ai04-ui-inspector/cd8c1c62e09a.mp3","08f795fa0f87":"audio/ai04-ui-inspector/08f795fa0f87.mp3","dbb763c531fa":"audio/ai04-ui-inspector/dbb763c531fa.mp3","4780fc79462b":"audio/ai04-ui-inspector/4780fc79462b.mp3","9d143b63b709":"audio/ai04-ui-inspector/9d143b63b709.mp3","57f54cf2d9c1":"audio/ai04-ui-inspector/57f54cf2d9c1.mp3","0883821651c0":"audio/ai04-ui-inspector/0883821651c0.mp3","c556aaeb85c9":"audio/ai04-ui-inspector/c556aaeb85c9.mp3","dec1ce6c690b":"audio/ai04-ui-inspector/dec1ce6c690b.mp3","f3bc581be169":"audio/ai04-ui-inspector/f3bc581be169.mp3","3fb0e684b56b":"audio/ai04-ui-inspector/3fb0e684b56b.mp3","9bb8216b6df6":"audio/ai04-ui-inspector/9bb8216b6df6.mp3","af93a4a1253d":"audio/ai04-ui-inspector/af93a4a1253d.mp3","dae85fea6441":"audio/ai04-ui-inspector/dae85fea6441.mp3","dab05dcf3741":"audio/ai04-ui-inspector/dab05dcf3741.mp3","dc60fd67731f":"audio/ai04-ui-inspector/dc60fd67731f.mp3","23a4b62e4a90":"audio/ai04-ui-inspector/23a4b62e4a90.mp3","127e3ccc78f4":"audio/ai04-ui-inspector/127e3ccc78f4.mp3","852128f8e136":"audio/ai04-ui-inspector/852128f8e136.mp3","bc8dacd62d03":"audio/ai04-ui-inspector/bc8dacd62d03.mp3","422f4310175a":"audio/ai04-ui-inspector/422f4310175a.mp3","61b085e8d194":"audio/ai04-ui-inspector/61b085e8d194.mp3","e4b67abbdf28":"audio/ai04-ui-inspector/e4b67abbdf28.mp3","5fd98d8652bc":"audio/ai04-ui-inspector/5fd98d8652bc.mp3","3750418128c2":"audio/ai04-ui-inspector/3750418128c2.mp3","e92914e2d183":"audio/ai04-ui-inspector/e92914e2d183.mp3","28acf87bf838":"audio/ai04-ui-inspector/28acf87bf838.mp3","b9bf87237e15":"audio/ai04-ui-inspector/b9bf87237e15.mp3","2f93d6a0cb73":"audio/ai04-ui-inspector/2f93d6a0cb73.mp3","8f7ad152ae7a":"audio/ai04-ui-inspector/8f7ad152ae7a.mp3","6144b9febc32":"audio/ai04-ui-inspector/6144b9febc32.mp3","179d160ac71f":"audio/ai04-ui-inspector/179d160ac71f.mp3","dc0b127fb60f":"audio/ai04-ui-inspector/dc0b127fb60f.mp3","a13825d7b4a4":"audio/ai04-ui-inspector/a13825d7b4a4.mp3","bfa1b62b1d68":"audio/ai04-ui-inspector/bfa1b62b1d68.mp3","c8d756e97035":"audio/ai04-ui-inspector/c8d756e97035.mp3","031eb96d9d13":"audio/ai04-ui-inspector/031eb96d9d13.mp3","5d5f05e3a464":"audio/ai04-ui-inspector/5d5f05e3a464.mp3","f44e5154c88e":"audio/ai04-ui-inspector/f44e5154c88e.mp3","dec590901e64":"audio/ai04-ui-inspector/dec590901e64.mp3","3b86a6f3cb9d":"audio/ai04-ui-inspector/3b86a6f3cb9d.mp3","6e907a9ea1b1":"audio/ai04-ui-inspector/6e907a9ea1b1.mp3","cfab5df41ad1":"audio/ai04-ui-inspector/cfab5df41ad1.mp3","14aca681385b":"audio/ai04-ui-inspector/14aca681385b.mp3","3385404f0986":"audio/ai04-ui-inspector/3385404f0986.mp3","ae4edc092caa":"audio/ai04-ui-inspector/ae4edc092caa.mp3","8b92bed02c5b":"audio/ai04-ui-inspector/8b92bed02c5b.mp3","1d8c976ac3e4":"audio/ai04-ui-inspector/1d8c976ac3e4.mp3","5c61cd3e292d":"audio/ai04-ui-inspector/5c61cd3e292d.mp3","923f252d3486":"audio/ai04-ui-inspector/923f252d3486.mp3","cd3e7f94eba3":"audio/ai04-ui-inspector/cd3e7f94eba3.mp3","ed9ed3821dcf":"audio/ai04-ui-inspector/ed9ed3821dcf.mp3","76d672f27e54":"audio/ai04-ui-inspector/76d672f27e54.mp3","ce7889573a0a":"audio/ai04-ui-inspector/ce7889573a0a.mp3","4887c1128430":"audio/ai04-ui-inspector/4887c1128430.mp3","6fbc75bae354":"audio/ai04-ui-inspector/6fbc75bae354.mp3","512fdbe08c22":"audio/ai04-ui-inspector/512fdbe08c22.mp3","b4dadd4ca696":"audio/ai04-ui-inspector/b4dadd4ca696.mp3","6a6cfacdfac4":"audio/ai04-ui-inspector/6a6cfacdfac4.mp3","6991ba190822":"audio/ai04-ui-inspector/6991ba190822.mp3","617ca255948a":"audio/ai04-ui-inspector/617ca255948a.mp3","2d6b338610cd":"audio/ai04-ui-inspector/2d6b338610cd.mp3","e2201058885c":"audio/ai04-ui-inspector/e2201058885c.mp3","6aefdacbf9ce":"audio/ai04-ui-inspector/6aefdacbf9ce.mp3","0f5758aa4491":"audio/ai04-ui-inspector/0f5758aa4491.mp3","64d423dc159d":"audio/ai04-ui-inspector/64d423dc159d.mp3","a6a1fe1db447":"audio/ai04-ui-inspector/a6a1fe1db447.mp3","97dc5fcae289":"audio/ai04-ui-inspector/97dc5fcae289.mp3","f0c04324e034":"audio/ai04-ui-inspector/f0c04324e034.mp3","1825e2dbc31e":"audio/ai04-ui-inspector/1825e2dbc31e.mp3","909d73d48990":"audio/ai04-ui-inspector/909d73d48990.mp3","5eec9ef01114":"audio/ai04-ui-inspector/5eec9ef01114.mp3","98c39d026b32":"audio/ai04-ui-inspector/98c39d026b32.mp3","45dc682cadde":"audio/ai04-ui-inspector/45dc682cadde.mp3","627350e7c797":"audio/ai04-ui-inspector/627350e7c797.mp3","f645100bbbe4":"audio/ai04-ui-inspector/f645100bbbe4.mp3","a3c12712badb":"audio/ai04-ui-inspector/a3c12712badb.mp3","e54d9e87ef27":"audio/ai04-ui-inspector/e54d9e87ef27.mp3","ee09044ea69d":"audio/ai04-ui-inspector/ee09044ea69d.mp3","16ea0bb1483d":"audio/ai04-ui-inspector/16ea0bb1483d.mp3","e5bb218aeda0":"audio/ai04-ui-inspector/e5bb218aeda0.mp3","a66234b845ea":"audio/ai04-ui-inspector/a66234b845ea.mp3","ca813a19fdc5":"audio/ai04-ui-inspector/ca813a19fdc5.mp3","a77e605361a0":"audio/ai04-ui-inspector/a77e605361a0.mp3","d579c4469efe":"audio/ai04-ui-inspector/d579c4469efe.mp3","cf16977c770a":"audio/ai04-ui-inspector/cf16977c770a.mp3","c64f51b80323":"audio/ai04-ui-inspector/c64f51b80323.mp3","d38136cec014":"audio/ai04-ui-inspector/d38136cec014.mp3","5e601865a6aa":"audio/ai04-ui-inspector/5e601865a6aa.mp3","81575cc9760b":"audio/ai04-ui-inspector/81575cc9760b.mp3","47b3310fd0eb":"audio/ai04-ui-inspector/47b3310fd0eb.mp3","95c8a274d6b9":"audio/ai04-ui-inspector/95c8a274d6b9.mp3","20f19aa0bde0":"audio/ai04-ui-inspector/20f19aa0bde0.mp3","6a793128dfc3":"audio/ai04-ui-inspector/6a793128dfc3.mp3","2c1c286dad99":"audio/ai04-ui-inspector/2c1c286dad99.mp3","f641244a9ce3":"audio/ai04-ui-inspector/f641244a9ce3.mp3","ca568fc98df0":"audio/ai04-ui-inspector/ca568fc98df0.mp3","bb928e9930ff":"audio/ai04-ui-inspector/bb928e9930ff.mp3","59c6121a8a5d":"audio/ai04-ui-inspector/59c6121a8a5d.mp3","55b8d003517f":"audio/ai04-ui-inspector/55b8d003517f.mp3","efcad34495be":"audio/ai04-ui-inspector/efcad34495be.mp3","22700da77f90":"audio/ai04-ui-inspector/22700da77f90.mp3","ea0685890ed3":"audio/ai04-ui-inspector/ea0685890ed3.mp3","9abe9d61ceff":"audio/ai04-ui-inspector/9abe9d61ceff.mp3","823ff2b0e918":"audio/ai04-ui-inspector/823ff2b0e918.mp3","910f766c52cb":"audio/ai04-ui-inspector/910f766c52cb.mp3","636cf21f929b":"audio/ai04-ui-inspector/636cf21f929b.mp3","4cf9b7ccc647":"audio/ai04-ui-inspector/4cf9b7ccc647.mp3","a68f1948bd19":"audio/ai04-ui-inspector/a68f1948bd19.mp3","37e839507229":"audio/ai04-ui-inspector/37e839507229.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.mtext','.sub'],extraNonDecorateSelectors:'.hotspot,.llmmodelopt,.llmside-item,.llmside-new,.llmchip,.coachbtn,.llmcopy,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
 </html>
