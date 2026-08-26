@@ -154,8 +154,38 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
     </div>
   </div>
 
+  <!-- STEP 3b · Know the document's limits -->
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · รู้ขอบเขตของเอกสาร</span>
+        <span class="scorepill" id="scorePill2">ตอบผิด 0 ครั้ง</span>
+      </div>
+      <div class="roledesc"><b>🧑‍💼 ด่านต่อไป:</b> เอกสารอ้างอิงไม่ได้มีคำตอบของทุกคำถาม — AI ที่ดีต้องรู้ว่าเมื่อไหร่ควร "บอกตามตรงว่าไม่รู้" แทนที่จะมั่วคำตอบขึ้นมาเองแม้จะมีเอกสารอยู่ในมือ</div>
+      <div class="docbox">
+        <div class="doctitle">📄 เอกสารอ้างอิง: กฎระเบียบโรงเรียน (ฉบับย่อ) — เหมือนเดิม</div>
+        <ol>
+          <li>ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์</li>
+          <li>ห้ามใช้โทรศัพท์มือถือในห้องเรียน ยกเว้นได้รับอนุญาตจากครู</li>
+          <li>นักเรียนต้องใส่ชุดพละวันพุธและวันศุกร์</li>
+          <li>พักกลางวัน 12:00–13:00 น.</li>
+          <li>ศูนย์รับเลี้ยงเด็กก่อน/หลังเลิกเรียน เปิด 07:00–08:00 น. และ 16:00–18:00 น.</li>
+        </ol>
+      </div>
+      <span class="rtag" id="roundTag2" style="display:block;margin:6px 0 6px">ข้อที่ 1/5</span>
+      <div class="qcard">
+        <div class="qlabel">❓ คำถามจากนักเรียน</div>
+        <div class="qtext" id="roundQ2"></div>
+      </div>
+      <div class="sub" style="margin-bottom:6px">เอกสารตอบคำถามนี้ได้ไหม? แตะคำตอบที่ AI ที่ดีควรพูด</div>
+      <div class="answerrow" id="answerRow2"></div>
+      <div class="explainbox" id="explainBox2" style="margin-top:10px"></div>
+      <button class="btn" id="nextRoundBtn2" style="display:none;margin-top:14px" onclick="nextScope()">ข้อถัดไป →</button>
+    </div>
+  </div>
+
   <!-- STEP 4 · Reflection -->
-  <div class="panel" id="s5" data-step="3" style="display:none">
+  <div class="panel" id="s5" data-step="4" style="display:none">
     <div class="refl-wrap">
       <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
       <div class="title" style="margin-top:2px">ถ้าจะสร้าง AI ผู้ช่วยของโรงเรียนเอง จะให้มัน "ดู" เอกสารอะไรก่อนตอบ?</div>
@@ -182,7 +212,8 @@ const PROCESS = [
   { label:'จุดเริ่ม', step:0 },
   { label:'แนวคิด', step:1 },
   { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
-  { label:'สะท้อนคิด', step:3 },
+  { label:'รู้ขอบเขต', step:3 },
+  { label:'สะท้อนคิด', step:4 },
 ];
 let curStep = 0;
 function $(id){ return document.getElementById(id); }
@@ -201,6 +232,7 @@ function goStep(n){
   renderRail();
   if (n===1) renderConcept();
   if (n===2) startPractice();
+  if (n===3) startScope();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -290,14 +322,77 @@ function nextRound(){
   renderRound();
 }
 
+// ===== Step 3b: does the document actually answer this? (grounding limits / honest refusal) =====
+const SCOPE_ROUNDS = [
+  { q:'ห้องสมุดเปิดกี่โมงถึงกี่โมง?', inDoc:true,
+    good:'ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์ ครับ (ตรงกับเอกสาร)',
+    bad:'ห้องสมุดเปิด 08:00–20:00 น. ทุกวันครับ (เดาขึ้นมาเอง ทั้งที่เอกสารมีคำตอบอยู่แล้ว)',
+    explain:'คำถามนี้ "มี" คำตอบอยู่ในเอกสารอยู่แล้ว — AI ที่ดีควรอ่านแล้วตอบตรงตามนั้น ไม่ใช่เดาขึ้นมาใหม่ทั้งที่มีคำตอบอยู่ตรงหน้า' },
+  { q:'ปีนี้โรงเรียนจะพาไปทัศนศึกษาที่ไหน?', inDoc:false,
+    good:'เอกสารกฎระเบียบโรงเรียนที่มีอยู่ไม่ได้พูดถึงเรื่องทัศนศึกษาเลยครับ ต้องถามฝ่ายกิจกรรมโดยตรง',
+    bad:'ปีนี้โรงเรียนจะพาไปทัศนศึกษาที่พิพิธภัณฑ์วิทยาศาสตร์ครับ',
+    explain:'เอกสารกฎระเบียบโรงเรียนไม่มีข้อมูลเรื่องทัศนศึกษาเลย — AI ที่ดีควรบอกตามตรงว่าไม่มีข้อมูลนี้ แทนที่จะมั่วสถานที่ขึ้นมาเองให้ฟังดูน่าเชื่อ' },
+  { q:'ใครเป็นครูใหญ่ของโรงเรียนตอนนี้?', inDoc:false,
+    good:'เอกสารนี้ไม่มีข้อมูลชื่อครูใหญ่ครับ แนะนำให้ตรวจสอบจากเว็บไซต์โรงเรียนหรือถามฝ่ายธุรการ',
+    bad:'ครูใหญ่ของโรงเรียนตอนนี้คือคุณสมชาย ใจดี ครับ',
+    explain:'กฎระเบียบโรงเรียนไม่ได้ระบุชื่อครูใหญ่ไว้เลย การตอบชื่อคนขึ้นมาเป็นการมั่วข้อมูลที่อาจทำให้เข้าใจผิดร้ายแรง — ควรบอกว่าไม่รู้แทน' },
+  { q:'พักกลางวันกี่โมงถึงกี่โมง?', inDoc:true,
+    good:'พักกลางวัน 12:00–13:00 น. ตามที่ระบุไว้ในเอกสารครับ',
+    bad:'พักกลางวันประมาณ 1 ชั่วโมงครับ แต่จำเวลาแน่นอนไม่ได้',
+    explain:'เอกสารระบุเวลาพักกลางวันไว้ชัดเจนแล้ว (12:00–13:00 น.) — AI ควรอ้างอิงเวลาที่แน่นอนจากเอกสาร ไม่ใช่ตอบแบบคลุมเครือทั้งที่มีคำตอบชัดอยู่แล้ว' },
+  { q:'มีวิชาเลือกเสรีให้ลงทะเบียนกี่วิชา?', inDoc:false,
+    good:'เอกสารกฎระเบียบที่มีอยู่ไม่ได้ระบุเรื่องวิชาเลือกเสรีไว้ครับ ต้องสอบถามฝ่ายวิชาการเพิ่มเติม',
+    bad:'มีวิชาเลือกเสรีให้ลงทะเบียนทั้งหมด 6 วิชาครับ',
+    explain:'เอกสารกฎระเบียบโรงเรียนไม่มีข้อมูลเรื่องวิชาเลือกเสรีเลย — การตอบตัวเลขขึ้นมาลอย ๆ คือการมั่วข้อมูล ทั้งที่ AI ควรบอกว่าเอกสารนี้ตอบคำถามนี้ไม่ได้' },
+];
+let sIdx = 0, scopeWrong = 0, scopeAnswered = false, scopeAiSide = 'good';
+
+function startScope(){ sIdx = 0; scopeWrong = 0; renderScope(); }
+function renderScope(){
+  const r = SCOPE_ROUNDS[sIdx];
+  scopeAnswered = false;
+  scopeAiSide = Math.random() < 0.5 ? 'good' : 'bad';
+  $('roundTag2').textContent = `ข้อที่ ${sIdx+1}/${SCOPE_ROUNDS.length}`;
+  $('scorePill2').textContent = `ตอบผิด ${scopeWrong} ครั้ง`;
+  $('roundQ2').textContent = r.q;
+  const textA = scopeAiSide === 'good' ? r.good : r.bad;
+  const textB = scopeAiSide === 'good' ? r.bad : r.good;
+  $('answerRow2').innerHTML = `
+    <button type="button" class="acard" id="scopeA" onclick="pickScope('a')"><span class="alabel">🤖 คำตอบ A</span>${esc(textA)}</button>
+    <button type="button" class="acard" id="scopeB" onclick="pickScope('b')"><span class="alabel">🤖 คำตอบ B</span>${esc(textB)}</button>`;
+  $('explainBox2').className = 'explainbox';
+  $('explainBox2').innerHTML = '';
+  $('nextRoundBtn2').style.display = 'none';
+}
+function pickScope(side){
+  if (scopeAnswered) return;
+  scopeAnswered = true;
+  const r = SCOPE_ROUNDS[sIdx];
+  const correctSlot = scopeAiSide === 'good' ? 'a' : 'b';
+  const correct = side === correctSlot;
+  $('scopeA').disabled = true; $('scopeB').disabled = true;
+  $('scope' + correctSlot.toUpperCase()).classList.add(correct ? 'correct' : 'wrong');
+  if (!correct){ $('scope' + side.toUpperCase()).classList.add('wrong'); scopeWrong++; $('scorePill2').textContent = `ตอบผิด ${scopeWrong} ครั้ง`; }
+  else if (window.dlf) dlf.cheer('เก่งมาก!');
+  $('explainBox2').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
+  $('explainBox2').innerHTML = `<b>${correct ? '✅ ถูกต้อง! นี่คือคำตอบที่ AI ที่ดีควรพูด' : '❌ ยังไม่ถูก — คำตอบที่ดีคือ ' + correctSlot.toUpperCase()}</b>${esc(r.explain)}`;
+  $('nextRoundBtn2').style.display = 'block';
+}
+function nextScope(){
+  sIdx++;
+  if (sIdx >= SCOPE_ROUNDS.length){ goStep(4); return; }
+  renderScope();
+}
+
 // ===== Step 4 done =====
 function finishGame(){
-  window.dlfStars = wrongCount <= 1 ? 3 : wrongCount <= 3 ? 2 : 1;
+  const totalWrong = wrongCount + scopeWrong;
+  window.dlfStars = totalWrong <= 2 ? 3 : totalWrong <= 5 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
   $('resTitle').textContent = window.dlfStars === 3 ? 'ตอบจากเอกสารจริงเก่งมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `ตอบครบ ${ROUNDS.length} ข้อ โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
+  $('resScore').textContent = `ทำครบ ${ROUNDS.length + SCOPE_ROUNDS.length} ข้อ (ตอบจากเอกสาร ${ROUNDS.length} ข้อ + รู้ขอบเขตเอกสาร ${SCOPE_ROUNDS.length} ข้อ) โดยตอบผิดทั้งหมด ${totalWrong} ครั้ง`;
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -355,7 +450,7 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"6660fc09cb03":"audio/ai10-sandbox-master/6660fc09cb03.mp3","fae8687fb402":"audio/ai10-sandbox-master/fae8687fb402.mp3","976a5a48f4d9":"audio/ai10-sandbox-master/976a5a48f4d9.mp3","6be762de71d3":"audio/ai10-sandbox-master/6be762de71d3.mp3","2921b2d5a114":"audio/ai10-sandbox-master/2921b2d5a114.mp3","d811e87eefb3":"audio/ai10-sandbox-master/d811e87eefb3.mp3","71a51a023ae8":"audio/ai10-sandbox-master/71a51a023ae8.mp3","852128f8e136":"audio/ai10-sandbox-master/852128f8e136.mp3","ce97d9170f39":"audio/ai10-sandbox-master/ce97d9170f39.mp3","d510e0b04163":"audio/ai10-sandbox-master/d510e0b04163.mp3","27f8a60ece31":"audio/ai10-sandbox-master/27f8a60ece31.mp3","c0b2ce96392e":"audio/ai10-sandbox-master/c0b2ce96392e.mp3","4c7f0e8ac60d":"audio/ai10-sandbox-master/4c7f0e8ac60d.mp3","556e94dd062a":"audio/ai10-sandbox-master/556e94dd062a.mp3","d585a6a9d18d":"audio/ai10-sandbox-master/d585a6a9d18d.mp3","4c280000630c":"audio/ai10-sandbox-master/4c280000630c.mp3","4751df9b0a77":"audio/ai10-sandbox-master/4751df9b0a77.mp3","b5f11fde1306":"audio/ai10-sandbox-master/b5f11fde1306.mp3","ae285d998b10":"audio/ai10-sandbox-master/ae285d998b10.mp3","3e5161d42589":"audio/ai10-sandbox-master/3e5161d42589.mp3","8f899eae95ff":"audio/ai10-sandbox-master/8f899eae95ff.mp3","fc39b03be3ad":"audio/ai10-sandbox-master/fc39b03be3ad.mp3","cea97a64d8ad":"audio/ai10-sandbox-master/cea97a64d8ad.mp3","a993c1ec407e":"audio/ai10-sandbox-master/a993c1ec407e.mp3","64686e1761c3":"audio/ai10-sandbox-master/64686e1761c3.mp3","d29a305f571b":"audio/ai10-sandbox-master/d29a305f571b.mp3","bcf5d6f34f71":"audio/ai10-sandbox-master/bcf5d6f34f71.mp3","39d11af92b4f":"audio/ai10-sandbox-master/39d11af92b4f.mp3","603a19382b9e":"audio/ai10-sandbox-master/603a19382b9e.mp3","29ad6e430561":"audio/ai10-sandbox-master/29ad6e430561.mp3","040cbe1237c6":"audio/ai10-sandbox-master/040cbe1237c6.mp3","7ab2786f9409":"audio/ai10-sandbox-master/7ab2786f9409.mp3","83e02f9379e3":"audio/ai10-sandbox-master/83e02f9379e3.mp3","17bb9b990f39":"audio/ai10-sandbox-master/17bb9b990f39.mp3","a66234b845ea":"audio/ai10-sandbox-master/a66234b845ea.mp3","faf81b740c6d":"audio/ai10-sandbox-master/faf81b740c6d.mp3","981da41c62a3":"audio/ai10-sandbox-master/981da41c62a3.mp3","4d665c71a9ba":"audio/ai10-sandbox-master/4d665c71a9ba.mp3","4780fc79462b":"audio/ai10-sandbox-master/4780fc79462b.mp3","dfb3e4afa929":"audio/ai10-sandbox-master/dfb3e4afa929.mp3","b6f862f3d5c9":"audio/ai10-sandbox-master/b6f862f3d5c9.mp3","57f54cf2d9c1":"audio/ai10-sandbox-master/57f54cf2d9c1.mp3","d7a5b884a56b":"audio/ai10-sandbox-master/d7a5b884a56b.mp3","8e6baed70cab":"audio/ai10-sandbox-master/8e6baed70cab.mp3","dec1ce6c690b":"audio/ai10-sandbox-master/dec1ce6c690b.mp3","f3bc581be169":"audio/ai10-sandbox-master/f3bc581be169.mp3","3fb0e684b56b":"audio/ai10-sandbox-master/3fb0e684b56b.mp3","46abc19d5112":"audio/ai10-sandbox-master/46abc19d5112.mp3","e04742eeacc1":"audio/ai10-sandbox-master/e04742eeacc1.mp3","8314cfa6ef50":"audio/ai10-sandbox-master/8314cfa6ef50.mp3","08ed479a8980":"audio/ai10-sandbox-master/08ed479a8980.mp3","b1fc49be34e6":"audio/ai10-sandbox-master/b1fc49be34e6.mp3","660babd55c3b":"audio/ai10-sandbox-master/660babd55c3b.mp3","52b1d6e957d5":"audio/ai10-sandbox-master/52b1d6e957d5.mp3","18c5170e97a8":"audio/ai10-sandbox-master/18c5170e97a8.mp3","c8a8e9ea3a61":"audio/ai10-sandbox-master/c8a8e9ea3a61.mp3","6dff09512b06":"audio/ai10-sandbox-master/6dff09512b06.mp3","ce1fd9818d76":"audio/ai10-sandbox-master/ce1fd9818d76.mp3","0179af46d1d6":"audio/ai10-sandbox-master/0179af46d1d6.mp3","cb6458397c09":"audio/ai10-sandbox-master/cb6458397c09.mp3","e0293c5ef2f8":"audio/ai10-sandbox-master/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai10-sandbox-master/9bb8216b6df6.mp3","fe22d43a91c8":"audio/ai10-sandbox-master/fe22d43a91c8.mp3","dba177b037ec":"audio/ai10-sandbox-master/dba177b037ec.mp3","dab05dcf3741":"audio/ai10-sandbox-master/dab05dcf3741.mp3","dc60fd67731f":"audio/ai10-sandbox-master/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai10-sandbox-master/af6ba89d9b27.mp3","aca2b0992481":"audio/ai10-sandbox-master/aca2b0992481.mp3","66590c21d92e":"audio/ai10-sandbox-master/66590c21d92e.mp3","e18a189a9371":"audio/ai10-sandbox-master/e18a189a9371.mp3","8af1f0edc12c":"audio/ai10-sandbox-master/8af1f0edc12c.mp3"}</script>
+<script id="dlfAudioData" type="application/json">{"6660fc09cb03":"audio/ai10-sandbox-master/6660fc09cb03.mp3","fae8687fb402":"audio/ai10-sandbox-master/fae8687fb402.mp3","976a5a48f4d9":"audio/ai10-sandbox-master/976a5a48f4d9.mp3","6be762de71d3":"audio/ai10-sandbox-master/6be762de71d3.mp3","2921b2d5a114":"audio/ai10-sandbox-master/2921b2d5a114.mp3","d811e87eefb3":"audio/ai10-sandbox-master/d811e87eefb3.mp3","71a51a023ae8":"audio/ai10-sandbox-master/71a51a023ae8.mp3","852128f8e136":"audio/ai10-sandbox-master/852128f8e136.mp3","ce97d9170f39":"audio/ai10-sandbox-master/ce97d9170f39.mp3","d510e0b04163":"audio/ai10-sandbox-master/d510e0b04163.mp3","27f8a60ece31":"audio/ai10-sandbox-master/27f8a60ece31.mp3","c0b2ce96392e":"audio/ai10-sandbox-master/c0b2ce96392e.mp3","4c7f0e8ac60d":"audio/ai10-sandbox-master/4c7f0e8ac60d.mp3","556e94dd062a":"audio/ai10-sandbox-master/556e94dd062a.mp3","d585a6a9d18d":"audio/ai10-sandbox-master/d585a6a9d18d.mp3","4c280000630c":"audio/ai10-sandbox-master/4c280000630c.mp3","4751df9b0a77":"audio/ai10-sandbox-master/4751df9b0a77.mp3","b5f11fde1306":"audio/ai10-sandbox-master/b5f11fde1306.mp3","ae285d998b10":"audio/ai10-sandbox-master/ae285d998b10.mp3","3e5161d42589":"audio/ai10-sandbox-master/3e5161d42589.mp3","8f899eae95ff":"audio/ai10-sandbox-master/8f899eae95ff.mp3","fc39b03be3ad":"audio/ai10-sandbox-master/fc39b03be3ad.mp3","cea97a64d8ad":"audio/ai10-sandbox-master/cea97a64d8ad.mp3","a993c1ec407e":"audio/ai10-sandbox-master/a993c1ec407e.mp3","64686e1761c3":"audio/ai10-sandbox-master/64686e1761c3.mp3","d29a305f571b":"audio/ai10-sandbox-master/d29a305f571b.mp3","bcf5d6f34f71":"audio/ai10-sandbox-master/bcf5d6f34f71.mp3","39d11af92b4f":"audio/ai10-sandbox-master/39d11af92b4f.mp3","603a19382b9e":"audio/ai10-sandbox-master/603a19382b9e.mp3","29ad6e430561":"audio/ai10-sandbox-master/29ad6e430561.mp3","040cbe1237c6":"audio/ai10-sandbox-master/040cbe1237c6.mp3","7ab2786f9409":"audio/ai10-sandbox-master/7ab2786f9409.mp3","83e02f9379e3":"audio/ai10-sandbox-master/83e02f9379e3.mp3","17bb9b990f39":"audio/ai10-sandbox-master/17bb9b990f39.mp3","a66234b845ea":"audio/ai10-sandbox-master/a66234b845ea.mp3","faf81b740c6d":"audio/ai10-sandbox-master/faf81b740c6d.mp3","981da41c62a3":"audio/ai10-sandbox-master/981da41c62a3.mp3","4d665c71a9ba":"audio/ai10-sandbox-master/4d665c71a9ba.mp3","4780fc79462b":"audio/ai10-sandbox-master/4780fc79462b.mp3","dfb3e4afa929":"audio/ai10-sandbox-master/dfb3e4afa929.mp3","b6f862f3d5c9":"audio/ai10-sandbox-master/b6f862f3d5c9.mp3","57f54cf2d9c1":"audio/ai10-sandbox-master/57f54cf2d9c1.mp3","d7a5b884a56b":"audio/ai10-sandbox-master/d7a5b884a56b.mp3","8e6baed70cab":"audio/ai10-sandbox-master/8e6baed70cab.mp3","dec1ce6c690b":"audio/ai10-sandbox-master/dec1ce6c690b.mp3","f3bc581be169":"audio/ai10-sandbox-master/f3bc581be169.mp3","3fb0e684b56b":"audio/ai10-sandbox-master/3fb0e684b56b.mp3","46abc19d5112":"audio/ai10-sandbox-master/46abc19d5112.mp3","e04742eeacc1":"audio/ai10-sandbox-master/e04742eeacc1.mp3","8314cfa6ef50":"audio/ai10-sandbox-master/8314cfa6ef50.mp3","08ed479a8980":"audio/ai10-sandbox-master/08ed479a8980.mp3","b1fc49be34e6":"audio/ai10-sandbox-master/b1fc49be34e6.mp3","660babd55c3b":"audio/ai10-sandbox-master/660babd55c3b.mp3","52b1d6e957d5":"audio/ai10-sandbox-master/52b1d6e957d5.mp3","18c5170e97a8":"audio/ai10-sandbox-master/18c5170e97a8.mp3","c8a8e9ea3a61":"audio/ai10-sandbox-master/c8a8e9ea3a61.mp3","6dff09512b06":"audio/ai10-sandbox-master/6dff09512b06.mp3","ce1fd9818d76":"audio/ai10-sandbox-master/ce1fd9818d76.mp3","0179af46d1d6":"audio/ai10-sandbox-master/0179af46d1d6.mp3","cb6458397c09":"audio/ai10-sandbox-master/cb6458397c09.mp3","e0293c5ef2f8":"audio/ai10-sandbox-master/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai10-sandbox-master/9bb8216b6df6.mp3","fe22d43a91c8":"audio/ai10-sandbox-master/fe22d43a91c8.mp3","dba177b037ec":"audio/ai10-sandbox-master/dba177b037ec.mp3","dab05dcf3741":"audio/ai10-sandbox-master/dab05dcf3741.mp3","dc60fd67731f":"audio/ai10-sandbox-master/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai10-sandbox-master/af6ba89d9b27.mp3","aca2b0992481":"audio/ai10-sandbox-master/aca2b0992481.mp3","66590c21d92e":"audio/ai10-sandbox-master/66590c21d92e.mp3","e18a189a9371":"audio/ai10-sandbox-master/e18a189a9371.mp3","8af1f0edc12c":"audio/ai10-sandbox-master/8af1f0edc12c.mp3","07713ef9f593":"audio/ai10-sandbox-master/07713ef9f593.mp3","2d85f6d50fa6":"audio/ai10-sandbox-master/2d85f6d50fa6.mp3","06bf53bb1629":"audio/ai10-sandbox-master/06bf53bb1629.mp3","abb5fc97e3f6":"audio/ai10-sandbox-master/abb5fc97e3f6.mp3","28ecaf71e16e":"audio/ai10-sandbox-master/28ecaf71e16e.mp3","f964e01e38f1":"audio/ai10-sandbox-master/f964e01e38f1.mp3","1074a216408b":"audio/ai10-sandbox-master/1074a216408b.mp3","a1904d653782":"audio/ai10-sandbox-master/a1904d653782.mp3","cdb9ec1943f6":"audio/ai10-sandbox-master/cdb9ec1943f6.mp3","6b45d8c981da":"audio/ai10-sandbox-master/6b45d8c981da.mp3","daa6cbe1892c":"audio/ai10-sandbox-master/daa6cbe1892c.mp3","27cf47b5180e":"audio/ai10-sandbox-master/27cf47b5180e.mp3","e4e4e9ff223b":"audio/ai10-sandbox-master/e4e4e9ff223b.mp3","fd6d5666752f":"audio/ai10-sandbox-master/fd6d5666752f.mp3","4c520e3bd639":"audio/ai10-sandbox-master/4c520e3bd639.mp3","86f9c933bd04":"audio/ai10-sandbox-master/86f9c933bd04.mp3","f690b6b5a5fc":"audio/ai10-sandbox-master/f690b6b5a5fc.mp3","883e0b95a506":"audio/ai10-sandbox-master/883e0b95a506.mp3","5b36cb4200bd":"audio/ai10-sandbox-master/5b36cb4200bd.mp3","e340c4d36186":"audio/ai10-sandbox-master/e340c4d36186.mp3","9833f9743793":"audio/ai10-sandbox-master/9833f9743793.mp3","91c489263228":"audio/ai10-sandbox-master/91c489263228.mp3","4b3eb632022f":"audio/ai10-sandbox-master/4b3eb632022f.mp3","67c33ac80457":"audio/ai10-sandbox-master/67c33ac80457.mp3","ef72b9f1f3ae":"audio/ai10-sandbox-master/ef72b9f1f3ae.mp3","28d419640301":"audio/ai10-sandbox-master/28d419640301.mp3","43689e44f471":"audio/ai10-sandbox-master/43689e44f471.mp3"}</script>
 <script>window.DLF_CONFIG={extraReadSelectors:['.qtext','.doctitle'],extraNonDecorateSelectors:'.acard,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
