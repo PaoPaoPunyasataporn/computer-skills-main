@@ -7,16 +7,17 @@
 // accounts.
 import { getSql } from './db';
 
-export type Certification = { id: number; name: string; score: number | null; created_at: string };
+export type Certification = { id: number; name: string; score: number | null; grade_level: string | null; created_at: string };
 
 // Record that someone passed the certification. `score` is a percent (0-100) or
-// null if the game did not report one. Returns the new row's id, or null when
-// the database is not configured.
-export async function addCertification(name: string, score: number | null): Promise<number | null> {
+// null if the game did not report one. `gradeLevel` is one of GRADE_LEVELS (see
+// lib/grade-levels.ts) or null. Returns the new row's id, or null when the
+// database is not configured.
+export async function addCertification(name: string, gradeLevel: string | null, score: number | null): Promise<number | null> {
   const sql = getSql();
   if (!sql) return null;
   const rows = (await sql`
-    insert into certifications (name, score) values (${name}, ${score})
+    insert into certifications (name, grade_level, score) values (${name}, ${gradeLevel}, ${score})
     returning id`) as { id: number }[];
   return rows[0]?.id ?? null;
 }
@@ -26,7 +27,7 @@ export async function listCertifications(): Promise<Certification[]> {
   const sql = getSql();
   if (!sql) return [];
   return (await sql`
-    select id, name, score, created_at
+    select id, name, grade_level, score, created_at
     from certifications
     order by created_at desc, id desc`) as Certification[];
 }

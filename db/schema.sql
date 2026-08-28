@@ -21,11 +21,13 @@ create table if not exists certifications (
   id          serial primary key,
   name        text not null,
   score       integer,                     -- percent 0-100; null if not reported
+  grade_level text,                        -- e.g. 'ป.4', 'ม.2'; null if not reported
   created_at  timestamptz not null default now()
 );
 
--- Bring older databases (created before the score column existed) up to date.
+-- Bring older databases (created before these columns existed) up to date.
 alter table certifications add column if not exists score integer;
+alter table certifications add column if not exists grade_level text;
 
 create index if not exists certifications_created_idx on certifications(created_at desc);
 

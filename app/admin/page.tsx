@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 
-type Cert = { id: number; name: string; score: number | null; created_at: string };
+type Cert = { id: number; name: string; score: number | null; grade_level: string | null; created_at: string };
 
 const field: React.CSSProperties = { padding: '12px 14px', border: '1.5px solid var(--line)', borderRadius: 12, fontFamily: 'Sarabun', fontSize: 16, background: '#FFFDF6', width: '100%' };
 
@@ -109,6 +109,7 @@ export default function AdminPage() {
                 <tr style={{ background: 'var(--cream)', textAlign: 'left', fontFamily: 'Mitr', fontSize: 14, color: 'var(--muted2)' }}>
                   <th style={{ padding: '12px 16px', width: 60 }}>#</th>
                   <th style={{ padding: '12px 16px' }}>ชื่อนักเรียน</th>
+                  <th style={{ padding: '12px 16px', width: 90 }}>ระดับชั้น</th>
                   <th style={{ padding: '12px 16px', width: 110 }}>คะแนน</th>
                   <th style={{ padding: '12px 16px', width: 240 }}>วันที่ผ่าน</th>
                 </tr>
@@ -118,6 +119,7 @@ export default function AdminPage() {
                   <tr key={c.id} style={{ borderTop: '1px solid var(--line)' }}>
                     <td style={{ padding: '12px 16px', color: 'var(--muted2)', fontWeight: 700 }}>{i + 1}</td>
                     <td style={{ padding: '12px 16px', fontWeight: 600, fontSize: 16 }}>{c.name}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--muted2)' }}>{c.grade_level ?? '—'}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--green-d)', fontWeight: 700 }}>{c.score == null ? '—' : `${c.score}%`}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--muted2)' }}>{fmt(c.created_at)}</td>
                   </tr>

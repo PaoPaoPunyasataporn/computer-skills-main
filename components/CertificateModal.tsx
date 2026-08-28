@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { BossScore } from '@/components/GameOverlay';
+import { GRADE_LEVELS } from '@/lib/grade-levels';
 
 // Shown after a child clears the final boss fight. They type their name once;
 // we record it (POST /api/certify) and render it onto a certificate. If the boss
@@ -27,6 +28,7 @@ const DATE_MAX_WIDTH = 340;
 
 export default function CertificateModal({ score = null, onClose }: { score?: BossScore | null; onClose: () => void }) {
   const [name, setName] = useState('');
+  const [gradeLevel, setGradeLevel] = useState('');
   const [issued, setIssued] = useState('');   // the name once submitted
   const [busy, setBusy] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -40,6 +42,7 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
   async function submit() {
     if (busy) return;   // guard against rapid double-Enter firing two concurrent POSTs
     const clean = name.trim().replace(/\s+/g, ' ').slice(0, 60);
+    if (!gradeLevel) { setErr('เลือกระดับชั้นของหนูก่อนนะ'); return; }
     if (!clean) { setErr('พิมพ์ชื่อของหนูก่อนนะ'); return; }
     setBusy(true); setErr('');
     // Show the earned certificate immediately. Recording is deliberately
@@ -49,7 +52,7 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
     try {
       const response = await fetch('/api/certify', {
         method: 'POST', headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name: clean, score: score ? score.percent : null }),
+        body: JSON.stringify({ name: clean, gradeLevel, score: score ? score.percent : null }),
       });
       if (!response.ok) console.error('Could not record certification');
     } catch {
@@ -170,6 +173,26 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
         {scoreText && (
           <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 18, color: 'var(--green-d)', marginBottom: 14 }}>คะแนนของหนู: {scoreText}</div>
         )}
+        <div style={{ fontFamily: 'Sarabun', fontSize: 14, fontWeight: 600, color: 'var(--muted2)', marginBottom: 8, textAlign: 'left' }}>ระดับชั้นของหนู</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginBottom: 16 }}>
+          {GRADE_LEVELS.map((g) => (
+            <button
+              key={g}
+              type="button"
+              disabled={busy}
+              onClick={() => setGradeLevel(g)}
+              style={{
+                padding: '10px 6px', borderRadius: 12, fontFamily: 'Mitr', fontWeight: 700, fontSize: 15,
+                cursor: busy ? 'not-allowed' : 'pointer', opacity: busy ? 0.6 : 1,
+                border: gradeLevel === g ? '2px solid var(--blue, #2E6FE0)' : '1.5px solid var(--line)',
+                background: gradeLevel === g ? 'var(--blue-light, #E5EEFF)' : '#FFFDF6',
+                color: gradeLevel === g ? 'var(--blue-d, #1E4FB0)' : 'var(--text, #2b3350)',
+              }}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
         <input
           style={{ ...field, opacity: busy ? 0.6 : 1 }}
           placeholder="ชื่อ - นามสกุล"
@@ -180,7 +203,7 @@ export default function CertificateModal({ score = null, onClose }: { score?: Bo
           onKeyDown={(e) => e.key === 'Enter' && submit()}
         />
         {err && <div style={{ color: '#C23B2A', fontFamily: 'Sarabun', fontSize: 14, marginTop: 10 }}>{err}</div>}
-        <button className="btn3d blue" style={{ width: '100%', marginTop: 16, opacity: busy ? 0.6 : 1 }} disabled={busy} onClick={submit}>
+        <button className="btn3d blue" style={{ width: '100%', marginTop: 16, opacity: busy || !gradeLevel ? 0.6 : 1 }} disabled={busy} onClick={submit}>
           {busy ? '...' : 'รับใบประกาศนียบัตร'}
         </button>
       </div>
