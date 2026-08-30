@@ -31,9 +31,9 @@ export const AREAS: Area[] = [
     ],
   },
   {
-    num: 3, mascot: '🎨', title: 'การสร้างเนื้อหาดิจิทัล', sub: 'สร้างงานบนคอมพิวเตอร์ และใช้ของผู้อื่นอย่างถูกต้อง',
+    num: 3, mascot: '🔐', title: 'การสร้างและดูแลบัญชีดิจิทัล', sub: 'สมัครบัญชีของตัวเอง และดูแลให้ปลอดภัย',
     games: [
-      { code: 'g-creator', icon: '🎨', th: 'สตูดิโอสร้างสรรค์', desc: 'สร้างผลงานทีละขั้น ใช้ AI และอ้างอิงอย่างถูกต้อง', file: '/games/unit8-creator-studio.html' },
+      { code: 'g-google-account', icon: '🔐', th: 'สร้างบัญชี Google', desc: 'สมัครบัญชี Google ทีละขั้นตอน ตั้งรหัสผ่านที่ปลอดภัย', file: '/games/unit3-google-account.html' },
     ],
   },
   {
@@ -56,7 +56,7 @@ export const AREAS: Area[] = [
     // Each game forces the actual skill (label real data, fix a biased
     // dataset, click the real UI, write your own prompt, design system rules)
     // instead of letting a kid pattern-match a multiple-choice answer key.
-    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 4 โมดูล 13 บทเรียน',
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 3 โมดูล 12 บทเรียน',
     modules: [
       {
         key: 'm1-foundations', icon: '🤖', title: 'รากฐาน AI', sub: 'AI คืออะไร เรียนรู้จากข้อมูลยังไง ทำไมบางทีถึงลำเอียง และ AI ซ่อนอยู่ที่ไหนในชีวิตจริง',
@@ -83,12 +83,6 @@ export const AREAS: Area[] = [
           { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'ออกแบบกฎให้ AI ติวเตอร์ส่วนตัว ไม่บอกคำตอบตรง ๆ', file: '/games/ai09-gem-architect.html' },
           { code: 'g-sandboxmaster', icon: '📚', th: 'สถาปนิกข้อมูลอ้างอิงของ AI', desc: 'แนบเอกสารจริงให้ AI ดูก่อนตอบ (RAG) เปรียบเทียบคำตอบที่มั่วเองกับคำตอบที่อ้างอิงเอกสารจริง', file: '/games/ai10-sandbox-master.html' },
           { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'เรียนคณิตศาสตร์/คำศัพท์อังกฤษ หรือให้ AI ช่วยสรุปข้อมูล ทำการ์ดคำศัพท์ ในแชทจริง', file: '/games/ai11-learn-with-ai.html' },
-        ],
-      },
-      {
-        key: 'm5-synthesis', icon: '🏆', title: 'ภารกิจสุดท้าย', sub: 'รวมทุกทักษะเข้าด้วยกันในภารกิจใช้ AI ช่วยทำงานจริง',
-        games: [
-          { code: 'g-aiquest', icon: '🏆', th: 'ภารกิจใช้ AI อย่างมือโปร', desc: 'ภารกิจสุดท้าย ใช้ AI ช่วยทำประกาศกิจกรรมจริงให้โรงเรียน ตั้งคำถามดี ตรวจสอบ ปกป้องความเป็นส่วนตัว ปรับโทน และใช้อย่างรับผิดชอบ', file: '/games/ai13-ai-quest.html' },
         ],
       },
     ],
