@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สร้างบัญชี Google</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F4F2EA; --panel:#FFFFFF; --border:#E6E1D6;
+  --primary:#1A73E8; --primary-light:#E8F0FE; --primary-dark:#1558B0;
+  --green:#1E8E3E; --green-light:#E6F4EA;
+  --red:#D93025; --red-light:#FCE8E6;
+  --amber:#E37400; --amber-light:#FEF3E0;
+  --text:#0F1B2D; --text2:#54677E; --text3:#B0A794;
+  --radius:14px; --shadow:0 6px 24px rgba(26,115,232,0.12);
+}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E8F0FE 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FEF3E0 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px;}
+.screen{display:none;width:100%;max-width:560px;flex-direction:column;align-items:center;gap:14px;}
+.screen.active{display:flex;}
+.screen.wide-step{max-width:min(96vw,1040px);}
+/* real-screenshot steps: fill most of the viewport instead of the narrow 560px column */
+.photostep{width:100%;display:flex;flex-direction:column;align-items:center;}
+.photostep-imgwrap{width:100%;border-radius:16px;overflow:hidden;border:1.5px solid var(--border);box-shadow:var(--shadow);background:#fff;}
+.photostep-imgwrap img{width:100%;height:100%;object-fit:contain;display:block;}
+.intro-wrap{width:100%;background:var(--panel);border-radius:20px;padding:34px 26px;text-align:center;box-shadow:var(--shadow);}
+.intro-icon{font-size:70px;margin-bottom:8px;display:block;}
+.intro-title{font-family:'Mitr',sans-serif;font-size:28px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.intro-sub{font-size:14px;color:var(--text2);margin-bottom:18px;line-height:1.6;}
+.goal-box{width:100%;margin:0 0 18px;background:var(--panel);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:12px;padding:12px 15px;text-align:left;display:flex;gap:10px;align-items:flex-start;}
+.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--primary);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
+.goal-text{font-size:12.5px;color:var(--text);font-weight:500;line-height:1.5;}
+.goal-text b{color:var(--primary);font-weight:600;}
+.btn{width:100%;padding:15px;background:var(--primary);color:white;border:none;border-radius:12px;font-size:17px;font-weight:600;font-family:'Mitr',sans-serif;cursor:pointer;box-shadow:0 5px 0 var(--primary-dark);transition:transform .08s,box-shadow .08s;}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.score-row{width:100%;display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid var(--border);border-radius:14px;padding:9px 16px;}
+.score-label{font-size:11px;color:var(--text2);}
+.score-val{font-family:'Mitr',sans-serif;font-size:18px;font-weight:700;color:var(--primary);}
+.mission-card{width:100%;background:var(--panel);border-radius:var(--radius);border:2px solid var(--primary-light);padding:14px 16px;box-shadow:var(--shadow);}
+.mc-tag{font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-light);display:inline-block;padding:3px 11px;border-radius:20px;margin-bottom:8px;}
+.mc-title{font-family:'Mitr',sans-serif;font-size:15px;font-weight:600;margin-bottom:4px;}
+.mc-body{font-size:13.5px;color:var(--text2);line-height:1.6;}
+.stage{width:100%;display:flex;flex-direction:column;gap:10px;}
+
+/* ===== fake Google Account chrome ===== */
+.gauth-app{width:100%;background:#fff;border-radius:16px;border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--shadow);}
+.gauth-top{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #EEE;background:#fff;}
+.gauth-logo{display:flex;align-items:center;gap:5px;font-family:'Mitr';font-weight:600;font-size:16px;color:#5f6368;}
+.gauth-logo .g1{color:#4285F4;} .gauth-logo .g2{color:#EA4335;} .gauth-logo .g3{color:#FBBC05;} .gauth-logo .g4{color:#4285F4;} .gauth-logo .g5{color:#34A853;} .gauth-logo .g6{color:#EA4335;}
+.gauth-ava{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5B9BFF,#1A73E8);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:'Mitr';flex:0 0 auto;font-size:15px;margin-left:auto;}
+.gauth-ava.clickable{cursor:pointer;}
+.gauth-body{padding:22px 20px;text-align:center;}
+.gauth-body h3{font-family:'Mitr';font-weight:600;font-size:18px;color:var(--text);}
+.gauth-sub{font-size:12.5px;color:var(--text2);margin:4px 0 16px;}
+.gauth-row2{display:flex;gap:10px;}
+.gauth-field{text-align:left;margin-bottom:11px;}
+.gauth-field label{font-size:12px;color:var(--text2);display:block;margin-bottom:4px;font-weight:600;}
+.gauth-field input,.gauth-field select{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-family:'Sarabun';font-size:14px;color:var(--text);outline:none;background:#fff;}
+.gauth-field input:focus,.gauth-field select:focus{border-color:var(--primary);}
+.gauth-emailprev{font-size:12px;color:var(--primary-dark);margin-top:5px;font-weight:600;min-height:16px;}
+.gauth-pwwrap{position:relative;display:block;}
+.gauth-pwwrap input{width:100%;padding-right:44px;}
+.gauth-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:transparent;border:none;font-size:17px;line-height:1;cursor:pointer;padding:5px 6px;border-radius:8px;}
+.gauth-eye:hover{background:var(--primary-light);}
+.gauth-strength{font-size:11.5px;margin-top:5px;line-height:1.4;}
+.gauth-primary{width:100%;margin-top:6px;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Mitr';font-weight:600;font-size:15px;cursor:pointer;box-shadow:0 4px 0 var(--primary-dark);}
+.gauth-primary:active{transform:translateY(2px);box-shadow:0 2px 0 var(--primary-dark);}
+.gauth-ghost{width:100%;margin-top:8px;background:#fff;color:var(--primary);border:1.5px solid var(--primary);border-radius:12px;padding:11px;font-family:'Mitr';font-weight:600;font-size:14px;cursor:pointer;}
+.gauth-remind{background:var(--primary-light);border:1px dashed var(--primary);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--text2);margin-bottom:14px;text-align:left;line-height:1.5;}
+.gauth-remind b{color:var(--primary-dark);}
+.gauth-note{background:var(--amber-light);border:1px solid var(--amber);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--text2);margin:0 0 14px;text-align:left;line-height:1.5;}
+.gauth-note b{color:var(--amber);}
+.gauth-acctcard{border:1px solid var(--border);border-radius:12px;margin:0;padding:16px;text-align:center;box-shadow:var(--shadow);animation:rise .2s ease;}
+.gauth-unlock{width:100%;display:flex;flex-direction:column;gap:8px;text-align:left;margin:14px 0;}
+.gauth-unlock-item{display:flex;align-items:center;gap:10px;background:var(--primary-light);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text);}
+.gauth-unlock-item .u-em{font-size:20px;flex:0 0 auto;}
+.gauth-check{display:flex;align-items:flex-start;gap:8px;text-align:left;margin:8px 0 14px;font-size:12.5px;color:var(--text2);line-height:1.5;}
+.gauth-check input{margin-top:3px;flex:0 0 auto;}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* shared action buttons */
+.act-btn{padding:11px 16px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-family:'Mitr';font-weight:600;font-size:13.5px;cursor:pointer;box-shadow:0 4px 0 var(--primary-dark);}
+.act-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--primary-dark);}
+.act-btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
+.act-btn.ghost{background:#fff;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none;}
+.act-btn.ghost:disabled{color:var(--text3);border-color:var(--border);}
+.act-btn.bad{background:var(--red-light)!important;color:var(--red)!important;border:1.5px solid var(--red)!important;box-shadow:none!important;}
+/* speaker on every answer choice */
+.opt-spk{flex:0 0 auto;margin-left:6px;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--border);background:#fff;color:var(--primary);font-size:15px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:border-color .12s,background .12s,transform .12s;}
+.opt-spk:hover{border-color:var(--primary);background:var(--primary-light);transform:scale(1.1);}
+.opt-spk:active{transform:scale(.9);}
+.opt-spk.playing{animation:dlfPulse .6s ease infinite;}
+.act-btn{display:inline-flex;align-items:center;gap:2px;}
+.act-btn:disabled .opt-spk{opacity:.55;}
+.act-btn.locked{cursor:not-allowed;box-shadow:none;pointer-events:none;filter:grayscale(.35);opacity:.75;}
+.act-btn.locked .opt-spk{pointer-events:auto;cursor:pointer;}
+.act-btn .opt-spk{width:30px;height:30px;font-size:13px;border-color:rgba(255,255,255,.6);}
+.act-btn.ghost .opt-spk{border-color:var(--border);}
+/* highlight + reveal pulses */
+.highlighted{animation:pulseHi 1.05s ease-in-out infinite;position:relative;z-index:1;}
+@keyframes pulseHi{0%,100%{box-shadow:0 0 0 0 rgba(26,115,232,.5)}50%{box-shadow:0 0 0 11px rgba(26,115,232,0)}}
+.reveal{animation:revealGlow 1s ease-in-out infinite;}
+@keyframes revealGlow{0%,100%{box-shadow:0 0 0 0 rgba(26,115,232,.55)}50%{box-shadow:0 0 0 11px rgba(26,115,232,0)}}
+.shake{animation:shk .3s;}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.simhint{font-size:12px;color:var(--text2);text-align:center;line-height:1.5;background:var(--amber-light);border-radius:10px;padding:9px 12px;width:100%;}
+.feedback{width:100%;padding:14px 16px;border-radius:12px;font-size:14px;font-weight:600;display:none;line-height:1.55;}
+.feedback.show{display:block;}
+.feedback.correct{background:var(--green-light);color:var(--green);}
+.feedback.wrong{background:var(--amber-light);color:var(--amber);}
+.results-wrap{width:100%;background:var(--panel);border-radius:20px;padding:44px 30px;text-align:center;box-shadow:var(--shadow);border:2px solid var(--border);animation:pop .3s ease;}
+.res-emoji{font-size:76px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.res-stars{font-size:40px;letter-spacing:6px;margin:10px 0;}
+.res-score{font-size:15px;color:var(--text2);margin-bottom:14px;}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* ══════════ dashboard-match layer: 3D cards + pressable buttons ══════════ */
+:root{--shadow:none;}
+.intro-wrap,.mission-card,.goal-box,.results-wrap{border:1.5px solid var(--border)!important;border-bottom-width:5px!important;border-radius:20px!important;box-shadow:none!important;}
+.btn,.gauth-primary{border-radius:16px!important;font-weight:700;transition:transform .1s,box-shadow .1s;}
+.btn:not(.ghost),.gauth-primary{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary))!important;color:#fff!important;box-shadow:0 5px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
+.btn:not(.ghost):active,.gauth-primary:active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--primary) 70%,black)!important;}
+.btn.ghost{border:1.5px solid var(--border)!important;border-bottom-width:4px!important;}
+.act-btn{border-radius:14px;}
+</style>
+</head>
+<body>
+<div id="intro" class="screen active">
+  <div class="intro-wrap">
+    <span class="intro-icon">🔐</span>
+    <div class="intro-title">สร้างบัญชี Google</div>
+    <div class="intro-sub">ลองสมัครบัญชี Google จริง ๆ ทีละขั้นตอน!<br>กรอกชื่อ · ตั้งอีเมล Gmail · ตั้งรหัสผ่านที่แข็งแรง · เพิ่มข้อมูลกู้คืนบัญชี · ยอมรับข้อตกลง</div>
+    <div class="goal-box">
+      <span class="goal-chip">🎯</span>
+      <div class="goal-text"><b>สิ่งที่จะทำได้:</b> สมัครบัญชี Google ด้วยตัวเองอย่างถูกต้องและปลอดภัย เข้าใจว่าทำไมต้องมีข้อมูลกู้คืนบัญชี และรู้ว่าบัญชีเดียวใช้ได้กับ Gmail, Drive, Classroom และแอปอื่น ๆ ของ Google</div>
+    </div>
+    <button class="btn" onclick="startGame()">เริ่มสมัครบัญชี →</button>
+  </div>
+</div>
+
+<div id="game" class="screen">
+  <div class="score-row">
+    <div><div class="score-label">คะแนน</div><div class="score-val" id="score">0</div></div>
+    <div style="text-align:center"><div class="score-label">ขั้นตอน</div><div class="score-val" id="mnum">1/9</div></div>
+    <div style="text-align:right"><div class="score-label">ดาว</div><div class="score-val">⭐</div></div>
+  </div>
+  <div class="mission-card">
+    <span class="mc-tag" id="tag">ขั้นตอน</span>
+    <div class="mc-title" id="mtitle"></div>
+    <div class="mc-body" id="mbody"></div>
+  </div>
+
+  <div class="stage" id="stage"></div>
+  <div class="simhint" id="hint" style="display:none"></div>
+  <div class="feedback" id="feedback"></div>
+</div>
+
+<div id="done" class="screen">
+  <div class="results-wrap">
+    <div class="res-emoji" id="resEmoji">🎉</div>
+    <div class="res-title" id="resTitle">เก่งมาก!</div>
+    <div class="res-stars" id="resStars">⭐⭐⭐</div>
+    <div class="res-score" id="resScore"></div>
+    <button class="btn" onclick="restart()">เล่นอีกครั้ง ↻</button>
+  </div>
+</div>
+
+<script>
+const esc = (s) => (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const $ = (id) => document.getElementById(id);
+function el(tag,cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
+
+// ===== simulated account state =====
+let account = {first:'',last:'',username:'',password:'',recovery:'', usernameTries:0};
+
+// ===== missions (steps of the real Google Account sign-up flow) =====
+const MISSIONS = [
+  { view:'photostep', img:'img/unit3-google-account/step01.png', ratio:'1260/697', tag:'เริ่มต้น · ค้นหา',
+    title:'ค้นหา “google account” แล้วกด “Create a Google Account”',
+    ctx:'พิมพ์ “google account” ในช่องค้นหาของ Google แล้วมองหาลิงก์ “Create a Google Account” ในผลการค้นหา (จะเจอในกล่องแนะนำด้านขวา หรือ Google Account Help)',
+    explain:'ค้นหาตรง ๆ แบบนี้เป็นวิธีที่ปลอดภัยที่สุด — จะได้ลิงก์จริงของ Google เอง ไม่ใช่เว็บปลอมที่แอบอ้าง' },
+
+  { view:'photostep', img:'img/unit3-google-account/step02.png', ratio:'976/900', tag:'เริ่มต้น · เลือกประเภทบัญชี',
+    title:'ในหน้าช่วยเหลือ กด “For myself”',
+    ctx:'หน้า Google Account Help จะถามว่าจะสร้างบัญชีเพื่อใคร — เลือก “For myself” เพราะเรากำลังสร้างบัญชีของตัวเอง',
+    explain:'ถ้าเป็นบัญชีสำหรับธุรกิจหรือโรงเรียน จะมีตัวเลือกอื่น แต่สำหรับใช้ส่วนตัวให้เลือก “For myself” เสมอ' },
+
+  { view:'photostep', img:'img/unit3-google-account/step1name.png', ratio:'1154/509', tag:'ข้อมูลส่วนตัว · ชื่อ',
+    title:'กรอกชื่อและนามสกุลของคุณ',
+    ctx:'ใส่ชื่อจริงในช่อง “First name” และนามสกุลในช่อง “Surname” แล้วกด “Next”',
+    explain:'ควรใช้ชื่อจริงของตัวเองในการสมัครบัญชี เพื่อให้กู้คืนบัญชีได้ง่ายหากมีปัญหาในอนาคต' },
+
+  { view:'photostep', img:'img/unit3-google-account/step2info.png', ratio:'1164/529', tag:'ข้อมูลส่วนตัว · วันเกิด',
+    title:'กรอกวันเกิดและเพศ',
+    ctx:'เลือกวัน เดือน ปีเกิด และเพศของคุณในช่อง “Basic information” แล้วกด “Next”',
+    explain:'Google ใช้วันเกิดเพื่อตรวจสอบว่าคุณอายุถึงเกณฑ์ที่จะสมัครบัญชีเองได้หรือไม่ — เด็กเล็กอาจต้องให้ผู้ปกครองช่วยดูแลบัญชีผ่าน Family Link' },
+
+  { view:'photostep', img:'img/unit3-google-account/step3username.png', ratio:'1142/507', tag:'บัญชี · ที่อยู่ Gmail',
+    title:'เลือกที่อยู่ Gmail ของคุณ',
+    ctx:'ตั้งชื่อผู้ใช้ในช่อง “Username” — นี่จะกลายเป็นอีเมล @gmail.com ของคุณ แล้วกด “Next”',
+    explain:'ชื่อผู้ใช้ Gmail ต้องไม่ซ้ำกับใครในโลก ถ้าชื่อที่ต้องการถูกใช้แล้ว ลองเติมตัวเลขหรือจุดเพื่อให้ไม่ซ้ำ' },
+
+  { view:'photostep', img:'img/unit3-google-account/step4password.png', ratio:'1077/525', tag:'ความปลอดภัย · ตั้งรหัสผ่าน',
+    title:'สร้างรหัสผ่านที่แข็งแรง',
+    ctx:'ตั้งรหัสผ่านที่คนอื่นเดายาก ผสมตัวอักษร ตัวเลข และสัญลักษณ์ ในช่อง “Password” และ “Confirm” แล้วกด “Next”',
+    explain:'รหัสผ่านที่ดีควรยาว จำยาก เดายาก และไม่ใช้ซ้ำกับบัญชีอื่น ที่สำคัญที่สุดคือห้ามบอกรหัสผ่านให้ใครเด็ดขาด แม้แต่เพื่อนสนิท' },
+
+  { view:'photostep', img:'img/unit3-google-account/step5notrobot.png', ratio:'1093/483', tag:'ความปลอดภัย · ยืนยันตัวตน',
+    title:'ยืนยันว่าคุณไม่ใช่โปรแกรมอัตโนมัติ',
+    ctx:'Google อาจขอเบอร์โทรศัพท์เพื่อส่งรหัสยืนยัน — ขั้นตอนนี้ช่วยป้องกันไม่ให้คนสร้างบัญชีปลอมจำนวนมาก ควรใช้เบอร์ของตัวเองหรือผู้ปกครอง',
+    explain:'ควรปรึกษาผู้ปกครองก่อนใส่เบอร์โทรศัพท์จริง และไม่ควรใส่เบอร์ของคนแปลกหน้าหรือเบอร์ที่ไม่ใช่ของครอบครัว' },
+
+  { view:'welcome', tag:'เสร็จสิ้น · ยินดีต้อนรับ',
+    title:'ยินดีด้วย! บัญชี Google พร้อมใช้งานแล้ว',
+    ctx:'บัญชีเดียวนี้ใช้เปิดได้ทั้ง Gmail, Google Drive, Google Classroom, YouTube และ Google Photos — แตะ “ไปต่อ” เพื่อดูว่าใช้ทำอะไรได้บ้าง',
+    hint:'แตะปุ่ม “ไปต่อ” เพื่อดูสิ่งที่บัญชีของคุณใช้ได้',
+    explain:'บัญชี Google เดียวเชื่อมทุกบริการของ Google เข้าด้วยกัน ทำให้ไม่ต้องสมัครแยกทีละแอป' },
+
+  { view:'signout', tag:'ความปลอดภัย · ออกจากระบบ',
+    title:'ใช้เครื่องคอมร่วมกับคนอื่น? ออกจากระบบให้เรียบร้อย',
+    ctx:'ใช้งานที่ห้องคอมพิวเตอร์หรือเครื่องที่ใช้ร่วมกันเสร็จแล้ว แตะรูปโปรไฟล์มุมขวาบน แล้วเลือก “ออกจากระบบ” ทุกครั้ง',
+    hint:'แตะวงกลมรูปโปรไฟล์มุมขวาบน แล้วกด “ออกจากระบบ”',
+    explain:'การออกจากระบบทุกครั้งบนเครื่องที่ใช้ร่วมกัน ช่วยปกป้องบัญชี Gmail, Drive และข้อมูลส่วนตัวของเราจากคนอื่นที่ใช้เครื่องต่อ' },
+];
+
+let mIdx = 0, score = 0, advanced = false, hintTimer = null;
+const ANSWER_DELAY = 1000;
+
+function startGame(){ mIdx=0; score=0; advanced=false; account={first:'',last:'',username:'',password:'',recovery:'',usernameTries:0}; show('game'); renderMission(); }
+function restart(){ startGame(); }
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
+
+function setHUD(m){
+  $('tag').textContent = m.tag || '';
+  $('mtitle').textContent = m.title || '';
+  $('mbody').textContent = m.ctx || '';
+  $('score').textContent = score;
+  $('mnum').textContent = (mIdx+1)+'/'+MISSIONS.length;
+}
+function clearFb(){ const fb=$('feedback'); fb.className='feedback'; fb.textContent=''; }
+function flashOk(msg){ const fb=$('feedback'); fb.className='feedback show correct'; fb.textContent='✅ '+msg; }
+function flashNo(msg){ const fb=$('feedback'); fb.className='feedback show wrong'; fb.textContent='💡 '+msg; }
+
+function hideHint(){ if(hintTimer){ clearTimeout(hintTimer); hintTimer=null; } $('hint').style.display='none'; }
+function scheduleHint(text){
+  const h=$('hint'); h.textContent='💡 '+text; h.style.display='none';
+  hintTimer=setTimeout(()=>{ if(!advanced) h.style.display='block'; }, 8000);
+}
+
+function renderMission(){
+  advanced=false;
+  const m=MISSIONS[mIdx];
+  setHUD(m); clearFb(); hideHint();
+  if(m.hint) scheduleHint(m.hint);
+  $('game').classList.toggle('wide-step', !!m.img);
+  const stage=$('stage'); stage.innerHTML='';
+  VIEWS[m.view](m,stage);
+}
+
+function advance(delay){
+  if(!advanced) return;
+  hideHint();
+  setTimeout(()=>{ mIdx++; if(mIdx>=MISSIONS.length) finish(); else renderMission(); }, delay||1000);
+}
+function missionSuccess(msg){
+  if(advanced) return; advanced=true;
+  score++; $('score').textContent=score;
+  const ex=MISSIONS[mIdx].explain;
+  flashOk(msg + (ex ? ' — ' + ex : ''));
+  advance(ANSWER_DELAY);
+}
+function missionMiss(msg){
+  if(advanced) return; advanced=true;
+  flashNo(msg + ' — ดูตัวเลือกที่ไฮไลต์สีเขียวนะ');
+  advance(ANSWER_DELAY);
+}
+function nudge(msg,elm){
+  if(advanced) return;
+  flashNo(msg);
+  if(elm){ elm.classList.add('shake'); setTimeout(()=>elm.classList.remove('shake'),320); }
+}
+
+// ===== shared builders =====
+function spkHtml(t){ return `<span class="opt-spk" role="button" data-say="${String(t||'').replace(/"/g,'&quot;')}" title="ฟังเสียงตัวเลือก">🔊</span>`; }
+function bindSpk(root){
+  (root||document).querySelectorAll('.opt-spk').forEach(spk=>{
+    if(spk.dataset.bound) return; spk.dataset.bound='1';
+    spk.addEventListener('mousedown',e=>{ e.stopPropagation(); e.preventDefault(); });
+    spk.addEventListener('click',e=>{
+      e.stopPropagation(); e.preventDefault();
+      if(window.dlf && dlf.speak) dlf.speak(spk.getAttribute('data-say'));
+      spk.classList.add('playing'); setTimeout(()=>spk.classList.remove('playing'),1100);
+    });
+  });
+}
+function topBar(opts){
+  opts=opts||{};
+  const ini = ((account.first||'?').trim().charAt(0) || '?');
+  const ava = opts.loggedIn
+    ? `<div class="gauth-ava${opts.avaClick?' clickable':''}${opts.avaHi?' highlighted':''}" id="gAva">${esc(ini)}</div>`
+    : '';
+  return `<div class="gauth-top"><div class="gauth-logo"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span></div>${ava}</div>`;
+}
+
+// ===== password helpers =====
+function pwStrong(p){ return p.length>=8 && /\d/.test(p) && /[^\d\s]/.test(p); }
+function pwInfo(p){
+  if(!p) return {text:'ควรมีทั้งตัวอักษรและตัวเลข อย่างน้อย 8 ตัว', color:'var(--text2)'};
+  if(p.length<8) return {text:'สั้นเกินไป ตั้งให้ยาวขึ้น (อย่างน้อย 8 ตัว)', color:'var(--red)'};
+  if(!/\d/.test(p) || !/[^\d\s]/.test(p)) return {text:'เพิ่มความแข็งแรง: ผสมทั้งตัวอักษรและตัวเลข', color:'var(--amber)'};
+  return {text:'รหัสผ่านแข็งแรง 👍 อย่าบอกใครเด็ดขาด', color:'var(--green)'};
+}
+function pwField(id, placeholder){
+  return `<div class="gauth-pwwrap"><input id="${id}" type="password" placeholder="${placeholder}">`
+       + `<button type="button" class="gauth-eye" id="${id}Eye" title="แสดง/ซ่อนรหัสผ่าน" aria-label="แสดงหรือซ่อนรหัสผ่าน">👁️</button></div>`;
+}
+function wirePwToggle(id){
+  const inp=$(id), btn=$(id+'Eye');
+  if(!inp||!btn) return;
+  btn.onclick=()=>{
+    const show = inp.type==='password';
+    inp.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁️';
+  };
+}
+
+// ===== views =====
+const VIEWS = {
+  // Real screenshot of the actual Google sign-up flow + a "Done" button —
+  // no simulated form filling, since these are genuine screenshots the
+  // student is following along with on their own device.
+  photostep(m,stage){
+    const wrap=el('div','photostep');
+    wrap.innerHTML = `<div class="photostep-imgwrap" style="aspect-ratio:${m.ratio}"><img src="${m.img}" alt="${(m.title||'').replace(/"/g,'&quot;')}" loading="lazy"></div>`
+      + `<button class="act-btn highlighted" id="psDone" style="width:100%;margin-top:12px"><span class="act-txt">✅ ทำแล้ว ไปขั้นต่อไป</span>${spkHtml('ทำแล้ว ไปขั้นต่อไป')}</button>`;
+    stage.appendChild(wrap);
+    bindSpk(wrap);
+    $('psDone').onclick=()=>{ if(advanced) return; missionSuccess('ไปขั้นต่อไป!'); };
+  },
+
+  welcome(m,stage){
+    const c=el('div','gauth-app');
+    c.innerHTML = topBar({loggedIn:true})
+      + `<div class="gauth-body">`
+      + `<h3>ยินดีต้อนรับสู่บัญชี Google ของคุณ! 🎉</h3>`
+      + `<div class="gauth-sub">บัญชีพร้อมใช้งานแล้ว</div>`
+      + `<div class="gauth-unlock">`
+      + `<div class="gauth-unlock-item"><span class="u-em">📧</span> Gmail — ส่งและรับอีเมล</div>`
+      + `<div class="gauth-unlock-item"><span class="u-em">📁</span> Google Drive — เก็บไฟล์และเอกสารออนไลน์</div>`
+      + `<div class="gauth-unlock-item"><span class="u-em">🎓</span> Google Classroom — เรียนและส่งการบ้าน</div>`
+      + `<div class="gauth-unlock-item"><span class="u-em">🖼️</span> Google Photos — เก็บรูปภาพอัตโนมัติ</div>`
+      + `</div>`
+      + `<button class="act-btn highlighted" id="wBtn" style="width:100%"><span class="act-txt">ไปต่อ →</span>${spkHtml('ไปต่อ')}</button>`
+      + `</div>`;
+    stage.appendChild(c);
+    bindSpk(c);
+    $('wBtn').onclick=()=>{ if(advanced) return; missionSuccess('บัญชีของคุณพร้อมใช้กับทุกบริการของ Google แล้ว!'); };
+  },
+
+  signout(m,stage){
+    const c=el('div','gauth-app');
+    c.innerHTML = topBar({loggedIn:true,avaClick:true,avaHi:true})
+      + `<div class="gauth-body" style="opacity:.9">`
+      + `<h3>บัญชี Google ของคุณ</h3>`
+      + `<div class="gauth-sub">แตะรูปโปรไฟล์มุมขวาบนเพื่อออกจากระบบ</div>`
+      + `</div>`
+      + `<div id="acctMenu" style="padding:0 20px 20px"></div>`;
+    stage.appendChild(c);
+    $('gAva').onclick=()=>{
+      if(advanced) return;
+      if($('acctMenu').innerHTML) return;
+      $('gAva').classList.remove('highlighted');
+      $('acctMenu').innerHTML =
+        `<div class="gauth-acctcard"><div class="gauth-ava" style="margin:0 auto 8px">😀</div>`
+        + `<div style="font-size:12px;color:var(--text2);margin-bottom:12px">บัญชี Google ของคุณ</div>`
+        + `<button class="act-btn ghost highlighted" id="btnSignout"><span class="act-txt">🚪 ออกจากระบบ</span>${spkHtml('ออกจากระบบ')}</button></div>`;
+      bindSpk($('acctMenu'));
+      $('btnSignout').onclick=()=>{ if(advanced) return; missionSuccess('ออกจากระบบเรียบร้อย! ปลอดภัยเมื่อใช้เครื่องร่วมกับผู้อื่น'); };
+    };
+  }
+};
+
+function finish(){
+  const stars = score>=MISSIONS.length ? 3 : score>=Math.ceil(MISSIONS.length/2) ? 2 : 1;
+  window.dlfStars = stars;
+  $('resStars').textContent='⭐'.repeat(stars)+'☆'.repeat(3-stars);
+  $('resEmoji').textContent = stars===3?'🏆':stars===2?'🎉':'🌟';
+  $('resTitle').textContent = stars===3?'สมัครบัญชีได้เองแล้ว!':'เก่งมาก!';
+  $('resScore').textContent='ทำได้ดี '+score+' จาก '+MISSIONS.length+' ขั้นตอน';
+  show('done');
+}
+</script>
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border,#30363D);background:var(--panel,#161B22);color:var(--text,#E6EDF3);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(0,0,0,.3);transition:transform .15s;}
+.dlf-spk{box-shadow:0 6px 18px rgba(91,168,255,.35)!important;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:50%;border:1.5px solid var(--blue,#58A6FF);background:rgba(88,166,255,.12);
+  color:var(--blue,#58A6FF);font-size:15px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say{box-shadow:0 2px 8px rgba(91,168,255,.25);}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);background:rgba(91,168,255,.25);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(5,8,14,.72);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:linear-gradient(160deg,var(--panel,#161B22),var(--panel2,#1C2330));
+  border:2px solid var(--green,#3FB950);box-shadow:0 20px 60px rgba(0,0,0,.5);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--green,#3FB950);margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2,#8B949E);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#0D1117;background:var(--green,#3FB950);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel,#161B22);border:2px solid var(--yellow,#D29922);color:var(--text,#E6EDF3);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+<!-- Audio map: text -> mp3 source. Filled by gen-audio.mjs. Empty {} = device-voice fallback only. -->
+<script id="dlfAudioData" type="application/json">{"e0d84225bd21":"audio/unit3-google-account/e0d84225bd21.mp3","7a5b13f77f85":"audio/unit3-google-account/7a5b13f77f85.mp3","a76f196c3af6":"audio/unit3-google-account/a76f196c3af6.mp3","905555cb0e5e":"audio/unit3-google-account/905555cb0e5e.mp3","f60fbd1ce926":"audio/unit3-google-account/f60fbd1ce926.mp3","63add4da5623":"audio/unit3-google-account/63add4da5623.mp3","2a0feab0453d":"audio/unit3-google-account/2a0feab0453d.mp3","b4db9d5b4a77":"audio/unit3-google-account/b4db9d5b4a77.mp3","52a6b51936e4":"audio/unit3-google-account/52a6b51936e4.mp3","56974ddaf57e":"audio/unit3-google-account/56974ddaf57e.mp3","9d6bf8ceae57":"audio/unit3-google-account/9d6bf8ceae57.mp3","265b231c445a":"audio/unit3-google-account/265b231c445a.mp3","87543324218a":"audio/unit3-google-account/87543324218a.mp3","320e51229dac":"audio/unit3-google-account/320e51229dac.mp3","59539c64eb05":"audio/unit3-google-account/59539c64eb05.mp3","6a43208b348f":"audio/unit3-google-account/6a43208b348f.mp3","4019c678d63e":"audio/unit3-google-account/4019c678d63e.mp3","51916df7a911":"audio/unit3-google-account/51916df7a911.mp3","2de10d917ed2":"audio/unit3-google-account/2de10d917ed2.mp3","d13cbd8e4b3b":"audio/unit3-google-account/d13cbd8e4b3b.mp3","5715721d11be":"audio/unit3-google-account/5715721d11be.mp3","6891f7065875":"audio/unit3-google-account/6891f7065875.mp3","e338d734c38e":"audio/unit3-google-account/e338d734c38e.mp3","3413049a9303":"audio/unit3-google-account/3413049a9303.mp3","2c5711468c71":"audio/unit3-google-account/2c5711468c71.mp3","a3aca11d7beb":"audio/unit3-google-account/a3aca11d7beb.mp3","e54c1277d567":"audio/unit3-google-account/e54c1277d567.mp3","adbd247a6c89":"audio/unit3-google-account/adbd247a6c89.mp3","c4f7711e8f72":"audio/unit3-google-account/c4f7711e8f72.mp3","5312ba77dc8a":"audio/unit3-google-account/5312ba77dc8a.mp3","42f0eed79fab":"audio/unit3-google-account/42f0eed79fab.mp3","b81fefd5453b":"audio/unit3-google-account/b81fefd5453b.mp3","01f6ec51263b":"audio/unit3-google-account/01f6ec51263b.mp3","64f6ed69a5af":"audio/unit3-google-account/64f6ed69a5af.mp3","afa10a78425d":"audio/unit3-google-account/afa10a78425d.mp3","4e6d3e2d3c90":"audio/unit3-google-account/4e6d3e2d3c90.mp3","fc8cf7efd073":"audio/unit3-google-account/fc8cf7efd073.mp3","d56e59a63893":"audio/unit3-google-account/d56e59a63893.mp3","955ae3111c11":"audio/unit3-google-account/955ae3111c11.mp3","3fafbdcc0794":"audio/unit3-google-account/3fafbdcc0794.mp3","15d6d2ca351d":"audio/unit3-google-account/15d6d2ca351d.mp3","b82193278d6c":"audio/unit3-google-account/b82193278d6c.mp3","70a3faea7302":"audio/unit3-google-account/70a3faea7302.mp3","5eb8f0ac8c02":"audio/unit3-google-account/5eb8f0ac8c02.mp3","69f15b2e83ab":"audio/unit3-google-account/69f15b2e83ab.mp3","9bf3d5836d42":"audio/unit3-google-account/9bf3d5836d42.mp3","8c9a73b98d24":"audio/unit3-google-account/8c9a73b98d24.mp3","50c9fd2975a5":"audio/unit3-google-account/50c9fd2975a5.mp3","b4ccb5d04339":"audio/unit3-google-account/b4ccb5d04339.mp3","b061c1b54c63":"audio/unit3-google-account/b061c1b54c63.mp3","27fc46f86053":"audio/unit3-google-account/27fc46f86053.mp3","4dd579ab7c4d":"audio/unit3-google-account/4dd579ab7c4d.mp3","c0a45f86d075":"audio/unit3-google-account/c0a45f86d075.mp3","adba61291575":"audio/unit3-google-account/adba61291575.mp3","749ba3d838e7":"audio/unit3-google-account/749ba3d838e7.mp3","66590c21d92e":"audio/unit3-google-account/66590c21d92e.mp3","e17e55038818":"audio/unit3-google-account/e17e55038818.mp3","3668e3804b64":"audio/unit3-google-account/3668e3804b64.mp3","6031f52fdc2f":"audio/unit3-google-account/6031f52fdc2f.mp3","a48416bf68b0":"audio/unit3-google-account/a48416bf68b0.mp3","e04ffa811bc0":"audio/unit3-google-account/e04ffa811bc0.mp3","c135b43b5554":"audio/unit3-google-account/c135b43b5554.mp3","dbc6a8181e2f":"audio/unit3-google-account/dbc6a8181e2f.mp3","a66234b845ea":"audio/unit3-google-account/a66234b845ea.mp3","3c2aa803edc6":"audio/unit3-google-account/3c2aa803edc6.mp3","f2db2c9bd94a":"audio/unit3-google-account/f2db2c9bd94a.mp3","2f69c8e3d3e0":"audio/unit3-google-account/2f69c8e3d3e0.mp3","dfb3e4afa929":"audio/unit3-google-account/dfb3e4afa929.mp3","ca02ef5010bd":"audio/unit3-google-account/ca02ef5010bd.mp3","07a29bed37b7":"audio/unit3-google-account/07a29bed37b7.mp3","c68b0ac36885":"audio/unit3-google-account/c68b0ac36885.mp3","225e7605d6d0":"audio/unit3-google-account/225e7605d6d0.mp3","064ba9d6dd2f":"audio/unit3-google-account/064ba9d6dd2f.mp3","f82983fea479":"audio/unit3-google-account/f82983fea479.mp3","588a27223b5f":"audio/unit3-google-account/588a27223b5f.mp3","3a86ebc8a0de":"audio/unit3-google-account/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/unit3-google-account/af6ba89d9b27.mp3","aca2b0992481":"audio/unit3-google-account/aca2b0992481.mp3","e18a189a9371":"audio/unit3-google-account/e18a189a9371.mp3","8af1f0edc12c":"audio/unit3-google-account/8af1f0edc12c.mp3"}</script>
+<script src="_lib/dlf-unit-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+</body>
+</html>
