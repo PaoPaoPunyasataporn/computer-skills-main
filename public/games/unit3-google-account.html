@@ -142,7 +142,7 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
 <div id="game" class="screen">
   <div class="score-row">
     <div><div class="score-label">คะแนน</div><div class="score-val" id="score">0</div></div>
-    <div style="text-align:center"><div class="score-label">ขั้นตอน</div><div class="score-val" id="mnum">1/9</div></div>
+    <div style="text-align:center"><div class="score-label">ขั้นตอน</div><div class="score-val" id="mnum">1/13</div></div>
     <div style="text-align:right"><div class="score-label">ดาว</div><div class="score-val">⭐</div></div>
   </div>
   <div class="mission-card">
@@ -222,6 +222,39 @@ const MISSIONS = [
     ctx:'ใช้งานที่ห้องคอมพิวเตอร์หรือเครื่องที่ใช้ร่วมกันเสร็จแล้ว แตะรูปโปรไฟล์มุมขวาบน แล้วเลือก “ออกจากระบบ” ทุกครั้ง',
     hint:'แตะวงกลมรูปโปรไฟล์มุมขวาบน แล้วกด “ออกจากระบบ”',
     explain:'การออกจากระบบทุกครั้งบนเครื่องที่ใช้ร่วมกัน ช่วยปกป้องบัญชี Gmail, Drive และข้อมูลส่วนตัวของเราจากคนอื่นที่ใช้เครื่องต่อ' },
+
+  { view:'safetyinfo', tag:'ก่อนไปต่อ · สิ่งที่ต้องรู้',
+    title:'ดูแลบัญชี Google ของคุณให้ปลอดภัย',
+    ctx:'อ่านกฎความปลอดภัยที่สำคัญเหล่านี้ให้ครบ แล้วแตะ “เข้าใจแล้ว” เพื่อไปทำแบบทดสอบ' },
+
+  { view:'quiz', qIdx:0, tag:'แบบทดสอบ · ข้อ 1',
+    title:'ลองตอบดูสิ!' },
+  { view:'quiz', qIdx:1, tag:'แบบทดสอบ · ข้อ 2',
+    title:'ลองตอบดูสิ!' },
+  { view:'quiz', qIdx:2, tag:'แบบทดสอบ · ข้อ 3',
+    title:'ลองตอบดูสิ!' },
+];
+
+// ===== essential safety info shown right after the account is created =====
+const SAFETY_POINTS = [
+  { em:'🔒', text:'เก็บรหัสผ่านเป็นความลับ ห้ามบอกใครเด็ดขาด แม้แต่เพื่อนสนิท' },
+  { em:'🔁', text:'อย่าใช้รหัสผ่านเดียวกันซ้ำกับบัญชีอื่น ๆ' },
+  { em:'🎣', text:'อย่ากดลิงก์แปลก ๆ ที่ขอให้กรอกรหัสผ่าน — อาจเป็นอีเมลหลอกลวง (ฟิชชิง)' },
+  { em:'🚪', text:'ออกจากระบบทุกครั้งเมื่อใช้คอมพิวเตอร์ร่วมกับคนอื่น เช่น ที่ห้องสมุดหรือโรงเรียน' },
+  { em:'👨‍👩‍👧', text:'ถ้าไม่แน่ใจเรื่องอะไรเกี่ยวกับบัญชี ควรปรึกษาพ่อแม่หรือผู้ปกครองก่อนเสมอ' },
+];
+
+// ===== safety quiz (asked right after the essential-info screen) =====
+const QUIZ = [
+  { q:'เพื่อนขอรหัสผ่านบัญชี Google ของคุณ บอกว่าจะ “ช่วยทำการบ้านให้”  คุณควรทำอย่างไร?',
+    opts:['ให้รหัสผ่านไปเลย เพราะเป็นเพื่อนสนิทไว้ใจได้','ปฏิเสธ ไม่บอกรหัสผ่านใคร แล้วช่วยเพื่อนด้วยวิธีอื่นแทน','เปลี่ยนรหัสผ่านให้ง่าย ๆ เพื่อให้เพื่อนจำได้'],
+    correct:1, explain:'รหัสผ่านเป็นความลับเฉพาะตัว ห้ามบอกใครเด็ดขาด ไม่ว่าจะสนิทกันแค่ไหนก็ตาม' },
+  { q:'ใช้คอมพิวเตอร์ที่ห้องสมุดหรือโรงเรียนเสร็จแล้ว ก่อนลุกจากเครื่อง ควรทำอะไรก่อน?',
+    opts:['ปิดแค่หน้าต่างเบราว์เซอร์เฉย ๆ','แตะรูปโปรไฟล์แล้วกด “ออกจากระบบ” ให้เรียบร้อย','ปล่อยไว้แบบนั้น ไม่เป็นไรหรอก'],
+    correct:1, explain:'ถ้าไม่ออกจากระบบ คนที่ใช้เครื่องต่อจากเราอาจเข้าไปดูหรือใช้บัญชี Gmail และ Drive ของเราได้' },
+  { q:'ได้รับอีเมลอ้างว่าเป็น Google บอกว่า “บัญชีจะถูกลบถ้าไม่กรอกรหัสผ่านในลิงก์นี้ด่วน!” ควรทำอย่างไร?',
+    opts:['รีบกดลิงก์แล้วกรอกรหัสผ่านทันทีก่อนบัญชีจะถูกลบ','ไม่กดลิงก์ สงสัยไว้ก่อนว่าอาจเป็นอีเมลหลอกลวง แล้วลองเข้า Google โดยตรงเพื่อตรวจสอบ','ตอบกลับอีเมลไปถามว่า “จริงหรือเปล่า”'],
+    correct:1, explain:'อีเมลที่เร่งรัดให้กรอกรหัสผ่านด่วน ๆ มักเป็นฟิชชิง — Google จริงจะไม่ขอรหัสผ่านผ่านลิงก์ในอีเมลแบบนี้' },
 ];
 
 let mIdx = 0, score = 0, advanced = false, hintTimer = null;
@@ -378,6 +411,52 @@ const VIEWS = {
       bindSpk($('acctMenu'));
       $('btnSignout').onclick=()=>{ if(advanced) return; missionSuccess('ออกจากระบบเรียบร้อย! ปลอดภัยเมื่อใช้เครื่องร่วมกับผู้อื่น'); };
     };
+  },
+
+  safetyinfo(m,stage){
+    const c=el('div','gauth-app');
+    c.innerHTML = `<div class="gauth-body" style="padding-bottom:8px">`
+      + `<h3>📋 กฎความปลอดภัยที่ต้องรู้</h3>`
+      + `<div class="gauth-sub">อ่านให้ครบทุกข้อก่อนไปทำแบบทดสอบ</div>`
+      + `<div class="gauth-unlock">`
+      + SAFETY_POINTS.map(p=>`<div class="gauth-unlock-item"><span class="u-em">${p.em}</span> ${esc(p.text)}${spkHtml(p.text)}</div>`).join('')
+      + `</div>`
+      + `<button class="act-btn highlighted" id="siBtn" style="width:100%;margin-top:4px"><span class="act-txt">✅ เข้าใจแล้ว ไปทำแบบทดสอบ</span>${spkHtml('เข้าใจแล้ว ไปทำแบบทดสอบ')}</button>`
+      + `</div>`;
+    stage.appendChild(c);
+    bindSpk(c);
+    $('siBtn').onclick=()=>{ if(advanced) return; missionSuccess('พร้อมแล้ว! ไปทำแบบทดสอบกัน'); };
+  },
+
+  quiz(m,stage){
+    const q=QUIZ[m.qIdx];
+    const c=el('div','gauth-app');
+    c.innerHTML = `<div class="gauth-body">`
+      + `<h3 style="text-align:left;line-height:1.5">${esc(q.q)}${spkHtml(q.q)}</h3>`
+      + `<div id="qOpts" style="display:flex;flex-direction:column;gap:8px;margin-top:14px"></div>`
+      + `</div>`;
+    stage.appendChild(c);
+    const optsWrap = c.querySelector('#qOpts');
+    q.opts.forEach((opt,i)=>{
+      const b=el('button','act-btn ghost');
+      b.style.width='100%'; b.style.textAlign='left'; b.style.whiteSpace='normal';
+      b.innerHTML=`<span class="act-txt">${esc(opt)}</span>${spkHtml(opt)}`;
+      b.onclick=()=>{
+        if(advanced) return;
+        if(i===q.correct){
+          b.classList.remove('ghost');
+          missionSuccess('ถูกต้อง! ' + q.explain);
+        } else {
+          b.classList.add('bad'); b.classList.add('shake'); setTimeout(()=>b.classList.remove('shake'),320);
+          optsWrap.querySelectorAll('.act-btn').forEach(x=>x.classList.add('locked'));
+          const correctBtn = optsWrap.children[q.correct];
+          if(correctBtn) correctBtn.classList.add('reveal');
+          missionMiss('ยังไม่ถูก — ' + q.explain);
+        }
+      };
+      optsWrap.appendChild(b);
+    });
+    bindSpk(c);
   }
 };
 
@@ -445,7 +524,7 @@ function finish(){
 <div class="dlf-mini" id="dlfMini"></div>
 
 <!-- Audio map: text -> mp3 source. Filled by gen-audio.mjs. Empty {} = device-voice fallback only. -->
-<script id="dlfAudioData" type="application/json">{"e0d84225bd21":"audio/unit3-google-account/e0d84225bd21.mp3","7a5b13f77f85":"audio/unit3-google-account/7a5b13f77f85.mp3","a76f196c3af6":"audio/unit3-google-account/a76f196c3af6.mp3","905555cb0e5e":"audio/unit3-google-account/905555cb0e5e.mp3","f60fbd1ce926":"audio/unit3-google-account/f60fbd1ce926.mp3","63add4da5623":"audio/unit3-google-account/63add4da5623.mp3","2a0feab0453d":"audio/unit3-google-account/2a0feab0453d.mp3","b4db9d5b4a77":"audio/unit3-google-account/b4db9d5b4a77.mp3","52a6b51936e4":"audio/unit3-google-account/52a6b51936e4.mp3","56974ddaf57e":"audio/unit3-google-account/56974ddaf57e.mp3","9d6bf8ceae57":"audio/unit3-google-account/9d6bf8ceae57.mp3","265b231c445a":"audio/unit3-google-account/265b231c445a.mp3","87543324218a":"audio/unit3-google-account/87543324218a.mp3","320e51229dac":"audio/unit3-google-account/320e51229dac.mp3","59539c64eb05":"audio/unit3-google-account/59539c64eb05.mp3","6a43208b348f":"audio/unit3-google-account/6a43208b348f.mp3","4019c678d63e":"audio/unit3-google-account/4019c678d63e.mp3","51916df7a911":"audio/unit3-google-account/51916df7a911.mp3","2de10d917ed2":"audio/unit3-google-account/2de10d917ed2.mp3","d13cbd8e4b3b":"audio/unit3-google-account/d13cbd8e4b3b.mp3","5715721d11be":"audio/unit3-google-account/5715721d11be.mp3","6891f7065875":"audio/unit3-google-account/6891f7065875.mp3","e338d734c38e":"audio/unit3-google-account/e338d734c38e.mp3","3413049a9303":"audio/unit3-google-account/3413049a9303.mp3","2c5711468c71":"audio/unit3-google-account/2c5711468c71.mp3","a3aca11d7beb":"audio/unit3-google-account/a3aca11d7beb.mp3","e54c1277d567":"audio/unit3-google-account/e54c1277d567.mp3","adbd247a6c89":"audio/unit3-google-account/adbd247a6c89.mp3","c4f7711e8f72":"audio/unit3-google-account/c4f7711e8f72.mp3","5312ba77dc8a":"audio/unit3-google-account/5312ba77dc8a.mp3","42f0eed79fab":"audio/unit3-google-account/42f0eed79fab.mp3","b81fefd5453b":"audio/unit3-google-account/b81fefd5453b.mp3","01f6ec51263b":"audio/unit3-google-account/01f6ec51263b.mp3","64f6ed69a5af":"audio/unit3-google-account/64f6ed69a5af.mp3","afa10a78425d":"audio/unit3-google-account/afa10a78425d.mp3","4e6d3e2d3c90":"audio/unit3-google-account/4e6d3e2d3c90.mp3","fc8cf7efd073":"audio/unit3-google-account/fc8cf7efd073.mp3","d56e59a63893":"audio/unit3-google-account/d56e59a63893.mp3","955ae3111c11":"audio/unit3-google-account/955ae3111c11.mp3","3fafbdcc0794":"audio/unit3-google-account/3fafbdcc0794.mp3","15d6d2ca351d":"audio/unit3-google-account/15d6d2ca351d.mp3","b82193278d6c":"audio/unit3-google-account/b82193278d6c.mp3","70a3faea7302":"audio/unit3-google-account/70a3faea7302.mp3","5eb8f0ac8c02":"audio/unit3-google-account/5eb8f0ac8c02.mp3","69f15b2e83ab":"audio/unit3-google-account/69f15b2e83ab.mp3","9bf3d5836d42":"audio/unit3-google-account/9bf3d5836d42.mp3","8c9a73b98d24":"audio/unit3-google-account/8c9a73b98d24.mp3","50c9fd2975a5":"audio/unit3-google-account/50c9fd2975a5.mp3","b4ccb5d04339":"audio/unit3-google-account/b4ccb5d04339.mp3","b061c1b54c63":"audio/unit3-google-account/b061c1b54c63.mp3","27fc46f86053":"audio/unit3-google-account/27fc46f86053.mp3","4dd579ab7c4d":"audio/unit3-google-account/4dd579ab7c4d.mp3","c0a45f86d075":"audio/unit3-google-account/c0a45f86d075.mp3","adba61291575":"audio/unit3-google-account/adba61291575.mp3","749ba3d838e7":"audio/unit3-google-account/749ba3d838e7.mp3","66590c21d92e":"audio/unit3-google-account/66590c21d92e.mp3","e17e55038818":"audio/unit3-google-account/e17e55038818.mp3","3668e3804b64":"audio/unit3-google-account/3668e3804b64.mp3","6031f52fdc2f":"audio/unit3-google-account/6031f52fdc2f.mp3","a48416bf68b0":"audio/unit3-google-account/a48416bf68b0.mp3","e04ffa811bc0":"audio/unit3-google-account/e04ffa811bc0.mp3","c135b43b5554":"audio/unit3-google-account/c135b43b5554.mp3","dbc6a8181e2f":"audio/unit3-google-account/dbc6a8181e2f.mp3","a66234b845ea":"audio/unit3-google-account/a66234b845ea.mp3","3c2aa803edc6":"audio/unit3-google-account/3c2aa803edc6.mp3","f2db2c9bd94a":"audio/unit3-google-account/f2db2c9bd94a.mp3","2f69c8e3d3e0":"audio/unit3-google-account/2f69c8e3d3e0.mp3","dfb3e4afa929":"audio/unit3-google-account/dfb3e4afa929.mp3","ca02ef5010bd":"audio/unit3-google-account/ca02ef5010bd.mp3","07a29bed37b7":"audio/unit3-google-account/07a29bed37b7.mp3","c68b0ac36885":"audio/unit3-google-account/c68b0ac36885.mp3","225e7605d6d0":"audio/unit3-google-account/225e7605d6d0.mp3","064ba9d6dd2f":"audio/unit3-google-account/064ba9d6dd2f.mp3","f82983fea479":"audio/unit3-google-account/f82983fea479.mp3","588a27223b5f":"audio/unit3-google-account/588a27223b5f.mp3","3a86ebc8a0de":"audio/unit3-google-account/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/unit3-google-account/af6ba89d9b27.mp3","aca2b0992481":"audio/unit3-google-account/aca2b0992481.mp3","e18a189a9371":"audio/unit3-google-account/e18a189a9371.mp3","8af1f0edc12c":"audio/unit3-google-account/8af1f0edc12c.mp3"}</script>
+<script id="dlfAudioData" type="application/json">{"e0d84225bd21":"audio/unit3-google-account/e0d84225bd21.mp3","7a5b13f77f85":"audio/unit3-google-account/7a5b13f77f85.mp3","a76f196c3af6":"audio/unit3-google-account/a76f196c3af6.mp3","905555cb0e5e":"audio/unit3-google-account/905555cb0e5e.mp3","f60fbd1ce926":"audio/unit3-google-account/f60fbd1ce926.mp3","63add4da5623":"audio/unit3-google-account/63add4da5623.mp3","2a0feab0453d":"audio/unit3-google-account/2a0feab0453d.mp3","b4db9d5b4a77":"audio/unit3-google-account/b4db9d5b4a77.mp3","52a6b51936e4":"audio/unit3-google-account/52a6b51936e4.mp3","56974ddaf57e":"audio/unit3-google-account/56974ddaf57e.mp3","9d6bf8ceae57":"audio/unit3-google-account/9d6bf8ceae57.mp3","265b231c445a":"audio/unit3-google-account/265b231c445a.mp3","87543324218a":"audio/unit3-google-account/87543324218a.mp3","320e51229dac":"audio/unit3-google-account/320e51229dac.mp3","59539c64eb05":"audio/unit3-google-account/59539c64eb05.mp3","6a43208b348f":"audio/unit3-google-account/6a43208b348f.mp3","4019c678d63e":"audio/unit3-google-account/4019c678d63e.mp3","51916df7a911":"audio/unit3-google-account/51916df7a911.mp3","2de10d917ed2":"audio/unit3-google-account/2de10d917ed2.mp3","d13cbd8e4b3b":"audio/unit3-google-account/d13cbd8e4b3b.mp3","5715721d11be":"audio/unit3-google-account/5715721d11be.mp3","6891f7065875":"audio/unit3-google-account/6891f7065875.mp3","e338d734c38e":"audio/unit3-google-account/e338d734c38e.mp3","3413049a9303":"audio/unit3-google-account/3413049a9303.mp3","2c5711468c71":"audio/unit3-google-account/2c5711468c71.mp3","a3aca11d7beb":"audio/unit3-google-account/a3aca11d7beb.mp3","e54c1277d567":"audio/unit3-google-account/e54c1277d567.mp3","adbd247a6c89":"audio/unit3-google-account/adbd247a6c89.mp3","c4f7711e8f72":"audio/unit3-google-account/c4f7711e8f72.mp3","5312ba77dc8a":"audio/unit3-google-account/5312ba77dc8a.mp3","42f0eed79fab":"audio/unit3-google-account/42f0eed79fab.mp3","b81fefd5453b":"audio/unit3-google-account/b81fefd5453b.mp3","01f6ec51263b":"audio/unit3-google-account/01f6ec51263b.mp3","64f6ed69a5af":"audio/unit3-google-account/64f6ed69a5af.mp3","afa10a78425d":"audio/unit3-google-account/afa10a78425d.mp3","4e6d3e2d3c90":"audio/unit3-google-account/4e6d3e2d3c90.mp3","fc8cf7efd073":"audio/unit3-google-account/fc8cf7efd073.mp3","d56e59a63893":"audio/unit3-google-account/d56e59a63893.mp3","955ae3111c11":"audio/unit3-google-account/955ae3111c11.mp3","3fafbdcc0794":"audio/unit3-google-account/3fafbdcc0794.mp3","15d6d2ca351d":"audio/unit3-google-account/15d6d2ca351d.mp3","b82193278d6c":"audio/unit3-google-account/b82193278d6c.mp3","70a3faea7302":"audio/unit3-google-account/70a3faea7302.mp3","5eb8f0ac8c02":"audio/unit3-google-account/5eb8f0ac8c02.mp3","69f15b2e83ab":"audio/unit3-google-account/69f15b2e83ab.mp3","9bf3d5836d42":"audio/unit3-google-account/9bf3d5836d42.mp3","8c9a73b98d24":"audio/unit3-google-account/8c9a73b98d24.mp3","50c9fd2975a5":"audio/unit3-google-account/50c9fd2975a5.mp3","b4ccb5d04339":"audio/unit3-google-account/b4ccb5d04339.mp3","b061c1b54c63":"audio/unit3-google-account/b061c1b54c63.mp3","27fc46f86053":"audio/unit3-google-account/27fc46f86053.mp3","4dd579ab7c4d":"audio/unit3-google-account/4dd579ab7c4d.mp3","c0a45f86d075":"audio/unit3-google-account/c0a45f86d075.mp3","adba61291575":"audio/unit3-google-account/adba61291575.mp3","749ba3d838e7":"audio/unit3-google-account/749ba3d838e7.mp3","66590c21d92e":"audio/unit3-google-account/66590c21d92e.mp3","e17e55038818":"audio/unit3-google-account/e17e55038818.mp3","3668e3804b64":"audio/unit3-google-account/3668e3804b64.mp3","6031f52fdc2f":"audio/unit3-google-account/6031f52fdc2f.mp3","a48416bf68b0":"audio/unit3-google-account/a48416bf68b0.mp3","e04ffa811bc0":"audio/unit3-google-account/e04ffa811bc0.mp3","c135b43b5554":"audio/unit3-google-account/c135b43b5554.mp3","dbc6a8181e2f":"audio/unit3-google-account/dbc6a8181e2f.mp3","a66234b845ea":"audio/unit3-google-account/a66234b845ea.mp3","3c2aa803edc6":"audio/unit3-google-account/3c2aa803edc6.mp3","f2db2c9bd94a":"audio/unit3-google-account/f2db2c9bd94a.mp3","2f69c8e3d3e0":"audio/unit3-google-account/2f69c8e3d3e0.mp3","dfb3e4afa929":"audio/unit3-google-account/dfb3e4afa929.mp3","ca02ef5010bd":"audio/unit3-google-account/ca02ef5010bd.mp3","07a29bed37b7":"audio/unit3-google-account/07a29bed37b7.mp3","c68b0ac36885":"audio/unit3-google-account/c68b0ac36885.mp3","225e7605d6d0":"audio/unit3-google-account/225e7605d6d0.mp3","064ba9d6dd2f":"audio/unit3-google-account/064ba9d6dd2f.mp3","f82983fea479":"audio/unit3-google-account/f82983fea479.mp3","588a27223b5f":"audio/unit3-google-account/588a27223b5f.mp3","3a86ebc8a0de":"audio/unit3-google-account/3a86ebc8a0de.mp3","af6ba89d9b27":"audio/unit3-google-account/af6ba89d9b27.mp3","aca2b0992481":"audio/unit3-google-account/aca2b0992481.mp3","e18a189a9371":"audio/unit3-google-account/e18a189a9371.mp3","8af1f0edc12c":"audio/unit3-google-account/8af1f0edc12c.mp3","b1a6ab7de64b":"audio/unit3-google-account/b1a6ab7de64b.mp3","0f92c6a11fa2":"audio/unit3-google-account/0f92c6a11fa2.mp3","891e8ac15b74":"audio/unit3-google-account/891e8ac15b74.mp3","dbf98800420d":"audio/unit3-google-account/dbf98800420d.mp3","0740e7d4572a":"audio/unit3-google-account/0740e7d4572a.mp3","8b93cc67092f":"audio/unit3-google-account/8b93cc67092f.mp3","b9a041e9a1c3":"audio/unit3-google-account/b9a041e9a1c3.mp3","062e9535275c":"audio/unit3-google-account/062e9535275c.mp3","5e714039fb94":"audio/unit3-google-account/5e714039fb94.mp3","58e5805f1139":"audio/unit3-google-account/58e5805f1139.mp3","54dd41e8bc62":"audio/unit3-google-account/54dd41e8bc62.mp3","5121ccc0186a":"audio/unit3-google-account/5121ccc0186a.mp3","e9aa763994c9":"audio/unit3-google-account/e9aa763994c9.mp3","ff853a8aa411":"audio/unit3-google-account/ff853a8aa411.mp3","5a5b9a373218":"audio/unit3-google-account/5a5b9a373218.mp3","2e3acb29a89b":"audio/unit3-google-account/2e3acb29a89b.mp3","186a76d2a58e":"audio/unit3-google-account/186a76d2a58e.mp3","88c80a6580b9":"audio/unit3-google-account/88c80a6580b9.mp3","c0b97391903f":"audio/unit3-google-account/c0b97391903f.mp3","1509bbb9d428":"audio/unit3-google-account/1509bbb9d428.mp3","5a08680657b2":"audio/unit3-google-account/5a08680657b2.mp3","b4459d48fec8":"audio/unit3-google-account/b4459d48fec8.mp3","21c0b610cdbf":"audio/unit3-google-account/21c0b610cdbf.mp3","65354e1a332d":"audio/unit3-google-account/65354e1a332d.mp3","2380bf141a8a":"audio/unit3-google-account/2380bf141a8a.mp3","0c55e335d3b9":"audio/unit3-google-account/0c55e335d3b9.mp3","6ae0d9b237c1":"audio/unit3-google-account/6ae0d9b237c1.mp3","b46088ce576e":"audio/unit3-google-account/b46088ce576e.mp3","8e302c04975a":"audio/unit3-google-account/8e302c04975a.mp3","1ab2605bfadd":"audio/unit3-google-account/1ab2605bfadd.mp3","b7256a8dff42":"audio/unit3-google-account/b7256a8dff42.mp3","7fdd46cba22b":"audio/unit3-google-account/7fdd46cba22b.mp3","45ffbd65f3aa":"audio/unit3-google-account/45ffbd65f3aa.mp3"}</script>
 <script src="_lib/dlf-unit-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
