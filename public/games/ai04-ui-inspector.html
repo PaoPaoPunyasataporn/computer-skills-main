@@ -151,29 +151,8 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .refl-wrap textarea:focus{outline:2px solid var(--primary);}
 .refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
 
-/* token-order exercise (new hands-on round, click-to-place) */
-.tokex{width:100%;max-width:1180px;min-height:min(72vh,640px);background:#fff;border:2px solid var(--border);border-radius:20px;box-shadow:0 6px 0 var(--line-d);display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:32px 20px;text-align:center;}
-.tokex.show{display:flex;}
-.tokex-title{font-family:'Mitr',sans-serif;font-size:18px;font-weight:700;color:var(--primary-dark);max-width:520px;}
-.tokex-word{font-size:15px;color:var(--text2);}
-.tokex-slots{display:flex;gap:12px;justify-content:center;}
-.tokex-slot{width:96px;height:52px;border-radius:12px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;color:var(--primary-dark);background:var(--cream2);}
-.tokex-slot.filled{border-style:solid;border-color:var(--primary);background:var(--primary-light);}
-.tokex-slots.wrong .tokex-slot{animation:tokShake .4s;border-color:var(--red);}
-@keyframes tokShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
-.tokex-pool{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:480px;}
-.tokex-chip{padding:12px 20px;border-radius:14px;border:1.5px solid var(--primary);background:var(--primary-light);color:var(--primary-dark);font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:transform .1s;}
-.tokex-chip:active{transform:translateY(2px);}
-.tokex-chip.used{visibility:hidden;}
-.tokhl-wrap{width:100%;max-width:480px;margin-top:10px;padding-top:18px;border-top:1.5px dashed var(--border);}
-.tokhl-title{font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
-.tokhl-input{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);box-sizing:border-box;}
-.tokhl-input:focus{outline:2px solid var(--primary);}
-.tokhl-out{margin-top:10px;min-height:40px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;}
-.tokhl-tok{display:inline-block;padding:3px 6px;border-radius:6px;font-size:14px;font-family:'Sarabun',sans-serif;color:#1a1a1a;}
-
 /* prompt-structuring round (new hands-on round, replaces the old separate
-   "what does this button do?" quiz — runs after the token-order exercise,
+   "what does this button do?" quiz — runs after the "clear chat" coach step,
    before the reflection step). MC warm-up sub-phase reuses .quizex-q/-opts;
    the typed-fixing sub-phase reuses the .llmthread/.llmsuggest/.llminputbar
    chat-shell classes already defined above, in a single-column layout. */
@@ -269,18 +248,6 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
           <input id="chatInput" class="llminput" type="text" placeholder="พิมพ์อะไรก็ได้ แล้วกด Enter..." onkeydown="if(event.key==='Enter')onSendOrStop();">
           <button class="llmsend" id="sendBtn" onclick="onSendOrStop()">➤</button>
         </div>
-      </div>
-    </div>
-
-    <div class="tokex" id="tokExercise">
-      <div class="tokex-title">AI ตัดคำเป็น "token" ก่อนอ่าน — ลองแตะชิ้นส่วนของคำว่า "การเรียนรู้" ให้เรียงถูกลำดับ</div>
-      <div class="tokex-word">แตะชิ้นส่วนด้านล่างตามลำดับที่ถูกต้อง</div>
-      <div class="tokex-slots" id="tokexSlots"></div>
-      <div class="tokex-pool" id="tokexPool"></div>
-      <div class="tokhl-wrap">
-        <div class="tokhl-title">🖍️ ลองพิมพ์อะไรก็ได้ ดูว่า AI ตัด token ยังไง (1 คำ ≠ 1 token เสมอไป)</div>
-        <input type="text" id="tokhlInput" class="tokhl-input" placeholder="พิมพ์ประโยคของตัวเอง..." oninput="onTokHlType()">
-        <div class="tokhl-out" id="tokhlOut"></div>
       </div>
     </div>
 
@@ -401,7 +368,6 @@ function startPractice(){
   step = 0; retries = 0; generating = false; historyOpened=false; modelChanged=false; clearedOnce=false; copied=false;
   $('scorePill').textContent = 'พลาดไป 0 ครั้ง';
   $('chatThread').innerHTML = '';
-  $('tokExercise').classList.remove('show');
   $('promptExercise').classList.remove('show');
   $('shell').style.display = '';
   $('modelMenu').classList.remove('show');
@@ -413,12 +379,14 @@ function startPractice(){
   setStep(0);
 }
 
-// 9 named coach steps: input+send · stop · full answer+copy · model switch ·
-// history · clear chat(+token explain) · token-order drag exercise ·
+// 8 named coach steps: input+send · stop (explicitly mentions tokens, since
+// that's the concept ai01 already teaches — this lesson just points out
+// tokens as the AI is visibly generating them) · full answer+copy ·
+// model switch · history · clear chat(+token/context-limit explain) ·
 // prompt-structuring round (MC warm-up + typed role/task/format fixing) ·
 // finish — enough hands-on rounds for a real 8-15 minute session, each with
 // its own immediate feedback message.
-const STEP_COUNT = 9;
+const STEP_COUNT = 8;
 function coachShow(text, opts){
   opts = opts || {};
   $('coachText').textContent = text;
@@ -433,32 +401,6 @@ function highlight(id){
 }
 function bumpRetry(){ retries++; $('scorePill').textContent = `พลาดไป ${retries} ครั้ง`; }
 
-// ── Visual token highlighter: splits whatever the student types into pseudo-token
-// chunks and color-codes them live, to make "1 word ≠ 1 token" visible and concrete.
-// This is a simplified illustrative heuristic (real tokenizers use learned subword
-// vocabularies), not an actual model's tokenizer — short words/pieces stay whole,
-// longer words get split into 2-3 pieces the way subword tokenization often would.
-const TOKHL_COLORS = ['#FFE1A8','#B8E6D5','#C9D9FF','#FFD1DC','#D9C9FF','#C9F0FF','#FFE1C9'];
-function fakeTokenize(text){
-  const words = text.split(/(\s+)/).filter(w=>w.length);
-  const tokens = [];
-  words.forEach(w=>{
-    if (/^\s+$/.test(w)){ return; } // skip whitespace, keep words visually separate via gap
-    if (w.length <= 3){ tokens.push(w); return; }
-    const cut1 = Math.ceil(w.length/3);
-    const cut2 = Math.ceil(w.length*2/3);
-    tokens.push(w.slice(0,cut1), w.slice(cut1,cut2), w.slice(cut2));
-  });
-  return tokens.filter(t=>t.length);
-}
-function onTokHlType(){
-  const text = $('tokhlInput').value;
-  const tokens = fakeTokenize(text);
-  $('tokhlOut').innerHTML = tokens.map((t,i)=>
-    `<span class="tokhl-tok" style="background:${TOKHL_COLORS[i%TOKHL_COLORS.length]}">${esc(t)}</span>`
-  ).join('');
-}
-
 function setStep(n){
   step = n;
   highlight(null);
@@ -467,7 +409,7 @@ function setStep(n){
     coachShow('ขั้นที่ 1: นี่คือ 「ช่องพิมพ์ข้อความ」 (input box) — พิมพ์อะไรก็ได้แล้วกดปุ่ม ➤ หรือกด Enter เพื่อส่งให้ AI');
   } else if (n === 1){
     highlight('sendBtn');
-    coachShow('เก่งมาก! ตอนนี้ AI กำลังตอบอยู่ (จุดสามจุดเด้ง ๆ) สังเกตปุ่มส่งเปลี่ยนเป็น ⏹ สีแดง — นี่คือปุ่ม 「หยุดตอบ」 ลองกดก่อนที่ AI จะพิมพ์จบดูสิ!', { skip: 'skipStop()' });
+    coachShow('เก่งมาก! ตอนนี้ AI กำลังตอบอยู่ (จุดสามจุดเด้ง ๆ) — นั่นคือ AI กำลังทาย token ถัดไปทีละตัวต่อกันไปเรื่อย ๆ จนครบคำตอบ สังเกตปุ่มส่งเปลี่ยนเป็น ⏹ สีแดง — นี่คือปุ่ม 「หยุดตอบ」 ลองกดก่อนที่ AI จะพิมพ์จบดูสิ!', { skip: 'skipStop()' });
   } else if (n === 2){
     highlight('chatInput');
     coachShow('รอบนี้ลองพิมพ์คำถามอีกครั้งแล้วปล่อยให้ AI ตอบจนจบดูสิ — พอตอบจบแล้วจะมีปุ่ม 「คัดลอกคำตอบ」 โผล่ขึ้นมาใต้คำตอบนั้น');
@@ -483,58 +425,14 @@ function setStep(n){
   } else if (n === 6){
     highlight(null);
     coachHide();
-    startTokEx();
-  } else if (n === 7){
-    highlight(null);
-    coachHide();
     startPromptEx();
-  } else if (n === 8){
+  } else if (n === 7){
     highlight(null);
     goStep(3);
   }
 }
 
-// ── token-order exercise (new round type: click-to-place, keyboard/touch friendly) ──
-const TOKEX_CORRECT = ['การ','เรียน','รู้'];
-let tokexPlaced = [];
-function startTokEx(){
-  $('shell').style.display = 'none';
-  tokexPlaced = [];
-  const shuffled = [...TOKEX_CORRECT].sort(()=>Math.random()-0.5);
-  $('tokexSlots').innerHTML = TOKEX_CORRECT.map((_,i)=>`<div class="tokex-slot" id="tokexSlot${i}"></div>`).join('');
-  $('tokexPool').innerHTML = shuffled.map((t,i)=>`<button class="tokex-chip" id="tokexChip${i}" onclick="tokexPick('${esc(t)}',${i})">${esc(t)}</button>`).join('');
-  $('tokExercise').classList.add('show');
-}
-function tokexPick(text, chipIdx){
-  const chip = $('tokexChip'+chipIdx);
-  if (!chip || chip.classList.contains('used')) return;
-  chip.classList.add('used');
-  tokexPlaced.push(text);
-  const slot = $('tokexSlot'+(tokexPlaced.length-1));
-  slot.textContent = text;
-  slot.classList.add('filled');
-  if (tokexPlaced.length === TOKEX_CORRECT.length) checkTokEx();
-}
-function checkTokEx(){
-  const ok = tokexPlaced.every((t,i)=>t===TOKEX_CORRECT[i]);
-  if (ok){
-    setTimeout(()=>{
-      $('tokExercise').classList.remove('show');
-      $('shell').style.display = '';
-      setStep(7);
-    }, 700);
-    return;
-  } else {
-    bumpRetry();
-    $('tokexSlots').classList.add('wrong');
-    setTimeout(()=>{
-      $('tokexSlots').classList.remove('wrong');
-      startTokEx();
-    }, 650);
-  }
-}
-
-// ── prompt-structuring round (new round type, runs after the token-order
+// ── prompt-structuring round (new round type, runs after the token
 //    exercise): a short "spot the better prompt" MC warm-up, then a few
 //    rounds of retyping a vague prompt into one with role+task+format.
 //    Ported from the old standalone ai05-prompt-fixer.html and trimmed
@@ -675,7 +573,7 @@ function sendPf(){
         setTimeout(() => {
           $('promptExercise').classList.remove('show');
           $('shell').style.display = '';
-          setStep(8);
+          setStep(7);
         }, 1200);
       } else {
         setTimeout(() => loadPfRound(pfRound + 1), 1200);
@@ -794,8 +692,8 @@ function clearChat(){
 
 // ===== Step 4 done =====
 function finishGame(){
-  // total mistakes now come from the coach tour + token-order exercise + the
-  // prompt-structuring round (MC warm-up + typed fixing), so thresholds are
+  // total mistakes now come from the coach tour + the prompt-structuring
+  // round (MC warm-up + typed fixing), so thresholds are
   // rescaled up from the old 0/1-2/3+ scale
   window.dlfStars = retries <= 1 ? 3 : retries <= 5 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
