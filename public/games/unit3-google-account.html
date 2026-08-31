@@ -71,7 +71,6 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
 .gauth-remind b{color:var(--primary-dark);}
 .gauth-note{background:var(--amber-light);border:1px solid var(--amber);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--text2);margin:0 0 14px;text-align:left;line-height:1.5;}
 .gauth-note b{color:var(--amber);}
-.gauth-acctcard{border:1px solid var(--border);border-radius:12px;margin:0;padding:16px;text-align:center;box-shadow:var(--shadow);animation:rise .2s ease;}
 .gauth-unlock{width:100%;display:flex;flex-direction:column;gap:8px;text-align:left;margin:14px 0;}
 .gauth-unlock-item{display:flex;align-items:center;gap:10px;background:var(--primary-light);border:1px solid var(--border);border-radius:10px;padding:9px 12px;font-size:13px;color:var(--text);}
 .gauth-unlock-item .u-em{font-size:20px;flex:0 0 auto;}
@@ -142,7 +141,7 @@ body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at
 <div id="game" class="screen">
   <div class="score-row">
     <div><div class="score-label">คะแนน</div><div class="score-val" id="score">0</div></div>
-    <div style="text-align:center"><div class="score-label">ขั้นตอน</div><div class="score-val" id="mnum">1/13</div></div>
+    <div style="text-align:center"><div class="score-label">ขั้นตอน</div><div class="score-val" id="mnum">1/12</div></div>
     <div style="text-align:right"><div class="score-label">ดาว</div><div class="score-val">⭐</div></div>
   </div>
   <div class="mission-card">
@@ -216,12 +215,6 @@ const MISSIONS = [
     ctx:'บัญชีเดียวนี้ใช้เปิดได้ทั้ง Gmail, Google Drive, Google Classroom, YouTube และ Google Photos — แตะ “ไปต่อ” เพื่อดูว่าใช้ทำอะไรได้บ้าง',
     hint:'แตะปุ่ม “ไปต่อ” เพื่อดูสิ่งที่บัญชีของคุณใช้ได้',
     explain:'บัญชี Google เดียวเชื่อมทุกบริการของ Google เข้าด้วยกัน ทำให้ไม่ต้องสมัครแยกทีละแอป' },
-
-  { view:'signout', tag:'ความปลอดภัย · ออกจากระบบ',
-    title:'ใช้เครื่องคอมร่วมกับคนอื่น? ออกจากระบบให้เรียบร้อย',
-    ctx:'ใช้งานที่ห้องคอมพิวเตอร์หรือเครื่องที่ใช้ร่วมกันเสร็จแล้ว แตะรูปโปรไฟล์มุมขวาบน แล้วเลือก “ออกจากระบบ” ทุกครั้ง',
-    hint:'แตะวงกลมรูปโปรไฟล์มุมขวาบน แล้วกด “ออกจากระบบ”',
-    explain:'การออกจากระบบทุกครั้งบนเครื่องที่ใช้ร่วมกัน ช่วยปกป้องบัญชี Gmail, Drive และข้อมูลส่วนตัวของเราจากคนอื่นที่ใช้เครื่องต่อ' },
 
   { view:'safetyinfo', tag:'ก่อนไปต่อ · สิ่งที่ต้องรู้',
     title:'ดูแลบัญชี Google ของคุณให้ปลอดภัย',
@@ -389,28 +382,6 @@ const VIEWS = {
     stage.appendChild(c);
     bindSpk(c);
     $('wBtn').onclick=()=>{ if(advanced) return; missionSuccess('บัญชีของคุณพร้อมใช้กับทุกบริการของ Google แล้ว!'); };
-  },
-
-  signout(m,stage){
-    const c=el('div','gauth-app');
-    c.innerHTML = topBar({loggedIn:true,avaClick:true,avaHi:true})
-      + `<div class="gauth-body" style="opacity:.9">`
-      + `<h3>บัญชี Google ของคุณ</h3>`
-      + `<div class="gauth-sub">แตะรูปโปรไฟล์มุมขวาบนเพื่อออกจากระบบ</div>`
-      + `</div>`
-      + `<div id="acctMenu" style="padding:0 20px 20px"></div>`;
-    stage.appendChild(c);
-    $('gAva').onclick=()=>{
-      if(advanced) return;
-      if($('acctMenu').innerHTML) return;
-      $('gAva').classList.remove('highlighted');
-      $('acctMenu').innerHTML =
-        `<div class="gauth-acctcard"><div class="gauth-ava" style="margin:0 auto 8px">😀</div>`
-        + `<div style="font-size:12px;color:var(--text2);margin-bottom:12px">บัญชี Google ของคุณ</div>`
-        + `<button class="act-btn ghost highlighted" id="btnSignout"><span class="act-txt">🚪 ออกจากระบบ</span>${spkHtml('ออกจากระบบ')}</button></div>`;
-      bindSpk($('acctMenu'));
-      $('btnSignout').onclick=()=>{ if(advanced) return; missionSuccess('ออกจากระบบเรียบร้อย! ปลอดภัยเมื่อใช้เครื่องร่วมกับผู้อื่น'); };
-    };
   },
 
   safetyinfo(m,stage){
