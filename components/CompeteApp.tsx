@@ -688,26 +688,23 @@ function pickSeededGeneric<T>(bank: readonly T[], seed: number, n: number): T[] 
 // Phase 2: an icon must be DOUBLE-clicked to "open" — single clicks are ignored,
 // which is exactly the muscle-memory distinction kids often get wrong at first.
 function DoubleClickIcon(p: { icon: DesktopIcon | undefined; onOpen: () => void }) {
-  const [clicks, setClicks] = useState(0);
   const [opened, setOpened] = useState(false);
+  const clickCount = useRef(0);
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   if (!p.icon) return null;
 
+  // Count clicks in a ref (no effect needed): two clicks must land within 420ms.
   function handleClick() {
     if (opened) return;
-    setClicks((c) => c + 1);
+    clickCount.current += 1;
     if (clickTimer.current) clearTimeout(clickTimer.current);
-    clickTimer.current = setTimeout(() => setClicks(0), 420); // two clicks must land close together
-  }
-
-  useEffect(() => {
-    if (clicks >= 2 && !opened) {
+    if (clickCount.current >= 2) {
       setOpened(true);
-      if (clickTimer.current) clearTimeout(clickTimer.current);
       setTimeout(() => p.onOpen(), 250);
+    } else {
+      clickTimer.current = setTimeout(() => { clickCount.current = 0; }, 420);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clicks]);
+  }
 
   return (
     <div className="cmp-dclick-area">
@@ -725,8 +722,8 @@ function DoubleClickIcon(p: { icon: DesktopIcon | undefined; onOpen: () => void 
 function ContextMenuTask(p: { task: ContextTask | undefined; seed: number; onPick: () => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [picked, setPicked] = useState<string | null>(null);
-  if (!p.task) return null;
 
+  // Hooks must run on every render, so this sits above the early return below.
   const options = useMemo(() => {
     if (!p.task) return [];
     const opts = [p.task.action, ...p.task.decoys];
@@ -737,7 +734,9 @@ function ContextMenuTask(p: { task: ContextTask | undefined; seed: number; onPic
     }
     return opts;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [p.seed, p.task.id]);
+  }, [p.seed, p.task?.id]);
+
+  if (!p.task) return null;
 
   function choose(opt: string) {
     if (picked) return;

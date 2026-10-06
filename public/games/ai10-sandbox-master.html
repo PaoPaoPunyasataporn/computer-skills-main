@@ -124,6 +124,30 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
 .explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
 
+/* animated with/without comparison */
+.cmpgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media (max-width:560px){.cmpgrid{grid-template-columns:1fr;}}
+.cmpcol{background:var(--panel2);border:1.5px solid var(--border);border-radius:16px;padding:10px 12px;min-height:250px;}
+.cmphead{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;display:inline-block;margin-bottom:6px;}
+.cmphead.nodoc{background:#FFF1D6;color:#8A6300;border:1px solid #E8C468;}
+.cmphead.grounded{background:var(--green-light);color:#1F6B33;border:1px solid var(--green);}
+.cmpdoc{background:#FFFCEF;border:1.5px dashed #C58A00;border-radius:12px;padding:8px 10px;margin:4px 0 6px;opacity:0;transform:translateY(-14px) scale(.92);transition:opacity .45s ease,transform .45s cubic-bezier(.34,1.56,.64,1);}
+.cmpdoc.in{opacity:1;transform:none;}
+.cmpdoc .doctitle{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:#8A6300;margin-bottom:4px;}
+.cmpdoc ol{margin:0;padding-left:18px;font-size:11.5px;line-height:1.7;color:var(--text);}
+.cmpdoc li.hit{transition:background .4s .5s;}
+.cmpdoc.in li.hit{background:#FFE88A;border-radius:5px;font-weight:700;}
+.cmpcap{margin-top:10px;min-height:44px;background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:10px 14px;font-size:13.5px;font-weight:600;color:var(--text);line-height:1.6;}
+/* build step */
+.filegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0;}
+.filebtn{display:flex;align-items:center;gap:8px;border:2px solid var(--border);border-bottom-width:4px;border-radius:14px;background:var(--panel);padding:10px 12px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:13.5px;color:var(--text);text-align:left;transition:transform .1s;}
+.filebtn:active:not(:disabled){transform:translateY(2px);}
+.filebtn .fe{font-size:24px;}
+.filebtn.ok{border-color:var(--green);background:var(--green-light);}
+.filebtn.bad{border-color:var(--red);background:var(--red-light);opacity:.8;}
+.filebtn:disabled{cursor:default;}
+.bldchat{width:100%;max-height:230px;overflow-y:auto;margin-top:6px;}
+
 /* reflection step */
 .refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
 .refl-wrap textarea:focus{outline:2px solid var(--primary);}
@@ -166,92 +190,63 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
     </div>
   </div>
 
-  <!-- STEP 3 · Hands-on core — three compact scenes (ask → attach → ask again),
-       only one visible at a time so nothing ever needs scrolling (body has no
-       scroll at all; see html,body{overflow:hidden} above). -->
+  <!-- STEP 3 · Watch the difference (auto-playing animation, no judging) -->
   <div class="panel" id="s3" data-step="2" style="display:none">
     <div class="teach-wrap" style="text-align:left">
       <div class="rhead">
-        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือทำ</span>
-        <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ดูความต่าง</span>
+        <span class="rtag" id="cmpTag">ตัวอย่างที่ 1/3</span>
       </div>
-      <span class="rtag" id="roundTag" style="display:block;margin:6px 0 10px">ข้อที่ 1/5</span>
-
-      <!-- Scene A: ask the un-augmented AI, judge its answer -->
-      <div id="sceneAsk1">
-        <div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble" id="askQ1"></div></div>
-        <div class="chatrow ai">
-          <span class="chatava">🤖</span>
-          <div class="chatbubble nodoc" id="aiBubble1"><span class="chattyping" id="typing1"><span></span><span></span><span></span></span><span id="aiText1" style="display:none"></span></div>
+      <div class="sub" style="margin:8px 0 10px">คำถามเดียวกัน ถาม AI 2 ตัว — ต่างกันแค่ว่า "ได้อ่านเอกสาร" หรือไม่ ดูว่าเกิดอะไรขึ้น</div>
+      <div class="cmpgrid">
+        <div class="cmpcol">
+          <div class="cmphead nodoc">🤖 AI ไม่มีเอกสาร</div>
+          <div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble cmpq"></div></div>
+          <div class="chatrow ai" id="rowL" style="visibility:hidden"><span class="chatava">🤖</span><div class="chatbubble nodoc" id="cmpL"></div></div>
         </div>
-        <div id="judgeArea" style="display:none">
-          <div class="sub" style="margin:8px 0 6px">คิดว่าคำตอบนี้ "เชื่อถือได้" ไหม?</div>
-          <div class="judgerow" id="judgeRow">
-            <button type="button" class="acard" onclick="judgeAnswer(true)">👍 เชื่อถือได้</button>
-            <button type="button" class="acard" onclick="judgeAnswer(false)">🤔 น่าจะมั่ว</button>
+        <div class="cmpcol">
+          <div class="cmphead grounded">🤖 AI + 📄 เอกสาร</div>
+          <div class="cmpdoc" id="cmpDoc">
+            <div class="doctitle">📎 แนบไฟล์: กฎระเบียบโรงเรียน.pdf</div>
+            <ol id="cmpDocList"></ol>
           </div>
-          <div class="explainbox" id="explainBox" style="margin-top:6px"></div>
-          <button class="btn" id="toAttachBtn" style="display:none;margin-top:10px" onclick="goAttachScene()">ลากไฟล์ให้ AI ดูกัน →</button>
+          <div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble cmpq"></div></div>
+          <div class="chatrow ai" id="rowR" style="visibility:hidden"><span class="chatava">🤖</span><div class="chatbubble grounded" id="cmpR"></div></div>
         </div>
       </div>
-
-      <!-- Scene B: drag the reference file to the AI -->
-      <div id="sceneAttach" style="display:none">
-        <div class="filepanel-hint">📂 ลากไฟล์เอกสารไปวางในกล่องขวา เพื่อให้ AI ดูก่อนตอบคำถามเดิมอีกครั้ง</div>
-        <div class="filepanel-row">
-          <div class="fileicon" id="fileIcon" draggable="true" ondragstart="onFileDragStart(event)" onclick="attachDoc()">
-            <span class="fileicon-emoji">📄</span>
-            <span class="fileicon-name">กฎระเบียบ<br>โรงเรียน.pdf</span>
-          </div>
-          <div class="filearrow">→</div>
-          <div class="filedrop" id="fileDrop" ondragover="onFileDragOver(event)" ondragleave="onFileDragLeave(event)" ondrop="onFileDrop(event)" onclick="attachDoc()">
-            <span class="filedrop-icon">🤖</span>
-            <span class="filedrop-text">ลากมาวางให้ AI ดู<br>(หรือแตะไฟล์ก็ได้)</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scene C: same question, now grounded -->
-      <div id="sceneAsk2" style="display:none">
-        <div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble" id="askQ2"></div></div>
-        <div class="docref" id="docRef"></div>
-        <div class="chatrow ai">
-          <span class="chatava">🤖</span>
-          <div class="chatbubble grounded" id="aiBubble2"><span class="chattyping" id="typing2"><span></span><span></span><span></span></span><span id="aiText2" style="display:none"></span></div>
-        </div>
-        <div class="explainbox" id="explainBox2b" style="margin-top:6px;display:none"></div>
-        <button class="btn" id="nextRoundBtn" style="display:none;margin-top:12px" onclick="nextRound()">ข้อถัดไป →</button>
+      <div class="cmpcap" id="cmpCap"></div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <button class="btn ghost" id="cmpReplay" onclick="playCmp(cmpIdx)" style="flex:1">↻ ดูอีกครั้ง</button>
+        <button class="btn" id="cmpNext" onclick="cmpAdvance()" style="flex:2;display:none">ดูตัวอย่างถัดไป →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 3b · Know the document's limits -->
+  <!-- STEP 4 · Build the school help-desk assistant (click-through, simulated) -->
   <div class="panel" id="s4" data-step="3" style="display:none">
     <div class="teach-wrap" style="text-align:left">
       <div class="rhead">
-        <span class="stepstage" style="margin:0">ขั้นที่ 3 · รู้ขอบเขตของเอกสาร</span>
-        <span class="scorepill" id="scorePill2">ตอบผิด 0 ครั้ง</span>
+        <span class="stepstage" style="margin:0">ขั้นที่ 4 · ลงมือสร้างผู้ช่วย</span>
+        <span class="scorepill" id="scorePill2">เลือกพลาด 0 ครั้ง</span>
       </div>
-      <div class="roledesc"><b>🧑‍💼 ด่านต่อไป:</b> เอกสารอ้างอิงไม่ได้มีคำตอบของทุกคำถาม — AI ที่ดีต้องรู้ว่าเมื่อไหร่ควร "บอกตามตรงว่าไม่รู้" แทนที่จะมั่วคำตอบขึ้นมาเองแม้จะมีเอกสารอยู่ในมือ</div>
-      <div class="docbox">
-        <div class="doctitle">📄 เอกสารอ้างอิง: กฎระเบียบโรงเรียน (ฉบับย่อ) — เหมือนเดิม</div>
-        <ol>
-          <li>ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์</li>
-          <li>ห้ามใช้โทรศัพท์มือถือในห้องเรียน ยกเว้นได้รับอนุญาตจากครู</li>
-          <li>นักเรียนต้องใส่ชุดพละวันพุธและวันศุกร์</li>
-          <li>พักกลางวัน 12:00–13:00 น.</li>
-          <li>ศูนย์รับเลี้ยงเด็กก่อน/หลังเลิกเรียน เปิด 07:00–08:00 น. และ 16:00–18:00 น.</li>
-        </ol>
+
+      <div id="bldA">
+        <div class="roledesc"><b>🛠️ งานที่ 1: แนบเอกสารให้ตรงเรื่อง</b> — AI ตอบได้เฉพาะจากไฟล์ที่เราแนบให้ แตะเลือกไฟล์ที่ควรแนบเพื่อตอบคำถามนี้ แล้วดูว่า AI ตอบอะไร</div>
+        <span class="rtag" id="bldTag" style="display:block;margin:6px 0">คำถามที่ 1/3</span>
+        <div class="qcard"><div class="qlabel">❓ นักเรียนถามผู้ช่วยว่า</div><div class="qtext" id="bldQ"></div></div>
+        <div class="filegrid" id="fileGrid"></div>
+        <div id="bldChat" class="bldchat"></div>
+        <div class="explainbox" id="bldExplain" style="margin-top:8px"></div>
+        <button class="btn" id="bldNextBtn" style="display:none;margin-top:12px" onclick="bldNext()">ข้อถัดไป →</button>
       </div>
-      <span class="rtag" id="roundTag2" style="display:block;margin:6px 0 6px">ข้อที่ 1/5</span>
-      <div class="qcard">
-        <div class="qlabel">❓ คำถามจากนักเรียน</div>
-        <div class="qtext" id="roundQ2"></div>
+
+      <div id="bldB" style="display:none">
+        <div class="roledesc"><b>🛠️ งานที่ 2: ตั้งคำสั่งให้ผู้ช่วย</b> — บอก AI ว่าต้อง "ประพฤติตัว" แบบไหนเวลาตอบ เลือก 1 คำสั่ง แล้วดูผลทดสอบกับ 2 คำถาม (คำถามแรกมีในเอกสาร คำถามที่สองไม่มีในเอกสาร)</div>
+        <div class="answerrow" id="instrRow"></div>
+        <div class="bldchat" id="instrChat"></div>
+        <div class="explainbox" id="instrExplain" style="margin-top:8px"></div>
+        <button class="btn" id="instrDoneBtn" style="display:none;margin-top:12px" onclick="goStep(4)">ผู้ช่วยพร้อมใช้งานแล้ว →</button>
       </div>
-      <div class="sub" style="margin-bottom:6px">เอกสารตอบคำถามนี้ได้ไหม? แตะคำตอบที่ AI ที่ดีควรพูด</div>
-      <div class="answerrow" id="answerRow2"></div>
-      <div class="explainbox" id="explainBox2" style="margin-top:10px"></div>
-      <button class="btn" id="nextRoundBtn2" style="display:none;margin-top:14px" onclick="nextScope()">ข้อถัดไป →</button>
     </div>
   </div>
 
@@ -282,8 +277,8 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 const PROCESS = [
   { label:'จุดเริ่ม', step:0 },
   { label:'แนวคิด', step:1 },
-  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
-  { label:'รู้ขอบเขต', step:3 },
+  { label:'ดูความต่าง', step:2 },
+  { label:'ลงมือสร้างผู้ช่วย', step:3 },
   { label:'สะท้อนคิด', step:4 },
 ];
 let curStep = 0;
@@ -302,8 +297,8 @@ function goStep(n){
   $('done').style.display = 'none'; $('done').classList.remove('active');
   renderRail();
   if (n===1) renderConcept();
-  if (n===2) startPractice();
-  if (n===3) startScope();
+  if (n===2) startCmp();
+  if (n===3) startBuild();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -313,6 +308,8 @@ const CONCEPTS = [
     ex:'ถามว่า "ห้องสมุดโรงเรียนเราเปิดกี่โมง" — AI ไม่เคยเห็นตารางเวลาโรงเรียนเรา จึงมั่วเวลาขึ้นมาเองแบบมั่นใจ' },
   { icon:'📎', title:'RAG: แนบเอกสารให้ AI "ดู" ก่อนตอบ', body:'RAG (Retrieval-Augmented Generation) คือการให้ AI ค้นหาและอ่านเอกสารอ้างอิงจริงก่อนตอบคำถาม แทนที่จะให้มันเดาจากความจำอย่างเดียว — เหมือนให้เพื่อนเปิดหนังสือดูก่อนตอบ แทนที่จะตอบจากความจำล้วน ๆ',
     ex:'ถ้าแนบ "กฎระเบียบโรงเรียน" ให้ AI ดูก่อน มันจะตอบเวลาห้องสมุดได้ถูกต้องตรงกับเอกสารจริง ไม่ใช่เดาเอาเอง' },
+  { icon:'🛠️', title:'สร้างผู้ช่วยที่ดี ต้องทำ 2 อย่าง', body:'(1) แนบไฟล์ให้ตรงเรื่อง — AI ค้นเจอแค่ในไฟล์ที่เราแนบ แนบผิดไฟล์ก็ตอบไม่ได้ (2) ตั้งคำสั่งให้ผู้ช่วย "ตอบจากเอกสารเท่านั้น ถ้าไม่พบให้บอกว่าไม่พบ และบอกชื่อเอกสารที่อ้างอิง" — คำสั่งนี้ทำให้ AI กล้าพูดว่า "ไม่รู้" แทนที่จะเดา',
+    ex:'เดี๋ยวเราจะดูภาพเคลื่อนไหวเทียบ AI สองตัว แล้วลองสร้างผู้ช่วยตอบคำถามของโรงเรียนด้วยตัวเอง' },
 ];
 let cIdx = 0;
 function renderConcept(){ cIdx = 0; renderConceptCard(); }
@@ -328,11 +325,9 @@ function renderConceptCard(){
 function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
 function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
 
-// ===== Step 3: watch AI hallucinate WITHOUT the doc, judge whether to trust it,
-// then attach the reference doc and watch AI answer again, now grounded. =====
-// The reveal order matters: the document stays hidden until the student has
-// already judged the un-augmented answer, so there's nothing to pattern-match
-// against yet — they have to reason about plausibility, not compare text.
+// ===== Step 3: animated side-by-side — same question, with vs. without the document =====
+// Pure animation (no judging): the viewer just watches what changes when the AI is
+// handed a document before answering.
 const DOC_LINES = [
   'ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์',
   'ห้ามใช้โทรศัพท์มือถือในห้องเรียน ยกเว้นได้รับอนุญาตจากครู',
@@ -340,187 +335,187 @@ const DOC_LINES = [
   'พักกลางวัน 12:00–13:00 น.',
   'ศูนย์รับเลี้ยงเด็กก่อน/หลังเลิกเรียน เปิด 07:00–08:00 น. และ 16:00–18:00 น.',
 ];
-const ROUNDS = [
+const CMP_EXAMPLES = [
   { q:'ห้องสมุดเปิดกี่โมงถึงกี่โมง?', docLine:0,
     without:'ห้องสมุดเปิด 09:00–17:00 น. ทุกวัน รวมวันหยุดสุดสัปดาห์ด้วยครับ',
-    with:'ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์ ตามที่ระบุไว้ในกฎระเบียบโรงเรียนครับ',
-    explain:'AI เดาเวลาขึ้นมาเอง (09:00–17:00 น. ทุกวัน) ให้ฟังดูสมเหตุสมผลแต่ไม่ตรงกับความจริง เพราะมันไม่เคยเห็นตารางเวลาโรงเรียนเรามาก่อน' },
+    with:'ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์ ตามที่ระบุไว้ในกฎระเบียบโรงเรียนครับ' },
   { q:'ใช้โทรศัพท์มือถือในห้องเรียนได้ไหม?', docLine:1,
-    without:'ได้เลยครับ นักเรียนสามารถใช้โทรศัพท์มือถือในห้องเรียนได้ตลอดเวลาโดยไม่มีข้อจำกัด',
-    with:'ห้ามใช้โทรศัพท์มือถือในห้องเรียน ยกเว้นได้รับอนุญาตจากครูก่อนครับ',
-    explain:'AI เดาคำตอบที่ฟังดูเป็นมิตรแต่ผิดกฎจริงของโรงเรียน เพราะมันไม่มีทางรู้กฎเฉพาะของโรงเรียนเราได้เอง' },
+    without:'ได้เลยครับ ใช้ได้ตลอดเวลาโดยไม่มีข้อจำกัด',
+    with:'ห้ามใช้ ยกเว้นได้รับอนุญาตจากครูก่อนครับ (ตามกฎระเบียบโรงเรียน)' },
   { q:'ต้องใส่ชุดพละวันไหนบ้าง?', docLine:2,
-    without:'นักเรียนสามารถใส่ชุดพละวันไหนก็ได้ตามความสะดวกของแต่ละคนครับ',
-    with:'ใส่ชุดพละวันพุธและวันศุกร์ ตามระเบียบของโรงเรียนครับ',
-    explain:'AI เดาว่า "วันไหนก็ได้" ซึ่งฟังดูเป็นไปได้แต่ไม่ตรงกับกฎจริงของโรงเรียนเราเลย' },
-  { q:'พักกลางวันกี่โมงถึงกี่โมง?', docLine:3,
-    without:'พักกลางวัน 11:30–12:30 น. ครับ',
-    with:'พักกลางวัน 12:00–13:00 น. ตามที่ระบุไว้ในกฎระเบียบโรงเรียนครับ',
-    explain:'ตัวเลขเวลาที่ AI เดาฟังดูสมเหตุสมผลแต่คลาดเคลื่อนจากความจริง — มันแค่ "เดาให้ดูมั่นใจ" เท่านั้น' },
-  { q:'ศูนย์รับเลี้ยงเด็กหลังเลิกเรียนเปิดถึงกี่โมง?', docLine:4,
-    without:'เปิดถึง 17:00 น. ทุกวันครับ',
-    with:'เปิด 16:00–18:00 น. ตามที่ระบุไว้ในกฎระเบียบโรงเรียนครับ (และช่วงก่อนเรียน 07:00–08:00 น. ด้วย)',
-    explain:'AI เดาเวลาปิดที่ผิดไปจากความจริง เพราะไม่เคยเห็นเอกสารตารางเวลาจริงของศูนย์รับเลี้ยงเด็กเลย' },
+    without:'ใส่วันไหนก็ได้ตามความสะดวกของแต่ละคนครับ',
+    with:'ใส่ชุดพละวันพุธและวันศุกร์ ตามระเบียบของโรงเรียนครับ' },
 ];
-let rIdx = 0, wrongCount = 0, roundStage = 'judge';
-let typingTimer = null;
+let cmpIdx = 0, cmpSeen = 0, cmpTimers = [];
+const DOTS = '<span class="chattyping"><span></span><span></span><span></span></span>';
 
-function startPractice(){ rIdx = 0; wrongCount = 0; renderRound(); }
+function startCmp(){ cmpIdx = 0; cmpSeen = 0; playCmp(0); }
+function cmpAt(ms, fn){ cmpTimers.push(setTimeout(fn, ms)); }
+function playCmp(i){
+  cmpTimers.forEach(clearTimeout); cmpTimers = [];
+  cmpIdx = i;
+  const e = CMP_EXAMPLES[i];
+  $('cmpTag').textContent = `ตัวอย่างที่ ${i+1}/${CMP_EXAMPLES.length}`;
+  document.querySelectorAll('.cmpq').forEach(n => n.textContent = e.q);
+  $('cmpDocList').innerHTML = DOC_LINES.map((l,n)=>`<li class="${n===e.docLine?'hit':''}" data-n="${n}">${esc(l)}</li>`).join('');
+  $('cmpDoc').classList.remove('in');
+  $('rowL').style.visibility = 'hidden'; $('rowR').style.visibility = 'hidden';
+  $('cmpL').innerHTML = ''; $('cmpR').innerHTML = '';
+  $('cmpNext').style.display = 'none'; $('cmpReplay').disabled = true;
+  $('cmpCap').textContent = '① ถามคำถามเดียวกันกับ AI ทั้งสองตัว';
+  cmpAt(900, () => { $('rowL').style.visibility = ''; $('cmpL').innerHTML = DOTS; $('cmpCap').textContent = '② ซ้าย: AI ไม่เคยเห็นเอกสารของโรงเรียน ลองดูว่ามันตอบอะไร…'; });
+  cmpAt(2100, () => { $('cmpL').textContent = e.without; $('cmpCap').textContent = '② AI ซ้ายเดาคำตอบที่ฟังดูมั่นใจ แต่ไม่ตรงกับกฎจริง ❌'; });
+  cmpAt(3600, () => { $('cmpDoc').classList.add('in'); $('cmpCap').textContent = '③ ขวา: แนบเอกสารให้ AI อ่านก่อนตอบ 📎 (ไฮไลต์คือบรรทัดที่เกี่ยวข้อง)'; });
+  cmpAt(5000, () => { $('rowR').style.visibility = ''; $('cmpR').innerHTML = DOTS; });
+  cmpAt(6100, () => {
+    $('cmpR').textContent = e.with;
+    $('cmpCap').textContent = '④ AI ขวาตอบตรงกับเอกสาร ไม่ต้องเดาอีกต่อไป ✅ — นี่คือ RAG';
+    if (window.dlf) dlf.cheer('เห็นความต่างไหม?');
+    $('cmpReplay').disabled = false;
+    cmpSeen = Math.max(cmpSeen, i+1);
+    $('cmpNext').textContent = cmpSeen >= CMP_EXAMPLES.length ? 'ไปลงมือสร้างผู้ช่วย →' : 'ดูตัวอย่างถัดไป →';
+    $('cmpNext').style.display = '';
+  });
+}
+function cmpAdvance(){
+  if (cmpIdx < CMP_EXAMPLES.length - 1) playCmp(cmpIdx + 1);
+  else goStep(3);
+}
 
-// Shows a bubble's "..." typing dots for a beat, then reveals the real text —
-// used for every AI turn so the response always feels like it's arriving live,
-// not just appearing instantly.
-function typeReveal(typingId, textId, text, cls, cb){
-  clearTimeout(typingTimer);
-  $(typingId).style.display = '';
-  $(textId).style.display = 'none';
-  $(textId).textContent = text;
-  typingTimer = setTimeout(() => {
-    $(typingId).style.display = 'none';
-    $(textId).style.display = '';
-    if (cb) cb();
+// ===== Step 4: build the school help-desk assistant (click-through, nothing typed) =====
+// Part A — attach the RIGHT file for each question (retrieval = picking the right source).
+// Part B — choose the instruction that makes the assistant stick to its documents.
+const FILES = [
+  { id:'rules', emoji:'📄', name:'กฎระเบียบโรงเรียน' },
+  { id:'menu', emoji:'🍱', name:'เมนูโรงอาหาร' },
+  { id:'cal', emoji:'📅', name:'ปฏิทินกิจกรรม' },
+  { id:'bus', emoji:'🚌', name:'ตารางรถรับส่ง' },
+];
+const BUILD_QS = [
+  { q:'พรุ่งนี้โรงอาหารขายอะไรบ้าง?', file:'menu', answer:'พรุ่งนี้มีข้าวมันไก่ ผัดกะเพราหมูสับ และก๋วยเตี๋ยวเรือครับ (จากเอกสาร: เมนูโรงอาหาร)' },
+  { q:'สอบปลายภาควันไหน?', file:'cal', answer:'สอบปลายภาควันที่ 10–14 มีนาคมครับ (จากเอกสาร: ปฏิทินกิจกรรม)' },
+  { q:'รถรับส่งสายบางนาออกกี่โมง?', file:'bus', answer:'สายบางนาออกเวลา 06:30 น. ครับ (จากเอกสาร: ตารางรถรับส่ง)' },
+];
+let bIdx = 0, bldWrong = 0, bldDone = false, instrDone = false;
+
+function startBuild(){
+  bIdx = 0; bldWrong = 0; instrDone = false;
+  $('bldA').style.display = ''; $('bldB').style.display = 'none';
+  renderBuildQ();
+}
+function updBldScore(){ $('scorePill2').textContent = `เลือกพลาด ${bldWrong} ครั้ง`; }
+function renderBuildQ(){
+  const q = BUILD_QS[bIdx];
+  bldDone = false;
+  updBldScore();
+  $('bldTag').textContent = `คำถามที่ ${bIdx+1}/${BUILD_QS.length}`;
+  $('bldQ').textContent = q.q;
+  $('fileGrid').innerHTML = FILES.map(f=>`<button type="button" class="filebtn" id="fb_${f.id}" onclick="attachFile('${f.id}')"><span class="fe">${f.emoji}</span><span class="fn">${esc(f.name)}</span></button>`).join('');
+  $('bldChat').innerHTML = `<div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble">${esc(q.q)}</div></div>`;
+  $('bldExplain').className = 'explainbox'; $('bldExplain').innerHTML = '';
+  $('bldNextBtn').style.display = 'none';
+}
+function attachFile(id){
+  if (bldDone) return;
+  const q = BUILD_QS[bIdx];
+  const f = FILES.find(x=>x.id===id);
+  const ok = id === q.file;
+  const btn = $('fb_'+id);
+  btn.disabled = true;
+  const chat = $('bldChat');
+  chat.insertAdjacentHTML('beforeend', `<div class="docref" style="margin-left:0">📎 แนบไฟล์: ${f.emoji} ${esc(f.name)}</div><div class="chatrow ai"><span class="chatava">🤖</span><div class="chatbubble ${ok?'grounded':'nodoc'}" id="bldReply">${DOTS}</div></div>`);
+  setTimeout(() => {
+    const r = $('bldReply'); r.removeAttribute('id');
+    if (ok){
+      bldDone = true;
+      r.textContent = q.answer;
+      btn.classList.add('ok');
+      $('bldExplain').className = 'explainbox show correct';
+      $('bldExplain').innerHTML = `<b>✅ แนบถูกไฟล์ AI จึงตอบจากเอกสารได้</b>ไฟล์ที่ตรงกับคำถามคือ "${esc(f.name)}" — AI ค้นหาคำตอบจากไฟล์ที่เราแนบเท่านั้น`;
+      if (window.dlf) dlf.cheer('ถูกไฟล์!');
+      $('bldNextBtn').textContent = bIdx === BUILD_QS.length-1 ? 'ไปงานที่ 2 →' : 'ข้อถัดไป →';
+      $('bldNextBtn').style.display = 'block';
+    } else {
+      bldWrong++; updBldScore();
+      r.textContent = `ในไฟล์ "${f.name}" ไม่พบข้อมูลเรื่องนี้ครับ`;
+      btn.classList.add('bad');
+      $('bldExplain').className = 'explainbox show wrong';
+      $('bldExplain').innerHTML = `<b>🤔 แนบผิดเรื่อง</b>AI อ่านได้เฉพาะไฟล์ที่แนบ — ไฟล์นี้ไม่เกี่ยวกับคำถาม จึงตอบไม่ได้ ลองเลือกไฟล์อื่นดู`;
+    }
+    chat.scrollTop = chat.scrollHeight;
+  }, 650);
+}
+function bldNext(){
+  bIdx++;
+  if (bIdx >= BUILD_QS.length){ startInstr(); return; }
+  renderBuildQ();
+}
+
+const INSTRUCTIONS = [
+  { key:'guess', text:'ตอบทุกคำถามให้ได้เสมอ ถ้าไม่มีในเอกสารให้เดาให้ฟังดูน่าเชื่อ',
+    t1:'สอบปลายภาควันที่ 10–14 มีนาคมครับ',
+    t2:'ปีนี้โรงเรียนพาไปทัศนศึกษาที่พิพิธภัณฑ์วิทยาศาสตร์ ออกเดินทาง 08:00 น. ครับ',
+    ok:false, why:'ผู้ช่วยไม่กล้าบอกว่า "ไม่รู้" จึงเดาสถานที่ขึ้นมาเอง — นักเรียนอาจเชื่อและเข้าใจผิดได้' },
+  { key:'grounded', text:'ตอบจากเอกสารที่แนบเท่านั้น ถ้าไม่พบข้อมูลให้บอกตรง ๆ ว่าไม่พบ และบอกชื่อเอกสารที่อ้างอิงทุกครั้ง',
+    t1:'สอบปลายภาควันที่ 10–14 มีนาคมครับ (อ้างอิง: ปฏิทินกิจกรรม)',
+    t2:'ไม่พบข้อมูลเรื่องทัศนศึกษาในเอกสารที่แนบ (กฎระเบียบ, เมนู, ปฏิทิน, ตารางรถ) แนะนำให้ถามฝ่ายกิจกรรมโดยตรงครับ',
+    ok:true, why:'ผู้ช่วยตอบจากเอกสาร อ้างชื่อไฟล์ และกล้าบอกว่า "ไม่พบ" เมื่อเอกสารไม่มีคำตอบ — นี่คือผู้ช่วยที่เชื่อถือได้' },
+  { key:'style', text:'ตอบสั้น ๆ เป็นกันเอง ใช้อีโมจิเยอะ ๆ ให้ดูสนุก',
+    t1:'สอบปลายภาค 10–14 มี.ค. จ้า 🎉📚 สู้ ๆ นะ 💪✨',
+    t2:'ไปสวนสนุกแน่นอนจ้า 🎢🎡 สนุกมากกก 🤩',
+    ok:false, why:'โทนเป็นกันเองดี แต่คำสั่งนี้ไม่ได้บอกให้ยึดเอกสาร ผู้ช่วยจึงยังเดาเรื่องที่ไม่มีในเอกสารอยู่' },
+];
+function startInstr(){
+  $('bldA').style.display = 'none'; $('bldB').style.display = '';
+  instrDone = false;
+  $('instrChat').innerHTML = ''; $('instrExplain').className = 'explainbox'; $('instrExplain').innerHTML = '';
+  $('instrDoneBtn').style.display = 'none';
+  $('instrRow').innerHTML = INSTRUCTIONS.map((x,i)=>`<button type="button" class="acard" id="ins${i}" onclick="pickInstr(${i})"><span class="alabel">คำสั่งแบบที่ ${i+1}</span>${esc(x.text)}</button>`).join('');
+}
+function pickInstr(i){
+  if (instrDone) return;
+  const x = INSTRUCTIONS[i];
+  document.querySelectorAll('#instrRow .acard').forEach(b=>b.classList.remove('wrong','correct'));
+  $('ins'+i).classList.add(x.ok ? 'correct' : 'wrong');
+  const chat = $('instrChat');
+  chat.innerHTML = `<div class="docref" style="margin-left:0">🧪 ทดสอบผู้ช่วยด้วยคำสั่งแบบที่ ${i+1}</div>
+    <div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble">สอบปลายภาควันไหน?</div></div>
+    <div class="chatrow ai"><span class="chatava">🤖</span><div class="chatbubble grounded" id="t1">${DOTS}</div></div>`;
+  $('instrExplain').className = 'explainbox'; $('instrExplain').innerHTML = '';
+  setTimeout(() => {
+    $('t1').textContent = x.t1;
+    chat.insertAdjacentHTML('beforeend', `<div class="chatrow user"><span class="chatava">🙋</span><div class="chatbubble">ปีนี้โรงเรียนจะพาไปทัศนศึกษาที่ไหน?</div></div>
+      <div class="chatrow ai"><span class="chatava">🤖</span><div class="chatbubble ${x.ok?'grounded':'nodoc'}" id="t2">${DOTS}</div></div>`);
+    setTimeout(() => {
+      $('t2').textContent = x.t2;
+      if (x.ok){
+        instrDone = true;
+        $('instrExplain').className = 'explainbox show correct';
+        $('instrExplain').innerHTML = `<b>✅ ผู้ช่วยของคุณพร้อมแล้ว!</b>${esc(x.why)}`;
+        if (window.dlf) dlf.cheer('สร้างผู้ช่วยสำเร็จ!');
+        $('instrDoneBtn').style.display = 'block';
+      } else {
+        bldWrong++; updBldScore();
+        $('instrExplain').className = 'explainbox show wrong';
+        $('instrExplain').innerHTML = `<b>🤔 ยังไม่ใช่ผู้ช่วยที่เชื่อถือได้</b>${esc(x.why)} — ลองเลือกคำสั่งอื่นดู`;
+      }
+      chat.scrollTop = chat.scrollHeight;
+    }, 900);
   }, 700);
 }
 
-function showScene(name){
-  $('sceneAsk1').style.display = name === 'ask1' ? '' : 'none';
-  $('sceneAttach').style.display = name === 'attach' ? '' : 'none';
-  $('sceneAsk2').style.display = name === 'ask2' ? '' : 'none';
-}
-
-function renderRound(){
-  const r = ROUNDS[rIdx];
-  roundStage = 'judge';
-  $('roundTag').textContent = `ข้อที่ ${rIdx+1}/${ROUNDS.length}`;
-  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
-  showScene('ask1');
-  $('askQ1').textContent = r.q;
-  $('judgeArea').style.display = 'none';
-  $('judgeRow').querySelectorAll('.acard').forEach(b=>{ b.disabled = false; b.classList.remove('correct','wrong'); });
-  $('explainBox').className = 'explainbox';
-  $('explainBox').innerHTML = '';
-  $('toAttachBtn').style.display = 'none';
-  $('fileDrop').classList.remove('dragover');
-  typeReveal('typing1', 'aiText1', r.without, 'nodoc', () => { $('judgeArea').style.display = ''; });
-}
-function judgeAnswer(believed){
-  if (roundStage !== 'judge') return;
-  roundStage = 'attach';
-  const r = ROUNDS[rIdx];
-  const btns = $('judgeRow').querySelectorAll('.acard');
-  btns.forEach(b=>b.disabled = true);
-  // The un-augmented answer is always wrong, so "น่าจะมั่ว" (btns[1]) is always
-  // the correct judgment — mark it, and mark the trust button red if that's
-  // what the student picked.
-  btns[1].classList.add('correct');
-  if (believed){ btns[0].classList.add('wrong'); wrongCount++; $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`; }
-  else if (window.dlf) dlf.cheer('จับผิดเก่งมาก!');
-  $('explainBox').className = 'explainbox show ' + (believed ? 'wrong' : 'correct');
-  $('explainBox').innerHTML = `<b>${believed ? '❌ ผิด มั่ว! ที่จริง AI ตอบมั่ว' : '✅ ถูกต้อง จับได้ว่า AI ตอบมั่ว!'}</b>${esc(r.explain)}`;
-  $('toAttachBtn').style.display = 'block';
-}
-function goAttachScene(){ showScene('attach'); }
-function onFileDragStart(e){ e.dataTransfer.setData('text/plain', 'doc'); e.dataTransfer.effectAllowed = 'copy'; }
-function onFileDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; $('fileDrop').classList.add('dragover'); }
-function onFileDragLeave(){ $('fileDrop').classList.remove('dragover'); }
-function onFileDrop(e){ e.preventDefault(); $('fileDrop').classList.remove('dragover'); attachDoc(); }
-function attachDoc(){
-  if (roundStage !== 'attach') return;
-  roundStage = 'done';
-  const r = ROUNDS[rIdx];
-  showScene('ask2');
-  $('askQ2').textContent = r.q;
-  $('docRef').textContent = `📄 อ้างอิงจากเอกสาร: "${DOC_LINES[r.docLine]}"`;
-  $('explainBox2b').className = 'explainbox';
-  $('explainBox2b').innerHTML = '';
-  $('nextRoundBtn').style.display = 'none';
-  typeReveal('typing2', 'aiText2', r.with, 'grounded', () => {
-    $('explainBox2b').className = 'explainbox show correct';
-    $('explainBox2b').innerHTML = `<b>✅ ตอนนี้ AI "ดู" เอกสารก่อนตอบแล้ว (RAG)</b>คำตอบตรงกับเอกสารเป๊ะ ๆ ไม่ใช่การเดาอีกต่อไป`;
-    if (window.dlf) dlf.cheer('เยี่ยม!');
-    $('nextRoundBtn').style.display = 'block';
-  });
-}
-function nextRound(){
-  rIdx++;
-  if (rIdx >= ROUNDS.length){ goStep(3); return; }
-  renderRound();
-}
-
-// ===== Step 3b: does the document actually answer this? (grounding limits / honest refusal) =====
-const SCOPE_ROUNDS = [
-  { q:'ห้องสมุดเปิดกี่โมงถึงกี่โมง?', inDoc:true,
-    good:'ห้องสมุดเปิด 08:00–16:30 น. วันจันทร์–ศุกร์ ครับ (ตรงกับเอกสาร)',
-    bad:'ห้องสมุดเปิด 08:00–20:00 น. ทุกวันครับ (เดาขึ้นมาเอง ทั้งที่เอกสารมีคำตอบอยู่แล้ว)',
-    explain:'คำถามนี้ "มี" คำตอบอยู่ในเอกสารอยู่แล้ว — AI ที่ดีควรอ่านแล้วตอบตรงตามนั้น ไม่ใช่เดาขึ้นมาใหม่ทั้งที่มีคำตอบอยู่ตรงหน้า' },
-  { q:'ปีนี้โรงเรียนจะพาไปทัศนศึกษาที่ไหน?', inDoc:false,
-    good:'เอกสารกฎระเบียบโรงเรียนที่มีอยู่ไม่ได้พูดถึงเรื่องทัศนศึกษาเลยครับ ต้องถามฝ่ายกิจกรรมโดยตรง',
-    bad:'ปีนี้โรงเรียนจะพาไปทัศนศึกษาที่พิพิธภัณฑ์วิทยาศาสตร์ครับ',
-    explain:'เอกสารกฎระเบียบโรงเรียนไม่มีข้อมูลเรื่องทัศนศึกษาเลย — AI ที่ดีควรบอกตามตรงว่าไม่มีข้อมูลนี้ แทนที่จะมั่วสถานที่ขึ้นมาเองให้ฟังดูน่าเชื่อ' },
-  { q:'ใครเป็นครูใหญ่ของโรงเรียนตอนนี้?', inDoc:false,
-    good:'เอกสารนี้ไม่มีข้อมูลชื่อครูใหญ่ครับ แนะนำให้ตรวจสอบจากเว็บไซต์โรงเรียนหรือถามฝ่ายธุรการ',
-    bad:'ครูใหญ่ของโรงเรียนตอนนี้คือคุณสมชาย ใจดี ครับ',
-    explain:'กฎระเบียบโรงเรียนไม่ได้ระบุชื่อครูใหญ่ไว้เลย การตอบชื่อคนขึ้นมาเป็นการมั่วข้อมูลที่อาจทำให้เข้าใจผิดร้ายแรง — ควรบอกว่าไม่รู้แทน' },
-  { q:'พักกลางวันกี่โมงถึงกี่โมง?', inDoc:true,
-    good:'พักกลางวัน 12:00–13:00 น. ตามที่ระบุไว้ในเอกสารครับ',
-    bad:'พักกลางวันประมาณ 1 ชั่วโมงครับ แต่จำเวลาแน่นอนไม่ได้',
-    explain:'เอกสารระบุเวลาพักกลางวันไว้ชัดเจนแล้ว (12:00–13:00 น.) — AI ควรอ้างอิงเวลาที่แน่นอนจากเอกสาร ไม่ใช่ตอบแบบคลุมเครือทั้งที่มีคำตอบชัดอยู่แล้ว' },
-  { q:'มีวิชาเลือกเสรีให้ลงทะเบียนกี่วิชา?', inDoc:false,
-    good:'เอกสารกฎระเบียบที่มีอยู่ไม่ได้ระบุเรื่องวิชาเลือกเสรีไว้ครับ ต้องสอบถามฝ่ายวิชาการเพิ่มเติม',
-    bad:'มีวิชาเลือกเสรีให้ลงทะเบียนทั้งหมด 6 วิชาครับ',
-    explain:'เอกสารกฎระเบียบโรงเรียนไม่มีข้อมูลเรื่องวิชาเลือกเสรีเลย — การตอบตัวเลขขึ้นมาลอย ๆ คือการมั่วข้อมูล ทั้งที่ AI ควรบอกว่าเอกสารนี้ตอบคำถามนี้ไม่ได้' },
-];
-let sIdx = 0, scopeWrong = 0, scopeAnswered = false, scopeAiSide = 'good';
-
-function startScope(){ sIdx = 0; scopeWrong = 0; renderScope(); }
-function renderScope(){
-  const r = SCOPE_ROUNDS[sIdx];
-  scopeAnswered = false;
-  scopeAiSide = Math.random() < 0.5 ? 'good' : 'bad';
-  $('roundTag2').textContent = `ข้อที่ ${sIdx+1}/${SCOPE_ROUNDS.length}`;
-  $('scorePill2').textContent = `ตอบผิด ${scopeWrong} ครั้ง`;
-  $('roundQ2').textContent = r.q;
-  const textA = scopeAiSide === 'good' ? r.good : r.bad;
-  const textB = scopeAiSide === 'good' ? r.bad : r.good;
-  $('answerRow2').innerHTML = `
-    <button type="button" class="acard" id="scopeA" onclick="pickScope('a')"><span class="alabel">🤖 คำตอบ A</span>${esc(textA)}</button>
-    <button type="button" class="acard" id="scopeB" onclick="pickScope('b')"><span class="alabel">🤖 คำตอบ B</span>${esc(textB)}</button>`;
-  $('explainBox2').className = 'explainbox';
-  $('explainBox2').innerHTML = '';
-  $('nextRoundBtn2').style.display = 'none';
-}
-function pickScope(side){
-  if (scopeAnswered) return;
-  scopeAnswered = true;
-  const r = SCOPE_ROUNDS[sIdx];
-  const correctSlot = scopeAiSide === 'good' ? 'a' : 'b';
-  const correct = side === correctSlot;
-  $('scopeA').disabled = true; $('scopeB').disabled = true;
-  $('scope' + correctSlot.toUpperCase()).classList.add(correct ? 'correct' : 'wrong');
-  if (!correct){ $('scope' + side.toUpperCase()).classList.add('wrong'); scopeWrong++; $('scorePill2').textContent = `ตอบผิด ${scopeWrong} ครั้ง`; }
-  else if (window.dlf) dlf.cheer('เก่งมาก!');
-  $('explainBox2').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
-  $('explainBox2').innerHTML = `<b>${correct ? '✅ ถูกต้อง! นี่คือคำตอบที่ AI ที่ดีควรพูด' : '❌ ผิด มั่ว! คำตอบที่ดีคือ ' + correctSlot.toUpperCase()}</b>${esc(r.explain)}`;
-  $('nextRoundBtn2').style.display = 'block';
-}
-function nextScope(){
-  sIdx++;
-  if (sIdx >= SCOPE_ROUNDS.length){ goStep(4); return; }
-  renderScope();
-}
-
-// ===== Step 4 done =====
+// ===== Step 5 done =====
 function finishGame(){
-  const totalWrong = wrongCount + scopeWrong;
-  window.dlfStars = totalWrong <= 2 ? 3 : totalWrong <= 5 ? 2 : 1;
+  window.dlfStars = bldWrong <= 1 ? 3 : bldWrong <= 3 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
-  $('resTitle').textContent = window.dlfStars === 3 ? 'ตอบจากเอกสารจริงเก่งมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
+  $('resTitle').textContent = window.dlfStars === 3 ? 'สร้างผู้ช่วยที่เชื่อถือได้สำเร็จ!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `ทำครบ ${ROUNDS.length + SCOPE_ROUNDS.length} ข้อ (ตอบจากเอกสาร ${ROUNDS.length} ข้อ + รู้ขอบเขตเอกสาร ${SCOPE_ROUNDS.length} ข้อ) โดยตอบผิดทั้งหมด ${totalWrong} ครั้ง`;
+  $('resScore').textContent = `แนบเอกสารถูกเรื่อง ${BUILD_QS.length} ข้อ และตั้งคำสั่งให้ผู้ช่วยยึดเอกสารสำเร็จ โดยเลือกพลาด ${bldWrong} ครั้ง`;
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 function restartGame(){ goStep(0); }
 
 renderRail();
@@ -575,7 +570,7 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"6660fc09cb03":"audio/ai10-sandbox-master/6660fc09cb03.mp3","fae8687fb402":"audio/ai10-sandbox-master/fae8687fb402.mp3","976a5a48f4d9":"audio/ai10-sandbox-master/976a5a48f4d9.mp3","6be762de71d3":"audio/ai10-sandbox-master/6be762de71d3.mp3","2921b2d5a114":"audio/ai10-sandbox-master/2921b2d5a114.mp3","d811e87eefb3":"audio/ai10-sandbox-master/d811e87eefb3.mp3","71a51a023ae8":"audio/ai10-sandbox-master/71a51a023ae8.mp3","852128f8e136":"audio/ai10-sandbox-master/852128f8e136.mp3","ce97d9170f39":"audio/ai10-sandbox-master/ce97d9170f39.mp3","d510e0b04163":"audio/ai10-sandbox-master/d510e0b04163.mp3","27f8a60ece31":"audio/ai10-sandbox-master/27f8a60ece31.mp3","c0b2ce96392e":"audio/ai10-sandbox-master/c0b2ce96392e.mp3","4c7f0e8ac60d":"audio/ai10-sandbox-master/4c7f0e8ac60d.mp3","556e94dd062a":"audio/ai10-sandbox-master/556e94dd062a.mp3","d585a6a9d18d":"audio/ai10-sandbox-master/d585a6a9d18d.mp3","4c280000630c":"audio/ai10-sandbox-master/4c280000630c.mp3","4751df9b0a77":"audio/ai10-sandbox-master/4751df9b0a77.mp3","b5f11fde1306":"audio/ai10-sandbox-master/b5f11fde1306.mp3","ae285d998b10":"audio/ai10-sandbox-master/ae285d998b10.mp3","3e5161d42589":"audio/ai10-sandbox-master/3e5161d42589.mp3","8f899eae95ff":"audio/ai10-sandbox-master/8f899eae95ff.mp3","fc39b03be3ad":"audio/ai10-sandbox-master/fc39b03be3ad.mp3","cea97a64d8ad":"audio/ai10-sandbox-master/cea97a64d8ad.mp3","a993c1ec407e":"audio/ai10-sandbox-master/a993c1ec407e.mp3","64686e1761c3":"audio/ai10-sandbox-master/64686e1761c3.mp3","d29a305f571b":"audio/ai10-sandbox-master/d29a305f571b.mp3","bcf5d6f34f71":"audio/ai10-sandbox-master/bcf5d6f34f71.mp3","39d11af92b4f":"audio/ai10-sandbox-master/39d11af92b4f.mp3","603a19382b9e":"audio/ai10-sandbox-master/603a19382b9e.mp3","29ad6e430561":"audio/ai10-sandbox-master/29ad6e430561.mp3","040cbe1237c6":"audio/ai10-sandbox-master/040cbe1237c6.mp3","7ab2786f9409":"audio/ai10-sandbox-master/7ab2786f9409.mp3","83e02f9379e3":"audio/ai10-sandbox-master/83e02f9379e3.mp3","17bb9b990f39":"audio/ai10-sandbox-master/17bb9b990f39.mp3","a66234b845ea":"audio/ai10-sandbox-master/a66234b845ea.mp3","faf81b740c6d":"audio/ai10-sandbox-master/faf81b740c6d.mp3","981da41c62a3":"audio/ai10-sandbox-master/981da41c62a3.mp3","4d665c71a9ba":"audio/ai10-sandbox-master/4d665c71a9ba.mp3","4780fc79462b":"audio/ai10-sandbox-master/4780fc79462b.mp3","dfb3e4afa929":"audio/ai10-sandbox-master/dfb3e4afa929.mp3","b6f862f3d5c9":"audio/ai10-sandbox-master/b6f862f3d5c9.mp3","57f54cf2d9c1":"audio/ai10-sandbox-master/57f54cf2d9c1.mp3","d7a5b884a56b":"audio/ai10-sandbox-master/d7a5b884a56b.mp3","8e6baed70cab":"audio/ai10-sandbox-master/8e6baed70cab.mp3","dec1ce6c690b":"audio/ai10-sandbox-master/dec1ce6c690b.mp3","f3bc581be169":"audio/ai10-sandbox-master/f3bc581be169.mp3","3fb0e684b56b":"audio/ai10-sandbox-master/3fb0e684b56b.mp3","46abc19d5112":"audio/ai10-sandbox-master/46abc19d5112.mp3","e04742eeacc1":"audio/ai10-sandbox-master/e04742eeacc1.mp3","8314cfa6ef50":"audio/ai10-sandbox-master/8314cfa6ef50.mp3","08ed479a8980":"audio/ai10-sandbox-master/08ed479a8980.mp3","b1fc49be34e6":"audio/ai10-sandbox-master/b1fc49be34e6.mp3","660babd55c3b":"audio/ai10-sandbox-master/660babd55c3b.mp3","52b1d6e957d5":"audio/ai10-sandbox-master/52b1d6e957d5.mp3","18c5170e97a8":"audio/ai10-sandbox-master/18c5170e97a8.mp3","c8a8e9ea3a61":"audio/ai10-sandbox-master/c8a8e9ea3a61.mp3","6dff09512b06":"audio/ai10-sandbox-master/6dff09512b06.mp3","ce1fd9818d76":"audio/ai10-sandbox-master/ce1fd9818d76.mp3","0179af46d1d6":"audio/ai10-sandbox-master/0179af46d1d6.mp3","cb6458397c09":"audio/ai10-sandbox-master/cb6458397c09.mp3","e0293c5ef2f8":"audio/ai10-sandbox-master/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai10-sandbox-master/9bb8216b6df6.mp3","fe22d43a91c8":"audio/ai10-sandbox-master/fe22d43a91c8.mp3","dba177b037ec":"audio/ai10-sandbox-master/dba177b037ec.mp3","dab05dcf3741":"audio/ai10-sandbox-master/dab05dcf3741.mp3","dc60fd67731f":"audio/ai10-sandbox-master/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai10-sandbox-master/af6ba89d9b27.mp3","aca2b0992481":"audio/ai10-sandbox-master/aca2b0992481.mp3","66590c21d92e":"audio/ai10-sandbox-master/66590c21d92e.mp3","e18a189a9371":"audio/ai10-sandbox-master/e18a189a9371.mp3","8af1f0edc12c":"audio/ai10-sandbox-master/8af1f0edc12c.mp3","07713ef9f593":"audio/ai10-sandbox-master/07713ef9f593.mp3","2d85f6d50fa6":"audio/ai10-sandbox-master/2d85f6d50fa6.mp3","06bf53bb1629":"audio/ai10-sandbox-master/06bf53bb1629.mp3","abb5fc97e3f6":"audio/ai10-sandbox-master/abb5fc97e3f6.mp3","28ecaf71e16e":"audio/ai10-sandbox-master/28ecaf71e16e.mp3","f964e01e38f1":"audio/ai10-sandbox-master/f964e01e38f1.mp3","1074a216408b":"audio/ai10-sandbox-master/1074a216408b.mp3","a1904d653782":"audio/ai10-sandbox-master/a1904d653782.mp3","cdb9ec1943f6":"audio/ai10-sandbox-master/cdb9ec1943f6.mp3","6b45d8c981da":"audio/ai10-sandbox-master/6b45d8c981da.mp3","daa6cbe1892c":"audio/ai10-sandbox-master/daa6cbe1892c.mp3","27cf47b5180e":"audio/ai10-sandbox-master/27cf47b5180e.mp3","e4e4e9ff223b":"audio/ai10-sandbox-master/e4e4e9ff223b.mp3","fd6d5666752f":"audio/ai10-sandbox-master/fd6d5666752f.mp3","4c520e3bd639":"audio/ai10-sandbox-master/4c520e3bd639.mp3","86f9c933bd04":"audio/ai10-sandbox-master/86f9c933bd04.mp3","f690b6b5a5fc":"audio/ai10-sandbox-master/f690b6b5a5fc.mp3","883e0b95a506":"audio/ai10-sandbox-master/883e0b95a506.mp3","5b36cb4200bd":"audio/ai10-sandbox-master/5b36cb4200bd.mp3","e340c4d36186":"audio/ai10-sandbox-master/e340c4d36186.mp3","9833f9743793":"audio/ai10-sandbox-master/9833f9743793.mp3","91c489263228":"audio/ai10-sandbox-master/91c489263228.mp3","4b3eb632022f":"audio/ai10-sandbox-master/4b3eb632022f.mp3","67c33ac80457":"audio/ai10-sandbox-master/67c33ac80457.mp3","ef72b9f1f3ae":"audio/ai10-sandbox-master/ef72b9f1f3ae.mp3","28d419640301":"audio/ai10-sandbox-master/28d419640301.mp3","43689e44f471":"audio/ai10-sandbox-master/43689e44f471.mp3","9d684bfccfb8":"audio/ai10-sandbox-master/9d684bfccfb8.mp3","d7540a93b105":"audio/ai10-sandbox-master/d7540a93b105.mp3","e800641f8051":"audio/ai10-sandbox-master/e800641f8051.mp3","d7b63ba17be5":"audio/ai10-sandbox-master/d7b63ba17be5.mp3","43dcfb5c31d8":"audio/ai10-sandbox-master/43dcfb5c31d8.mp3","874a4f432ebd":"audio/ai10-sandbox-master/874a4f432ebd.mp3","60790d2e3901":"audio/ai10-sandbox-master/60790d2e3901.mp3","9f5f6a43e5a9":"audio/ai10-sandbox-master/9f5f6a43e5a9.mp3","f8a659c69f1b":"audio/ai10-sandbox-master/f8a659c69f1b.mp3","e7a89bc27117":"audio/ai10-sandbox-master/e7a89bc27117.mp3","d5e6d811ed12":"audio/ai10-sandbox-master/d5e6d811ed12.mp3","bee51abddccc":"audio/ai10-sandbox-master/bee51abddccc.mp3","de7f13373781":"audio/ai10-sandbox-master/de7f13373781.mp3","00b6ddba24f3":"audio/ai10-sandbox-master/00b6ddba24f3.mp3","573da14216ef":"audio/ai10-sandbox-master/573da14216ef.mp3","c919f33d654e":"audio/ai10-sandbox-master/c919f33d654e.mp3","38e5a5011a13":"audio/ai10-sandbox-master/38e5a5011a13.mp3","a4e27e5c56a2":"audio/ai10-sandbox-master/a4e27e5c56a2.mp3","81cde8be6cd0":"audio/ai10-sandbox-master/81cde8be6cd0.mp3","c1db40224210":"audio/ai10-sandbox-master/c1db40224210.mp3","e4ca8dfd50a5":"audio/ai10-sandbox-master/e4ca8dfd50a5.mp3","9cf53b5dd129":"audio/ai10-sandbox-master/9cf53b5dd129.mp3","5d3fe2eb8425":"audio/ai10-sandbox-master/5d3fe2eb8425.mp3","96f66ba975ac":"audio/ai10-sandbox-master/96f66ba975ac.mp3","84cb8df2b5f5":"audio/ai10-sandbox-master/84cb8df2b5f5.mp3"}</script>
+<script id="dlfAudioData" type="application/json">{"6660fc09cb03":"audio/ai10-sandbox-master/6660fc09cb03.mp3","fae8687fb402":"audio/ai10-sandbox-master/fae8687fb402.mp3","976a5a48f4d9":"audio/ai10-sandbox-master/976a5a48f4d9.mp3","6be762de71d3":"audio/ai10-sandbox-master/6be762de71d3.mp3","2921b2d5a114":"audio/ai10-sandbox-master/2921b2d5a114.mp3","d811e87eefb3":"audio/ai10-sandbox-master/d811e87eefb3.mp3","71a51a023ae8":"audio/ai10-sandbox-master/71a51a023ae8.mp3","852128f8e136":"audio/ai10-sandbox-master/852128f8e136.mp3","ce97d9170f39":"audio/ai10-sandbox-master/ce97d9170f39.mp3","d510e0b04163":"audio/ai10-sandbox-master/d510e0b04163.mp3","27f8a60ece31":"audio/ai10-sandbox-master/27f8a60ece31.mp3","c0b2ce96392e":"audio/ai10-sandbox-master/c0b2ce96392e.mp3","4c7f0e8ac60d":"audio/ai10-sandbox-master/4c7f0e8ac60d.mp3","556e94dd062a":"audio/ai10-sandbox-master/556e94dd062a.mp3","d585a6a9d18d":"audio/ai10-sandbox-master/d585a6a9d18d.mp3","4c280000630c":"audio/ai10-sandbox-master/4c280000630c.mp3","4751df9b0a77":"audio/ai10-sandbox-master/4751df9b0a77.mp3","b5f11fde1306":"audio/ai10-sandbox-master/b5f11fde1306.mp3","ae285d998b10":"audio/ai10-sandbox-master/ae285d998b10.mp3","3e5161d42589":"audio/ai10-sandbox-master/3e5161d42589.mp3","8f899eae95ff":"audio/ai10-sandbox-master/8f899eae95ff.mp3","fc39b03be3ad":"audio/ai10-sandbox-master/fc39b03be3ad.mp3","cea97a64d8ad":"audio/ai10-sandbox-master/cea97a64d8ad.mp3","a993c1ec407e":"audio/ai10-sandbox-master/a993c1ec407e.mp3","64686e1761c3":"audio/ai10-sandbox-master/64686e1761c3.mp3","d29a305f571b":"audio/ai10-sandbox-master/d29a305f571b.mp3","bcf5d6f34f71":"audio/ai10-sandbox-master/bcf5d6f34f71.mp3","39d11af92b4f":"audio/ai10-sandbox-master/39d11af92b4f.mp3","603a19382b9e":"audio/ai10-sandbox-master/603a19382b9e.mp3","29ad6e430561":"audio/ai10-sandbox-master/29ad6e430561.mp3","040cbe1237c6":"audio/ai10-sandbox-master/040cbe1237c6.mp3","7ab2786f9409":"audio/ai10-sandbox-master/7ab2786f9409.mp3","83e02f9379e3":"audio/ai10-sandbox-master/83e02f9379e3.mp3","17bb9b990f39":"audio/ai10-sandbox-master/17bb9b990f39.mp3","a66234b845ea":"audio/ai10-sandbox-master/a66234b845ea.mp3","faf81b740c6d":"audio/ai10-sandbox-master/faf81b740c6d.mp3","981da41c62a3":"audio/ai10-sandbox-master/981da41c62a3.mp3","4d665c71a9ba":"audio/ai10-sandbox-master/4d665c71a9ba.mp3","4780fc79462b":"audio/ai10-sandbox-master/4780fc79462b.mp3","dfb3e4afa929":"audio/ai10-sandbox-master/dfb3e4afa929.mp3","b6f862f3d5c9":"audio/ai10-sandbox-master/b6f862f3d5c9.mp3","57f54cf2d9c1":"audio/ai10-sandbox-master/57f54cf2d9c1.mp3","d7a5b884a56b":"audio/ai10-sandbox-master/d7a5b884a56b.mp3","8e6baed70cab":"audio/ai10-sandbox-master/8e6baed70cab.mp3","dec1ce6c690b":"audio/ai10-sandbox-master/dec1ce6c690b.mp3","f3bc581be169":"audio/ai10-sandbox-master/f3bc581be169.mp3","3fb0e684b56b":"audio/ai10-sandbox-master/3fb0e684b56b.mp3","46abc19d5112":"audio/ai10-sandbox-master/46abc19d5112.mp3","e04742eeacc1":"audio/ai10-sandbox-master/e04742eeacc1.mp3","8314cfa6ef50":"audio/ai10-sandbox-master/8314cfa6ef50.mp3","08ed479a8980":"audio/ai10-sandbox-master/08ed479a8980.mp3","b1fc49be34e6":"audio/ai10-sandbox-master/b1fc49be34e6.mp3","660babd55c3b":"audio/ai10-sandbox-master/660babd55c3b.mp3","52b1d6e957d5":"audio/ai10-sandbox-master/52b1d6e957d5.mp3","18c5170e97a8":"audio/ai10-sandbox-master/18c5170e97a8.mp3","c8a8e9ea3a61":"audio/ai10-sandbox-master/c8a8e9ea3a61.mp3","6dff09512b06":"audio/ai10-sandbox-master/6dff09512b06.mp3","ce1fd9818d76":"audio/ai10-sandbox-master/ce1fd9818d76.mp3","0179af46d1d6":"audio/ai10-sandbox-master/0179af46d1d6.mp3","cb6458397c09":"audio/ai10-sandbox-master/cb6458397c09.mp3","e0293c5ef2f8":"audio/ai10-sandbox-master/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai10-sandbox-master/9bb8216b6df6.mp3","fe22d43a91c8":"audio/ai10-sandbox-master/fe22d43a91c8.mp3","dba177b037ec":"audio/ai10-sandbox-master/dba177b037ec.mp3","dab05dcf3741":"audio/ai10-sandbox-master/dab05dcf3741.mp3","dc60fd67731f":"audio/ai10-sandbox-master/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai10-sandbox-master/af6ba89d9b27.mp3","aca2b0992481":"audio/ai10-sandbox-master/aca2b0992481.mp3","66590c21d92e":"audio/ai10-sandbox-master/66590c21d92e.mp3","e18a189a9371":"audio/ai10-sandbox-master/e18a189a9371.mp3","8af1f0edc12c":"audio/ai10-sandbox-master/8af1f0edc12c.mp3","07713ef9f593":"audio/ai10-sandbox-master/07713ef9f593.mp3","2d85f6d50fa6":"audio/ai10-sandbox-master/2d85f6d50fa6.mp3","06bf53bb1629":"audio/ai10-sandbox-master/06bf53bb1629.mp3","abb5fc97e3f6":"audio/ai10-sandbox-master/abb5fc97e3f6.mp3","28ecaf71e16e":"audio/ai10-sandbox-master/28ecaf71e16e.mp3","f964e01e38f1":"audio/ai10-sandbox-master/f964e01e38f1.mp3","1074a216408b":"audio/ai10-sandbox-master/1074a216408b.mp3","a1904d653782":"audio/ai10-sandbox-master/a1904d653782.mp3","cdb9ec1943f6":"audio/ai10-sandbox-master/cdb9ec1943f6.mp3","6b45d8c981da":"audio/ai10-sandbox-master/6b45d8c981da.mp3","daa6cbe1892c":"audio/ai10-sandbox-master/daa6cbe1892c.mp3","27cf47b5180e":"audio/ai10-sandbox-master/27cf47b5180e.mp3","e4e4e9ff223b":"audio/ai10-sandbox-master/e4e4e9ff223b.mp3","fd6d5666752f":"audio/ai10-sandbox-master/fd6d5666752f.mp3","4c520e3bd639":"audio/ai10-sandbox-master/4c520e3bd639.mp3","86f9c933bd04":"audio/ai10-sandbox-master/86f9c933bd04.mp3","f690b6b5a5fc":"audio/ai10-sandbox-master/f690b6b5a5fc.mp3","883e0b95a506":"audio/ai10-sandbox-master/883e0b95a506.mp3","5b36cb4200bd":"audio/ai10-sandbox-master/5b36cb4200bd.mp3","e340c4d36186":"audio/ai10-sandbox-master/e340c4d36186.mp3","9833f9743793":"audio/ai10-sandbox-master/9833f9743793.mp3","91c489263228":"audio/ai10-sandbox-master/91c489263228.mp3","4b3eb632022f":"audio/ai10-sandbox-master/4b3eb632022f.mp3","67c33ac80457":"audio/ai10-sandbox-master/67c33ac80457.mp3","ef72b9f1f3ae":"audio/ai10-sandbox-master/ef72b9f1f3ae.mp3","28d419640301":"audio/ai10-sandbox-master/28d419640301.mp3","43689e44f471":"audio/ai10-sandbox-master/43689e44f471.mp3","9d684bfccfb8":"audio/ai10-sandbox-master/9d684bfccfb8.mp3","d7540a93b105":"audio/ai10-sandbox-master/d7540a93b105.mp3","e800641f8051":"audio/ai10-sandbox-master/e800641f8051.mp3","d7b63ba17be5":"audio/ai10-sandbox-master/d7b63ba17be5.mp3","43dcfb5c31d8":"audio/ai10-sandbox-master/43dcfb5c31d8.mp3","874a4f432ebd":"audio/ai10-sandbox-master/874a4f432ebd.mp3","60790d2e3901":"audio/ai10-sandbox-master/60790d2e3901.mp3","9f5f6a43e5a9":"audio/ai10-sandbox-master/9f5f6a43e5a9.mp3","f8a659c69f1b":"audio/ai10-sandbox-master/f8a659c69f1b.mp3","e7a89bc27117":"audio/ai10-sandbox-master/e7a89bc27117.mp3","d5e6d811ed12":"audio/ai10-sandbox-master/d5e6d811ed12.mp3","bee51abddccc":"audio/ai10-sandbox-master/bee51abddccc.mp3","de7f13373781":"audio/ai10-sandbox-master/de7f13373781.mp3","00b6ddba24f3":"audio/ai10-sandbox-master/00b6ddba24f3.mp3","573da14216ef":"audio/ai10-sandbox-master/573da14216ef.mp3","c919f33d654e":"audio/ai10-sandbox-master/c919f33d654e.mp3","38e5a5011a13":"audio/ai10-sandbox-master/38e5a5011a13.mp3","a4e27e5c56a2":"audio/ai10-sandbox-master/a4e27e5c56a2.mp3","81cde8be6cd0":"audio/ai10-sandbox-master/81cde8be6cd0.mp3","c1db40224210":"audio/ai10-sandbox-master/c1db40224210.mp3","e4ca8dfd50a5":"audio/ai10-sandbox-master/e4ca8dfd50a5.mp3","9cf53b5dd129":"audio/ai10-sandbox-master/9cf53b5dd129.mp3","5d3fe2eb8425":"audio/ai10-sandbox-master/5d3fe2eb8425.mp3","96f66ba975ac":"audio/ai10-sandbox-master/96f66ba975ac.mp3","84cb8df2b5f5":"audio/ai10-sandbox-master/84cb8df2b5f5.mp3","9096b6a0e784":"audio/ai10-sandbox-master/9096b6a0e784.mp3","896609197b79":"audio/ai10-sandbox-master/896609197b79.mp3","3fd5ea45d07e":"audio/ai10-sandbox-master/3fd5ea45d07e.mp3","44cf67de31eb":"audio/ai10-sandbox-master/44cf67de31eb.mp3","2e84ed5a81d5":"audio/ai10-sandbox-master/2e84ed5a81d5.mp3","aedb865c0fd5":"audio/ai10-sandbox-master/aedb865c0fd5.mp3","688a15f6f889":"audio/ai10-sandbox-master/688a15f6f889.mp3","1511d94c30c9":"audio/ai10-sandbox-master/1511d94c30c9.mp3","1a6c6e51502f":"audio/ai10-sandbox-master/1a6c6e51502f.mp3","3bc859758898":"audio/ai10-sandbox-master/3bc859758898.mp3","5dedc7ace9a2":"audio/ai10-sandbox-master/5dedc7ace9a2.mp3","defc58dbbc8e":"audio/ai10-sandbox-master/defc58dbbc8e.mp3","b06490743d1c":"audio/ai10-sandbox-master/b06490743d1c.mp3","1d0a82849e38":"audio/ai10-sandbox-master/1d0a82849e38.mp3","e94611fdca17":"audio/ai10-sandbox-master/e94611fdca17.mp3","082ad038ec40":"audio/ai10-sandbox-master/082ad038ec40.mp3","f71bb980b4ff":"audio/ai10-sandbox-master/f71bb980b4ff.mp3","bb4ddce4f4cf":"audio/ai10-sandbox-master/bb4ddce4f4cf.mp3","8014e81b9521":"audio/ai10-sandbox-master/8014e81b9521.mp3","e21fabc781e5":"audio/ai10-sandbox-master/e21fabc781e5.mp3","1cc0a94e9d8f":"audio/ai10-sandbox-master/1cc0a94e9d8f.mp3","b9de832d4f3b":"audio/ai10-sandbox-master/b9de832d4f3b.mp3","811abb85a040":"audio/ai10-sandbox-master/811abb85a040.mp3","199ce0239b9f":"audio/ai10-sandbox-master/199ce0239b9f.mp3","95363439be2a":"audio/ai10-sandbox-master/95363439be2a.mp3","f36f4c769d9f":"audio/ai10-sandbox-master/f36f4c769d9f.mp3","f0f55fbea858":"audio/ai10-sandbox-master/f0f55fbea858.mp3","af4aa6891eb0":"audio/ai10-sandbox-master/af4aa6891eb0.mp3","6b8b2ac38534":"audio/ai10-sandbox-master/6b8b2ac38534.mp3","50b3d90cd0ad":"audio/ai10-sandbox-master/50b3d90cd0ad.mp3","8b7c3a337ec7":"audio/ai10-sandbox-master/8b7c3a337ec7.mp3","c703cc87b5ba":"audio/ai10-sandbox-master/c703cc87b5ba.mp3","8754bc4542cc":"audio/ai10-sandbox-master/8754bc4542cc.mp3","84d027c78790":"audio/ai10-sandbox-master/84d027c78790.mp3","24bde7c72aaa":"audio/ai10-sandbox-master/24bde7c72aaa.mp3","3f308451a11c":"audio/ai10-sandbox-master/3f308451a11c.mp3","314c3cbaf5ae":"audio/ai10-sandbox-master/314c3cbaf5ae.mp3","966ea3b588b1":"audio/ai10-sandbox-master/966ea3b588b1.mp3","2ca0676333af":"audio/ai10-sandbox-master/2ca0676333af.mp3","0dff2d93fa00":"audio/ai10-sandbox-master/0dff2d93fa00.mp3","126e805e69d9":"audio/ai10-sandbox-master/126e805e69d9.mp3","27985e648bb3":"audio/ai10-sandbox-master/27985e648bb3.mp3","9e7d520857ae":"audio/ai10-sandbox-master/9e7d520857ae.mp3","4f6c9eb768f8":"audio/ai10-sandbox-master/4f6c9eb768f8.mp3","e570d8c5be2f":"audio/ai10-sandbox-master/e570d8c5be2f.mp3","c2631fcf0425":"audio/ai10-sandbox-master/c2631fcf0425.mp3","02c3cfaaf658":"audio/ai10-sandbox-master/02c3cfaaf658.mp3","6e402157dbd5":"audio/ai10-sandbox-master/6e402157dbd5.mp3","af86d3d5de2f":"audio/ai10-sandbox-master/af86d3d5de2f.mp3","4fcb529409c7":"audio/ai10-sandbox-master/4fcb529409c7.mp3","22180aea7399":"audio/ai10-sandbox-master/22180aea7399.mp3","36bf79ae41d2":"audio/ai10-sandbox-master/36bf79ae41d2.mp3","bac250577314":"audio/ai10-sandbox-master/bac250577314.mp3","b7f0cc03aa0c":"audio/ai10-sandbox-master/b7f0cc03aa0c.mp3","1f69260769eb":"audio/ai10-sandbox-master/1f69260769eb.mp3","1a71daa8b5c2":"audio/ai10-sandbox-master/1a71daa8b5c2.mp3","6c87bc9190e5":"audio/ai10-sandbox-master/6c87bc9190e5.mp3","bd0dae8d7026":"audio/ai10-sandbox-master/bd0dae8d7026.mp3","b026c1d3bbb4":"audio/ai10-sandbox-master/b026c1d3bbb4.mp3","636b366fd2d7":"audio/ai10-sandbox-master/636b366fd2d7.mp3"}</script>
 <script>window.DLF_CONFIG={extraReadSelectors:['.qtext','.doctitle','.chatbubble','.docref'],extraNonDecorateSelectors:'.acard,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>

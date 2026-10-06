@@ -32,7 +32,10 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
 .pchip.cur .num{background:rgba(255,255,255,.35);}
 
-.stage{width:100%;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+/* flex:1 + overflow-y:auto: the page itself never scrolls (html,body{overflow:hidden}), so
+   .stage scrolls internally and long simulation steps can never trap the Next button. */
+.stage{width:100%;flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;padding:24px 20px 56px;}
+.stage > .panel,.stage > #s3{margin-top:auto;margin-bottom:auto;}
 .panel{width:100%;max-width:640px;}
 
 .screen{display:none;width:100%;max-width:760px;flex-direction:column;align-items:center;gap:16px;}
@@ -175,6 +178,26 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .llminput:focus{border-color:var(--primary);}
 .llmsend{width:42px;height:42px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:18px;cursor:pointer;flex:0 0 auto;}
 
+/* click-through study simulations */
+#sim.screen{max-width:760px;}
+.matbox{width:100%;background:#FFFCEF;border:1.5px dashed #C58A00;border-radius:14px;padding:12px 16px;font-size:13px;line-height:1.7;color:var(--text);text-align:left;}
+.matbox .matlabel{font-family:'Mitr',sans-serif;font-size:11.5px;font-weight:700;color:#8A6300;margin-bottom:4px;}
+.simthread{width:100%;max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 2px;}
+.simthread:empty{display:none;}
+.simnarr{width:100%;font-family:'Mitr',sans-serif;font-size:15px;font-weight:600;color:var(--primary-dark);line-height:1.6;text-align:left;}
+.topiccard.done{border-color:var(--green);background:var(--green-light);}
+.topiccard .tblurb{font-size:12px;color:var(--text2);margin-top:4px;line-height:1.5;}
+.explainbox.wrongx{border-left-color:var(--red);background:var(--red-light);}
+.explainbox.wrongx b{color:#A32E20;}
+.flipgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;}
+.flipcard{position:relative;min-height:84px;border:2px solid var(--border);border-bottom-width:5px;border-radius:14px;background:var(--panel);cursor:pointer;padding:10px;font-family:'Sarabun',sans-serif;color:var(--text);transition:transform .12s,background .2s;}
+.flipcard:active{transform:translateY(2px);}
+.flipcard .ff{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;color:var(--primary-dark);}
+.flipcard .fb{display:none;font-size:13px;line-height:1.5;}
+.flipcard.flipped{background:var(--primary-light);border-color:var(--primary);}
+.flipcard.flipped .ff{display:none;}
+.flipcard.flipped .fb{display:block;}
+
 /* reflection step */
 .refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
 .refl-wrap textarea:focus{outline:2px solid var(--primary);}
@@ -230,45 +253,22 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
       </div>
     </div>
 
-    <div id="chat" class="screen">
-      <div class="coachcard" id="coachCard">
-        <div class="coachrow"><span class="coachicon">💡</span><div class="coachtext" id="coachText"></div></div>
-        <button class="coachbtn" onclick="coachHide()">เข้าใจแล้ว</button>
+    <div id="sim" class="screen">
+      <div class="round-head">
+        <span class="round-tag" id="simTitle"></span>
+        <span class="scorepill" id="simScore">พลาด 0 ครั้ง</span>
       </div>
-      <div class="llmwrap">
-        <div class="llmside">
-          <div class="llmside-new">➕ แชทใหม่</div>
-          <div class="llmside-label">ประวัติแชท</div>
-          <div class="llmside-item" id="sideTopicItem">💬 เรียนรู้กับ AI</div>
-        </div>
-        <div class="llmmain">
-          <div class="llmhead">
-            <span class="llmhead-title" id="chatTopicTitle">แชทกับ AI</span>
-          </div>
-          <div class="llmthread" id="chatThread"></div>
-          <div class="llmsuggest" id="chatChips"></div>
-          <div class="llminputbar">
-            <input id="chatInput" class="llminput" type="text" placeholder="พิมพ์คำสั่งของคุณ..." onkeydown="if(event.key==='Enter')sendChatPrompt();">
-            <button class="llmsend" onclick="sendChatPrompt()">➤</button>
-          </div>
-        </div>
+      <div class="matbox" id="simMat" style="display:none">
+        <div class="matlabel">📄 บทความที่คุณมี</div>
+        <div id="simMatText"></div>
       </div>
-      <button class="btn" id="toQuizBtn" style="margin-top:14px;display:none;" onclick="startCheck()">📝 ให้ AI ออกโจทย์ฝึกให้ลองทำ →</button>
+      <div class="simthread" id="simThread"></div>
+      <div class="simnarr" id="simNarr"></div>
+      <div class="choices" id="simChoices"></div>
+      <div class="explainbox" id="simExplain"></div>
+      <button class="btn" id="simNext" style="display:none;" onclick="simNext()">ถัดไป →</button>
     </div>
 
-    <div id="game" class="screen">
-      <div class="round-head">
-        <span class="round-tag" id="roundTag">คำถามที่ 1/3</span>
-        <span class="scorepill" id="scorePill">พลาด 0 ครั้ง</span>
-      </div>
-      <div class="botrow">
-        <span class="botavatar">🎓</span>
-        <div class="botbubble" id="botBubble"></div>
-      </div>
-      <div class="choices" id="choicesWrap"></div>
-      <div class="explainbox" id="explainBox"></div>
-      <button class="btn ghost" id="nextQBtn" style="display:none;" onclick="nextQuestion()">ถัดไป →</button>
-    </div>
 
   </div>
 
@@ -325,12 +325,11 @@ function goStep(n){
 
 // ===== Step 2: concept =====
 const CONCEPTS = [
-  { icon:'🗣️', title:'AI ไม่ได้มีวิธีถามแบบเดียว', body:'ถ้าคำตอบแรกยังไม่เข้าใจ ลองขอให้อธิบายง่ายลง ยกตัวอย่างเทียบกับของที่รู้จัก หรือให้ AI ถามคำถามเราแทนก็ได้ — ยิ่งลองหลายแบบ ยิ่งได้คำตอบที่ตรงใจ',
-    anim:[ {me:true,text:'🙋 อธิบายง่ายกว่านี้ได้ไหม?'}, {text:'🎓 ได้เลย! ลองแบบนี้นะ...'}, {me:true,text:'🙋 ขอยกตัวอย่างอีกสิ'}, {text:'🎓 ได้! ลองนึกถึง...'} ] },
-  { icon:'⏳', title:'ติวเตอร์ที่ไม่มีวันหมดความอดทน', body:'ถามซ้ำกี่ครั้งก็ได้ ไม่ต้องอาย AI ไม่รู้สึกรำคาญ — ใช้เป็นผู้ช่วยเรียนเรื่องใหม่ หรือช่วยงานง่าย ๆ เช่น สรุปข้อมูล ทำการ์ดคำศัพท์ก็ได้เหมือนกัน' },
-  { icon:'🧠', title:'เรียนเก่งขึ้นจริง ต้องพูดคำตอบเองด้วย', body:'อย่าแค่อ่านคำตอบของ AI แล้วผ่านไป — ลองปิดหน้าจอแล้วอธิบายเรื่องนั้นด้วยคำพูดตัวเอง หรือขอให้ AI "ออกโจทย์ทดสอบ" เราแทนที่จะแค่ให้คำตอบ วิธีนี้ทำให้จำได้นานกว่าการอ่านผ่าน ๆ มาก' },
-  { icon:'✏️', title:'ขอโจทย์ฝึกเพิ่ม หรือขอคำใบ้แทนคำตอบ', body:'สั่ง AI ได้ 2 แบบที่ช่วยให้เราฝึกจริง ๆ แทนที่จะรอคำตอบ: (1) ขอโจทย์แบบเดียวกันมาฝึกเพิ่มอีกหลายข้อ (2) บอก AI ตรง ๆ ว่า "อย่าเพิ่งบอกคำตอบ ขอแค่คำใบ้ทีละขั้น" แล้วลองทำเองก่อน — สองแบบนี้ทำให้เราได้ลงมือคิดเอง ไม่ใช่แค่ก็อบคำตอบ',
-    anim:[ {me:true,text:'🙋 ขอโจทย์แบบนี้อีก 3 ข้อได้ไหม?'}, {text:'🎓 ได้เลย! นี่โจทย์ข้อ 1...'}, {me:true,text:'🙋 อย่าเพิ่งบอกคำตอบนะ ขอคำใบ้ทีละขั้นพอ'}, {text:'🎓 โอเค! ขั้นแรกลองดูว่า...'} ] },
+  { icon:'🎯', title:'คำสั่งยิ่งชัด ผลยิ่งตรงใจ', body:'AI ทำตามสิ่งที่เราสั่ง ถ้าสั่งสั้น ๆ กว้าง ๆ ก็ได้คำตอบกว้าง ๆ — ลองบอก 3 อย่าง: ต้องการอะไร (สรุป/การ์ด/โจทย์/อธิบาย) ใครเป็นผู้อ่าน และอยากได้ยาวแค่ไหน แบบไหน',
+    anim:[ {me:true,text:'🙋 สรุปให้หน่อย'}, {text:'🎓 (สรุปยาวมาก…)'}, {me:true,text:'🙋 สรุป 3 ข้อสั้น ๆ สำหรับเด็ก ป.5'}, {text:'🎓 ได้เลย! 1)… 2)… 3)…'} ] },
+  { icon:'📚', title:'AI ช่วยเตรียมสอบได้ 4 แบบ', body:'(1) สรุปข้อความยาว ๆ ให้สั้นลง (2) ทำการ์ดคำศัพท์ไว้ท่อง (3) ออกโจทย์ฝึกและแบบทดสอบก่อนสอบ (4) อธิบายเรื่องที่ยังไม่เข้าใจให้ง่ายขึ้น — เดี๋ยวเราจะลองทั้ง 4 แบบแบบคลิกเลือกคำสั่ง แล้วดูผลลัพธ์ที่ได้' },
+  { icon:'🧠', title:'AI ช่วยได้ แต่เราต้องลงมือเองด้วย', body:'ตรวจคำตอบของ AI เทียบกับต้นฉบับเสมอ และอย่าให้ AI ทำแทนทั้งหมด — ลองตอบโจทย์เอง ท่องการ์ดเอง แล้วค่อยขอให้ AI เฉลยพร้อมอธิบายเหตุผล จะจำได้นานกว่าการอ่านคำตอบเฉย ๆ มาก',
+    anim:[ {me:true,text:'🙋 ขอโจทย์ฝึก 3 ข้อ ยังไม่ต้องเฉลย'}, {text:'🎓 นี่โจทย์ข้อ 1…'}, {me:true,text:'🙋 ทำเสร็จแล้ว ขอเฉลยพร้อมเหตุผล'}, {text:'🎓 ข้อ 1 ตอบ… เพราะ…'} ] },
 ];
 let cIdx = 0;
 function renderConcept(){ cIdx = 0; renderConceptCard(); }
@@ -350,356 +349,301 @@ function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
 function coachShow(text){ $('coachText').textContent = text; $('coachCard').classList.add('show'); }
 function coachHide(){ $('coachCard').classList.remove('show'); }
 
-const TOPICS = [
-  { id:'summarize', icon:'📝', title:'ให้ AI ช่วยสรุปข้อมูล',
-    respSimple:'AI ช่วย "สรุป" ข้อความยาว ๆ ให้เหลือแค่ใจความสำคัญได้ — เหมือนอ่านทั้งหน้าแล้วเล่าให้เพื่อนฟังในไม่กี่ประโยค 📝',
-    respExample:'ลองนึกถึงบทความยาว 2 หน้าเรื่อง "ทำไมควรนอนให้พอ" ถ้าอ่านทั้งหมดอาจใช้เวลานาน แต่ถ้าขอให้ AI สรุปเหลือ 3 ประโยค เราจะได้ใจความสำคัญ เช่น "นอนไม่พอทำให้สมองล้า ความจำแย่ลง และป่วยง่ายขึ้น ผู้ใหญ่ควรนอน 7-9 ชั่วโมงต่อคืน" — อ่านแป๊บเดียวก็เข้าใจแล้ว',
-    questions:[
-    { type:'order', q:'เรียงขั้นตอนขอให้ AI ช่วยสรุปข้อมูลให้ดี (แตะทีละอันตามลำดับ)',
-      items:['คัดลอกข้อความยาว ๆ ที่อยากให้สรุป','บอก AI ว่าอยากได้สรุปกี่ประโยค หรือสั้นแค่ไหน','อ่านสรุปที่ได้ แล้วตรวจว่าใจความสำคัญครบไหม'],
-      hint:'เริ่มจากมีข้อความก่อน แล้วค่อยบอกความต้องการ สุดท้ายค่อยตรวจสอบผลลัพธ์',
-      explain:'ลำดับที่ดี: 1) มีข้อความต้นฉบับ 2) บอกความยาวที่ต้องการให้ AI รู้ 3) ตรวจสอบว่าใจความสำคัญครบก่อนนำไปใช้' },
-    { type:'order', q:'เรียงความยาวข้อความจากสั้นไปยาว (แตะทีละอันตามลำดับ)',
-      items:['สรุป 1 ประโยค','สรุป 3 ประโยค','บทความต้นฉบับเต็ม ๆ'],
-      hint:'สรุปสั้น ๆ จะมีคำน้อยกว่าสรุปยาว และสรุปย่อมสั้นกว่าต้นฉบับเสมอ',
-      explain:'เรียงจากสั้นไปยาวคือ สรุป 1 ประโยค → สรุป 3 ประโยค → บทความต้นฉบับเต็ม — ยิ่งขอสรุปสั้นเท่าไร ยิ่งเหลือใจความน้อยลง' },
-    { type:'order', q:'เรียงขั้นตอนตรวจสอบว่าสรุปของ AI ดีหรือไม่ (แตะทีละอันตามลำดับ)',
-      items:['อ่านสรุปที่ AI ให้มา','เทียบดูว่าตรงกับใจความสำคัญของต้นฉบับไหม','ถ้าขาดใจความสำคัญ ให้ขอให้ AI แก้ไขใหม่'],
-      hint:'ต้องอ่านก่อนถึงจะเทียบได้ และถ้าพบปัญหาค่อยขอแก้ไขทีหลัง',
-      explain:'ลำดับที่ดี: อ่านสรุปก่อน แล้วเทียบกับต้นฉบับ สุดท้ายถ้าขาดอะไรไปให้ขอให้ AI แก้ไขใหม่' },
-  ]},
-  { id:'flashcards', icon:'🗂️', title:'ให้ AI ช่วยทำการ์ดคำศัพท์',
-    respSimple:'Flashcard (การ์ดคำศัพท์) คือการ์ดที่มีคำถามด้านหน้าและคำตอบด้านหลัง ใช้ท่องจำได้ดีมาก AI ช่วยสร้างชุดการ์ดจากหัวข้อที่เราอยากท่องได้ทันที 🗂️',
-    respExample:'ลองนึกถึงตอนท่องคำศัพท์ก่อนสอบ แทนที่จะเขียนการ์ดเองทีละใบ ลองบอก AI ว่า "ช่วยทำการ์ดคำศัพท์เรื่องสัตว์ 5 คำ แบบคำถาม-คำตอบ" AI จะสร้างให้ทันที เช่น หน้าการ์ด: "แมว ภาษาอังกฤษคืออะไร?" หลังการ์ด: "Cat" — ทำแบบนี้ได้หลายใบในไม่กี่วินาที',
-    questions:[
-    { type:'order', q:'เรียงขั้นตอนขอให้ AI ทำการ์ดคำศัพท์ (แตะทีละอันตามลำดับ)',
-      items:['บอกหัวข้อที่อยากท่อง เช่น คำศัพท์สัตว์','บอกจำนวนใบที่ต้องการ','รับการ์ดคำถาม-คำตอบจาก AI มาใช้ท่องจำ'],
-      hint:'ต้องบอก AI ก่อนว่าจะทำเรื่องอะไรและกี่ใบ ก่อนจะได้การ์ดมาใช้',
-      explain:'ลำดับที่ดี: บอกหัวข้อ → บอกจำนวนใบ → รับการ์ดมาใช้ท่องจำ' },
-    { type:'order', q:'เรียงขั้นตอนใช้การ์ดคำศัพท์ท่องจำให้ได้ผล (แตะทีละอันตามลำดับ)',
-      items:['ดูคำถามหรือคำศัพท์ด้านหน้าการ์ด','ลองตอบในใจก่อน','พลิกดูคำตอบด้านหลังเพื่อเช็กว่าถูกไหม'],
-      hint:'ต้องเห็นคำถามก่อน ลองคิดคำตอบเอง แล้วค่อยเฉลยทีหลัง',
-      explain:'ลำดับที่ดี: ดูคำถามหน้าการ์ด → ลองตอบในใจ → พลิกดูคำตอบเพื่อเช็ก — ถ้าเฉลยก่อนตอบเองจะไม่ช่วยให้จำ' },
-    { type:'order', q:'เรียงขั้นตอนตรวจการ์ดที่ AI ทำให้ก่อนนำไปใช้จริง (แตะทีละอันตามลำดับ)',
-      items:['อ่านการ์ดที่ AI สร้างให้ทั้งหมด','เช็กว่าคำตอบถูกต้องไหม','ถ้ามีข้อผิดพลาด ให้แก้ไขก่อนนำไปท่อง'],
-      hint:'ต้องอ่านก่อนถึงจะตรวจได้ และถ้าเจอผิดค่อยแก้ไขทีหลัง',
-      explain:'ลำดับที่ดี: อ่านการ์ดทั้งหมด → เช็กความถูกต้อง → แก้ไขก่อนนำไปใช้จริง เพราะ AI อาจพลาดได้บ้าง' },
-  ]},
+// ===== Step 3: four "how to use AI to study" simulations (click-through, nothing typed) =====
+// There is no real LLM behind this page, so every step is a menu of prompts. The student
+// picks one, sees exactly what that prompt would produce, and keeps going until they land on
+// the better prompt. One shared study topic (the water cycle) runs through all four.
+const PASSAGE = 'น้ำบนโลกหมุนเวียนอยู่ตลอดเวลา เมื่อแสงแดดทำให้น้ำในทะเลและแม่น้ำร้อนขึ้น น้ำจะระเหยกลายเป็นไอน้ำลอยขึ้นสู่อากาศ เมื่อไอน้ำลอยสูงขึ้นจะเย็นลงและควบแน่นเป็นเมฆ จากนั้นเมฆที่หนักขึ้นจะปล่อยน้ำลงมาเป็นฝน หิมะ หรือลูกเห็บ น้ำที่ตกลงมาจะไหลลงสู่แม่น้ำและทะเลอีกครั้ง แล้ววนซ้ำเป็นวัฏจักรที่ไม่มีวันจบ';
+
+const CATEGORIES = [
+  { id:'summarize', icon:'📝', title:'ให้ AI สรุปข้อความ', blurb:'ย่อบทความยาวให้เหลือใจความสำคัญ', material:true,
+    steps:[
+      { kind:'choice', narr:'พรุ่งนี้มีสอบ แต่บทความข้างบนยาวเกินจะอ่านทัน — พิมพ์คำสั่งอะไรให้ AI ดี? แตะเลือกแล้วดูว่า AI จะตอบอะไร',
+        options:[
+          { text:'สรุปให้หน่อย',
+            reply:'น้ำบนโลกหมุนเวียนตลอดเวลา แดดทำให้น้ำระเหยเป็นไอ ไอน้ำลอยสูงและเย็นลงกลายเป็นเมฆ เมฆปล่อยน้ำลงมาเป็นฝน หิมะ หรือลูกเห็บ น้ำไหลกลับสู่แม่น้ำและทะเล แล้ววนซ้ำไม่มีวันจบ (…ยาวเกือบเท่าต้นฉบับ)',
+            good:false, why:'คำสั่งสั้นเกินไป ไม่บอกความยาวหรือรูปแบบ AI จึงสรุปยาวเกือบเท่าต้นฉบับ ไม่ช่วยประหยัดเวลา' },
+          { text:'สรุปบทความนี้เป็น 3 ข้อสั้น ๆ สำหรับเด็ก ป.5 ใช้คำง่าย ๆ',
+            reply:'1) แดดทำให้น้ำระเหยเป็นไอน้ำลอยขึ้นฟ้า\n2) ไอน้ำเย็นลงกลายเป็นเมฆ\n3) เมฆปล่อยฝนลงมา น้ำไหลกลับทะเลแล้ววนซ้ำ',
+            good:true, why:'คำสั่งนี้บอกครบ 3 อย่าง: จำนวนข้อ (3 ข้อ) ผู้อ่าน (เด็ก ป.5) และสไตล์ภาษา (คำง่าย ๆ) — AI จึงสรุปได้ตรงใจ' },
+          { text:'แปลบทความนี้เป็นภาษาอังกฤษ',
+            reply:'The water on Earth is always circulating. When the sun heats the water in the sea and rivers, it evaporates into vapor…',
+            good:false, why:'ได้งานผิดประเภท — AI ทำตามคำสั่งตรง ๆ ถ้าอยากได้สรุปต้องใช้คำว่า "สรุป" และบอกว่าอยากได้แบบไหน' },
+        ] },
+      { kind:'choice', narr:'สมมติว่า AI ส่งสรุปมา แต่ข้อ 2 เขียนว่า "เมฆเกิดจากควันโรงงาน" ซึ่งไม่ตรงกับบทความ — คุณจะทำอย่างไรต่อ?',
+        options:[
+          { text:'คัดลอกไปส่งครูเลย',
+            reply:'(ครูตรวจแล้วหักคะแนน เพราะมีข้อมูลผิดอยู่ในข้อ 2)',
+            good:false, why:'AI อาจใส่ข้อมูลผิดอย่างมั่นใจได้ — ต้องเทียบกับต้นฉบับก่อนนำไปใช้เสมอ' },
+          { text:'เทียบกับบทความต้นฉบับ แล้วบอก AI ว่าข้อ 2 ผิด ให้แก้ตามบทความ',
+            reply:'ขออภัยครับ แก้ให้แล้ว: 2) ไอน้ำเย็นลงและควบแน่นกลายเป็นเมฆ',
+            good:true, why:'ตรวจเทียบกับต้นฉบับ แล้วชี้จุดผิดให้ AI แก้ตรง ๆ — นี่คือวิธีใช้ AI สรุปอย่างปลอดภัย' },
+          { text:'ขอให้ AI สรุปใหม่ทั้งหมด โดยไม่บอกว่าผิดตรงไหน',
+            reply:'(AI สรุปใหม่ แต่ยังมีข้อมูลที่ไม่ตรงกับบทความอีกจุดหนึ่ง)',
+            good:false, why:'ถ้าไม่บอกว่าผิดตรงไหน AI ไม่รู้ว่าต้องแก้อะไร การชี้จุดผิดตรง ๆ ได้ผลดีกว่า' },
+        ] },
+    ] },
+
+  { id:'flashcards', icon:'🗂️', title:'ให้ AI ทำการ์ดคำศัพท์', blurb:'สร้างการ์ดถาม-ตอบไว้ท่องก่อนสอบ', material:true,
+    steps:[
+      { kind:'choice', narr:'อยากท่องศัพท์จากบทความข้างบนให้ทันสอบ — คำสั่งไหนจะได้การ์ดที่ใช้ท่องได้จริง?',
+        options:[
+          { text:'ทำการ์ดให้หน่อย',
+            reply:'ได้เลยครับ! อยากได้การ์ดเรื่องอะไร กี่ใบ และรูปแบบไหนดีครับ?',
+            good:false, why:'คำสั่งกว้างเกินไป AI ต้องถามกลับ — บอกหัวข้อ จำนวนใบ และรูปแบบไปเลยจะประหยัดเวลากว่า' },
+          { text:'ทำการ์ดคำศัพท์จากบทความนี้ 4 ใบ ด้านหน้าเป็นคำศัพท์ ด้านหลังเป็นความหมายสั้น ๆ',
+            reply:'นี่คือการ์ด 4 ใบที่สร้างให้ครับ — ไปลองพลิกดูในขั้นถัดไปได้เลย 👇',
+            good:true, why:'คำสั่งบอกหัวข้อ (จากบทความนี้) จำนวน (4 ใบ) และรูปแบบ (หน้า-หลัง) ครบ AI จึงสร้างการ์ดให้ได้ทันที' },
+          { text:'เขียนเรียงความเรื่องน้ำ 500 คำ',
+            reply:'น้ำเป็นทรัพยากรที่สำคัญที่สุดอย่างหนึ่งของโลก… (เรียงความยาว 500 คำ)',
+            good:false, why:'ได้งานผิดประเภท — เรียงความไม่ใช่การ์ดท่องศัพท์ ถ้าอยากได้การ์ดต้องบอกว่า "การ์ดคำศัพท์" ให้ชัด' },
+        ] },
+      { kind:'flip', narr:'ลองแตะการ์ดแต่ละใบเพื่อพลิกดู — ด้านหน้าคือคำศัพท์ ด้านหลังคือความหมาย',
+        cards:[
+          { front:'ระเหย', back:'น้ำกลายเป็นไอน้ำเมื่อโดนความร้อน' },
+          { front:'ควบแน่น', back:'ไอน้ำเย็นลงแล้วกลายเป็นหยดน้ำหรือเมฆ' },
+          { front:'หยาดน้ำฟ้า', back:'ฝน หิมะ หรือลูกเห็บที่ตกลงมาจากเมฆ' },
+          { front:'วัฏจักรของน้ำ', back:'การหมุนเวียนของน้ำบนโลกที่วนซ้ำไม่จบ' },
+        ] },
+      { kind:'choice', narr:'ได้การ์ดมาแล้ว — วิธีใช้การ์ดท่องศัพท์แบบไหนช่วยให้จำได้จริง?',
+        options:[
+          { text:'อ่านด้านหลัง (คำตอบ) ทุกใบรวดเดียว แล้วไม่ต้องทบทวนอีก',
+            reply:'(พรุ่งนี้ตอนสอบ จำคำศัพท์ได้แค่ครึ่งเดียว)',
+            good:false, why:'การอ่านผ่าน ๆ ไม่ช่วยให้จำ — ต้องลองดึงคำตอบออกมาจากสมองเองด้วย' },
+          { text:'ดูด้านหน้า ลองตอบในใจก่อน แล้วค่อยพลิกดูคำตอบ',
+            reply:'(ทบทวนวันละรอบ จำคำศัพท์ได้เกือบหมดก่อนสอบ 🎉)',
+            good:true, why:'การลองตอบก่อนพลิกดูเฉลย ช่วยให้สมองจำได้นานกว่าการอ่านคำตอบเฉย ๆ' },
+          { text:'ขอให้ AI ทำการ์ดเพิ่มเรื่อย ๆ โดยไม่เคยเปิดดู',
+            reply:'(มีการ์ดเต็มโฟลเดอร์ แต่ไม่ได้ท่องสักใบ)',
+            good:false, why:'การ์ดมีประโยชน์เมื่อเราเอามาท่องจริง ๆ ไม่ใช่แค่มีเยอะ' },
+        ] },
+    ] },
+
+  { id:'practice', icon:'✏️', title:'ให้ AI ออกโจทย์ฝึก', blurb:'สร้างโจทย์เตรียมสอบจากเรื่องที่เรียน', material:true,
+    steps:[
+      { kind:'choice', narr:'อยากซ้อมก่อนสอบเรื่องวัฏจักรของน้ำ — คำสั่งไหนจะได้โจทย์ฝึกที่ใช้ได้?',
+        options:[
+          { text:'ออกข้อสอบให้หน่อย',
+            reply:'ได้เลยครับ! ข้อสอบวิชาอะไร ระดับชั้นไหน กี่ข้อดีครับ?',
+            good:false, why:'ไม่บอกหัวข้อ ระดับ และจำนวนข้อ AI จึงต้องถามกลับ — บอกให้ครบตั้งแต่แรกจะได้โจทย์ทันที' },
+          { text:'ออกโจทย์ฝึกเรื่องวัฏจักรของน้ำ 3 ข้อ ระดับ ป.5 เป็นแบบเลือกตอบ ยังไม่ต้องบอกเฉลย',
+            reply:'นี่คือโจทย์ฝึก 3 ข้อครับ ลองทำเองก่อน แล้วค่อยขอเฉลยทีหลังนะ 👇',
+            good:true, why:'คำสั่งนี้บอกหัวข้อ จำนวนข้อ ระดับ รูปแบบ และ "ยังไม่ต้องเฉลย" — เปิดโอกาสให้เราลองทำเองก่อน' },
+          { text:'บอกเฉลยข้อสอบเรื่องวัฏจักรของน้ำให้หน่อย',
+            reply:'เฉลย: 1) การระเหย 2) การควบแน่น 3) หยาดน้ำฟ้า (…แต่ยังไม่มีโจทย์ให้ลองทำเลย)',
+            good:false, why:'ขอเฉลยโดยไม่มีโจทย์ ก็ไม่ได้ฝึกอะไร — การฝึกคือการลองทำเองก่อน' },
+        ] },
+      { kind:'quiz', narr:'ลองทำโจทย์ฝึก 3 ข้อที่ AI ออกให้ — แตะคำตอบที่คิดว่าถูก',
+        qs:[
+          { q:'1) น้ำในทะเลร้อนขึ้นแล้วกลายเป็นไอน้ำลอยขึ้นฟ้า เรียกว่าอะไร?',
+            opts:['การระเหย','การควบแน่น','การแข็งตัว'], correct:0, explain:'น้ำกลายเป็นไอน้ำเมื่อโดนความร้อน เรียกว่า "การระเหย"' },
+          { q:'2) เมฆเกิดขึ้นได้อย่างไร?',
+            opts:['ควันลอยขึ้นไปรวมกัน','ไอน้ำเย็นลงและควบแน่น','น้ำแข็งละลายบนฟ้า'], correct:1, explain:'ไอน้ำที่ลอยสูงขึ้นจะเย็นลงและควบแน่นเป็นละอองน้ำเล็ก ๆ รวมกันเป็นเมฆ' },
+          { q:'3) ฝน หิมะ และลูกเห็บ เรียกรวมกันว่าอะไรในวัฏจักรของน้ำ?',
+            opts:['การระเหย','การไหลบ่า','หยาดน้ำฟ้า'], correct:2, explain:'น้ำที่ตกลงมาจากเมฆในรูปแบบต่าง ๆ เรียกรวมว่า "หยาดน้ำฟ้า"' },
+        ] },
+      { kind:'choice', narr:'ทำเสร็จแล้ว — ขอเฉลยกับ AI อย่างไรให้ได้เรียนรู้มากที่สุด?',
+        options:[
+          { text:'บอกเฉลยสั้น ๆ ว่าข้อไหนถูกข้อไหนผิดก็พอ',
+            reply:'ข้อ 1 ถูก ข้อ 2 ถูก ข้อ 3 ถูก 👍',
+            good:false, why:'รู้แค่ถูก-ผิด ไม่รู้ว่า "ทำไม" — ถ้าพลาดข้อไหน จะไม่รู้ว่าต้องแก้ความเข้าใจตรงไหน' },
+          { text:'ขอเฉลยพร้อมอธิบายว่าทำไมแต่ละข้อถึงถูก และข้อที่ผิดผิดเพราะอะไร',
+            reply:'ข้อ 1: ระเหย เพราะน้ำโดนความร้อนแล้วกลายเป็นไอ\nข้อ 2: ไอน้ำเย็นลงจึงควบแน่นเป็นเมฆ ไม่ใช่ควัน\nข้อ 3: หยาดน้ำฟ้า คือน้ำทุกรูปแบบที่ตกจากเมฆ',
+            good:true, why:'ขอคำอธิบายเหตุผลด้วย ทำให้เข้าใจจริง ไม่ใช่แค่รู้ว่าถูกหรือผิด' },
+          { text:'ขอโจทย์ชุดใหม่เลย โดยไม่ดูเฉลยชุดแรก',
+            reply:'ได้ครับ! นี่คือโจทย์ชุดใหม่ 3 ข้อ… (แต่ยังไม่รู้ว่าชุดแรกพลาดตรงไหน)',
+            good:false, why:'การดูเฉลยและเหตุผลของชุดแรกก่อน ช่วยให้โจทย์ชุดต่อไปทำได้ดีขึ้น' },
+        ] },
+    ] },
+
+  { id:'teach', icon:'🎓', title:'ให้ AI สอนแนวคิด', blurb:'ให้ AI อธิบายเรื่องที่ยังไม่เข้าใจ', material:false,
+    steps:[
+      { kind:'choice', narr:'คุณยังไม่เข้าใจเรื่อง "วัฏจักรของน้ำ" เลย — จะขอให้ AI อธิบายอย่างไร?',
+        options:[
+          { text:'อธิบายวัฏจักรของน้ำ',
+            reply:'วัฏจักรของน้ำ (hydrologic cycle) คือกระบวนการหมุนเวียนของน้ำระหว่างบรรยากาศ ผิวโลก และใต้ดิน ผ่านกระบวนการ evaporation, condensation และ precipitation…',
+            good:false, why:'AI ตอบแบบตำราเรียน มีศัพท์ยากเต็มไปหมด — เพราะเราไม่ได้บอกว่าเราเป็นใครและอยากให้อธิบายระดับไหน' },
+          { text:'อธิบายวัฏจักรของน้ำให้เด็ก ป.5 เข้าใจ เปรียบเทียบกับของใกล้ตัว ทีละขั้น',
+            reply:'ลองนึกถึงหม้อต้มน้ำที่มีฝาปิดนะ 🍲\n1) ต้มน้ำ → น้ำร้อนกลายเป็นไอลอยขึ้น (เหมือนแดดทำให้น้ำทะเลระเหย)\n2) ไอไปโดนฝาที่เย็น → กลายเป็นหยดน้ำเกาะฝา (เหมือนไอน้ำเย็นลงเป็นเมฆ)\n3) หยดใหญ่ขึ้นจนหยดกลับลงหม้อ (เหมือนฝนตก)',
+            good:true, why:'บอกผู้เรียน (ป.5) สไตล์ (เปรียบเทียบของใกล้ตัว) และวิธีสอน (ทีละขั้น) — AI จึงอธิบายได้เข้าใจง่าย' },
+          { text:'บอกเนื้อหาวัฏจักรของน้ำเป็นข้อ ๆ ให้ท่องจำ',
+            reply:'1. การระเหย 2. การควบแน่น 3. หยาดน้ำฟ้า 4. การไหลบ่า (…ท่องได้ แต่ยังไม่รู้ว่าทำไมถึงเป็นแบบนั้น)',
+            good:false, why:'ท่องจำได้แต่ไม่เข้าใจ — ถ้าอยากเข้าใจจริง ให้ขอคำอธิบายพร้อมตัวอย่าง ไม่ใช่แค่รายการให้ท่อง' },
+        ] },
+      { kind:'choice', narr:'AI บอกว่า "ไอน้ำควบแน่นเป็นเมฆ" แต่คุณยังไม่รู้ว่า "ควบแน่น" คืออะไร — ถามต่ออย่างไร?',
+        options:[
+          { text:'ไม่เข้าใจ',
+            reply:'ขออภัยครับ ผมอธิบายซ้ำอีกครั้งนะ ไอน้ำควบแน่นเป็นเมฆ… (ซ้ำเดิมทุกคำ)',
+            good:false, why:'บอกแค่ "ไม่เข้าใจ" AI ไม่รู้ว่าติดตรงไหน จึงตอบซ้ำเดิม — ชี้คำที่ไม่เข้าใจให้ชัด' },
+          { text:'คำว่า "ควบแน่น" คืออะไร ขอตัวอย่างจากชีวิตประจำวันหน่อย',
+            reply:'ควบแน่น คือไอน้ำที่เย็นลงแล้วกลายเป็นหยดน้ำ เช่น น้ำเย็นในแก้วที่มีหยดน้ำเกาะข้างแก้ว 🥤 นั่นคือไอน้ำในอากาศที่โดนแก้วเย็นแล้วกลายเป็นน้ำ',
+            good:true, why:'ชี้คำที่ไม่เข้าใจ + ขอตัวอย่างใกล้ตัว — ถามตามหลังแบบนี้ AI จะอธิบายเฉพาะจุดที่เราติด' },
+          { text:'ข้ามไปเรื่องอื่นก่อน',
+            reply:'ได้ครับ เรื่องต่อไปคือ… (แต่ยังไม่เข้าใจเรื่องควบแน่น ทำให้ตามเรื่องต่อไปไม่ทัน)',
+            good:false, why:'ถ้าข้ามส่วนที่ไม่เข้าใจ ส่วนต่อไปก็จะยิ่งงง — ถาม AI ให้ชัดก่อนเดินหน้าต่อ' },
+        ] },
+      { kind:'choice', narr:'อธิบายจบแล้ว — จะรู้ได้อย่างไรว่าเราเข้าใจจริง ไม่ใช่แค่รู้สึกว่าเข้าใจ?',
+        options:[
+          { text:'บอก AI ว่า "เข้าใจแล้ว ขอบคุณ" แล้วจบเลย',
+            reply:'ยินดีครับ! (ไม่มีใครรู้ว่าเข้าใจจริงหรือเปล่า จนกว่าจะถึงห้องสอบ)',
+            good:false, why:'ความรู้สึกว่าเข้าใจ ไม่เท่ากับเข้าใจจริง — ควรทดสอบตัวเองด้วย' },
+          { text:'ขอให้ AI ถามคำถามฉันทีละข้อเพื่อเช็กความเข้าใจ โดยยังไม่บอกเฉลย',
+            reply:'ได้เลยครับ! ข้อแรก: ถ้าเอาน้ำร้อนใส่แก้วแล้วเอาจานมาปิด จะเห็นหยดน้ำเกาะที่จาน — เกิดจากกระบวนการอะไร? (ลองตอบก่อนนะ ผมจะเฉลยทีหลัง)',
+            good:true, why:'ให้ AI เป็นคนถามเรา แล้วเราตอบเอง — วิธีนี้ทำให้รู้ว่าเข้าใจจริงหรือยัง' },
+          { text:'ขอให้ AI ทำข้อสอบแทนเรา',
+            reply:'เรียบร้อยครับ ข้อสอบทำเสร็จแล้ว ได้ 10/10 (แต่คนที่ได้คะแนนคือ AI ไม่ใช่เรา)',
+            good:false, why:'ให้ AI ทำแทน เราก็ไม่ได้เรียนรู้อะไร — ใช้ AI เป็นผู้ช่วยเรียน ไม่ใช่ผู้ทำแทน' },
+        ] },
+    ] },
 ];
 
-const REQUIRED_TOPICS = 2; // both remaining topics (summarize, flashcards) — each × (chat + 3-question quiz)
+let curCat = null, stepIdx = 0, simMisses = 0, doneCats = new Set();
+let flipSeen = new Set(), quizIdx = 0, simLocked = false;
 
-let curTopic = null, qIdx = 0, wrongThisQ = 0, totalWrong = 0;
-let stylesUsed = new Set(), chatSends = 0;
-let completedTopics = [], totalWrongAll = 0, stylesUsedAll = new Set();
-
-// Generic inspiration chips — not named after any technique, just phrased differently
-// so the student sees several ways to ask, and picks/adapts one.
-const PROMPT_CHIPS = [
-  { style:'practice', text:t => `ช่วยออกโจทย์ฝึกเกี่ยวกับ${t}ให้หน่อย เอาไว้เตรียมสอบ` },
-  { style:'quizme', text:t => `ช่วยทำแบบทดสอบสั้น ๆ เกี่ยวกับ${t}ให้ฉันลองทำก่อนสอบจริงได้ไหม` },
-  { style:'simple', text:t => `อธิบาย${t}แบบง่ายที่สุด เหมือนอธิบายให้เด็ก 8 ขวบฟัง` },
-  { style:'example', text:t => `ช่วยยกตัวอย่าง${t}หน่อย เทียบกับของที่เด็กรู้จัก` },
-];
-
-function renderTopicGrid(){
-  const remaining = TOPICS.filter(t => !completedTopics.includes(t.id));
-  $('pickStage').textContent = `ขั้นที่ 3 · ลงมือทำ (เรื่องที่ ${completedTopics.length+1}/${REQUIRED_TOPICS})`;
-  $('pickTitle').textContent = completedTopics.length === 0
-    ? 'เลือกเรื่องที่อยากเตรียมสอบหรืองานที่อยากให้ช่วย'
-    : 'เก่งมาก! เลือกเรื่องถัดไปกันต่อ';
-  $('pickSub').textContent = completedTopics.length === 0
-    ? 'เลือกเรื่องที่อยากฝึก แล้วลองให้ AI ช่วยออกโจทย์ฝึกหรือทำแบบทดสอบสั้น ๆ ให้ลองทำก่อนสอบจริงดู'
-    : `ลองเรียนอีก ${REQUIRED_TOPICS - completedTopics.length} เรื่องให้ครบ แล้วค่อยไปสะท้อนคิดกัน`;
-  $('topicGrid').innerHTML = remaining.map(t => `<div class="topiccard" onclick="pickTopic('${t.id}')"><span class="ticon">${t.icon}</span><div class="ttitle">${esc(t.title)}</div></div>`).join('');
-}
-function showPick(){ renderTopicGrid(); showScreen('pick'); }
 function showScreen(id){ document.querySelectorAll('#s3 .screen').forEach(s=>s.classList.remove('active')); $(id).classList.add('active'); }
-
-function pickTopic(id){
-  curTopic = TOPICS.find(t=>t.id===id);
-  qIdx = 0; totalWrong = 0; stylesUsed = new Set(); chatSends = 0;
-  $('chatTopicTitle').textContent = `แชทกับ AI · เรื่อง "${curTopic.title}"`;
-  $('chatThread').innerHTML = `<div class="llmrow ai"><span class="llmava">🎓</span><div class="llmbubble">สวัสดี! วันนี้อยากเตรียมตัวเรื่อง "${esc(curTopic.title)}" ยังไงดี? ลองขอให้ฉัน "ออกโจทย์ฝึก" หรือ "ทำแบบทดสอบสั้น ๆ" ให้ลองทำดูก่อนสอบจริงก็ได้นะ — แตะตัวอย่างด้านล่าง หรือพิมพ์คำสั่งของคุณเองก็ได้ 👇</div></div>`;
-  renderChatChips();
-  $('chatInput').value = '';
-  $('toQuizBtn').style.display = 'none';
-  showScreen('chat');
-  coachShow('ลองให้ AI ช่วยเตรียมสอบ! แตะ "ช่วยออกโจทย์ฝึก" หรือ "ทำแบบทดสอบสั้น ๆ" ด้านล่าง เพื่อให้ AI สร้างโจทย์ให้คุณลองทำ — หรือจะขอให้อธิบายง่าย ๆ / ยกตัวอย่างก่อนก็ได้');
-}
-
-function renderChatChips(){
-  $('chatChips').innerHTML = PROMPT_CHIPS.map((c,i) =>
-    `<span class="llmchip" onclick="useChip(${i})">💬 ${esc(c.text('เรื่องนี้'))}</span>`
+function showPick(){
+  $('pickStage').textContent = `ขั้นที่ 3 · ลงมือทำ (ทำแล้ว ${doneCats.size}/${CATEGORIES.length} แบบ)`;
+  $('pickTitle').textContent = doneCats.size === 0 ? 'ลองใช้ AI ช่วยเตรียมสอบ 4 แบบ' : 'เก่งมาก! เลือกแบบถัดไปกันต่อ';
+  $('pickSub').textContent = 'เลือกวิธีใช้ AI ช่วยเรียน แล้วแตะเลือกคำสั่ง ดูว่า AI ตอบอะไร — ทำให้ครบทั้ง 4 แบบ (ไม่ต้องพิมพ์เอง)';
+  $('topicGrid').innerHTML = CATEGORIES.map(c =>
+    `<div class="topiccard${doneCats.has(c.id)?' done':''}" onclick="pickCat('${c.id}')"><span class="ticon">${doneCats.has(c.id)?'✅':c.icon}</span><div class="ttitle">${esc(c.title)}</div><div class="tblurb">${esc(c.blurb)}</div></div>`
   ).join('');
+  showScreen('pick');
 }
-function useChip(i){ $('chatInput').value = PROMPT_CHIPS[i].text(curTopic.title); $('chatInput').focus(); }
-
-function appendChatRow(role, html){
+function pickCat(id){
+  curCat = CATEGORIES.find(c=>c.id===id);
+  stepIdx = 0;
+  $('simThread').innerHTML = '';
+  $('simMat').style.display = curCat.material ? '' : 'none';
+  $('simMatText').textContent = PASSAGE;
+  showScreen('sim');
+  renderStep();
+}
+function updSimScore(){ $('simScore').textContent = `พลาด ${simMisses} ครั้ง`; }
+function addBubble(role, html){
   const row = document.createElement('div');
   row.className = `llmrow ${role}`;
   row.innerHTML = `<span class="llmava">${role==='user'?'🙋':'🎓'}</span><div class="llmbubble">${html}</div>`;
-  $('chatThread').appendChild(row);
-  $('chatThread').scrollTop = $('chatThread').scrollHeight;
+  $('simThread').appendChild(row);
+  $('simThread').scrollTop = $('simThread').scrollHeight;
   return row;
 }
-
-function detectStyle(text){
-  if (/(โจทย์ฝึก|แบบฝึกหัด|ฝึกเพิ่ม|ฝึกทำ|practice)/i.test(text)) return 'practice';
-  if (/(ไม่บอกคำตอบ|ไม่เฉลย|ถามคำถาม|ถามทีละ|อย่าเพิ่งบอก|ใบ้|quiz)/i.test(text)) return 'quizme';
-  if (/(ตัวอย่าง|เทียบ|เปรียบเทียบ|example)/i.test(text)) return 'example';
-  if (/(เด็ก|ง่าย|ขวบ|นิทาน|simple)/i.test(text)) return 'simple';
-  return 'other';
+function renderStep(){
+  const s = curCat.steps[stepIdx];
+  simLocked = false;
+  updSimScore();
+  $('simTitle').textContent = `${curCat.icon} ${curCat.title} · ขั้นที่ ${stepIdx+1}/${curCat.steps.length}`;
+  $('simNarr').textContent = s.narr;
+  $('simExplain').className = 'explainbox'; $('simExplain').innerHTML = '';
+  $('simNext').style.display = 'none';
+  if (s.kind === 'choice'){
+    $('simChoices').innerHTML = s.options.map((o,i)=>`<button type="button" class="choicebtn" id="sc${i}" onclick="simPick(${i})">💬 ${esc(o.text)}</button>`).join('');
+  } else if (s.kind === 'flip'){
+    flipSeen = new Set();
+    $('simChoices').innerHTML = `<div class="flipgrid">${s.cards.map((c,i)=>`<button type="button" class="flipcard" id="fc${i}" onclick="flipCard(${i})"><span class="ff">${esc(c.front)}</span><span class="fb">${esc(c.back)}</span></button>`).join('')}</div><div class="matchhint" style="text-align:center;margin-top:6px">พลิกให้ครบทุกใบเพื่อไปต่อ</div>`;
+  } else if (s.kind === 'quiz'){
+    quizIdx = 0;
+    addBubble('ai', 'นี่คือโจทย์ฝึก 3 ข้อที่ผมออกให้ ลองทำเองก่อนนะ แล้วค่อยขอเฉลยทีหลัง ✏️');
+    renderQuizQ();
+  }
 }
-
-function sendChatPrompt(){
-  const text = $('chatInput').value.trim();
-  if (!text) return;
-  appendChatRow('user', esc(text));
-  $('chatInput').value = '';
-  chatSends++;
-
-  const typingRow = appendChatRow('ai', '<span class="llmtyping"><span></span><span></span><span></span></span>');
-  const style = detectStyle(text);
-
+function simPick(i){
+  if (simLocked) return;
+  const s = curCat.steps[stepIdx], o = s.options[i];
+  simLocked = true;
+  const btn = $('sc'+i); btn.disabled = true;
+  addBubble('user', esc(o.text));
+  const t = addBubble('ai', '<span class="llmtyping"><span></span><span></span><span></span></span>');
   setTimeout(() => {
-    typingRow.remove();
-    if (style === 'practice'){
-      stylesUsed.add('practice');
-      appendChatRow('ai', '📝 ได้เลย! พี่ออกโจทย์ฝึกไว้ให้ลองทำก่อนสอบจริงแล้วนะ');
-      setTimeout(() => { showScreen('game'); renderQuestion(); }, 900);
-      return;
-    }
-    if (style === 'quizme'){
-      stylesUsed.add('quizme');
-      appendChatRow('ai', '📝 ได้เลย! นี่คือแบบทดสอบสั้น ๆ ที่พี่ออกให้ ลองทำดูเหมือนซ้อมสอบจริงเลยนะ');
-      setTimeout(() => { showScreen('game'); renderQuestion(); }, 900);
-      return;
-    }
-    if (style === 'example'){
-      stylesUsed.add('example');
-      appendChatRow('ai', esc(curTopic.respExample));
-    } else if (style === 'simple'){
-      stylesUsed.add('simple');
-      appendChatRow('ai', esc(curTopic.respSimple));
+    t.querySelector('.llmbubble').innerHTML = esc(o.reply).replace(/\n/g,'<br>');
+    $('simThread').scrollTop = $('simThread').scrollHeight;
+    if (o.good){
+      btn.classList.add('correct');
+      document.querySelectorAll('#simChoices .choicebtn').forEach(b=>b.disabled = true);
+      $('simExplain').className = 'explainbox show';
+      $('simExplain').innerHTML = `<b>✅ คำสั่งนี้ใช้ได้ดี</b> ${esc(o.why)}`;
+      if (window.dlf) dlf.cheer('เยี่ยม!');
+      $('simNext').textContent = stepIdx === curCat.steps.length-1 ? 'จบแบบนี้ →' : 'ถัดไป →';
+      $('simNext').style.display = 'block';
     } else {
-      stylesUsed.add('other');
-      appendChatRow('ai', esc(curTopic.respSimple) + '<br><br><i>(ลองขอให้อธิบายง่ายกว่านี้ ยกตัวอย่าง หรือให้ถามคำถามแทนดูก็ได้นะ — แตะตัวอย่างด้านล่างเพื่อลองแบบอื่น)</i>');
+      simMisses++; updSimScore();
+      btn.classList.add('wrong');
+      $('simExplain').className = 'explainbox show wrongx';
+      $('simExplain').innerHTML = `<b>🤔 ลองดูผลลัพธ์ข้างบน — ยังไม่ตรงใจ</b> ${esc(o.why)} ลองเลือกคำสั่งอื่นดู`;
+      simLocked = false;
     }
-    if (stylesUsed.size >= 1 || chatSends >= 2) $('toQuizBtn').style.display = 'block';
   }, 700);
 }
-
-function startCheck(){ showScreen('game'); renderQuestion(); }
-
-let orderPicked = []; // indices (into shuffled display array) picked so far, for 'order' type
-
-function renderQuestion(){
-  wrongThisQ = 0;
-  const q = curTopic.questions[qIdx];
-  $('roundTag').textContent = `โจทย์ฝึกที่ AI ออกให้ · ข้อ ${qIdx+1}/${curTopic.questions.length}`;
-  $('scorePill').textContent = `พลาด ${totalWrong} ครั้ง`;
-  $('botBubble').className = 'botbubble';
-  $('botBubble').textContent = q.q;
-  $('explainBox').className = 'explainbox';
-  $('explainBox').innerHTML = '';
-  $('nextQBtn').style.display = 'none';
-
-  const type = q.type || 'mc';
-  if (type === 'mc') renderMcQuestion(q);
-  else if (type === 'blank') renderBlankQuestion(q);
-  else if (type === 'match') renderMatchQuestion(q);
-  else if (type === 'order') renderOrderQuestion(q);
+function flipCard(i){
+  const el = $('fc'+i);
+  el.classList.add('flipped');
+  flipSeen.add(i);
+  if (flipSeen.size === curCat.steps[stepIdx].cards.length){
+    $('simExplain').className = 'explainbox show';
+    $('simExplain').innerHTML = '<b>✅ ครบทั้ง 4 ใบแล้ว</b> การ์ดแบบนี้เอาไว้ท่อง: ดูด้านหน้า ลองตอบในใจ แล้วค่อยพลิกดูเฉลย';
+    $('simNext').textContent = 'ถัดไป →';
+    $('simNext').style.display = 'block';
+  }
 }
-
-function markCorrect(explainHtml){
-  $('explainBox').className = 'explainbox show';
-  $('explainBox').innerHTML = explainHtml;
-  $('nextQBtn').style.display = 'block';
-  if (window.dlf) dlf.cheer('เก่งมาก!');
+function renderQuizQ(){
+  const s = curCat.steps[stepIdx], q = s.qs[quizIdx];
+  $('simExplain').className = 'explainbox'; $('simExplain').innerHTML = '';
+  $('simNarr').textContent = `${s.narr} (ข้อ ${quizIdx+1}/${s.qs.length})`;
+  $('simChoices').innerHTML = `<div class="botbubble" style="margin-bottom:6px">${esc(q.q)}</div>` + q.opts.map((o,i)=>`<button type="button" class="choicebtn" id="qo${i}" onclick="quizPick(${i})">${esc(o)}</button>`).join('');
 }
-function markWrong(hintText){
-  wrongThisQ++; totalWrong++;
-  $('scorePill').textContent = `พลาด ${totalWrong} ครั้ง`;
-  $('botBubble').className = 'botbubble hint';
-  $('botBubble').textContent = '🤔 ลองคิดดูใหม่นะ: ' + hintText;
-}
-
-/* ---- mc (legacy, still available) ---- */
-function renderMcQuestion(q){
-  const order = q.choices.map((c,i)=>i);
-  $('choicesWrap').innerHTML = order.map(i => `<button class="choicebtn" data-i="${i}" onclick="onChoice(${i})">${esc(q.choices[i])}</button>`).join('');
-}
-function onChoice(i){
-  const q = curTopic.questions[qIdx];
-  const btns = document.querySelectorAll('.choicebtn');
+function quizPick(i){
+  const s = curCat.steps[stepIdx], q = s.qs[quizIdx];
   if (i === q.correct){
-    btns.forEach(b=>{ b.disabled = true; if (Number(b.getAttribute('data-i'))===i) b.classList.add('correct'); });
-    markCorrect(`<b>✅ ถูกต้อง!</b> ${esc(q.explain)}`);
+    document.querySelectorAll('#simChoices .choicebtn').forEach(b=>b.disabled = true);
+    $('qo'+i).classList.add('correct');
+    $('simExplain').className = 'explainbox show';
+    $('simExplain').innerHTML = `<b>✅ ถูกต้อง</b> ${esc(q.explain)}`;
+    setTimeout(() => {
+      quizIdx++;
+      if (quizIdx >= s.qs.length){
+        addBubble('ai', 'ทำครบทั้ง 3 ข้อแล้ว! 🎉 ต่อไปมาดูว่าควรขอเฉลยแบบไหน');
+        $('simChoices').innerHTML = '';
+        $('simExplain').className = 'explainbox';
+        $('simNext').textContent = 'ถัดไป →';
+        $('simNext').style.display = 'block';
+      } else renderQuizQ();
+    }, 1300);
   } else {
-    btns.forEach(b=>{ if (Number(b.getAttribute('data-i'))===i) b.classList.add('wrong'); });
-    markWrong(q.hint);
+    $('qo'+i).classList.add('wrong'); $('qo'+i).disabled = true;
+    $('simExplain').className = 'explainbox show wrongx';
+    $('simExplain').innerHTML = '<b>🤔 ยังไม่ใช่</b> ลองคิดอีกครั้ง — โจทย์ฝึกมีไว้ให้ลองผิดลองถูก';
   }
 }
-
-/* ---- blank: type-in answer with keyword validation ---- */
-function normalizeBlank(s){ return (''+s).trim().toLowerCase().replace(/\s+/g,''); }
-function renderBlankQuestion(q){
-  $('choicesWrap').innerHTML = `
-    <div class="blankrow">
-      <input id="blankInput" class="blankinput" type="text" placeholder="${esc(q.placeholder||'พิมพ์คำตอบ...')}" onkeydown="if(event.key==='Enter')submitBlank();">
-      <button class="blanksubmit" id="blankSubmitBtn" onclick="submitBlank()">ตรวจคำตอบ</button>
-    </div>`;
-  setTimeout(()=>{ const el=$('blankInput'); if(el) el.focus(); }, 50);
+function simNext(){
+  stepIdx++;
+  if (stepIdx >= curCat.steps.length){ finishCat(); return; }
+  renderStep();
 }
-function submitBlank(){
-  const q = curTopic.questions[qIdx];
-  const input = $('blankInput');
-  if (!input) return;
-  const val = normalizeBlank(input.value);
-  if (!val) return;
-  const ok = q.accept.some(a => normalizeBlank(a) === val);
-  if (ok){
-    input.disabled = true; $('blankSubmitBtn').disabled = true;
-    input.classList.remove('wrong'); input.classList.add('correct');
-    markCorrect(`<b>✅ ถูกต้อง!</b> ${esc(q.explain)}`);
-  } else {
-    input.classList.remove('correct'); input.classList.add('wrong');
-    markWrong(q.hint);
-  }
-}
-
-/* ---- match: drag a word chip into the drop zone ---- */
-function renderMatchQuestion(q){
-  const shuffled = q.options.map((opt,i)=>({opt,correct:i===q.correct})).sort(()=>Math.random()-0.5);
-  $('choicesWrap').innerHTML = `
-    <div class="matchzone">
-      <div class="matchdrop" id="matchDrop">ลากคำมาวางตรงนี้</div>
-      <div class="matchchips" id="matchChips">
-        ${shuffled.map((s,idx)=>`<div class="matchchip" draggable="true" data-correct="${s.correct?'1':'0'}" data-idx="${idx}" id="mchip${idx}">${esc(s.opt)}</div>`).join('')}
-      </div>
-      <div class="matchhint">ลากคำ (หรือแตะคำแล้วแตะกล่อง) เพื่อจับคู่คำตอบ</div>
-    </div>`;
-  wireMatchDragDrop();
-}
-function wireMatchDragDrop(){
-  const drop = $('matchDrop');
-  const chips = document.querySelectorAll('.matchchip');
-  let selectedChip = null;
-
-  chips.forEach(chip=>{
-    chip.addEventListener('dragstart', e=>{ chip.classList.add('dragging'); e.dataTransfer.setData('text/plain', chip.id); });
-    chip.addEventListener('dragend', ()=> chip.classList.remove('dragging'));
-    // touch/click fallback: tap chip to select, tap drop zone to place
-    chip.addEventListener('click', ()=>{
-      if (selectedChip) selectedChip.classList.remove('selected');
-      if (selectedChip === chip){ selectedChip = null; return; }
-      selectedChip = chip; chip.classList.add('selected');
-    });
-  });
-  drop.addEventListener('dragover', e=>{ e.preventDefault(); drop.classList.add('over'); });
-  drop.addEventListener('dragleave', ()=> drop.classList.remove('over'));
-  drop.addEventListener('drop', e=>{
-    e.preventDefault(); drop.classList.remove('over');
-    const id = e.dataTransfer.getData('text/plain');
-    const chip = document.getElementById(id);
-    if (chip) handleMatchDrop(chip);
-  });
-  drop.addEventListener('click', ()=>{
-    if (selectedChip) handleMatchDrop(selectedChip);
-  });
-}
-function handleMatchDrop(chip){
-  const q = curTopic.questions[qIdx];
-  const drop = $('matchDrop');
-  if (chip.dataset.correct === '1'){
-    drop.textContent = chip.textContent;
-    drop.classList.remove('wrongflash');
-    drop.classList.add('filled');
-    document.querySelectorAll('.matchchip').forEach(c=>{ c.setAttribute('draggable','false'); c.style.pointerEvents='none'; c.classList.remove('selected'); });
-    markCorrect(`<b>✅ ถูกต้อง!</b> ${esc(q.explain)}`);
-  } else {
-    drop.classList.add('wrongflash');
-    setTimeout(()=>drop.classList.remove('wrongflash'), 400);
-    markWrong(q.hint);
-  }
-}
-
-/* ---- order: tap items in the correct sequence ---- */
-let orderShuffled = [];
-function renderOrderQuestion(q){
-  orderPicked = [];
-  orderShuffled = q.items.map((text,i)=>({text,correctPos:i})).sort(()=>Math.random()-0.5);
-  paintOrderItems();
-}
-function paintOrderItems(){
-  $('choicesWrap').innerHTML = `<div class="orderwrap" id="orderWrap">
-    ${orderShuffled.map((it,idx)=>{
-      const pickedAt = orderPicked.indexOf(idx);
-      const picked = pickedAt !== -1;
-      return `<button class="orderitem${picked?' picked':''}" data-idx="${idx}" ${picked?'data-disabled="1"':''} onclick="onOrderPick(${idx})">
-        <span class="obadge">${picked ? (pickedAt+1) : ''}</span>${esc(it.text)}
-      </button>`;
-    }).join('')}
-  </div>`;
-}
-function onOrderPick(idx){
-  if (orderPicked.includes(idx)) return;
-  orderPicked.push(idx);
-  paintOrderItems();
-  if (orderPicked.length === orderShuffled.length){
-    const q = curTopic.questions[qIdx];
-    const isCorrect = orderPicked.every((idx,pos)=> orderShuffled[idx].correctPos === pos);
-    if (isCorrect){
-      document.querySelectorAll('.orderitem').forEach(b=> b.disabled = true);
-      markCorrect(`<b>✅ เรียงถูกต้อง!</b> ${esc(q.explain)}`);
-    } else {
-      document.querySelectorAll('.orderitem').forEach(b=> b.classList.add('wrong'));
-      markWrong(q.hint);
-      setTimeout(()=>{ orderPicked = []; paintOrderItems(); }, 1100);
-    }
-  }
-}
-
-function nextQuestion(){
-  qIdx++;
-  if (qIdx >= curTopic.questions.length){ finishTopicQuiz(); return; }
-  renderQuestion();
-}
-
-function finishTopicQuiz(){
-  totalWrongAll += totalWrong;
-  stylesUsed.forEach(s => stylesUsedAll.add(s));
-  completedTopics.push(curTopic.id);
-  curTopic = null;
-  if (completedTopics.length < REQUIRED_TOPICS){
-    showPick();
-  } else {
-    goStep(3);
-  }
+function finishCat(){
+  doneCats.add(curCat.id);
+  curCat = null;
+  if (doneCats.size < CATEGORIES.length) showPick();
+  else goStep(3);
 }
 
 function restartGame(){
-  curTopic = null; qIdx = 0; totalWrong = 0; stylesUsed = new Set(); chatSends = 0;
-  completedTopics = []; totalWrongAll = 0; stylesUsedAll = new Set();
+  curCat = null; stepIdx = 0; simMisses = 0; doneCats = new Set();
   $('reflText').value = '';
   goStep(0);
 }
 
 // ===== Step 4 done =====
 function finishGame(){
-  const triedMultiple = stylesUsedAll.size >= 2;
-  const base = totalWrongAll <= 3 ? 3 : totalWrongAll <= 7 ? 2 : 1;
-  window.dlfStars = triedMultiple ? base : Math.max(1, base - 1);
+  window.dlfStars = simMisses <= 2 ? 3 : simMisses <= 6 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
-  $('resTitle').textContent = window.dlfStars === 3 ? 'เรียนรู้ผ่านฉลุย!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
+  $('resTitle').textContent = window.dlfStars === 3 ? 'ใช้ AI ช่วยเรียนได้เก่งมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `เรียนไป ${completedTopics.length} เรื่อง ลองถาม AI ไป ${stylesUsedAll.size} แบบ ตอบคำถามพลาด ${totalWrongAll} ครั้ง`
-    + (triedMultiple ? '' : ' — ลองรอบหน้าถามหลายแบบขึ้นดูสิ จะได้ดาวเยอะกว่านี้!');
+  $('resScore').textContent = `ลองใช้ AI ช่วยเรียนครบ ${CATEGORIES.length} แบบ (สรุปข้อความ · การ์ดคำศัพท์ · โจทย์ฝึก · ให้ AI สอนแนวคิด) เลือกคำสั่งพลาด ${simMisses} ครั้ง`;
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 
 renderRail();
 </script>
@@ -753,7 +697,7 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"238336d757b5":"audio/ai11-learn-with-ai/238336d757b5.mp3","04aa56c524dd":"audio/ai11-learn-with-ai/04aa56c524dd.mp3","887abcdedbbc":"audio/ai11-learn-with-ai/887abcdedbbc.mp3","b00bc9640ae7":"audio/ai11-learn-with-ai/b00bc9640ae7.mp3","7a79d3d7b099":"audio/ai11-learn-with-ai/7a79d3d7b099.mp3","6359e9743259":"audio/ai11-learn-with-ai/6359e9743259.mp3","1fb05caabaeb":"audio/ai11-learn-with-ai/1fb05caabaeb.mp3","37fea0b5a58d":"audio/ai11-learn-with-ai/37fea0b5a58d.mp3","4415e1087c4f":"audio/ai11-learn-with-ai/4415e1087c4f.mp3","20a065fe9c56":"audio/ai11-learn-with-ai/20a065fe9c56.mp3","f5e56928d9b9":"audio/ai11-learn-with-ai/f5e56928d9b9.mp3","5973f5cfcb88":"audio/ai11-learn-with-ai/5973f5cfcb88.mp3","696c0cf791a6":"audio/ai11-learn-with-ai/696c0cf791a6.mp3","0b0cf8b76cfe":"audio/ai11-learn-with-ai/0b0cf8b76cfe.mp3","12f62c38afc8":"audio/ai11-learn-with-ai/12f62c38afc8.mp3","5e48ebf1f385":"audio/ai11-learn-with-ai/5e48ebf1f385.mp3","4c475f13ccaa":"audio/ai11-learn-with-ai/4c475f13ccaa.mp3","cecfdbe9216a":"audio/ai11-learn-with-ai/cecfdbe9216a.mp3","5b2733a0463e":"audio/ai11-learn-with-ai/5b2733a0463e.mp3","fa2df3186be5":"audio/ai11-learn-with-ai/fa2df3186be5.mp3","7e20fcca8051":"audio/ai11-learn-with-ai/7e20fcca8051.mp3","194faf87aa2b":"audio/ai11-learn-with-ai/194faf87aa2b.mp3","2674c29a312e":"audio/ai11-learn-with-ai/2674c29a312e.mp3","cb252bccff7a":"audio/ai11-learn-with-ai/cb252bccff7a.mp3","5605140c3d9e":"audio/ai11-learn-with-ai/5605140c3d9e.mp3","372e38fd5296":"audio/ai11-learn-with-ai/372e38fd5296.mp3","77c52c9b0d2a":"audio/ai11-learn-with-ai/77c52c9b0d2a.mp3","8586608a153e":"audio/ai11-learn-with-ai/8586608a153e.mp3","7684a66f5533":"audio/ai11-learn-with-ai/7684a66f5533.mp3","d6d67169d3bf":"audio/ai11-learn-with-ai/d6d67169d3bf.mp3","12f705c42ad7":"audio/ai11-learn-with-ai/12f705c42ad7.mp3","3d46e2190d9e":"audio/ai11-learn-with-ai/3d46e2190d9e.mp3","83e191d42a80":"audio/ai11-learn-with-ai/83e191d42a80.mp3","4e22a217ff36":"audio/ai11-learn-with-ai/4e22a217ff36.mp3","7d73f2f68029":"audio/ai11-learn-with-ai/7d73f2f68029.mp3","eb6e66da934a":"audio/ai11-learn-with-ai/eb6e66da934a.mp3","878b3ff545d8":"audio/ai11-learn-with-ai/878b3ff545d8.mp3","9d211d933455":"audio/ai11-learn-with-ai/9d211d933455.mp3","b5ed86da4f0a":"audio/ai11-learn-with-ai/b5ed86da4f0a.mp3","89c96b1fca48":"audio/ai11-learn-with-ai/89c96b1fca48.mp3","429c0afdac84":"audio/ai11-learn-with-ai/429c0afdac84.mp3","6da0dbbfefd4":"audio/ai11-learn-with-ai/6da0dbbfefd4.mp3","2f45d05e4954":"audio/ai11-learn-with-ai/2f45d05e4954.mp3","d34e823f79df":"audio/ai11-learn-with-ai/d34e823f79df.mp3","760ad0b3b6ef":"audio/ai11-learn-with-ai/760ad0b3b6ef.mp3","cb834fcde526":"audio/ai11-learn-with-ai/cb834fcde526.mp3","ab1b4a3602e9":"audio/ai11-learn-with-ai/ab1b4a3602e9.mp3","2feb1e1655d1":"audio/ai11-learn-with-ai/2feb1e1655d1.mp3","ed8a8ebd588f":"audio/ai11-learn-with-ai/ed8a8ebd588f.mp3","775a3f6e0c5c":"audio/ai11-learn-with-ai/775a3f6e0c5c.mp3","c1e4c9b67eb2":"audio/ai11-learn-with-ai/c1e4c9b67eb2.mp3","60066a1f6724":"audio/ai11-learn-with-ai/60066a1f6724.mp3","b374770d7cc7":"audio/ai11-learn-with-ai/b374770d7cc7.mp3","57480bcdf28d":"audio/ai11-learn-with-ai/57480bcdf28d.mp3","09a2effbae12":"audio/ai11-learn-with-ai/09a2effbae12.mp3","62474b3e7d02":"audio/ai11-learn-with-ai/62474b3e7d02.mp3","cd7f8690da62":"audio/ai11-learn-with-ai/cd7f8690da62.mp3","94967d0c4cb8":"audio/ai11-learn-with-ai/94967d0c4cb8.mp3","1ed80323fb79":"audio/ai11-learn-with-ai/1ed80323fb79.mp3","6413f40c9117":"audio/ai11-learn-with-ai/6413f40c9117.mp3","132986c58aa8":"audio/ai11-learn-with-ai/132986c58aa8.mp3","32ea9d36191b":"audio/ai11-learn-with-ai/32ea9d36191b.mp3","f71db72ce5f7":"audio/ai11-learn-with-ai/f71db72ce5f7.mp3","1764a66530d5":"audio/ai11-learn-with-ai/1764a66530d5.mp3","f06453024dd6":"audio/ai11-learn-with-ai/f06453024dd6.mp3","0a6cc26b3b40":"audio/ai11-learn-with-ai/0a6cc26b3b40.mp3","8741d15297a6":"audio/ai11-learn-with-ai/8741d15297a6.mp3","f4be68c3f3f6":"audio/ai11-learn-with-ai/f4be68c3f3f6.mp3","f4ed9d211c14":"audio/ai11-learn-with-ai/f4ed9d211c14.mp3","b1b22c34fb80":"audio/ai11-learn-with-ai/b1b22c34fb80.mp3","efed19cffd6b":"audio/ai11-learn-with-ai/efed19cffd6b.mp3","3270fd3565a2":"audio/ai11-learn-with-ai/3270fd3565a2.mp3","0fe2de75f863":"audio/ai11-learn-with-ai/0fe2de75f863.mp3","bf114a528acf":"audio/ai11-learn-with-ai/bf114a528acf.mp3","a9e7d29bc5da":"audio/ai11-learn-with-ai/a9e7d29bc5da.mp3","6b36e3f8be17":"audio/ai11-learn-with-ai/6b36e3f8be17.mp3","dbdb2dc9c8fa":"audio/ai11-learn-with-ai/dbdb2dc9c8fa.mp3","5aa7a622db80":"audio/ai11-learn-with-ai/5aa7a622db80.mp3","ebd5f8b6ef13":"audio/ai11-learn-with-ai/ebd5f8b6ef13.mp3","f7bd712c735b":"audio/ai11-learn-with-ai/f7bd712c735b.mp3","6a307da330a0":"audio/ai11-learn-with-ai/6a307da330a0.mp3","84fcb0d74a1e":"audio/ai11-learn-with-ai/84fcb0d74a1e.mp3","ac9f96bcb9ae":"audio/ai11-learn-with-ai/ac9f96bcb9ae.mp3","5a25bac8b324":"audio/ai11-learn-with-ai/5a25bac8b324.mp3","e710a67414c1":"audio/ai11-learn-with-ai/e710a67414c1.mp3","e1659ab3bb57":"audio/ai11-learn-with-ai/e1659ab3bb57.mp3","7b20334ea359":"audio/ai11-learn-with-ai/7b20334ea359.mp3","8731c7d71bd4":"audio/ai11-learn-with-ai/8731c7d71bd4.mp3","dfcddda90ff3":"audio/ai11-learn-with-ai/dfcddda90ff3.mp3","35f31c17c671":"audio/ai11-learn-with-ai/35f31c17c671.mp3","c37581a13d3f":"audio/ai11-learn-with-ai/c37581a13d3f.mp3","a2dfe71b65bd":"audio/ai11-learn-with-ai/a2dfe71b65bd.mp3","b3665c865961":"audio/ai11-learn-with-ai/b3665c865961.mp3","3bac3a37764a":"audio/ai11-learn-with-ai/3bac3a37764a.mp3","4de66824094c":"audio/ai11-learn-with-ai/4de66824094c.mp3","c42cbb627f53":"audio/ai11-learn-with-ai/c42cbb627f53.mp3","f53e7c95e068":"audio/ai11-learn-with-ai/f53e7c95e068.mp3","9c3b80a5553c":"audio/ai11-learn-with-ai/9c3b80a5553c.mp3","a1f52fbb205c":"audio/ai11-learn-with-ai/a1f52fbb205c.mp3","d6eaa2651968":"audio/ai11-learn-with-ai/d6eaa2651968.mp3","3676d7ac1e67":"audio/ai11-learn-with-ai/3676d7ac1e67.mp3","a66234b845ea":"audio/ai11-learn-with-ai/a66234b845ea.mp3","7711447fb120":"audio/ai11-learn-with-ai/7711447fb120.mp3","3f68f448472e":"audio/ai11-learn-with-ai/3f68f448472e.mp3","4780fc79462b":"audio/ai11-learn-with-ai/4780fc79462b.mp3","2bb60e73ccfa":"audio/ai11-learn-with-ai/2bb60e73ccfa.mp3","dfb3e4afa929":"audio/ai11-learn-with-ai/dfb3e4afa929.mp3","e18a189a9371":"audio/ai11-learn-with-ai/e18a189a9371.mp3","8af1f0edc12c":"audio/ai11-learn-with-ai/8af1f0edc12c.mp3","e0f2ecaf33a9":"audio/ai11-learn-with-ai/e0f2ecaf33a9.mp3","dc8e03907814":"audio/ai11-learn-with-ai/dc8e03907814.mp3","677cb5d62bc1":"audio/ai11-learn-with-ai/677cb5d62bc1.mp3","e50a079c1c92":"audio/ai11-learn-with-ai/e50a079c1c92.mp3","dec1ce6c690b":"audio/ai11-learn-with-ai/dec1ce6c690b.mp3","98cc93acc34d":"audio/ai11-learn-with-ai/98cc93acc34d.mp3","5b18de6db3bd":"audio/ai11-learn-with-ai/5b18de6db3bd.mp3","d97eb941dfd0":"audio/ai11-learn-with-ai/d97eb941dfd0.mp3","c9ae25da0854":"audio/ai11-learn-with-ai/c9ae25da0854.mp3","762de0ca65a3":"audio/ai11-learn-with-ai/762de0ca65a3.mp3","235ce1de726b":"audio/ai11-learn-with-ai/235ce1de726b.mp3","488ae89c812d":"audio/ai11-learn-with-ai/488ae89c812d.mp3","be32c36b9931":"audio/ai11-learn-with-ai/be32c36b9931.mp3","1a71daa8b5c2":"audio/ai11-learn-with-ai/1a71daa8b5c2.mp3","011eb972cab5":"audio/ai11-learn-with-ai/011eb972cab5.mp3","e61e0f19ae72":"audio/ai11-learn-with-ai/e61e0f19ae72.mp3","29e8f9ee8147":"audio/ai11-learn-with-ai/29e8f9ee8147.mp3","d585a6a9d18d":"audio/ai11-learn-with-ai/d585a6a9d18d.mp3","c6fd118ebc16":"audio/ai11-learn-with-ai/c6fd118ebc16.mp3","af6ba89d9b27":"audio/ai11-learn-with-ai/af6ba89d9b27.mp3","aca2b0992481":"audio/ai11-learn-with-ai/aca2b0992481.mp3","66590c21d92e":"audio/ai11-learn-with-ai/66590c21d92e.mp3","f8eb5063c6d8":"audio/ai11-learn-with-ai/f8eb5063c6d8.mp3","e3f3c35d38fd":"audio/ai11-learn-with-ai/e3f3c35d38fd.mp3","b9e6d2b07767":"audio/ai11-learn-with-ai/b9e6d2b07767.mp3","d811e87eefb3":"audio/ai11-learn-with-ai/d811e87eefb3.mp3","71a51a023ae8":"audio/ai11-learn-with-ai/71a51a023ae8.mp3","fd2d26303411":"audio/ai11-learn-with-ai/fd2d26303411.mp3","25c6023076a9":"audio/ai11-learn-with-ai/25c6023076a9.mp3","ce97d9170f39":"audio/ai11-learn-with-ai/ce97d9170f39.mp3","39926b8aa0aa":"audio/ai11-learn-with-ai/39926b8aa0aa.mp3","bf5b015c5267":"audio/ai11-learn-with-ai/bf5b015c5267.mp3","476664d59158":"audio/ai11-learn-with-ai/476664d59158.mp3","556e94dd062a":"audio/ai11-learn-with-ai/556e94dd062a.mp3","6fe92c567adc":"audio/ai11-learn-with-ai/6fe92c567adc.mp3","57f54cf2d9c1":"audio/ai11-learn-with-ai/57f54cf2d9c1.mp3","ebf03024bfe8":"audio/ai11-learn-with-ai/ebf03024bfe8.mp3","bc408c701bd4":"audio/ai11-learn-with-ai/bc408c701bd4.mp3","f3bc581be169":"audio/ai11-learn-with-ai/f3bc581be169.mp3","3fb0e684b56b":"audio/ai11-learn-with-ai/3fb0e684b56b.mp3","46abc19d5112":"audio/ai11-learn-with-ai/46abc19d5112.mp3","9bb8216b6df6":"audio/ai11-learn-with-ai/9bb8216b6df6.mp3","2bf24b565db4":"audio/ai11-learn-with-ai/2bf24b565db4.mp3","fdd8e8fbc24b":"audio/ai11-learn-with-ai/fdd8e8fbc24b.mp3","dab05dcf3741":"audio/ai11-learn-with-ai/dab05dcf3741.mp3","dc60fd67731f":"audio/ai11-learn-with-ai/dc60fd67731f.mp3","db3c0659b695":"audio/ai11-learn-with-ai/db3c0659b695.mp3","852128f8e136":"audio/ai11-learn-with-ai/852128f8e136.mp3","58f12304afae":"audio/ai11-learn-with-ai/58f12304afae.mp3","f1b105d5a052":"audio/ai11-learn-with-ai/f1b105d5a052.mp3","00f2aca85829":"audio/ai11-learn-with-ai/00f2aca85829.mp3","6fb32102551f":"audio/ai11-learn-with-ai/6fb32102551f.mp3","fb8e1be10f2d":"audio/ai11-learn-with-ai/fb8e1be10f2d.mp3","b6615e2952aa":"audio/ai11-learn-with-ai/b6615e2952aa.mp3","3b9629f89144":"audio/ai11-learn-with-ai/3b9629f89144.mp3","7c61ebc5ea39":"audio/ai11-learn-with-ai/7c61ebc5ea39.mp3","a8d1be7481fe":"audio/ai11-learn-with-ai/a8d1be7481fe.mp3","610783dc69ce":"audio/ai11-learn-with-ai/610783dc69ce.mp3","6e07e566a2ea":"audio/ai11-learn-with-ai/6e07e566a2ea.mp3","01652b019a63":"audio/ai11-learn-with-ai/01652b019a63.mp3","eb40ffcf04ef":"audio/ai11-learn-with-ai/eb40ffcf04ef.mp3","2aca3b87f607":"audio/ai11-learn-with-ai/2aca3b87f607.mp3","387235ba755a":"audio/ai11-learn-with-ai/387235ba755a.mp3","5c9dfc8bcda4":"audio/ai11-learn-with-ai/5c9dfc8bcda4.mp3","c0c79559633e":"audio/ai11-learn-with-ai/c0c79559633e.mp3","d3549d9a8146":"audio/ai11-learn-with-ai/d3549d9a8146.mp3","c6e158b1fc71":"audio/ai11-learn-with-ai/c6e158b1fc71.mp3","d0f09ef2770b":"audio/ai11-learn-with-ai/d0f09ef2770b.mp3","663edfef7329":"audio/ai11-learn-with-ai/663edfef7329.mp3","523e1e7f785b":"audio/ai11-learn-with-ai/523e1e7f785b.mp3","a64116f5327f":"audio/ai11-learn-with-ai/a64116f5327f.mp3","49515601d1a5":"audio/ai11-learn-with-ai/49515601d1a5.mp3","23030e71e74e":"audio/ai11-learn-with-ai/23030e71e74e.mp3","5c8b7a755c65":"audio/ai11-learn-with-ai/5c8b7a755c65.mp3","d4376049f52c":"audio/ai11-learn-with-ai/d4376049f52c.mp3","cd35f71e00a9":"audio/ai11-learn-with-ai/cd35f71e00a9.mp3","087e71b319a6":"audio/ai11-learn-with-ai/087e71b319a6.mp3","5a77ac43e609":"audio/ai11-learn-with-ai/5a77ac43e609.mp3","3d7c39817600":"audio/ai11-learn-with-ai/3d7c39817600.mp3","e32244f85016":"audio/ai11-learn-with-ai/e32244f85016.mp3","83aae2434234":"audio/ai11-learn-with-ai/83aae2434234.mp3","2fc25010310d":"audio/ai11-learn-with-ai/2fc25010310d.mp3","2b8be79c589f":"audio/ai11-learn-with-ai/2b8be79c589f.mp3","0c663091d319":"audio/ai11-learn-with-ai/0c663091d319.mp3","b1651772ca8f":"audio/ai11-learn-with-ai/b1651772ca8f.mp3","2bcf475af776":"audio/ai11-learn-with-ai/2bcf475af776.mp3","c95f854771ca":"audio/ai11-learn-with-ai/c95f854771ca.mp3","4b24bd7f9853":"audio/ai11-learn-with-ai/4b24bd7f9853.mp3","68ead761b359":"audio/ai11-learn-with-ai/68ead761b359.mp3","c4c6543c781e":"audio/ai11-learn-with-ai/c4c6543c781e.mp3","5070a7718918":"audio/ai11-learn-with-ai/5070a7718918.mp3","65767a3a32c0":"audio/ai11-learn-with-ai/65767a3a32c0.mp3","6ad4a5cdffda":"audio/ai11-learn-with-ai/6ad4a5cdffda.mp3","374996355fbc":"audio/ai11-learn-with-ai/374996355fbc.mp3","8d7d726aa1c0":"audio/ai11-learn-with-ai/8d7d726aa1c0.mp3","88082281163c":"audio/ai11-learn-with-ai/88082281163c.mp3","40e7d2d317ff":"audio/ai11-learn-with-ai/40e7d2d317ff.mp3","83bfbcb6540b":"audio/ai11-learn-with-ai/83bfbcb6540b.mp3","eefdbe273235":"audio/ai11-learn-with-ai/eefdbe273235.mp3","cd0c9bbe8369":"audio/ai11-learn-with-ai/cd0c9bbe8369.mp3","538549484354":"audio/ai11-learn-with-ai/538549484354.mp3","2ee1bbf3d673":"audio/ai11-learn-with-ai/2ee1bbf3d673.mp3","f01049dd2d84":"audio/ai11-learn-with-ai/f01049dd2d84.mp3","ade8a8490dc3":"audio/ai11-learn-with-ai/ade8a8490dc3.mp3","c3e5d8fe996b":"audio/ai11-learn-with-ai/c3e5d8fe996b.mp3","6d1aed0271f7":"audio/ai11-learn-with-ai/6d1aed0271f7.mp3","ed7c2d0ed1b2":"audio/ai11-learn-with-ai/ed7c2d0ed1b2.mp3","8a5093226e9b":"audio/ai11-learn-with-ai/8a5093226e9b.mp3","339aab87a5aa":"audio/ai11-learn-with-ai/339aab87a5aa.mp3","0a7fa9ab3385":"audio/ai11-learn-with-ai/0a7fa9ab3385.mp3","f0dfe300e37b":"audio/ai11-learn-with-ai/f0dfe300e37b.mp3","6fe08c81d15f":"audio/ai11-learn-with-ai/6fe08c81d15f.mp3","423af8439a92":"audio/ai11-learn-with-ai/423af8439a92.mp3","75e9193fa6b5":"audio/ai11-learn-with-ai/75e9193fa6b5.mp3","c709e86fba14":"audio/ai11-learn-with-ai/c709e86fba14.mp3","0f673bad33b8":"audio/ai11-learn-with-ai/0f673bad33b8.mp3","55c2234b75a2":"audio/ai11-learn-with-ai/55c2234b75a2.mp3","fa68bda0eefa":"audio/ai11-learn-with-ai/fa68bda0eefa.mp3","56398acb01a8":"audio/ai11-learn-with-ai/56398acb01a8.mp3","c7aca9072c13":"audio/ai11-learn-with-ai/c7aca9072c13.mp3","cfcb6c7656e9":"audio/ai11-learn-with-ai/cfcb6c7656e9.mp3","7ce8a643a908":"audio/ai11-learn-with-ai/7ce8a643a908.mp3","7576ef7662ac":"audio/ai11-learn-with-ai/7576ef7662ac.mp3","e7e46c06b757":"audio/ai11-learn-with-ai/e7e46c06b757.mp3","2e46da0b35cd":"audio/ai11-learn-with-ai/2e46da0b35cd.mp3","85e9e4faf1b6":"audio/ai11-learn-with-ai/85e9e4faf1b6.mp3","74d5ccc7f564":"audio/ai11-learn-with-ai/74d5ccc7f564.mp3","cc08d2f592df":"audio/ai11-learn-with-ai/cc08d2f592df.mp3","ee0f9cff1627":"audio/ai11-learn-with-ai/ee0f9cff1627.mp3","6a03489ede76":"audio/ai11-learn-with-ai/6a03489ede76.mp3","2ec952702998":"audio/ai11-learn-with-ai/2ec952702998.mp3","1558992a1f9a":"audio/ai11-learn-with-ai/1558992a1f9a.mp3","47fa6f00ae4e":"audio/ai11-learn-with-ai/47fa6f00ae4e.mp3","605589a557c0":"audio/ai11-learn-with-ai/605589a557c0.mp3","85ac7bef1f3e":"audio/ai11-learn-with-ai/85ac7bef1f3e.mp3","2bb42ec6dc75":"audio/ai11-learn-with-ai/2bb42ec6dc75.mp3","2be60ad17b12":"audio/ai11-learn-with-ai/2be60ad17b12.mp3","54b8dd96c120":"audio/ai11-learn-with-ai/54b8dd96c120.mp3","0e338df3ca61":"audio/ai11-learn-with-ai/0e338df3ca61.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.ttitle','.sub'],extraNonDecorateSelectors:'.choicebtn,.topiccard,.llmchip,.llmsend,.llminputbar,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"238336d757b5":"audio/ai11-learn-with-ai/238336d757b5.mp3","04aa56c524dd":"audio/ai11-learn-with-ai/04aa56c524dd.mp3","887abcdedbbc":"audio/ai11-learn-with-ai/887abcdedbbc.mp3","b00bc9640ae7":"audio/ai11-learn-with-ai/b00bc9640ae7.mp3","7a79d3d7b099":"audio/ai11-learn-with-ai/7a79d3d7b099.mp3","6359e9743259":"audio/ai11-learn-with-ai/6359e9743259.mp3","1fb05caabaeb":"audio/ai11-learn-with-ai/1fb05caabaeb.mp3","37fea0b5a58d":"audio/ai11-learn-with-ai/37fea0b5a58d.mp3","4415e1087c4f":"audio/ai11-learn-with-ai/4415e1087c4f.mp3","20a065fe9c56":"audio/ai11-learn-with-ai/20a065fe9c56.mp3","f5e56928d9b9":"audio/ai11-learn-with-ai/f5e56928d9b9.mp3","5973f5cfcb88":"audio/ai11-learn-with-ai/5973f5cfcb88.mp3","696c0cf791a6":"audio/ai11-learn-with-ai/696c0cf791a6.mp3","0b0cf8b76cfe":"audio/ai11-learn-with-ai/0b0cf8b76cfe.mp3","12f62c38afc8":"audio/ai11-learn-with-ai/12f62c38afc8.mp3","5e48ebf1f385":"audio/ai11-learn-with-ai/5e48ebf1f385.mp3","4c475f13ccaa":"audio/ai11-learn-with-ai/4c475f13ccaa.mp3","cecfdbe9216a":"audio/ai11-learn-with-ai/cecfdbe9216a.mp3","5b2733a0463e":"audio/ai11-learn-with-ai/5b2733a0463e.mp3","fa2df3186be5":"audio/ai11-learn-with-ai/fa2df3186be5.mp3","7e20fcca8051":"audio/ai11-learn-with-ai/7e20fcca8051.mp3","194faf87aa2b":"audio/ai11-learn-with-ai/194faf87aa2b.mp3","2674c29a312e":"audio/ai11-learn-with-ai/2674c29a312e.mp3","cb252bccff7a":"audio/ai11-learn-with-ai/cb252bccff7a.mp3","5605140c3d9e":"audio/ai11-learn-with-ai/5605140c3d9e.mp3","372e38fd5296":"audio/ai11-learn-with-ai/372e38fd5296.mp3","77c52c9b0d2a":"audio/ai11-learn-with-ai/77c52c9b0d2a.mp3","8586608a153e":"audio/ai11-learn-with-ai/8586608a153e.mp3","7684a66f5533":"audio/ai11-learn-with-ai/7684a66f5533.mp3","d6d67169d3bf":"audio/ai11-learn-with-ai/d6d67169d3bf.mp3","12f705c42ad7":"audio/ai11-learn-with-ai/12f705c42ad7.mp3","3d46e2190d9e":"audio/ai11-learn-with-ai/3d46e2190d9e.mp3","83e191d42a80":"audio/ai11-learn-with-ai/83e191d42a80.mp3","4e22a217ff36":"audio/ai11-learn-with-ai/4e22a217ff36.mp3","7d73f2f68029":"audio/ai11-learn-with-ai/7d73f2f68029.mp3","eb6e66da934a":"audio/ai11-learn-with-ai/eb6e66da934a.mp3","878b3ff545d8":"audio/ai11-learn-with-ai/878b3ff545d8.mp3","9d211d933455":"audio/ai11-learn-with-ai/9d211d933455.mp3","b5ed86da4f0a":"audio/ai11-learn-with-ai/b5ed86da4f0a.mp3","89c96b1fca48":"audio/ai11-learn-with-ai/89c96b1fca48.mp3","429c0afdac84":"audio/ai11-learn-with-ai/429c0afdac84.mp3","6da0dbbfefd4":"audio/ai11-learn-with-ai/6da0dbbfefd4.mp3","2f45d05e4954":"audio/ai11-learn-with-ai/2f45d05e4954.mp3","d34e823f79df":"audio/ai11-learn-with-ai/d34e823f79df.mp3","760ad0b3b6ef":"audio/ai11-learn-with-ai/760ad0b3b6ef.mp3","cb834fcde526":"audio/ai11-learn-with-ai/cb834fcde526.mp3","ab1b4a3602e9":"audio/ai11-learn-with-ai/ab1b4a3602e9.mp3","2feb1e1655d1":"audio/ai11-learn-with-ai/2feb1e1655d1.mp3","ed8a8ebd588f":"audio/ai11-learn-with-ai/ed8a8ebd588f.mp3","775a3f6e0c5c":"audio/ai11-learn-with-ai/775a3f6e0c5c.mp3","c1e4c9b67eb2":"audio/ai11-learn-with-ai/c1e4c9b67eb2.mp3","60066a1f6724":"audio/ai11-learn-with-ai/60066a1f6724.mp3","b374770d7cc7":"audio/ai11-learn-with-ai/b374770d7cc7.mp3","57480bcdf28d":"audio/ai11-learn-with-ai/57480bcdf28d.mp3","09a2effbae12":"audio/ai11-learn-with-ai/09a2effbae12.mp3","62474b3e7d02":"audio/ai11-learn-with-ai/62474b3e7d02.mp3","cd7f8690da62":"audio/ai11-learn-with-ai/cd7f8690da62.mp3","94967d0c4cb8":"audio/ai11-learn-with-ai/94967d0c4cb8.mp3","1ed80323fb79":"audio/ai11-learn-with-ai/1ed80323fb79.mp3","6413f40c9117":"audio/ai11-learn-with-ai/6413f40c9117.mp3","132986c58aa8":"audio/ai11-learn-with-ai/132986c58aa8.mp3","32ea9d36191b":"audio/ai11-learn-with-ai/32ea9d36191b.mp3","f71db72ce5f7":"audio/ai11-learn-with-ai/f71db72ce5f7.mp3","1764a66530d5":"audio/ai11-learn-with-ai/1764a66530d5.mp3","f06453024dd6":"audio/ai11-learn-with-ai/f06453024dd6.mp3","0a6cc26b3b40":"audio/ai11-learn-with-ai/0a6cc26b3b40.mp3","8741d15297a6":"audio/ai11-learn-with-ai/8741d15297a6.mp3","f4be68c3f3f6":"audio/ai11-learn-with-ai/f4be68c3f3f6.mp3","f4ed9d211c14":"audio/ai11-learn-with-ai/f4ed9d211c14.mp3","b1b22c34fb80":"audio/ai11-learn-with-ai/b1b22c34fb80.mp3","efed19cffd6b":"audio/ai11-learn-with-ai/efed19cffd6b.mp3","3270fd3565a2":"audio/ai11-learn-with-ai/3270fd3565a2.mp3","0fe2de75f863":"audio/ai11-learn-with-ai/0fe2de75f863.mp3","bf114a528acf":"audio/ai11-learn-with-ai/bf114a528acf.mp3","a9e7d29bc5da":"audio/ai11-learn-with-ai/a9e7d29bc5da.mp3","6b36e3f8be17":"audio/ai11-learn-with-ai/6b36e3f8be17.mp3","dbdb2dc9c8fa":"audio/ai11-learn-with-ai/dbdb2dc9c8fa.mp3","5aa7a622db80":"audio/ai11-learn-with-ai/5aa7a622db80.mp3","ebd5f8b6ef13":"audio/ai11-learn-with-ai/ebd5f8b6ef13.mp3","f7bd712c735b":"audio/ai11-learn-with-ai/f7bd712c735b.mp3","6a307da330a0":"audio/ai11-learn-with-ai/6a307da330a0.mp3","84fcb0d74a1e":"audio/ai11-learn-with-ai/84fcb0d74a1e.mp3","ac9f96bcb9ae":"audio/ai11-learn-with-ai/ac9f96bcb9ae.mp3","5a25bac8b324":"audio/ai11-learn-with-ai/5a25bac8b324.mp3","e710a67414c1":"audio/ai11-learn-with-ai/e710a67414c1.mp3","e1659ab3bb57":"audio/ai11-learn-with-ai/e1659ab3bb57.mp3","7b20334ea359":"audio/ai11-learn-with-ai/7b20334ea359.mp3","8731c7d71bd4":"audio/ai11-learn-with-ai/8731c7d71bd4.mp3","dfcddda90ff3":"audio/ai11-learn-with-ai/dfcddda90ff3.mp3","35f31c17c671":"audio/ai11-learn-with-ai/35f31c17c671.mp3","c37581a13d3f":"audio/ai11-learn-with-ai/c37581a13d3f.mp3","a2dfe71b65bd":"audio/ai11-learn-with-ai/a2dfe71b65bd.mp3","b3665c865961":"audio/ai11-learn-with-ai/b3665c865961.mp3","3bac3a37764a":"audio/ai11-learn-with-ai/3bac3a37764a.mp3","4de66824094c":"audio/ai11-learn-with-ai/4de66824094c.mp3","c42cbb627f53":"audio/ai11-learn-with-ai/c42cbb627f53.mp3","f53e7c95e068":"audio/ai11-learn-with-ai/f53e7c95e068.mp3","9c3b80a5553c":"audio/ai11-learn-with-ai/9c3b80a5553c.mp3","a1f52fbb205c":"audio/ai11-learn-with-ai/a1f52fbb205c.mp3","d6eaa2651968":"audio/ai11-learn-with-ai/d6eaa2651968.mp3","3676d7ac1e67":"audio/ai11-learn-with-ai/3676d7ac1e67.mp3","a66234b845ea":"audio/ai11-learn-with-ai/a66234b845ea.mp3","7711447fb120":"audio/ai11-learn-with-ai/7711447fb120.mp3","3f68f448472e":"audio/ai11-learn-with-ai/3f68f448472e.mp3","4780fc79462b":"audio/ai11-learn-with-ai/4780fc79462b.mp3","2bb60e73ccfa":"audio/ai11-learn-with-ai/2bb60e73ccfa.mp3","dfb3e4afa929":"audio/ai11-learn-with-ai/dfb3e4afa929.mp3","e18a189a9371":"audio/ai11-learn-with-ai/e18a189a9371.mp3","8af1f0edc12c":"audio/ai11-learn-with-ai/8af1f0edc12c.mp3","e0f2ecaf33a9":"audio/ai11-learn-with-ai/e0f2ecaf33a9.mp3","dc8e03907814":"audio/ai11-learn-with-ai/dc8e03907814.mp3","677cb5d62bc1":"audio/ai11-learn-with-ai/677cb5d62bc1.mp3","e50a079c1c92":"audio/ai11-learn-with-ai/e50a079c1c92.mp3","dec1ce6c690b":"audio/ai11-learn-with-ai/dec1ce6c690b.mp3","98cc93acc34d":"audio/ai11-learn-with-ai/98cc93acc34d.mp3","5b18de6db3bd":"audio/ai11-learn-with-ai/5b18de6db3bd.mp3","d97eb941dfd0":"audio/ai11-learn-with-ai/d97eb941dfd0.mp3","c9ae25da0854":"audio/ai11-learn-with-ai/c9ae25da0854.mp3","762de0ca65a3":"audio/ai11-learn-with-ai/762de0ca65a3.mp3","235ce1de726b":"audio/ai11-learn-with-ai/235ce1de726b.mp3","488ae89c812d":"audio/ai11-learn-with-ai/488ae89c812d.mp3","be32c36b9931":"audio/ai11-learn-with-ai/be32c36b9931.mp3","1a71daa8b5c2":"audio/ai11-learn-with-ai/1a71daa8b5c2.mp3","011eb972cab5":"audio/ai11-learn-with-ai/011eb972cab5.mp3","e61e0f19ae72":"audio/ai11-learn-with-ai/e61e0f19ae72.mp3","29e8f9ee8147":"audio/ai11-learn-with-ai/29e8f9ee8147.mp3","d585a6a9d18d":"audio/ai11-learn-with-ai/d585a6a9d18d.mp3","c6fd118ebc16":"audio/ai11-learn-with-ai/c6fd118ebc16.mp3","af6ba89d9b27":"audio/ai11-learn-with-ai/af6ba89d9b27.mp3","aca2b0992481":"audio/ai11-learn-with-ai/aca2b0992481.mp3","66590c21d92e":"audio/ai11-learn-with-ai/66590c21d92e.mp3","f8eb5063c6d8":"audio/ai11-learn-with-ai/f8eb5063c6d8.mp3","e3f3c35d38fd":"audio/ai11-learn-with-ai/e3f3c35d38fd.mp3","b9e6d2b07767":"audio/ai11-learn-with-ai/b9e6d2b07767.mp3","d811e87eefb3":"audio/ai11-learn-with-ai/d811e87eefb3.mp3","71a51a023ae8":"audio/ai11-learn-with-ai/71a51a023ae8.mp3","fd2d26303411":"audio/ai11-learn-with-ai/fd2d26303411.mp3","25c6023076a9":"audio/ai11-learn-with-ai/25c6023076a9.mp3","ce97d9170f39":"audio/ai11-learn-with-ai/ce97d9170f39.mp3","39926b8aa0aa":"audio/ai11-learn-with-ai/39926b8aa0aa.mp3","bf5b015c5267":"audio/ai11-learn-with-ai/bf5b015c5267.mp3","476664d59158":"audio/ai11-learn-with-ai/476664d59158.mp3","556e94dd062a":"audio/ai11-learn-with-ai/556e94dd062a.mp3","6fe92c567adc":"audio/ai11-learn-with-ai/6fe92c567adc.mp3","57f54cf2d9c1":"audio/ai11-learn-with-ai/57f54cf2d9c1.mp3","ebf03024bfe8":"audio/ai11-learn-with-ai/ebf03024bfe8.mp3","bc408c701bd4":"audio/ai11-learn-with-ai/bc408c701bd4.mp3","f3bc581be169":"audio/ai11-learn-with-ai/f3bc581be169.mp3","3fb0e684b56b":"audio/ai11-learn-with-ai/3fb0e684b56b.mp3","46abc19d5112":"audio/ai11-learn-with-ai/46abc19d5112.mp3","9bb8216b6df6":"audio/ai11-learn-with-ai/9bb8216b6df6.mp3","2bf24b565db4":"audio/ai11-learn-with-ai/2bf24b565db4.mp3","fdd8e8fbc24b":"audio/ai11-learn-with-ai/fdd8e8fbc24b.mp3","dab05dcf3741":"audio/ai11-learn-with-ai/dab05dcf3741.mp3","dc60fd67731f":"audio/ai11-learn-with-ai/dc60fd67731f.mp3","db3c0659b695":"audio/ai11-learn-with-ai/db3c0659b695.mp3","852128f8e136":"audio/ai11-learn-with-ai/852128f8e136.mp3","58f12304afae":"audio/ai11-learn-with-ai/58f12304afae.mp3","f1b105d5a052":"audio/ai11-learn-with-ai/f1b105d5a052.mp3","00f2aca85829":"audio/ai11-learn-with-ai/00f2aca85829.mp3","6fb32102551f":"audio/ai11-learn-with-ai/6fb32102551f.mp3","fb8e1be10f2d":"audio/ai11-learn-with-ai/fb8e1be10f2d.mp3","b6615e2952aa":"audio/ai11-learn-with-ai/b6615e2952aa.mp3","3b9629f89144":"audio/ai11-learn-with-ai/3b9629f89144.mp3","7c61ebc5ea39":"audio/ai11-learn-with-ai/7c61ebc5ea39.mp3","a8d1be7481fe":"audio/ai11-learn-with-ai/a8d1be7481fe.mp3","610783dc69ce":"audio/ai11-learn-with-ai/610783dc69ce.mp3","6e07e566a2ea":"audio/ai11-learn-with-ai/6e07e566a2ea.mp3","01652b019a63":"audio/ai11-learn-with-ai/01652b019a63.mp3","eb40ffcf04ef":"audio/ai11-learn-with-ai/eb40ffcf04ef.mp3","2aca3b87f607":"audio/ai11-learn-with-ai/2aca3b87f607.mp3","387235ba755a":"audio/ai11-learn-with-ai/387235ba755a.mp3","5c9dfc8bcda4":"audio/ai11-learn-with-ai/5c9dfc8bcda4.mp3","c0c79559633e":"audio/ai11-learn-with-ai/c0c79559633e.mp3","d3549d9a8146":"audio/ai11-learn-with-ai/d3549d9a8146.mp3","c6e158b1fc71":"audio/ai11-learn-with-ai/c6e158b1fc71.mp3","d0f09ef2770b":"audio/ai11-learn-with-ai/d0f09ef2770b.mp3","663edfef7329":"audio/ai11-learn-with-ai/663edfef7329.mp3","523e1e7f785b":"audio/ai11-learn-with-ai/523e1e7f785b.mp3","a64116f5327f":"audio/ai11-learn-with-ai/a64116f5327f.mp3","49515601d1a5":"audio/ai11-learn-with-ai/49515601d1a5.mp3","23030e71e74e":"audio/ai11-learn-with-ai/23030e71e74e.mp3","5c8b7a755c65":"audio/ai11-learn-with-ai/5c8b7a755c65.mp3","d4376049f52c":"audio/ai11-learn-with-ai/d4376049f52c.mp3","cd35f71e00a9":"audio/ai11-learn-with-ai/cd35f71e00a9.mp3","087e71b319a6":"audio/ai11-learn-with-ai/087e71b319a6.mp3","5a77ac43e609":"audio/ai11-learn-with-ai/5a77ac43e609.mp3","3d7c39817600":"audio/ai11-learn-with-ai/3d7c39817600.mp3","e32244f85016":"audio/ai11-learn-with-ai/e32244f85016.mp3","83aae2434234":"audio/ai11-learn-with-ai/83aae2434234.mp3","2fc25010310d":"audio/ai11-learn-with-ai/2fc25010310d.mp3","2b8be79c589f":"audio/ai11-learn-with-ai/2b8be79c589f.mp3","0c663091d319":"audio/ai11-learn-with-ai/0c663091d319.mp3","b1651772ca8f":"audio/ai11-learn-with-ai/b1651772ca8f.mp3","2bcf475af776":"audio/ai11-learn-with-ai/2bcf475af776.mp3","c95f854771ca":"audio/ai11-learn-with-ai/c95f854771ca.mp3","4b24bd7f9853":"audio/ai11-learn-with-ai/4b24bd7f9853.mp3","68ead761b359":"audio/ai11-learn-with-ai/68ead761b359.mp3","c4c6543c781e":"audio/ai11-learn-with-ai/c4c6543c781e.mp3","5070a7718918":"audio/ai11-learn-with-ai/5070a7718918.mp3","65767a3a32c0":"audio/ai11-learn-with-ai/65767a3a32c0.mp3","6ad4a5cdffda":"audio/ai11-learn-with-ai/6ad4a5cdffda.mp3","374996355fbc":"audio/ai11-learn-with-ai/374996355fbc.mp3","8d7d726aa1c0":"audio/ai11-learn-with-ai/8d7d726aa1c0.mp3","88082281163c":"audio/ai11-learn-with-ai/88082281163c.mp3","40e7d2d317ff":"audio/ai11-learn-with-ai/40e7d2d317ff.mp3","83bfbcb6540b":"audio/ai11-learn-with-ai/83bfbcb6540b.mp3","eefdbe273235":"audio/ai11-learn-with-ai/eefdbe273235.mp3","cd0c9bbe8369":"audio/ai11-learn-with-ai/cd0c9bbe8369.mp3","538549484354":"audio/ai11-learn-with-ai/538549484354.mp3","2ee1bbf3d673":"audio/ai11-learn-with-ai/2ee1bbf3d673.mp3","f01049dd2d84":"audio/ai11-learn-with-ai/f01049dd2d84.mp3","ade8a8490dc3":"audio/ai11-learn-with-ai/ade8a8490dc3.mp3","c3e5d8fe996b":"audio/ai11-learn-with-ai/c3e5d8fe996b.mp3","6d1aed0271f7":"audio/ai11-learn-with-ai/6d1aed0271f7.mp3","ed7c2d0ed1b2":"audio/ai11-learn-with-ai/ed7c2d0ed1b2.mp3","8a5093226e9b":"audio/ai11-learn-with-ai/8a5093226e9b.mp3","339aab87a5aa":"audio/ai11-learn-with-ai/339aab87a5aa.mp3","0a7fa9ab3385":"audio/ai11-learn-with-ai/0a7fa9ab3385.mp3","f0dfe300e37b":"audio/ai11-learn-with-ai/f0dfe300e37b.mp3","6fe08c81d15f":"audio/ai11-learn-with-ai/6fe08c81d15f.mp3","423af8439a92":"audio/ai11-learn-with-ai/423af8439a92.mp3","75e9193fa6b5":"audio/ai11-learn-with-ai/75e9193fa6b5.mp3","c709e86fba14":"audio/ai11-learn-with-ai/c709e86fba14.mp3","0f673bad33b8":"audio/ai11-learn-with-ai/0f673bad33b8.mp3","55c2234b75a2":"audio/ai11-learn-with-ai/55c2234b75a2.mp3","fa68bda0eefa":"audio/ai11-learn-with-ai/fa68bda0eefa.mp3","56398acb01a8":"audio/ai11-learn-with-ai/56398acb01a8.mp3","c7aca9072c13":"audio/ai11-learn-with-ai/c7aca9072c13.mp3","cfcb6c7656e9":"audio/ai11-learn-with-ai/cfcb6c7656e9.mp3","7ce8a643a908":"audio/ai11-learn-with-ai/7ce8a643a908.mp3","7576ef7662ac":"audio/ai11-learn-with-ai/7576ef7662ac.mp3","e7e46c06b757":"audio/ai11-learn-with-ai/e7e46c06b757.mp3","2e46da0b35cd":"audio/ai11-learn-with-ai/2e46da0b35cd.mp3","85e9e4faf1b6":"audio/ai11-learn-with-ai/85e9e4faf1b6.mp3","74d5ccc7f564":"audio/ai11-learn-with-ai/74d5ccc7f564.mp3","cc08d2f592df":"audio/ai11-learn-with-ai/cc08d2f592df.mp3","ee0f9cff1627":"audio/ai11-learn-with-ai/ee0f9cff1627.mp3","6a03489ede76":"audio/ai11-learn-with-ai/6a03489ede76.mp3","2ec952702998":"audio/ai11-learn-with-ai/2ec952702998.mp3","1558992a1f9a":"audio/ai11-learn-with-ai/1558992a1f9a.mp3","47fa6f00ae4e":"audio/ai11-learn-with-ai/47fa6f00ae4e.mp3","605589a557c0":"audio/ai11-learn-with-ai/605589a557c0.mp3","85ac7bef1f3e":"audio/ai11-learn-with-ai/85ac7bef1f3e.mp3","2bb42ec6dc75":"audio/ai11-learn-with-ai/2bb42ec6dc75.mp3","2be60ad17b12":"audio/ai11-learn-with-ai/2be60ad17b12.mp3","54b8dd96c120":"audio/ai11-learn-with-ai/54b8dd96c120.mp3","0e338df3ca61":"audio/ai11-learn-with-ai/0e338df3ca61.mp3","4fa10e0eba7f":"audio/ai11-learn-with-ai/4fa10e0eba7f.mp3","81838c552c82":"audio/ai11-learn-with-ai/81838c552c82.mp3","41e2bb212012":"audio/ai11-learn-with-ai/41e2bb212012.mp3","5a61ed45433f":"audio/ai11-learn-with-ai/5a61ed45433f.mp3","1a2a7ec56b97":"audio/ai11-learn-with-ai/1a2a7ec56b97.mp3","d5279b31d5ff":"audio/ai11-learn-with-ai/d5279b31d5ff.mp3","1b3cd56f46da":"audio/ai11-learn-with-ai/1b3cd56f46da.mp3","4690686ee2ad":"audio/ai11-learn-with-ai/4690686ee2ad.mp3","10fe74763e4e":"audio/ai11-learn-with-ai/10fe74763e4e.mp3","a4fa8654a26d":"audio/ai11-learn-with-ai/a4fa8654a26d.mp3","a8157dc32b26":"audio/ai11-learn-with-ai/a8157dc32b26.mp3","6ae5acabea01":"audio/ai11-learn-with-ai/6ae5acabea01.mp3","0f0d8b957d97":"audio/ai11-learn-with-ai/0f0d8b957d97.mp3","102b72474ec4":"audio/ai11-learn-with-ai/102b72474ec4.mp3","9fef7cce3ebd":"audio/ai11-learn-with-ai/9fef7cce3ebd.mp3","0b17ae84070d":"audio/ai11-learn-with-ai/0b17ae84070d.mp3","b6a98c8ebdbd":"audio/ai11-learn-with-ai/b6a98c8ebdbd.mp3","565e5df29388":"audio/ai11-learn-with-ai/565e5df29388.mp3","17df28b3c54e":"audio/ai11-learn-with-ai/17df28b3c54e.mp3","598093ff24cf":"audio/ai11-learn-with-ai/598093ff24cf.mp3","0b78a8b3bc35":"audio/ai11-learn-with-ai/0b78a8b3bc35.mp3","212a4ec2bede":"audio/ai11-learn-with-ai/212a4ec2bede.mp3","b4ded946722b":"audio/ai11-learn-with-ai/b4ded946722b.mp3","f1a869753232":"audio/ai11-learn-with-ai/f1a869753232.mp3","498d35f44573":"audio/ai11-learn-with-ai/498d35f44573.mp3","7358e5776fa0":"audio/ai11-learn-with-ai/7358e5776fa0.mp3","53c2b43848a0":"audio/ai11-learn-with-ai/53c2b43848a0.mp3","657324ca8a3c":"audio/ai11-learn-with-ai/657324ca8a3c.mp3","c6ff7bad2c58":"audio/ai11-learn-with-ai/c6ff7bad2c58.mp3","8c7e89ae65b2":"audio/ai11-learn-with-ai/8c7e89ae65b2.mp3","c49e70569cec":"audio/ai11-learn-with-ai/c49e70569cec.mp3","4205fa9507cf":"audio/ai11-learn-with-ai/4205fa9507cf.mp3","62a519851cdd":"audio/ai11-learn-with-ai/62a519851cdd.mp3","bab5fab281b0":"audio/ai11-learn-with-ai/bab5fab281b0.mp3","57dbe03c92ef":"audio/ai11-learn-with-ai/57dbe03c92ef.mp3","5f93e445d972":"audio/ai11-learn-with-ai/5f93e445d972.mp3","17c77baad585":"audio/ai11-learn-with-ai/17c77baad585.mp3","e9b6f85816a0":"audio/ai11-learn-with-ai/e9b6f85816a0.mp3","d36457e0f37f":"audio/ai11-learn-with-ai/d36457e0f37f.mp3","fb421490eb84":"audio/ai11-learn-with-ai/fb421490eb84.mp3","1b3c7ecd977a":"audio/ai11-learn-with-ai/1b3c7ecd977a.mp3","4767581cd286":"audio/ai11-learn-with-ai/4767581cd286.mp3","8258f3a35774":"audio/ai11-learn-with-ai/8258f3a35774.mp3","f0b9276e393d":"audio/ai11-learn-with-ai/f0b9276e393d.mp3","614c966750a3":"audio/ai11-learn-with-ai/614c966750a3.mp3","4bbc3d187aec":"audio/ai11-learn-with-ai/4bbc3d187aec.mp3","1d028aab6554":"audio/ai11-learn-with-ai/1d028aab6554.mp3","17c533d904ec":"audio/ai11-learn-with-ai/17c533d904ec.mp3","dc37b2eece0c":"audio/ai11-learn-with-ai/dc37b2eece0c.mp3","1e586069e982":"audio/ai11-learn-with-ai/1e586069e982.mp3","0208f18c6209":"audio/ai11-learn-with-ai/0208f18c6209.mp3","1fa9e99067bc":"audio/ai11-learn-with-ai/1fa9e99067bc.mp3","7e5d19e94bab":"audio/ai11-learn-with-ai/7e5d19e94bab.mp3","ab28845333b3":"audio/ai11-learn-with-ai/ab28845333b3.mp3","333191defe5d":"audio/ai11-learn-with-ai/333191defe5d.mp3","a7dc62b930da":"audio/ai11-learn-with-ai/a7dc62b930da.mp3","5e68663e04bf":"audio/ai11-learn-with-ai/5e68663e04bf.mp3","8d9ee63866a2":"audio/ai11-learn-with-ai/8d9ee63866a2.mp3","6f08c315cf33":"audio/ai11-learn-with-ai/6f08c315cf33.mp3","a75a3ffc6e09":"audio/ai11-learn-with-ai/a75a3ffc6e09.mp3","402cf0ec2c58":"audio/ai11-learn-with-ai/402cf0ec2c58.mp3","2c0182c18626":"audio/ai11-learn-with-ai/2c0182c18626.mp3","b3a55b31160d":"audio/ai11-learn-with-ai/b3a55b31160d.mp3","70b4afbfc3b4":"audio/ai11-learn-with-ai/70b4afbfc3b4.mp3","792c3ab6351c":"audio/ai11-learn-with-ai/792c3ab6351c.mp3","452ff42a0e82":"audio/ai11-learn-with-ai/452ff42a0e82.mp3","68ba45521c5b":"audio/ai11-learn-with-ai/68ba45521c5b.mp3","6b4a067143bf":"audio/ai11-learn-with-ai/6b4a067143bf.mp3","95cc8dcda9fc":"audio/ai11-learn-with-ai/95cc8dcda9fc.mp3","d8e3e2accf85":"audio/ai11-learn-with-ai/d8e3e2accf85.mp3","7f1ae0d1e154":"audio/ai11-learn-with-ai/7f1ae0d1e154.mp3","8922844b4033":"audio/ai11-learn-with-ai/8922844b4033.mp3","66b6aac42e98":"audio/ai11-learn-with-ai/66b6aac42e98.mp3","4c8d8459a520":"audio/ai11-learn-with-ai/4c8d8459a520.mp3","fcea494fc09f":"audio/ai11-learn-with-ai/fcea494fc09f.mp3","a16d9a0cb04b":"audio/ai11-learn-with-ai/a16d9a0cb04b.mp3","b9497e05fe5a":"audio/ai11-learn-with-ai/b9497e05fe5a.mp3","6b22faa5a727":"audio/ai11-learn-with-ai/6b22faa5a727.mp3","1ede3c4e0187":"audio/ai11-learn-with-ai/1ede3c4e0187.mp3","07e8c998523a":"audio/ai11-learn-with-ai/07e8c998523a.mp3","ea773aeae127":"audio/ai11-learn-with-ai/ea773aeae127.mp3","4c5a043fda74":"audio/ai11-learn-with-ai/4c5a043fda74.mp3","087c03066071":"audio/ai11-learn-with-ai/087c03066071.mp3","4345201c59b9":"audio/ai11-learn-with-ai/4345201c59b9.mp3","961b81b6cd77":"audio/ai11-learn-with-ai/961b81b6cd77.mp3","cac863ca069b":"audio/ai11-learn-with-ai/cac863ca069b.mp3","370f5b5ee3ae":"audio/ai11-learn-with-ai/370f5b5ee3ae.mp3","af7659a734d9":"audio/ai11-learn-with-ai/af7659a734d9.mp3","2c3ba1e686f6":"audio/ai11-learn-with-ai/2c3ba1e686f6.mp3","001456cd5454":"audio/ai11-learn-with-ai/001456cd5454.mp3","e2c530da7a8c":"audio/ai11-learn-with-ai/e2c530da7a8c.mp3","90a1b4ec297b":"audio/ai11-learn-with-ai/90a1b4ec297b.mp3","37a388dea659":"audio/ai11-learn-with-ai/37a388dea659.mp3","f54bc0f8031a":"audio/ai11-learn-with-ai/f54bc0f8031a.mp3","3e057e125543":"audio/ai11-learn-with-ai/3e057e125543.mp3","4fcfdb94a02e":"audio/ai11-learn-with-ai/4fcfdb94a02e.mp3","62b54cbb73bb":"audio/ai11-learn-with-ai/62b54cbb73bb.mp3","3d85095cedc8":"audio/ai11-learn-with-ai/3d85095cedc8.mp3","688944de1407":"audio/ai11-learn-with-ai/688944de1407.mp3","f2d79506ec83":"audio/ai11-learn-with-ai/f2d79506ec83.mp3","4604bb92d236":"audio/ai11-learn-with-ai/4604bb92d236.mp3","f6876b07df13":"audio/ai11-learn-with-ai/f6876b07df13.mp3","e71b107ff197":"audio/ai11-learn-with-ai/e71b107ff197.mp3","7a8c316edc1a":"audio/ai11-learn-with-ai/7a8c316edc1a.mp3","a8d944936477":"audio/ai11-learn-with-ai/a8d944936477.mp3","66b98e40c7d1":"audio/ai11-learn-with-ai/66b98e40c7d1.mp3","b4e64e3c738d":"audio/ai11-learn-with-ai/b4e64e3c738d.mp3","b545e3c09c88":"audio/ai11-learn-with-ai/b545e3c09c88.mp3","6a1db0cc651f":"audio/ai11-learn-with-ai/6a1db0cc651f.mp3","aa67fc9f19a6":"audio/ai11-learn-with-ai/aa67fc9f19a6.mp3","7f5a8f08f180":"audio/ai11-learn-with-ai/7f5a8f08f180.mp3","eeac88a773d5":"audio/ai11-learn-with-ai/eeac88a773d5.mp3","e2eb98469ee7":"audio/ai11-learn-with-ai/e2eb98469ee7.mp3","65e218056a47":"audio/ai11-learn-with-ai/65e218056a47.mp3","917a0defbd50":"audio/ai11-learn-with-ai/917a0defbd50.mp3","17ffed47176b":"audio/ai11-learn-with-ai/17ffed47176b.mp3","6b42199daa61":"audio/ai11-learn-with-ai/6b42199daa61.mp3","1da876a39674":"audio/ai11-learn-with-ai/1da876a39674.mp3","a8c07aef05a3":"audio/ai11-learn-with-ai/a8c07aef05a3.mp3","6408f79dae8c":"audio/ai11-learn-with-ai/6408f79dae8c.mp3","c467790d6ecc":"audio/ai11-learn-with-ai/c467790d6ecc.mp3","ed560a897234":"audio/ai11-learn-with-ai/ed560a897234.mp3","44b04c5345a6":"audio/ai11-learn-with-ai/44b04c5345a6.mp3","ddb65b1e5050":"audio/ai11-learn-with-ai/ddb65b1e5050.mp3","66ddbd205d6d":"audio/ai11-learn-with-ai/66ddbd205d6d.mp3","43588b0536cc":"audio/ai11-learn-with-ai/43588b0536cc.mp3","1f856733e93a":"audio/ai11-learn-with-ai/1f856733e93a.mp3","a6e617a6f8e8":"audio/ai11-learn-with-ai/a6e617a6f8e8.mp3","b869c481ecba":"audio/ai11-learn-with-ai/b869c481ecba.mp3","ba184411ff45":"audio/ai11-learn-with-ai/ba184411ff45.mp3","b6039cbd39d2":"audio/ai11-learn-with-ai/b6039cbd39d2.mp3","80d0c61e4ba7":"audio/ai11-learn-with-ai/80d0c61e4ba7.mp3","0644479e6963":"audio/ai11-learn-with-ai/0644479e6963.mp3","e7a89bc27117":"audio/ai11-learn-with-ai/e7a89bc27117.mp3","2cf7a59e7cea":"audio/ai11-learn-with-ai/2cf7a59e7cea.mp3","6b6acc6373bd":"audio/ai11-learn-with-ai/6b6acc6373bd.mp3","e39fcdf1f2be":"audio/ai11-learn-with-ai/e39fcdf1f2be.mp3","f1c1d13de722":"audio/ai11-learn-with-ai/f1c1d13de722.mp3","2c26f5e4632f":"audio/ai11-learn-with-ai/2c26f5e4632f.mp3","4f3309ab4f4a":"audio/ai11-learn-with-ai/4f3309ab4f4a.mp3","e8761c229be8":"audio/ai11-learn-with-ai/e8761c229be8.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.ttitle','.sub'],extraNonDecorateSelectors:'.choicebtn,.topiccard,.llmchip,.llmsend,.llminputbar,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 </body>
 </html>

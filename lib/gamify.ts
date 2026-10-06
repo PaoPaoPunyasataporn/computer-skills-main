@@ -1,5 +1,5 @@
 import { getProgressMap } from './progress';
-import { AREAS } from './content';
+import { AREAS, ALL_GAME_CODES } from './content';
 
 // There was a second currency here — 💎 gems, minted at 5 per star and shown in the
 // top bar. It was derived from exactly the same stars as the XP meter, so it measured
@@ -9,7 +9,12 @@ export type Stats = { stars: number; completed: number; xp: number; totalCompete
 export function computeStats(): Stats {
   const map = getProgressMap();
   let stars = 0, completed = 0;
+  // Only count lessons that still exist: a browser can hold saved progress for
+  // lessons that were later retired, which would inflate XP/completed beyond
+  // what's attainable.
+  const known = new Set(ALL_GAME_CODES);
   for (const code of Object.keys(map)) {
+    if (!known.has(code)) continue;
     const e = map[code];
     stars += e.stars || 0;
     if ((e.stars || 0) > 0) completed++;
