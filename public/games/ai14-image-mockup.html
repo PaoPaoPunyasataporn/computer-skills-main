@@ -245,54 +245,59 @@ function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
 const ROUNDS = [
   { brief:'เพื่อนวาดภาพสีน้ำสวยมาก อยากทำม็อคอัพไปติดในนิทรรศการศิลปะของโรงเรียน ให้ดูเหมือนภาพจริงในแกลเลอรี',
     subj:'🎨', subjBg:'linear-gradient(135deg,#EFEAE0,#F7F4EE)',
-    settingRe:/(แกลเลอรี|ผนัง|นิทรรศการ|ห้อง|กำแพง)/,
-    styleRe:/(แสง|สลัว|นุ่มนวล|หรู|เรียบ)/,
-    matchCss:[{re:/แกลเลอรี|นิทรรศการ|ผนัง.*(ขาว|เรียบ)/, css:'linear-gradient(180deg,#F4F4F2,#E4E2DC)'}],
-    matchFilter:[{re:/แสง|สลัว|นุ่มนวล|หรู|เรียบ/, cls:'framed'}],
+    settingRe:/(แกลเลอรี|ผนัง|นิทรรศการ|ห้อง|กำแพง|หอศิลป์|พิพิธภัณฑ์|ห้องแสดง)/,
+    styleRe:/(แสง|สลัว|นุ่มนวล|หรู|เรียบ|อบอุ่น|ไฟ|สปอตไลท์)/,
+    example:'วางภาพบนผนังแกลเลอรีสีขาวเรียบ มีแสงสลัวนุ่มนวล',
+    matchCss:[{re:/แกลเลอรี|นิทรรศการ|ห้องแสดง|หอศิลป์|พิพิธภัณฑ์|ผนัง|กำแพง/, css:'linear-gradient(180deg,#F4F4F2,#E4E2DC)'}],
+    matchFilter:[{re:/แสง|สลัว|นุ่มนวล|หรู|เรียบ|อบอุ่น|ไฟ|สปอตไลท์/, cls:'framed'}],
     goodWhy:'บอกทั้งฉากแกลเลอรีเรียบ ๆ และแสงนุ่มนวลชัดเจน AI จึงวางภาพวาดได้ตรงกับงานนิทรรศการจริง',
     vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่ตรงกับงานนิทรรศการศิลปะ — ลองอธิบายฉากแกลเลอรีหรือผนังเรียบ ๆ ที่มีแสงนุ่มนวลดูสิ' },
   { brief:'อยากถ่ายรูปรองเท้าคู่ใหม่ไปลงขายออนไลน์ ให้ดูเป็นมืออาชีพน่าซื้อ',
     subj:'👟', subjBg:'linear-gradient(135deg,#EAF3FF,#F7FBFF)',
-    settingRe:/(พื้น|โต๊ะ|ไม้|ห้อง|บ้าน)/,
-    styleRe:/(แสง|ธรรมชาติ|มุม|นุ่ม|เรียบ)/,
-    matchCss:[{re:/พื้นไม้|โต๊ะไม้|ไม้.*มินิมอล/, css:'linear-gradient(180deg,#F1E4CE,#D9C6A3)'}],
-    matchFilter:[{re:/ธรรมชาติ|มุมเฉียง|นุ่ม/, cls:'warm'}],
+    settingRe:/(พื้น|โต๊ะ|ไม้|ห้อง|บ้าน|สตูดิโอ|มินิมอล)/,
+    styleRe:/(แสง|ธรรมชาติ|มุม|นุ่ม|เรียบ|หน้าต่าง|สว่าง)/,
+    example:'วางรองเท้าบนพื้นไม้มินิมอล แสงธรรมชาตินุ่ม ๆ',
+    matchCss:[{re:/พื้นไม้|โต๊ะไม้|ไม้|มินิมอล|พื้นขาว|โต๊ะขาว|สตูดิโอ|พื้นหลังขาว/, css:'linear-gradient(180deg,#F1E4CE,#D9C6A3)'}],
+    matchFilter:[{re:/ธรรมชาติ|มุมเฉียง|นุ่ม|หน้าต่าง|แสงอ่อน|สว่าง/, cls:'warm'}],
     goodWhy:'พื้นไม้เรียบกับแสงธรรมชาตินุ่ม ๆ ช่วยให้สินค้าดูสะอาดตาและน่าเชื่อถือ แบบภาพสินค้าขายออนไลน์มืออาชีพ',
     vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่เหมาะกับภาพสินค้าขาย — ลองอธิบายพื้นไม้มินิมอลกับแสงธรรมชาตินุ่ม ๆ ดูสิ' },
   { brief:'อยากโชว์หน้าจอแอปที่ออกแบบเองให้เพื่อนดูตอนพรีเซนต์หน้าห้อง ให้ดูสมจริงเหมือนใช้งานได้จริง',
     subj:'📱', subjBg:'linear-gradient(135deg,#F3E8FC,#FBF5FF)',
-    settingRe:/(โต๊ะ|มือถือ|กรอบ|ห้อง|ทำงาน)/,
-    styleRe:/(แสง|ในร่ม|นวล|เรียบ)/,
-    matchCss:[{re:/โต๊ะทำงาน|กรอบมือถือ|มือถือ.*โต๊ะ/, css:'linear-gradient(180deg,#DCE6F0,#B9C9DB)'}],
-    matchFilter:[{re:/แสง|ในร่ม|นวล/, cls:'warm'}],
+    settingRe:/(โต๊ะ|มือถือ|กรอบ|ห้อง|ทำงาน|สมาร์ทโฟน|ออฟฟิศ)/,
+    styleRe:/(แสง|ในร่ม|นวล|เรียบ|ไฟ|สว่าง)/,
+    example:'วางหน้าจอแอปในกรอบมือถือบนโต๊ะทำงาน แสงในร่มนวล ๆ',
+    matchCss:[{re:/โต๊ะทำงาน|กรอบมือถือ|มือถือ|สมาร์ทโฟน|ออฟฟิศ|แล็ปท็อป|โต๊ะ/, css:'linear-gradient(180deg,#DCE6F0,#B9C9DB)'}],
+    matchFilter:[{re:/แสง|ในร่ม|นวล|ไฟ|สว่าง|อ่อน/, cls:'warm'}],
     goodWhy:'การใส่กรอบมือถือจริงบนโต๊ะทำงานกับแสงในร่มนวล ๆ ทำให้เพื่อนเห็นภาพว่าแอปจะถูกใช้งานจริงยังไง',
     vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่ช่วยให้ดูสมจริง — ลองอธิบายกรอบมือถือวางบนโต๊ะทำงานกับแสงในร่มนวล ๆ ดูสิ' },
   { brief:'ออกแบบลายเสื้อของชมรมถ่ายภาพ อยากโชว์ให้เพื่อนดูว่าใส่จริงแล้วจะเป็นยังไง',
     subj:'👕', subjBg:'linear-gradient(135deg,#FFF1D6,#FFF8E8)',
-    settingRe:/(สตูดิโอ|นายแบบ|คน|ห้อง|พื้นหลัง)/,
-    styleRe:/(แสง|เรียบ|มุม|ชัด)/,
-    matchCss:[{re:/สตูดิโอ|นายแบบ|คนใส่/, css:'linear-gradient(180deg,#EDEDED,#D2D2D2)'}],
-    matchFilter:[{re:/แสง|เรียบ|มุมตรง|ชัด/, cls:'framed'}],
+    settingRe:/(สตูดิโอ|นายแบบ|นางแบบ|คน|ห้อง|พื้นหลัง|ใส่เสื้อ|สวม)/,
+    styleRe:/(แสง|เรียบ|มุม|ชัด|สว่าง|ทั่ว)/,
+    example:'ให้นายแบบใส่เสื้อในสตูดิโอพื้นหลังเรียบ แสงสว่างทั่วถึง',
+    matchCss:[{re:/สตูดิโอ|นายแบบ|นางแบบ|คนใส่|คนสวม|ใส่เสื้อ|สวมเสื้อ|พื้นหลังเรียบ|พื้นหลังสี/, css:'linear-gradient(180deg,#EDEDED,#D2D2D2)'}],
+    matchFilter:[{re:/แสง|เรียบ|มุมตรง|ชัด|สว่าง|ทั่ว/, cls:'framed'}],
     goodWhy:'สตูดิโอเรียบ ๆ ที่มีคนใส่จริง กับแสงทั่วถึง ช่วยให้เพื่อนเห็นลายเสื้อชัดเจนและดูเหมือนใส่จริง',
     vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่ช่วยโชว์ลายเสื้อ — ลองอธิบายฉากสตูดิโอที่มีคนใส่เสื้อจริง กับแสงเรียบทั่วถึงดูสิ' },
   { brief:'อยากทำม็อคอัพภาพวาดบ้านในฝัน (โปรเจกต์วิชาศิลปะ) ไปใส่ในสไลด์นำเสนอหน้าชั้น ให้ดูน่าประทับใจ',
     subj:'🏠', subjBg:'linear-gradient(135deg,#E9FBE7,#F5FEF3)',
-    settingRe:/(ห้องเรียน|ขาตั้ง|กรอบ|ผนัง)/,
-    styleRe:/(แสง|ชัดเจน|เรียบร้อย|สว่าง)/,
-    matchCss:[{re:/ห้องเรียน|ขาตั้ง/, css:'linear-gradient(180deg,#EAF3E4,#CFE3C4)'}],
-    matchFilter:[{re:/แสงสว่าง|ชัดเจน|สว่าง/, cls:'warm'}],
+    settingRe:/(ห้องเรียน|ขาตั้ง|กรอบ|ผนัง|สไลด์|กระดาน|โปรเจกเตอร์)/,
+    styleRe:/(แสง|ชัดเจน|เรียบร้อย|สว่าง|ชัด)/,
+    example:'วางภาพในกรอบบนขาตั้งในห้องเรียน แสงสว่างชัดเจน',
+    matchCss:[{re:/ห้องเรียน|ขาตั้ง|กรอบ|สไลด์|กระดาน|โปรเจกเตอร์/, css:'linear-gradient(180deg,#EAF3E4,#CFE3C4)'}],
+    matchFilter:[{re:/แสง|ชัดเจน|สว่าง|ชัด/, cls:'warm'}],
     goodWhy:'กรอบรูปตั้งในห้องเรียนที่จัดเรียบร้อย พร้อมแสงชัดเจน ทำให้ผลงานดูน่าประทับใจตอนพรีเซนต์',
     vagueWhy:'บอกฉากและสไตล์แล้ว แต่ยังไม่น่าประทับใจพอ — ลองอธิบายกรอบรูปตั้งบนขาตั้งในห้องเรียนที่มีแสงสว่างชัดเจนดูสิ' },
 ];
 
-let round = 0, mistakes = 0, answered = false;
+let round = 0, mistakes = 0, answered = false, attempts = 0;
 
 function startPractice(){ round = 0; mistakes = 0; $('scorePill').textContent = 'พลาดไป 0 ครั้ง'; loadRound(0); }
 
 const SUGGESTIONS = ['วางบน...', 'มีแสง...', 'บรรยากาศแบบ...'];
 
 function loadRound(i){
-  round = i; answered = false;
+  round = i; answered = false; attempts = 0;
   const r = ROUNDS[i];
   $('roundTag').textContent = `รอบที่ ${i+1}/${ROUNDS.length}`;
   $('briefText').textContent = r.brief;
@@ -337,11 +342,20 @@ function generateMockup(){
   const p = checkParts(text);
 
   if (!p.setting || !p.style){
-    mistakes++; $('scorePill').textContent = `พลาดไป ${mistakes} ครั้ง`;
+    mistakes++; attempts++; $('scorePill').textContent = `พลาดไป ${mistakes} ครั้ง`;
     const missing = [!p.setting&&'ฉาก/สถานที่', !p.style&&'สไตล์แสง/บรรยากาศ'].filter(Boolean).join(' และ ');
     $('mockExplain').className = 'explainbox show wrong';
-    $('mockExplain').innerHTML = `<b>⚠️ คำสั่งยังไม่ครบ</b>ยังไม่ได้บอก${esc(missing)} — AI จะเดาเอง แล้วมักได้ม็อคอัพทั่ว ๆ ไปไม่ตรงงาน ลองเติมให้ครบแล้วกดสร้างอีกครั้ง`;
     $('previewSubj').className = 'previewsubj blurred';
+    if (attempts >= 3){
+      // three incomplete tries in a row: show a model prompt so nobody is stuck
+      answered = true;
+      $('promptInput').disabled = true;
+      $('genBtn').disabled = true;
+      $('mockExplain').innerHTML = `<b>⚠️ คำสั่งยังไม่ครบ</b>ยังไม่ได้บอก${esc(missing)}<br><b>ตัวอย่างคำสั่งที่ดี:</b> ${esc(r.example)}`;
+      $('nextRoundBtn').style.display = 'block';
+      return;
+    }
+    $('mockExplain').innerHTML = `<b>⚠️ คำสั่งยังไม่ครบ</b>ยังไม่ได้บอก${esc(missing)} — AI จะเดาเอง แล้วมักได้ม็อคอัพทั่ว ๆ ไปไม่ตรงงาน ลองเติมให้ครบแล้วกดสร้างอีกครั้ง`;
     return;
   }
 
@@ -349,18 +363,33 @@ function generateMockup(){
   const filterMatch = r.matchFilter.find(m=>m.re.test(text));
   const correct = !!cssMatch && !!filterMatch;
 
-  answered = true;
-  $('promptInput').disabled = true;
-  $('genBtn').disabled = true;
-
   if (cssMatch) $('previewScene').style.background = cssMatch.css;
   $('previewSubj').className = 'previewsubj' + (filterMatch ? ' '+filterMatch.cls : '');
 
-  if (!correct){ mistakes++; $('scorePill').textContent = `พลาดไป ${mistakes} ครั้ง`; }
-  $('mockExplain').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
-  $('mockExplain').innerHTML = `<b>${correct ? '✅ ม็อคอัพออกมาดี!' : '❌ ม็อคอัพยังไม่เหมาะกับงานนี้'}</b>${esc(correct ? r.goodWhy : r.vagueWhy)}`;
-  $('nextRoundBtn').style.display = 'block';
-  if (correct && window.dlf) dlf.cheer('เก่งมาก!');
+  if (correct){
+    answered = true;
+    $('promptInput').disabled = true;
+    $('genBtn').disabled = true;
+    $('mockExplain').className = 'explainbox show correct';
+    $('mockExplain').innerHTML = `<b>✅ ม็อคอัพออกมาดี!</b>${esc(r.goodWhy)}`;
+    $('nextRoundBtn').style.display = 'block';
+    if (window.dlf) dlf.cheer('เก่งมาก!');
+    return;
+  }
+
+  // wrong: let the student revise their prompt (that is the real skill), and after
+  // three misses show a model prompt so nobody is stuck
+  mistakes++; attempts++; $('scorePill').textContent = `พลาดไป ${mistakes} ครั้ง`;
+  $('mockExplain').className = 'explainbox show wrong';
+  if (attempts >= 3){
+    answered = true;
+    $('promptInput').disabled = true;
+    $('genBtn').disabled = true;
+    $('mockExplain').innerHTML = `<b>❌ ยังไม่เหมาะกับงานนี้</b>${esc(r.vagueWhy)}<br><b>ตัวอย่างคำสั่งที่ดี:</b> ${esc(r.example)}`;
+    $('nextRoundBtn').style.display = 'block';
+  } else {
+    $('mockExplain').innerHTML = `<b>❌ ม็อคอัพยังไม่เหมาะกับงานนี้</b>${esc(r.vagueWhy)} แก้คำสั่งแล้วกดสร้างอีกครั้งได้เลย`;
+  }
 }
 
 function nextRound(){
@@ -432,7 +461,7 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"876c21d7949c":"audio/ai14-image-mockup/876c21d7949c.mp3","412aa7b1c422":"audio/ai14-image-mockup/412aa7b1c422.mp3","623b0e03af11":"audio/ai14-image-mockup/623b0e03af11.mp3","2e910fe6d7a9":"audio/ai14-image-mockup/2e910fe6d7a9.mp3","76ccac63d6e0":"audio/ai14-image-mockup/76ccac63d6e0.mp3","4fa091dd6c9d":"audio/ai14-image-mockup/4fa091dd6c9d.mp3","d811e87eefb3":"audio/ai14-image-mockup/d811e87eefb3.mp3","71a51a023ae8":"audio/ai14-image-mockup/71a51a023ae8.mp3","852128f8e136":"audio/ai14-image-mockup/852128f8e136.mp3","ce97d9170f39":"audio/ai14-image-mockup/ce97d9170f39.mp3","471d4a4c5c65":"audio/ai14-image-mockup/471d4a4c5c65.mp3","556e94dd062a":"audio/ai14-image-mockup/556e94dd062a.mp3","d585a6a9d18d":"audio/ai14-image-mockup/d585a6a9d18d.mp3","ffcc6ca00217":"audio/ai14-image-mockup/ffcc6ca00217.mp3","b9a6d67dec55":"audio/ai14-image-mockup/b9a6d67dec55.mp3","5433e783c22d":"audio/ai14-image-mockup/5433e783c22d.mp3","dee2b0ea6bea":"audio/ai14-image-mockup/dee2b0ea6bea.mp3","31ef13ad5f1f":"audio/ai14-image-mockup/31ef13ad5f1f.mp3","cda230a70e92":"audio/ai14-image-mockup/cda230a70e92.mp3","a8d52a4cf9fd":"audio/ai14-image-mockup/a8d52a4cf9fd.mp3","43c4e37364c4":"audio/ai14-image-mockup/43c4e37364c4.mp3","00c568392eba":"audio/ai14-image-mockup/00c568392eba.mp3","8f09cf3f99d4":"audio/ai14-image-mockup/8f09cf3f99d4.mp3","c54558dec7d2":"audio/ai14-image-mockup/c54558dec7d2.mp3","db670f64fd54":"audio/ai14-image-mockup/db670f64fd54.mp3","e93758c57b1b":"audio/ai14-image-mockup/e93758c57b1b.mp3","34983be25867":"audio/ai14-image-mockup/34983be25867.mp3","52649ceb133d":"audio/ai14-image-mockup/52649ceb133d.mp3","ef69b86d41ec":"audio/ai14-image-mockup/ef69b86d41ec.mp3","fefe9d4254cc":"audio/ai14-image-mockup/fefe9d4254cc.mp3","7df75dbeaed0":"audio/ai14-image-mockup/7df75dbeaed0.mp3","57596d6f4e38":"audio/ai14-image-mockup/57596d6f4e38.mp3","f9327e117221":"audio/ai14-image-mockup/f9327e117221.mp3","7cdccda44657":"audio/ai14-image-mockup/7cdccda44657.mp3","44a6b7caf074":"audio/ai14-image-mockup/44a6b7caf074.mp3","3b9bb3fa9e10":"audio/ai14-image-mockup/3b9bb3fa9e10.mp3","a66234b845ea":"audio/ai14-image-mockup/a66234b845ea.mp3","ea84cd88fbab":"audio/ai14-image-mockup/ea84cd88fbab.mp3","dfb3e4afa929":"audio/ai14-image-mockup/dfb3e4afa929.mp3","7f3f04a2d7d3":"audio/ai14-image-mockup/7f3f04a2d7d3.mp3","57f54cf2d9c1":"audio/ai14-image-mockup/57f54cf2d9c1.mp3","859e2d80d062":"audio/ai14-image-mockup/859e2d80d062.mp3","dec1ce6c690b":"audio/ai14-image-mockup/dec1ce6c690b.mp3","f3bc581be169":"audio/ai14-image-mockup/f3bc581be169.mp3","3fb0e684b56b":"audio/ai14-image-mockup/3fb0e684b56b.mp3","a7bc92297e7c":"audio/ai14-image-mockup/a7bc92297e7c.mp3","61478020c742":"audio/ai14-image-mockup/61478020c742.mp3","f6bd16a3d94c":"audio/ai14-image-mockup/f6bd16a3d94c.mp3","c01dece1e5f7":"audio/ai14-image-mockup/c01dece1e5f7.mp3","5ccb7284b00b":"audio/ai14-image-mockup/5ccb7284b00b.mp3","85a58dbfe9d3":"audio/ai14-image-mockup/85a58dbfe9d3.mp3","e0293c5ef2f8":"audio/ai14-image-mockup/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai14-image-mockup/9bb8216b6df6.mp3","3ca881a1905e":"audio/ai14-image-mockup/3ca881a1905e.mp3","dab05dcf3741":"audio/ai14-image-mockup/dab05dcf3741.mp3","06cce1081b61":"audio/ai14-image-mockup/06cce1081b61.mp3","af6ba89d9b27":"audio/ai14-image-mockup/af6ba89d9b27.mp3","aca2b0992481":"audio/ai14-image-mockup/aca2b0992481.mp3","66590c21d92e":"audio/ai14-image-mockup/66590c21d92e.mp3","e18a189a9371":"audio/ai14-image-mockup/e18a189a9371.mp3","8af1f0edc12c":"audio/ai14-image-mockup/8af1f0edc12c.mp3","570e87ed3a92":"audio/ai14-image-mockup/570e87ed3a92.mp3","84ac7bc54ded":"audio/ai14-image-mockup/84ac7bc54ded.mp3","758e0bb8aa33":"audio/ai14-image-mockup/758e0bb8aa33.mp3","3938b3af3f03":"audio/ai14-image-mockup/3938b3af3f03.mp3","5082421b3b2d":"audio/ai14-image-mockup/5082421b3b2d.mp3","d8cf69edbced":"audio/ai14-image-mockup/d8cf69edbced.mp3","f99ef9d5501a":"audio/ai14-image-mockup/f99ef9d5501a.mp3","92af8d9fe039":"audio/ai14-image-mockup/92af8d9fe039.mp3","d9e66eaf9ddb":"audio/ai14-image-mockup/d9e66eaf9ddb.mp3","15d03067f367":"audio/ai14-image-mockup/15d03067f367.mp3","fc0238a70c17":"audio/ai14-image-mockup/fc0238a70c17.mp3","b478fe5c05a5":"audio/ai14-image-mockup/b478fe5c05a5.mp3","be746fd3ca56":"audio/ai14-image-mockup/be746fd3ca56.mp3","0d36a7d24752":"audio/ai14-image-mockup/0d36a7d24752.mp3","10b25f97ef70":"audio/ai14-image-mockup/10b25f97ef70.mp3","823217234fe1":"audio/ai14-image-mockup/823217234fe1.mp3","0dd7d71b7ba6":"audio/ai14-image-mockup/0dd7d71b7ba6.mp3","27c745f46945":"audio/ai14-image-mockup/27c745f46945.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.bsay','.sub','.cb'],extraNonDecorateSelectors:'.sugchip,.chk,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<script id="dlfAudioData" type="application/json">{"876c21d7949c":"audio/ai14-image-mockup/876c21d7949c.mp3","412aa7b1c422":"audio/ai14-image-mockup/412aa7b1c422.mp3","623b0e03af11":"audio/ai14-image-mockup/623b0e03af11.mp3","2e910fe6d7a9":"audio/ai14-image-mockup/2e910fe6d7a9.mp3","76ccac63d6e0":"audio/ai14-image-mockup/76ccac63d6e0.mp3","4fa091dd6c9d":"audio/ai14-image-mockup/4fa091dd6c9d.mp3","d811e87eefb3":"audio/ai14-image-mockup/d811e87eefb3.mp3","71a51a023ae8":"audio/ai14-image-mockup/71a51a023ae8.mp3","852128f8e136":"audio/ai14-image-mockup/852128f8e136.mp3","ce97d9170f39":"audio/ai14-image-mockup/ce97d9170f39.mp3","471d4a4c5c65":"audio/ai14-image-mockup/471d4a4c5c65.mp3","556e94dd062a":"audio/ai14-image-mockup/556e94dd062a.mp3","d585a6a9d18d":"audio/ai14-image-mockup/d585a6a9d18d.mp3","ffcc6ca00217":"audio/ai14-image-mockup/ffcc6ca00217.mp3","b9a6d67dec55":"audio/ai14-image-mockup/b9a6d67dec55.mp3","5433e783c22d":"audio/ai14-image-mockup/5433e783c22d.mp3","dee2b0ea6bea":"audio/ai14-image-mockup/dee2b0ea6bea.mp3","31ef13ad5f1f":"audio/ai14-image-mockup/31ef13ad5f1f.mp3","cda230a70e92":"audio/ai14-image-mockup/cda230a70e92.mp3","a8d52a4cf9fd":"audio/ai14-image-mockup/a8d52a4cf9fd.mp3","43c4e37364c4":"audio/ai14-image-mockup/43c4e37364c4.mp3","00c568392eba":"audio/ai14-image-mockup/00c568392eba.mp3","8f09cf3f99d4":"audio/ai14-image-mockup/8f09cf3f99d4.mp3","c54558dec7d2":"audio/ai14-image-mockup/c54558dec7d2.mp3","db670f64fd54":"audio/ai14-image-mockup/db670f64fd54.mp3","e93758c57b1b":"audio/ai14-image-mockup/e93758c57b1b.mp3","34983be25867":"audio/ai14-image-mockup/34983be25867.mp3","52649ceb133d":"audio/ai14-image-mockup/52649ceb133d.mp3","ef69b86d41ec":"audio/ai14-image-mockup/ef69b86d41ec.mp3","fefe9d4254cc":"audio/ai14-image-mockup/fefe9d4254cc.mp3","7df75dbeaed0":"audio/ai14-image-mockup/7df75dbeaed0.mp3","57596d6f4e38":"audio/ai14-image-mockup/57596d6f4e38.mp3","f9327e117221":"audio/ai14-image-mockup/f9327e117221.mp3","7cdccda44657":"audio/ai14-image-mockup/7cdccda44657.mp3","44a6b7caf074":"audio/ai14-image-mockup/44a6b7caf074.mp3","3b9bb3fa9e10":"audio/ai14-image-mockup/3b9bb3fa9e10.mp3","a66234b845ea":"audio/ai14-image-mockup/a66234b845ea.mp3","ea84cd88fbab":"audio/ai14-image-mockup/ea84cd88fbab.mp3","dfb3e4afa929":"audio/ai14-image-mockup/dfb3e4afa929.mp3","7f3f04a2d7d3":"audio/ai14-image-mockup/7f3f04a2d7d3.mp3","57f54cf2d9c1":"audio/ai14-image-mockup/57f54cf2d9c1.mp3","859e2d80d062":"audio/ai14-image-mockup/859e2d80d062.mp3","dec1ce6c690b":"audio/ai14-image-mockup/dec1ce6c690b.mp3","f3bc581be169":"audio/ai14-image-mockup/f3bc581be169.mp3","3fb0e684b56b":"audio/ai14-image-mockup/3fb0e684b56b.mp3","a7bc92297e7c":"audio/ai14-image-mockup/a7bc92297e7c.mp3","61478020c742":"audio/ai14-image-mockup/61478020c742.mp3","f6bd16a3d94c":"audio/ai14-image-mockup/f6bd16a3d94c.mp3","c01dece1e5f7":"audio/ai14-image-mockup/c01dece1e5f7.mp3","5ccb7284b00b":"audio/ai14-image-mockup/5ccb7284b00b.mp3","85a58dbfe9d3":"audio/ai14-image-mockup/85a58dbfe9d3.mp3","e0293c5ef2f8":"audio/ai14-image-mockup/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai14-image-mockup/9bb8216b6df6.mp3","3ca881a1905e":"audio/ai14-image-mockup/3ca881a1905e.mp3","dab05dcf3741":"audio/ai14-image-mockup/dab05dcf3741.mp3","06cce1081b61":"audio/ai14-image-mockup/06cce1081b61.mp3","af6ba89d9b27":"audio/ai14-image-mockup/af6ba89d9b27.mp3","aca2b0992481":"audio/ai14-image-mockup/aca2b0992481.mp3","66590c21d92e":"audio/ai14-image-mockup/66590c21d92e.mp3","e18a189a9371":"audio/ai14-image-mockup/e18a189a9371.mp3","8af1f0edc12c":"audio/ai14-image-mockup/8af1f0edc12c.mp3","570e87ed3a92":"audio/ai14-image-mockup/570e87ed3a92.mp3","84ac7bc54ded":"audio/ai14-image-mockup/84ac7bc54ded.mp3","758e0bb8aa33":"audio/ai14-image-mockup/758e0bb8aa33.mp3","3938b3af3f03":"audio/ai14-image-mockup/3938b3af3f03.mp3","5082421b3b2d":"audio/ai14-image-mockup/5082421b3b2d.mp3","d8cf69edbced":"audio/ai14-image-mockup/d8cf69edbced.mp3","f99ef9d5501a":"audio/ai14-image-mockup/f99ef9d5501a.mp3","92af8d9fe039":"audio/ai14-image-mockup/92af8d9fe039.mp3","d9e66eaf9ddb":"audio/ai14-image-mockup/d9e66eaf9ddb.mp3","15d03067f367":"audio/ai14-image-mockup/15d03067f367.mp3","fc0238a70c17":"audio/ai14-image-mockup/fc0238a70c17.mp3","b478fe5c05a5":"audio/ai14-image-mockup/b478fe5c05a5.mp3","be746fd3ca56":"audio/ai14-image-mockup/be746fd3ca56.mp3","0d36a7d24752":"audio/ai14-image-mockup/0d36a7d24752.mp3","10b25f97ef70":"audio/ai14-image-mockup/10b25f97ef70.mp3","823217234fe1":"audio/ai14-image-mockup/823217234fe1.mp3","0dd7d71b7ba6":"audio/ai14-image-mockup/0dd7d71b7ba6.mp3","27c745f46945":"audio/ai14-image-mockup/27c745f46945.mp3","2e7156f87f80":"audio/ai14-image-mockup/2e7156f87f80.mp3","04bd5c8cdecd":"audio/ai14-image-mockup/04bd5c8cdecd.mp3","07a7249122f3":"audio/ai14-image-mockup/07a7249122f3.mp3","388859a9d287":"audio/ai14-image-mockup/388859a9d287.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.bsay','.sub','.cb'],extraNonDecorateSelectors:'.sugchip,.chk,textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
 <script>window.TRY_REAL={"title":"ให้ AI วางผลงานของเราในฉากจริง","intro":"ใช้เครื่องมือสร้างภาพที่รับรูปภาพได้ (เช่น Gemini หรือ ChatGPT) อัปโหลดภาพผลงานหรือสินค้าของเรา แล้วสั่งฉากกับแสง","links":[{"label":"เปิด Gemini","url":"https://gemini.google.com"},{"label":"เปิด ChatGPT","url":"https://chatgpt.com"}],"prompt":"นำภาพที่แนบนี้ไปจัดวางเป็นโปสเตอร์บนผนัง[แกลเลอรีสีขาวเรียบ] แสง[สลัวนุ่มนวล] ให้ดูเป็นภาพถ่ายจริง และคงลายเส้นกับสีของงานต้นฉบับไว้ให้เหมือนเดิม","steps":["เลือกภาพงานวาดหรือสินค้าของเรา (ไม่ใช้รูปใบหน้าตัวเองหรือคนอื่น) แล้วแนบรูปพร้อมวางคำสั่ง","เปลี่ยนส่วนในวงเล็บ [ ] เป็นฉากและแสงที่ต้องการ แล้วกดสร้าง","ลองเปลี่ยนเฉพาะฉาก (เช่น เป็นโต๊ะไม้ แสงธรรมชาติ) แล้วเทียบผลสองรอบ"],"observe":["ฉากและแสงตรงกับที่เราสั่งไหม","งานของเรายังเหมือนต้นฉบับไหม (สีเพี้ยน ตัวอักษรผิด รายละเอียดหายไหม)","ถ้านำภาพไปใช้จริง เราจะบอกคนดูอย่างไรว่าฉากนี้สร้างด้วย AI"],"note":"ภาพที่อัปโหลดจะถูกส่งไปยังบริษัทเจ้าของเครื่องมือ ใช้เฉพาะภาพที่ไม่มีข้อมูลส่วนตัวและไม่ใช่ภาพใบหน้า"};</script>
 <script src="_lib/try-real.js"></script>
