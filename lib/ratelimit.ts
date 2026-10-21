@@ -1,7 +1,17 @@
 // Best-effort in-memory sliding-window rate limiter. Persists across invocations
 // on a warm serverless instance (resets on cold start; not shared across
-// instances) — a throttle, not a hard guarantee. BotID guards teacher signup.
+// instances) — a throttle, not a hard guarantee. BotID also guards admin sign-in.
 const hits = new Map<string, number[]>();
+
+// Memory cap: drop the oldest keys (Map keeps insertion order) instead of wiping everything,
+// so one burst of new IPs can't erase a password-guessing lockout.
+function evict() {
+  while (hits.size > 5000) {
+    const first = hits.keys().next().value;
+    if (first === undefined) break;
+    hits.delete(first);
+  }
+}
 
 export function rateLimit(key: string, max: number, windowMs: number): boolean {
   const now = Date.now();
@@ -9,7 +19,7 @@ export function rateLimit(key: string, max: number, windowMs: number): boolean {
   if (arr.length >= max) { hits.set(key, arr); return false; }
   arr.push(now);
   hits.set(key, arr);
-  if (hits.size > 5000) hits.clear(); // crude memory cap
+  evict();
   return true;
 }
 
@@ -27,7 +37,7 @@ export function recordFailure(key: string) {
   const arr = hits.get(key) || [];
   arr.push(Date.now());
   hits.set(key, arr);
-  if (hits.size > 5000) hits.clear();
+  evict();
 }
 
 // Clear a key's history — call on a successful login so honest users start fresh.

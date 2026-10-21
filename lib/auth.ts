@@ -9,7 +9,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
 
 const COOKIE = 'cs_admin';
-const MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const MAX_AGE = 60 * 60 * 12; // 12 hours: one school day, so a shared laptop doesn't stay signed in
 
 function secret(): string {
   const s = process.env.SESSION_SECRET;

@@ -55,9 +55,8 @@ export const AREAS: Area[] = [
     // Structured on the Experience AI foundation arc (Raspberry Pi Foundation
     // × Google DeepMind): what AI is → how ML learns from data → bias in data
     // → generative AI tools & prompting → applying AI → applied challenge.
-    // Each game forces the actual skill (label real data, fix a biased
-    // dataset, click the real UI, write your own prompt, design system rules)
-    // instead of letting a kid pattern-match a multiple-choice answer key.
+    // Each lesson has the child DO something (order, match, assemble, spot the problem)
+    // rather than only pick from a multiple-choice list.
     num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 3 โมดูล 9 บทเรียน',
     modules: [
       {
@@ -72,7 +71,7 @@ export const AREAS: Area[] = [
       {
         key: 'm2-collab', icon: '🤝', title: 'ทำงานร่วมกับ AI', sub: 'สั่งงาน AI ให้ชัดเจน ตรวจสอบก่อนเชื่อ และรู้ว่างานไหนควรใช้ AI',
         games: [
-          { code: 'g-ui-inspector', icon: '🖥️', th: 'แชต AI: รู้จักปุ่ม และเขียนคำสั่งให้ชัด', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI เขียนคำสั่งให้ครบ 3 ส่วน (ใคร/ทำอะไร/ตอบแบบไหน) และบอกฉากกับแสงเมื่อสั่งสร้างภาพ', file: '/games/ai04-ui-inspector.html' },
+          { code: 'g-ui-inspector', icon: '🖥️', th: 'แชต AI: รู้จักปุ่ม และเขียนคำสั่งให้ชัด', desc: 'รู้จักปุ่มต่าง ๆ บนแชต AI เขียนคำสั่งให้ครบ 3 ส่วน (ใคร/ทำอะไร/ตอบแบบไหน) และบอกฉากกับแสงเมื่อสั่งสร้างภาพ', file: '/games/ai04-ui-inspector.html' },
           { code: 'g-discernment', icon: '🔍', th: 'นักตรวจสอบคำตอบ AI', desc: 'อ่านคำตอบของ AI อย่างเท่าทัน จับจุดที่ผิด มั่นใจเกินจริง หรือลำเอียง ก่อนเชื่อ', file: '/games/ai06-discernment.html' },
           { code: 'g-diligence', icon: '🧾', th: 'ใช้ AI อย่างรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และเช็กก่อนพิมพ์ว่าข้อมูลไหนปลอดภัย ควรถามผู้ใหญ่ หรือไม่ควรพิมพ์', file: '/games/ai07-diligence.html' },
         ],

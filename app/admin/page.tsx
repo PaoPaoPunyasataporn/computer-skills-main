@@ -113,9 +113,9 @@ export default function AdminPage() {
               <h1 style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 24, margin: '6px 0 2px' }}>แดชบอร์ดครู</h1>
               <p style={{ fontFamily: 'Sarabun', fontSize: 14, color: 'var(--muted2)' }}>ใส่รหัสผ่านของครูเพื่อดูว่านักเรียนคนไหนผ่านการรับรองแล้ว</p>
             </div>
-            <input style={field} type="password" placeholder="รหัสผ่านครู" autoComplete="current-password"
+            <input style={field} type="password" aria-label="รหัสผ่านครู" placeholder="รหัสผ่านครู" autoComplete="current-password"
               value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && signIn()} />
-            {err && <div style={{ color: '#C23B2A', fontFamily: 'Sarabun', fontSize: 14, marginTop: 8 }}>{err}</div>}
+            {err && <div role="alert" style={{ color: '#C23B2A', fontFamily: 'Sarabun', fontSize: 14, marginTop: 8 }}>{err}</div>}
             <button className="btn3d blue" style={{ width: '100%', marginTop: 14, opacity: busy ? 0.6 : 1 }} disabled={busy} onClick={signIn}>
               {busy ? '...' : 'เข้าสู่ระบบ'}
             </button>
@@ -165,7 +165,7 @@ export default function AdminPage() {
         <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
           {[['all', `ทุกชั้น (${certs.length})`] as const, ...gradeCounts.map(([g, n]) => [g, `${g} (${n})`] as const)].map(([g, label]) => (
             <button
-              key={g} type="button" onClick={() => setGrade(g)}
+              key={g} type="button" aria-pressed={grade === g} onClick={() => setGrade(g)}
               style={{ padding: '7px 14px', borderRadius: 99, border: '1.5px solid var(--line)', background: grade === g ? 'var(--green-d, #2E8B30)' : '#fff', color: grade === g ? '#fff' : 'var(--ink)', fontFamily: 'Mitr', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}
             >{label}</button>
           ))}

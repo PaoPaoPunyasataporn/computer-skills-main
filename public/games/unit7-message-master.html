@@ -510,7 +510,7 @@ const VIEWS = {
       const u=$('liUser').value.trim().replace(/\s/g,''), p=$('liPass').value;
       if(!u||!p){ nudge('กรอกชื่อผู้ใช้และรหัสผ่านให้ครบนะ', c); return; }
       if(u!==account.username || p!==account.password){ nudge('ชื่อผู้ใช้หรือรหัสผ่านไม่ตรงกับที่ตั้งไว้ ลองใหม่ (ชื่อผู้ใช้: '+account.username+')', $('liPass')); return; }
-      missionSuccess('เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ '+esc(account.first));
+      missionSuccess('เข้าสู่ระบบสำเร็จ! ยินดีต้อนรับ '+account.first);
     };
   },
 
