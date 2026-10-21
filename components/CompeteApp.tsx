@@ -91,21 +91,7 @@ export default function CompeteApp() {
   const stateRef = useRef<RoomState | null>(null);
   useEffect(() => { stateRef.current = state; }, [state]);
 
-  // Remember the nickname between visits so a child doesn't retype it every race.
-  // localStorage is client-only, so this can only run after mount.
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('cs_compete_me');
-      if (!raw) return;
-      const m = JSON.parse(raw);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (m.name) setName(String(m.name).slice(0, 16));
-      if (m.avatar) setAvatar(String(m.avatar));
-    } catch { /* ignore */ }
-  }, []);
-  useEffect(() => {
-    try { localStorage.setItem('cs_compete_me', JSON.stringify({ name, avatar })); } catch { /* ignore */ }
-  }, [name, avatar]);
+  // The nickname is deliberately NOT remembered: every child types their own each time.
 
   const post = useCallback(async (body: Record<string, unknown>) => {
     const r = await fetch('/api/compete', {

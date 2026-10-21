@@ -9,6 +9,7 @@ import { saveProgress } from '@/lib/progress';
 import { computeStats, recordDaily } from '@/lib/gamify';
 import GameOverlay, { type BossScore } from '@/components/GameOverlay';
 import CertificateModal from '@/components/CertificateModal';
+import ClearComputer from '@/components/ClearComputer';
 
 const MAIN_AREAS = AREAS.filter((a) => a.num <= 5);
 
@@ -51,7 +52,7 @@ export default function Home() {
     setBossOpen(false);
   }
 
-  // localStorage is client-only, so stats must load after mount.
+  // sessionStorage is client-only, so stats must load after mount.
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadStats(); }, []);
 
@@ -123,6 +124,7 @@ export default function Home() {
               อ้างอิง <b>DigComp 3.0</b> (JRC, 2025) · พัฒนาโดย <b>PaoPao Punyasataporn</b><br />
               <Link href="/admin" className="btn-ghost3d" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 14, fontSize: 14 }}>👩‍🏫 สำหรับครู · ดูรายชื่อผู้ผ่านการรับรอง</Link>
               <br /><Link href="/guide" className="btn-ghost3d" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 14 }}>📘 คู่มือครู</Link>
+              <br /><ClearComputer />
             </div>
 
             <p style={{ textAlign: 'center', maxWidth: 560, margin: '14px auto 0', fontSize: 11.5, color: 'var(--muted3)', lineHeight: 1.7 }}>
