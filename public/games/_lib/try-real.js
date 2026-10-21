@@ -45,7 +45,8 @@
   var L_STEPS = 'ทำตามนี้ทีละขั้น';
   var L_OBS = '🔎 สิ่งที่ต้องสังเกต (ติ๊กเมื่อเช็กแล้ว)';
   // each sentence stays under the generator's 160-character clip limit
-  var L_SAFE = ['ใช้เฉพาะเมื่อโรงเรียนหรือผู้ปกครองอนุญาต และอายุถึงเกณฑ์ของเครื่องมือนั้น', 'ไม่พิมพ์ข้อมูลส่วนตัว (ชื่อเต็ม ที่อยู่ เบอร์โทร รหัสผ่าน)', 'ถ้าใช้ไม่ได้ ข้ามส่วนนี้ได้ หรือให้ครูลองให้ดูหน้าห้อง'];
+  var L_SAFE = ['ใช้เฉพาะเมื่อโรงเรียนหรือผู้ปกครองอนุญาต และอายุถึงเกณฑ์ของเครื่องมือนั้น', 'ไม่พิมพ์ข้อมูลส่วนตัว (ชื่อเต็ม ที่อยู่ เบอร์โทร รหัสผ่าน)', 'ชื่อปุ่มและเมนูของเครื่องมืออาจเปลี่ยนไปตามเวลา ถ้าไม่ตรงให้ถามครู', 'ถ้าใช้ไม่ได้ ข้ามส่วนนี้ได้ หรือให้ครูลองให้ดูหน้าห้อง'];
+  var L_PRINT = '🖨️ พิมพ์เป็นใบงาน';
 
   function render(host){
     var html = '<div class="tr-card">'
@@ -68,8 +69,15 @@
       }).join('') + '</div>'
       + (C.note ? '<div class="tr-note">' + esc(C.note) + '</div>' : '')
       + '<div class="tr-note">' + L_SAFE.map(function(t){ return '<div>' + t + '</div>'; }).join('') + '</div>'
+      + '<button type="button" class="tr-copy" id="trPrint" style="margin-top:10px">' + L_PRINT + '</button>'
       + '</div>';
     host.innerHTML = html;
+    var pbtn = document.getElementById('trPrint');
+    if (pbtn) pbtn.onclick = function(){
+      function go(){ window.csPrint.tryReal(C); }
+      if (window.csPrint) return go();
+      var s = document.createElement('script'); s.src = '_lib/print-sheet.js'; s.onload = go; document.head.appendChild(s);
+    };
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     var btn = document.getElementById('trCopy');
     if (btn) btn.onclick = function(){ copyText(C.prompt, btn); };

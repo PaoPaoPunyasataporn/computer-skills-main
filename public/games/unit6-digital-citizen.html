@@ -121,6 +121,17 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .optbtn.wrong{border-color:var(--red);background:var(--red-light);color:#A32E20;}
 .optrow{display:flex;gap:8px;width:100%;margin:14px 0 4px;}
 .optrow .optbtn{text-align:center;font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;padding:14px 6px;}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px;}
+.mgrid .optcol{margin:0;}
+.optbtn.sel{border-color:var(--primary);background:var(--primary-light);}
+.slot{margin:12px 0 4px;text-align:left;}
+.slot .slotlbl{display:inline-block;font-family:'Mitr',sans-serif;font-size:12.5px;font-weight:700;color:var(--primary-dark);margin-bottom:2px;}
+.ordseq{display:flex;flex-direction:column;gap:8px;margin:14px 0 8px;min-height:48px;padding:10px;border:2px dashed var(--border);border-radius:14px;}
+.ordhint{font-size:13px;color:var(--text3);text-align:center;padding:6px;}
+.seqitem{display:flex;gap:10px;align-items:center;border-color:var(--primary);}
+.seqno{flex:none;width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;font-family:'Mitr',sans-serif;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.ordfix{margin:4px 0 8px 22px;padding:0;}
+.ordfix li{margin-bottom:3px;}
 .ctxbox{width:100%;background:var(--panel2);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;}
 .cmp{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:10px;text-align:left;}
 .cmp .cbox{border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.65;border:1.5px solid var(--border);background:var(--panel2);}
@@ -254,52 +265,172 @@ function renderConceptCard(){
 function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
 function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
 
-// ===== Step 3: choose-and-explain rounds =====
-// type 'v' = three fixed verdict buttons; type 'p' = pick the best of several written options (order shuffled).
+// ===== Step 3: activities =====
+// 'v' fixed verdict buttons · 'p' pick the best of several · 'o' put the steps in order · 'm' match the pairs ·
+// 'a' assemble an answer from parts · 's' spot the problem. A round answered wrongly comes back once at the end
+// ("review what you missed"); stars only count the first attempt.
 const VERDICTS = ["✅ ทำได้เลย","🙋 ขออนุญาตก่อน","🚫 ไม่ควรทำ"];
-const ROUNDS = [{"type":"v","q":"โพสต์รูปกิจกรรมกลุ่มที่เห็นหน้าเพื่อนหลายคน ลงโซเชียลที่ใคร ๆ ก็ดูได้","ans":1,"why":"รูปที่เห็นหน้าคนอื่นต้องถามเจ้าของใบหน้าก่อนว่ายอมให้โพสต์ไหม โดยเฉพาะบัญชีสาธารณะ"},{"type":"v","q":"แคปหน้าจอแชตส่วนตัวของเพื่อนส่งให้คนอื่นดู เพราะเห็นว่าตลก","ans":2,"why":"ข้อความส่วนตัวเป็นของคนที่เขียน การเอาไปเผยแพร่ทำให้เสียความไว้ใจและอาจทำร้ายความรู้สึกเพื่อน"},{"type":"v","q":"แชร์ภาพทิวทัศน์ที่เราถ่ายเองลงบัญชีของเรา","ans":0,"why":"เป็นผลงานและข้อมูลของเราเอง ไม่มีใครถูกเปิดเผย โพสต์ได้ตามปกติ"},{"type":"v","q":"เห็นเพื่อนถูกล้อเลียนในกลุ่มแชต จึงแคปภาพส่งให้ครูหรือผู้ปกครองที่ไว้ใจ","ans":0,"why":"การรายงานการรังแกกับผู้ใหญ่ที่ไว้ใจเป็นสิ่งที่ควรทำ เพราะช่วยให้เพื่อนปลอดภัยและหยุดเรื่องได้"},{"type":"v","q":"ตั้งชื่อผู้ใช้ในเกมออนไลน์เป็นชื่อจริง นามสกุลจริง และวันเกิดของเรา","ans":2,"why":"ข้อมูลเหล่านี้ทำให้คนแปลกหน้ารู้ตัวตนเรา ควรใช้ชื่อเล่นหรือชื่อที่คิดขึ้นมาแทน"},{"type":"v","q":"เขียนคอมเมนต์ด่าคนที่ความเห็นไม่ตรงกับเราในโพสต์สาธารณะ","ans":2,"why":"การด่าทำร้ายคนอื่นและทิ้งร่องรอยไม่ดีไว้กับชื่อเรา ถ้าไม่เห็นด้วยให้แย้งอย่างสุภาพ หรือเลือกไม่ตอบ"},{"type":"v","q":"ใช้รูปการ์ตูนเป็นรูปโปรไฟล์ในแอปที่มีคนแปลกหน้าเยอะ","ans":0,"why":"ไม่ต้องเปิดเผยใบหน้าจริงในที่สาธารณะ เป็นวิธีปกป้องตัวตนที่ดี"},{"type":"v","q":"ติดแท็กเพื่อนในรูปที่เพื่อนกำลังหลับหน้าเหวอ แล้วโพสต์ให้ทุกคนเห็น","ans":1,"why":"ก่อนติดแท็กหรือโพสต์รูปที่คนอื่นอาจอาย ควรถามเขาก่อนเสมอ"},{"type":"p","q":"ต้องการแจ้งครูว่าไม่สบาย ขอเลื่อนส่งงาน ควรแจ้งทางไหนดีที่สุด?","opts":[{"t":"ส่งข้อความหาครูโดยตรงผ่านช่องทางที่โรงเรียนกำหนด หรืออีเมล","ok":true,"why":"ครูได้รับเรื่องโดยตรง ชัดเจน และเรื่องส่วนตัวไม่กลายเป็นเรื่องของทั้งห้อง"},{"t":"โพสต์ในกลุ่มแชตของทั้งห้อง","ok":false,"why":"ครูอาจไม่เห็น และเรื่องส่วนตัวของเราถูกเปิดเผยให้ทุกคนรู้"},{"t":"คอมเมนต์ใต้โพสต์ของเพื่อนคนหนึ่ง","ok":false,"why":"เป็นช่องทางที่ครูไม่ได้ใช้ติดตามงาน เรื่องจึงอาจตกหล่น"}]},{"type":"p","q":"ข้อความไหนสุภาพและชัดเจนที่สุด สำหรับขอให้เพื่อนในกลุ่มส่งงานส่วนของตัวเอง?","opts":[{"t":"สวัสดี ขอส่วนของงานภายในพรุ่งนี้ 5 โมงเย็นได้ไหม จะได้รวมไฟล์ส่งครูทัน ขอบคุณนะ","ok":true,"why":"บอกสิ่งที่ต้องการ เวลา และเหตุผลชัดเจน ด้วยน้ำเสียงสุภาพ"},{"t":"ส่งงานมาเดี๋ยวนี้ ช้าจัง!!!","ok":false,"why":"น้ำเสียงเหมือนตำหนิ ทำให้อีกฝ่ายรู้สึกไม่ดีและไม่ยอมช่วย"},{"t":"ไม่ทำงานเลยนะ","ok":false,"why":"กล่าวหาโดยไม่บอกว่าต้องการอะไร และอาจไม่จริง"}]},{"type":"p","q":"มีคนเขียนคอมเมนต์ไม่ดีใส่โพสต์ของเรา ควรทำอะไรก่อน?","opts":[{"t":"ไม่ตอบโต้ เก็บภาพหน้าจอไว้ แล้วบอกผู้ใหญ่ที่ไว้ใจ หรือใช้ปุ่มรายงานของแอป","ok":true,"why":"ทำให้ไม่บานปลายและมีหลักฐานให้ผู้ใหญ่ช่วยจัดการได้"},{"t":"ด่ากลับทันทีให้สาสม","ok":false,"why":"ทำให้เรื่องบานปลาย และเราก็ทิ้งร่องรอยที่ไม่ดีไว้ด้วย"},{"t":"ลบบัญชีทิ้งโดยไม่บอกใคร","ok":false,"why":"ปัญหายังอยู่ และไม่มีใครรู้ที่จะช่วยเรา"}]},{"type":"p","q":"ข้อไหนทำให้ร่องรอยดิจิทัลของเรามีภาพลักษณ์ดีและปลอดภัยกว่า?","opts":[{"t":"เลือกโพสต์ผลงานและสิ่งดี ๆ ที่ภูมิใจ โดยไม่เปิดเผยที่อยู่หรือตารางชีวิตประจำวัน","ok":true,"why":"ได้ภาพลักษณ์ที่ดี และคนแปลกหน้าไม่รู้ว่าเราอยู่ที่ไหน"},{"t":"โพสต์ทุกอย่างที่ทำในแต่ละวัน พร้อมบอกว่าอยู่ที่ไหนตอนไหน","ok":false,"why":"คนแปลกหน้าติดตามตัวเราได้ และรายละเอียดบางอย่างอาจทำให้อายภายหลัง"},{"t":"ใช้ชื่อบัญชีเดียวกับเบอร์โทรในทุกแอป","ok":false,"why":"ทำให้คนเชื่อมโยงข้อมูลของเราจากหลายที่เข้าด้วยกันได้ง่าย"}]},{"type":"p","q":"ทำสไลด์กลุ่มในไฟล์ออนไลน์ เพื่อนคนหนึ่งยังไม่ทำส่วนของตัวเอง ควรทำอย่างไรดีที่สุด?","opts":[{"t":"ทักเพื่อนอย่างสุภาพถามว่าติดปัญหาอะไรไหม ตกลงกำหนดส่งใหม่ และบอกครูถ้ายังไม่คืบหน้า","ok":true,"why":"ช่วยให้เข้าใจกันก่อน และงานกลุ่มยังแฟร์กับทุกคน"},{"t":"ลบชื่อเพื่อนออกจากงานเงียบ ๆ","ok":false,"why":"ไม่แฟร์ และอาจเข้าใจผิดโดยที่เพื่อนยังไม่ได้รับโอกาสอธิบาย"},{"t":"ทำส่วนของเพื่อนทั้งหมดโดยไม่บอกใคร","ok":false,"why":"เพื่อนไม่ได้เรียนรู้ และเราต้องแบกงานเกินกำลัง"}]},{"type":"p","q":"เพื่อนช่วยออกแบบปกสไลด์ให้งานกลุ่ม ควรทำอย่างไรกับผลงานของเพื่อน?","opts":[{"t":"ใส่ชื่อเพื่อนในหน้าเครดิตว่าเป็นผู้ออกแบบปก","ok":true,"why":"การให้เครดิตเป็นการให้เกียรติคนที่ลงแรงช่วย"},{"t":"ไม่พูดถึง เพราะเป็นงานกลุ่มอยู่แล้ว","ok":false,"why":"คนที่ทำควรได้รับการยอมรับ"},{"t":"บอกว่าเราเป็นคนออกแบบเอง","ok":false,"why":"ไม่ซื่อสัตย์ต่อเพื่อน"}]},{"type":"p","q":"เห็นข่าวลือเกี่ยวกับเพื่อนร่วมโรงเรียนในกลุ่มแชต ควรทำอย่างไร?","opts":[{"t":"ไม่แชร์ต่อ เช็กความจริงก่อน และชวนคนในกลุ่มให้หยุดแชร์เรื่องที่ยังไม่แน่ใจ","ok":true,"why":"ข่าวลือทำร้ายคนได้โดยที่ไม่มีหลักฐาน การหยุดแชร์ช่วยให้เรื่องจบเร็ว"},{"t":"แชร์ต่อเพราะทุกคนก็แชร์กัน","ok":false,"why":"ยิ่งแชร์ ยิ่งทำร้ายเพื่อนมากขึ้น และเราก็มีส่วนรับผิดชอบ"},{"t":"เพิ่มรายละเอียดตามที่เราเดาเอง","ok":false,"why":"เป็นการสร้างข่าวลือใหม่ที่ไม่มีหลักฐาน"}]},{"type":"p","q":"อยากถามครูเรื่องการบ้านตอนห้าทุ่ม ควรทำอย่างไร?","opts":[{"t":"ส่งข้อความสุภาพสั้น ๆ แล้วรอให้ครูตอบในเวลาทำการ","ok":true,"why":"เคารพเวลาส่วนตัวของครู และได้คำตอบที่ชัดเจนในเวลาที่เหมาะสม"},{"t":"โทรหาครูซ้ำหลายสายจนกว่าจะรับ","ok":false,"why":"รบกวนเวลาส่วนตัว และไม่สุภาพ"},{"t":"ส่งข้อความซ้ำทุกนาทีจนกว่าครูจะตอบ","ok":false,"why":"ทำให้ครูรู้สึกกดดันและไม่อยากตอบ"}]}];
+const ROUNDS = [{"type":"v","q":"โพสต์รูปกิจกรรมกลุ่มที่เห็นหน้าเพื่อนหลายคน ลงโซเชียลที่ใคร ๆ ก็ดูได้","ans":1,"why":"รูปที่เห็นหน้าคนอื่นต้องถามเจ้าของใบหน้าก่อนว่ายอมให้โพสต์ไหม โดยเฉพาะบัญชีสาธารณะ"},{"type":"v","q":"แคปหน้าจอแชตส่วนตัวของเพื่อนส่งให้คนอื่นดู เพราะเห็นว่าตลก","ans":2,"why":"ข้อความส่วนตัวเป็นของคนที่เขียน การเอาไปเผยแพร่ทำให้เสียความไว้ใจและอาจทำร้ายความรู้สึกเพื่อน"},{"type":"o","q":"ถ้ามีคนเขียนคอมเมนต์ไม่ดีใส่โพสต์ของเรา เรียงขั้นตอนที่ควรทำจากแรกไปหลัง","items":["ไม่ตอบโต้กลับ","เก็บภาพหน้าจอไว้เป็นหลักฐาน","บอกครูหรือผู้ปกครองที่ไว้ใจ","กดปุ่มรายงานของแอป"],"why":"เริ่มจากไม่ตอบโต้ แล้วเก็บหลักฐาน บอกผู้ใหญ่ และรายงานแอป เพื่อให้เรื่องจบอย่างปลอดภัยและมีหลักฐาน"},{"type":"v","q":"แชร์ภาพทิวทัศน์ที่เราถ่ายเองลงบัญชีของเรา","ans":0,"why":"เป็นผลงานและข้อมูลของเราเอง ไม่มีใครถูกเปิดเผย โพสต์ได้ตามปกติ"},{"type":"v","q":"เห็นเพื่อนถูกล้อเลียนในกลุ่มแชต จึงแคปภาพส่งให้ครูหรือผู้ปกครองที่ไว้ใจ","ans":0,"why":"การรายงานการรังแกกับผู้ใหญ่ที่ไว้ใจเป็นสิ่งที่ควรทำ เพราะช่วยให้เพื่อนปลอดภัยและหยุดเรื่องได้"},{"type":"m","q":"จับคู่เรื่องที่ต้องการแจ้งกับช่องทางที่เหมาะที่สุด","pairs":[["ขอเลื่อนส่งงานเพราะป่วย","ข้อความหาครูโดยตรง"],["นัดแบ่งงานโปรเจกต์กลุ่ม","แชตกลุ่มของโปรเจกต์"],["ถูกเพื่อนล้อเลียนซ้ำ ๆ","ผู้ใหญ่ที่ไว้ใจ"],["อยากขอบคุณเพื่อนที่ช่วยงาน","ข้อความถึงเพื่อนโดยตรง"]],"why":"เรื่องส่วนตัวหรือสำคัญควรแจ้งตรงถึงคนที่เกี่ยวข้อง ส่วนเรื่องงานกลุ่มคุยในกลุ่มที่ทุกคนเห็นพร้อมกัน"},{"type":"v","q":"ตั้งชื่อผู้ใช้ในเกมออนไลน์เป็นชื่อจริง นามสกุลจริง และวันเกิดของเรา","ans":2,"why":"ข้อมูลเหล่านี้ทำให้คนแปลกหน้ารู้ตัวตนเรา ควรใช้ชื่อเล่นหรือชื่อที่คิดขึ้นมาแทน"},{"type":"v","q":"เขียนคอมเมนต์ด่าคนที่ความเห็นไม่ตรงกับเราในโพสต์สาธารณะ","ans":2,"why":"การด่าทำร้ายคนอื่นและทิ้งร่องรอยไม่ดีไว้กับชื่อเรา ถ้าไม่เห็นด้วยให้แย้งอย่างสุภาพ หรือเลือกไม่ตอบ"},{"type":"a","q":"ประกอบข้อความขอให้เพื่อนส่งงานส่วนของตัวเองให้สุภาพและชัดเจน","slots":[{"label":"ทักทาย","opts":["สวัสดี","เฮ้ย ว่าไง","ฮัลโหล รีบมาหน่อย"]},{"label":"สิ่งที่ขอ","opts":["ขอส่วนของงานภายในพรุ่งนี้ 5 โมงเย็นได้ไหม","ส่งมาเดี๋ยวนี้","ทำไมยังไม่ส่งสักที"]},{"label":"เหตุผล","opts":["จะได้รวมไฟล์ส่งครูทัน","เพราะฉันไม่อยากทำเอง","ไม่รู้เหมือนกัน"]},{"label":"ปิดท้าย","opts":["ขอบคุณนะ","รีบหน่อยนะ","ไม่ต้องตอบก็ได้"]}],"why":"ข้อความที่ดีมีทักทาย บอกสิ่งที่ขอพร้อมเวลา บอกเหตุผล และปิดท้ายด้วยคำขอบคุณ"},{"type":"v","q":"ใช้รูปการ์ตูนเป็นรูปโปรไฟล์ในแอปที่มีคนแปลกหน้าเยอะ","ans":0,"why":"ไม่ต้องเปิดเผยใบหน้าจริงในที่สาธารณะ เป็นวิธีปกป้องตัวตนที่ดี"},{"type":"v","q":"ติดแท็กเพื่อนในรูปที่เพื่อนกำลังหลับหน้าเหวอ แล้วโพสต์ให้ทุกคนเห็น","ans":1,"why":"ก่อนติดแท็กหรือโพสต์รูปที่คนอื่นอาจอาย ควรถามเขาก่อนเสมอ"},{"type":"s","q":"อ่านข้อความนี้ แล้วแตะส่วนที่ไม่สุภาพ","segs":["สวัสดีทุกคน","งานกลุ่มของเรายังไม่เสร็จ","ใครไม่ทำก็ไร้ความสามารถมาก","ช่วยกันทำให้เสร็จก่อนวันศุกร์นะ"],"bad":2,"why":"การว่าคนอื่นไร้ความสามารถทำให้เสียความรู้สึก ควรพูดถึงงานและสิ่งที่ต้องทำ ไม่ใช่ตัดสินตัวคน"},{"type":"p","q":"ข้อไหนทำให้ร่องรอยดิจิทัลของเรามีภาพลักษณ์ดีและปลอดภัยกว่า?","opts":[{"t":"เลือกโพสต์ผลงานและสิ่งดี ๆ ที่ภูมิใจ โดยไม่เปิดเผยที่อยู่หรือตารางชีวิตประจำวัน","ok":true,"why":"ได้ภาพลักษณ์ที่ดี และคนแปลกหน้าไม่รู้ว่าเราอยู่ที่ไหน"},{"t":"โพสต์ทุกอย่างที่ทำในแต่ละวัน พร้อมบอกว่าอยู่ที่ไหนตอนไหน","ok":false,"why":"คนแปลกหน้าติดตามตัวเราได้ และรายละเอียดบางอย่างอาจทำให้อายภายหลัง"},{"t":"ใช้ชื่อบัญชีเดียวกับเบอร์โทรในทุกแอป","ok":false,"why":"ทำให้คนเชื่อมโยงข้อมูลของเราจากหลายที่เข้าด้วยกันได้ง่าย"}]},{"type":"p","q":"ทำสไลด์กลุ่มในไฟล์ออนไลน์ เพื่อนคนหนึ่งยังไม่ทำส่วนของตัวเอง ควรทำอย่างไรดีที่สุด?","opts":[{"t":"ทักเพื่อนอย่างสุภาพถามว่าติดปัญหาอะไรไหม ตกลงกำหนดส่งใหม่ และบอกครูถ้ายังไม่คืบหน้า","ok":true,"why":"ช่วยให้เข้าใจกันก่อน และงานกลุ่มยังแฟร์กับทุกคน"},{"t":"ลบชื่อเพื่อนออกจากงานเงียบ ๆ","ok":false,"why":"ไม่แฟร์ และอาจเข้าใจผิดโดยที่เพื่อนยังไม่ได้รับโอกาสอธิบาย"},{"t":"ทำส่วนของเพื่อนทั้งหมดโดยไม่บอกใคร","ok":false,"why":"เพื่อนไม่ได้เรียนรู้ และเราต้องแบกงานเกินกำลัง"}]},{"type":"s","q":"แตะข้อมูลที่ไม่ควรโพสต์ในโปรไฟล์สาธารณะ","segs":["ชื่อเล่น น้องมิ้นท์","ชอบวาดรูปและเล่นดนตรี","บ้านเลขที่ 45 ซอยสุขใจ 7 ใกล้โรงเรียน","รูปโปรไฟล์เป็นการ์ตูน"],"bad":2,"why":"ที่อยู่บ้านทำให้คนแปลกหน้ารู้ว่าเราอยู่ที่ไหน ไม่ควรโพสต์ในที่สาธารณะ"},{"type":"p","q":"เพื่อนช่วยออกแบบปกสไลด์ให้งานกลุ่ม ควรทำอย่างไรกับผลงานของเพื่อน?","opts":[{"t":"ใส่ชื่อเพื่อนในหน้าเครดิตว่าเป็นผู้ออกแบบปก","ok":true,"why":"การให้เครดิตเป็นการให้เกียรติคนที่ลงแรงช่วย"},{"t":"ไม่พูดถึง เพราะเป็นงานกลุ่มอยู่แล้ว","ok":false,"why":"คนที่ทำควรได้รับการยอมรับ"},{"t":"บอกว่าเราเป็นคนออกแบบเอง","ok":false,"why":"ไม่ซื่อสัตย์ต่อเพื่อน"}]},{"type":"p","q":"เห็นข่าวลือเกี่ยวกับเพื่อนร่วมโรงเรียนในกลุ่มแชต ควรทำอย่างไร?","opts":[{"t":"ไม่แชร์ต่อ เช็กความจริงก่อน และชวนคนในกลุ่มให้หยุดแชร์เรื่องที่ยังไม่แน่ใจ","ok":true,"why":"ข่าวลือทำร้ายคนได้โดยที่ไม่มีหลักฐาน การหยุดแชร์ช่วยให้เรื่องจบเร็ว"},{"t":"แชร์ต่อเพราะทุกคนก็แชร์กัน","ok":false,"why":"ยิ่งแชร์ ยิ่งทำร้ายเพื่อนมากขึ้น และเราก็มีส่วนรับผิดชอบ"},{"t":"เพิ่มรายละเอียดตามที่เราเดาเอง","ok":false,"why":"เป็นการสร้างข่าวลือใหม่ที่ไม่มีหลักฐาน"}]},{"type":"p","q":"อยากถามครูเรื่องการบ้านตอนห้าทุ่ม ควรทำอย่างไร?","opts":[{"t":"ส่งข้อความสุภาพสั้น ๆ แล้วรอให้ครูตอบในเวลาทำการ","ok":true,"why":"เคารพเวลาส่วนตัวของครู และได้คำตอบที่ชัดเจนในเวลาที่เหมาะสม"},{"t":"โทรหาครูซ้ำหลายสายจนกว่าจะรับ","ok":false,"why":"รบกวนเวลาส่วนตัว และไม่สุภาพ"},{"t":"ส่งข้อความซ้ำทุกนาทีจนกว่าครูจะตอบ","ok":false,"why":"ทำให้ครูรู้สึกกดดันและไม่อยากตอบ"}]}];
 let rIdx = 0, wrongCount = 0, answered = false, curOpts = [];
+let queue = [], qPos = 0, reviewing = false, missed = [];
+let oSeq = [], oPool = [], mSel = null, mDone = 0, mWrong = false, aPick = [], roundWrong = false;
 
-function startPractice(){ rIdx = 0; wrongCount = 0; renderRound(); }
+function startPractice(){ wrongCount = 0; reviewing = false; missed = []; queue = ROUNDS.map(function(_, i){ return i; }); qPos = 0; showRound(); }
+function showRound(){ rIdx = queue[qPos]; renderRound(); }
+
 function renderRound(){
   const r = ROUNDS[rIdx];
-  answered = false;
-  $('roundTag').textContent = 'ข้อที่ ' + (rIdx+1) + '/' + ROUNDS.length;
+  answered = false; roundWrong = false;
+  $('roundTag').textContent = reviewing ? 'ทบทวนข้อที่พลาด ' + (qPos+1) + '/' + queue.length : 'ข้อที่ ' + (qPos+1) + '/' + queue.length;
   $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง';
   $('qSay').textContent = r.q;
-  if (r.ctx){ $('ctxBox').style.display = ''; $('ctxBox').textContent = r.ctx; } else { $('ctxBox').style.display = 'none'; }
-  if (r.type === 'v'){
-    curOpts = (r.labels || VERDICTS).map((v,i)=>({ t:v, ok: i===r.ans, why: r.why }));
-    $('optsWrap').innerHTML = '<div class="optrow">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
-  } else {
-    curOpts = shuffle(r.opts);
-    $('optsWrap').innerHTML = '<div class="optcol">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
-  }
-  document.querySelectorAll('#optsWrap .optbtn').forEach(b=>{ b.onclick = ()=>pick(Number(b.dataset.i)); });
+  if (reviewing){ $('ctxBox').style.display = ''; $('ctxBox').textContent = 'ทบทวน: ลองข้อที่พลาดอีกครั้งนะ'; }
+  else if (r.ctx){ $('ctxBox').style.display = ''; $('ctxBox').textContent = r.ctx; }
+  else { $('ctxBox').style.display = 'none'; }
   $('explainBox').className = 'explainbox'; $('explainBox').innerHTML = '';
   $('nextBtn').style.display = 'none';
+  if (r.type === 'v' || r.type === 'p') renderChoice(r);
+  else if (r.type === 'o') renderOrder(r);
+  else if (r.type === 'm') renderMatch(r);
+  else if (r.type === 'a') renderAssemble(r);
+  else if (r.type === 's') renderSpot(r);
+}
+
+// one place that records the result of a round and shows its feedback (each sentence in its own element,
+// so each has its own recording)
+function endRound(ok, wrongExtraHtml){
+  const r = ROUNDS[rIdx];
+  answered = true;
+  if (!ok){
+    if (!reviewing){ wrongCount++; if (missed.indexOf(rIdx) < 0) missed.push(rIdx); }
+    $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง';
+  }
+  $('explainBox').className = 'explainbox show ' + (ok ? 'correct' : 'wrong');
+  $('explainBox').innerHTML = ok
+    ? '<b>✅ ถูกต้อง!</b><div>' + esc(r.why) + '</div>'
+    : '<b>❌ ยังไม่ใช่</b>' + (wrongExtraHtml || '') + '<div>' + esc(r.why) + '</div>';
+  $('nextBtn').style.display = 'block';
+  if (ok && window.dlf) dlf.cheer('เก่งมาก!');
+}
+
+// ---- v / p : choose ----
+function renderChoice(r){
+  if (r.type === 'v'){
+    curOpts = (r.labels || VERDICTS).map(function(v, i){ return { t:v, ok: i===r.ans, why: r.why }; });
+    $('optsWrap').innerHTML = '<div class="optrow">' + curOpts.map(function(o, i){ return '<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>'; }).join('') + '</div>';
+  } else {
+    curOpts = shuffle(r.opts);
+    $('optsWrap').innerHTML = '<div class="optcol">' + curOpts.map(function(o, i){ return '<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>'; }).join('') + '</div>';
+  }
+  document.querySelectorAll('#optsWrap .optbtn').forEach(function(b){ b.onclick = function(){ pick(Number(b.dataset.i)); }; });
 }
 function pick(i){
   if (answered) return;
-  answered = true;
   const o = curOpts[i];
   const isVerdict = ROUNDS[rIdx].type === 'v';
   const btns = document.querySelectorAll('#optsWrap .optbtn');
-  btns.forEach((b,j)=>{ b.disabled = true; if (curOpts[j].ok) b.classList.add('correct'); else if (j===i) b.classList.add('wrong'); });
-  const right = curOpts.find(x=>x.ok);
-  if (!o.ok){ wrongCount++; $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง'; }
-  $('explainBox').className = 'explainbox show ' + (o.ok ? 'correct' : 'wrong');
-  // each sentence sits in its own element so each one has its own recording (no runtime-composed text)
-  $('explainBox').innerHTML = o.ok
-    ? '<b>✅ ถูกต้อง!</b><div>' + esc(o.why) + '</div>'
-    : '<b>❌ ยังไม่ใช่</b>' + (isVerdict ? '' : '<div>' + esc(o.why) + '</div>') + '<div><b class="cxbadge">ที่เหมาะที่สุดคือ</b> <span>' + esc(right.t) + '</span></div><div>' + esc(right.why) + '</div>';
-  $('nextBtn').style.display = 'block';
-  if (o.ok && window.dlf) dlf.cheer('เก่งมาก!');
+  btns.forEach(function(b, j){ b.disabled = true; if (curOpts[j].ok) b.classList.add('correct'); else if (j===i) b.classList.add('wrong'); });
+  const right = curOpts.find(function(x){ return x.ok; });
+  if (o.ok){ endRound(true); return; }
+  endRound(false, (isVerdict ? '' : '<div>' + esc(o.why) + '</div>') + '<div><b class="cxbadge">ที่เหมาะที่สุดคือ</b> <span>' + esc(right.t) + '</span></div>' + (isVerdict ? '' : '<div>' + esc(right.why) + '</div>'));
 }
+
+// ---- o : put the steps in order ----
+function renderOrder(r){
+  oPool = shuffle(r.items.map(function(t, i){ return { t:t, i:i }; })); oSeq = [];
+  $('optsWrap').innerHTML = '<div class="ordseq" id="ordSeq"></div><div class="optcol" id="ordPool"></div><button class="btn" id="ordCheck" style="margin-top:12px" disabled>ตรวจคำตอบ</button>';
+  $('ordCheck').onclick = checkOrder;
+  drawOrder();
+}
+function drawOrder(){
+  $('ordSeq').innerHTML = oSeq.length ? oSeq.map(function(x, k){ return '<button class="optbtn seqitem" data-k="'+k+'"><span class="seqno">'+(k+1)+'</span>'+esc(x.t)+'</button>'; }).join('') : '<div class="ordhint">แตะข้อความด้านล่างตามลำดับ ตั้งแต่ข้อแรกไปจนถึงข้อสุดท้าย</div>';
+  $('ordPool').innerHTML = oPool.map(function(x, k){ return '<button class="optbtn" data-k="'+k+'">'+esc(x.t)+'</button>'; }).join('');
+  $('ordSeq').querySelectorAll('.seqitem').forEach(function(b){ b.onclick = function(){ if (answered) return; oPool.push(oSeq.splice(Number(b.dataset.k), 1)[0]); drawOrder(); }; });
+  $('ordPool').querySelectorAll('.optbtn').forEach(function(b){ b.onclick = function(){ if (answered) return; oSeq.push(oPool.splice(Number(b.dataset.k), 1)[0]); drawOrder(); }; });
+  $('ordCheck').disabled = oPool.length > 0 || answered;
+}
+function checkOrder(){
+  if (answered) return;
+  const r = ROUNDS[rIdx];
+  const ok = oSeq.every(function(x, k){ return x.i === k; });
+  $('ordCheck').style.display = 'none';
+  document.querySelectorAll('#optsWrap .optbtn').forEach(function(b){ b.disabled = true; });
+  endRound(ok, '<div class="cxbadge-line"><b class="cxbadge">ลำดับที่ถูกต้อง</b></div><ol class="ordfix">' + r.items.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>');
+}
+
+// ---- m : match the pairs ----
+function renderMatch(r){
+  mSel = null; mDone = 0; mWrong = false;
+  const right = shuffle(r.pairs.map(function(p, i){ return { t:p[1], i:i }; }));
+  $('optsWrap').innerHTML = '<div class="mgrid"><div class="optcol" id="mLeft">' + r.pairs.map(function(p, i){ return '<button class="optbtn" data-side="L" data-i="'+i+'">'+esc(p[0])+'</button>'; }).join('') + '</div><div class="optcol" id="mRight">' + right.map(function(x){ return '<button class="optbtn" data-side="R" data-i="'+x.i+'">'+esc(x.t)+'</button>'; }).join('') + '</div></div>';
+  document.querySelectorAll('#optsWrap .optbtn').forEach(function(b){ b.onclick = function(){ matchTap(b); }; });
+}
+function matchTap(b){
+  if (answered || b.disabled) return;
+  const r = ROUNDS[rIdx];
+  if (b.dataset.side === 'L'){
+    document.querySelectorAll('#mLeft .optbtn').forEach(function(x){ x.classList.remove('sel'); });
+    b.classList.add('sel'); mSel = b.dataset.i; return;
+  }
+  if (mSel === null) return;
+  const left = document.querySelector('#mLeft .optbtn[data-i="'+mSel+'"]');
+  if (b.dataset.i === mSel){
+    left.classList.remove('sel'); left.classList.add('correct'); left.disabled = true;
+    b.classList.add('correct'); b.disabled = true; mSel = null; mDone++;
+    if (mDone === r.pairs.length) endRound(!mWrong, '');
+  } else {
+    mWrong = true; b.classList.add('wrong'); left.classList.remove('sel'); mSel = null;
+    setTimeout(function(){ b.classList.remove('wrong'); }, 450);
+  }
+}
+
+// ---- a : assemble an answer from parts ----
+function renderAssemble(r){
+  aPick = r.slots.map(function(){ return -1; });
+  const shuffled = r.slots.map(function(s){ return shuffle(s.opts.map(function(t, i){ return { t:t, ok: i===0 }; })); });
+  r._shuf = shuffled;
+  $('optsWrap').innerHTML = r.slots.map(function(s, si){ return '<div class="slot"><b class="cxbadge slotlbl">' + esc(s.label) + '</b><div class="optcol">' + shuffled[si].map(function(o, oi){ return '<button class="optbtn" data-s="'+si+'" data-o="'+oi+'">'+esc(o.t)+'</button>'; }).join('') + '</div></div>'; }).join('') + '<button class="btn" id="asmCheck" style="margin-top:12px" disabled>ตรวจคำตอบ</button>';
+  document.querySelectorAll('#optsWrap .optbtn').forEach(function(b){ b.onclick = function(){
+    if (answered) return;
+    const si = Number(b.dataset.s);
+    document.querySelectorAll('#optsWrap .optbtn[data-s="'+si+'"]').forEach(function(x){ x.classList.remove('sel'); });
+    b.classList.add('sel'); aPick[si] = Number(b.dataset.o);
+    $('asmCheck').disabled = aPick.some(function(v){ return v < 0; });
+  }; });
+  $('asmCheck').onclick = checkAssemble;
+}
+function checkAssemble(){
+  if (answered) return;
+  const r = ROUNDS[rIdx];
+  const bad = [];
+  r.slots.forEach(function(s, si){ if (!r._shuf[si][aPick[si]].ok) bad.push(si); });
+  $('asmCheck').style.display = 'none';
+  document.querySelectorAll('#optsWrap .optbtn').forEach(function(b){
+    b.disabled = true;
+    const si = Number(b.dataset.s), oi = Number(b.dataset.o);
+    if (r._shuf[si][oi].ok) b.classList.add('correct'); else if (aPick[si] === oi) b.classList.add('wrong');
+  });
+  endRound(bad.length === 0, bad.map(function(si){ return '<div><b class="cxbadge">' + esc(r.slots[si].label) + '</b> <span>' + esc(r.slots[si].opts[0]) + '</span></div>'; }).join(''));
+}
+
+// ---- s : spot the problem ----
+function renderSpot(r){
+  $('optsWrap').innerHTML = '<div class="optcol">' + r.segs.map(function(t, i){ return '<button class="optbtn" data-i="'+i+'">'+esc(t)+'</button>'; }).join('') + '</div>';
+  document.querySelectorAll('#optsWrap .optbtn').forEach(function(b){ b.onclick = function(){
+    if (answered) return;
+    const i = Number(b.dataset.i), ok = i === r.bad;
+    document.querySelectorAll('#optsWrap .optbtn').forEach(function(x, j){ x.disabled = true; if (j === r.bad) x.classList.add('correct'); else if (j === i) x.classList.add('wrong'); });
+    endRound(ok, '<div><b class="cxbadge">จุดที่มีปัญหาคือ</b> <span>' + esc(r.segs[r.bad]) + '</span></div>');
+  }; });
+}
+
 function nextRound(){
-  rIdx++;
-  if (rIdx >= ROUNDS.length){ goStep(3); return; }
-  renderRound();
+  qPos++;
+  if (qPos >= queue.length){
+    if (!reviewing && missed.length){ reviewing = true; queue = missed.slice(); qPos = 0; showRound(); return; }
+    goStep(3); return;
+  }
+  showRound();
 }
 
 // ===== Step 4: finish =====
@@ -368,9 +499,10 @@ renderRail();
 <div class="dlf-mini" id="dlfMini"></div>
 
 
-<script id="dlfAudioData" type="application/json">{"4577156e1cef":"audio/unit6-digital-citizen/4577156e1cef.mp3","d811e87eefb3":"audio/unit6-digital-citizen/d811e87eefb3.mp3","71a51a023ae8":"audio/unit6-digital-citizen/71a51a023ae8.mp3","852128f8e136":"audio/unit6-digital-citizen/852128f8e136.mp3","ce97d9170f39":"audio/unit6-digital-citizen/ce97d9170f39.mp3","df86dd6e5606":"audio/unit6-digital-citizen/df86dd6e5606.mp3","81b02bd7a638":"audio/unit6-digital-citizen/81b02bd7a638.mp3","42527b20073b":"audio/unit6-digital-citizen/42527b20073b.mp3","d92e23419da2":"audio/unit6-digital-citizen/d92e23419da2.mp3","2da548527a35":"audio/unit6-digital-citizen/2da548527a35.mp3","ac4eb68838eb":"audio/unit6-digital-citizen/ac4eb68838eb.mp3","1c18dff8dd8e":"audio/unit6-digital-citizen/1c18dff8dd8e.mp3","93b462e960a2":"audio/unit6-digital-citizen/93b462e960a2.mp3","e563af64533b":"audio/unit6-digital-citizen/e563af64533b.mp3","a9bb5e4d37e5":"audio/unit6-digital-citizen/a9bb5e4d37e5.mp3","d800ba46ebb9":"audio/unit6-digital-citizen/d800ba46ebb9.mp3","a4360a52ed6e":"audio/unit6-digital-citizen/a4360a52ed6e.mp3","59ac1ea7eda5":"audio/unit6-digital-citizen/59ac1ea7eda5.mp3","bbbf05b03ab0":"audio/unit6-digital-citizen/bbbf05b03ab0.mp3","556e94dd062a":"audio/unit6-digital-citizen/556e94dd062a.mp3","d585a6a9d18d":"audio/unit6-digital-citizen/d585a6a9d18d.mp3","5daa65353dd9":"audio/unit6-digital-citizen/5daa65353dd9.mp3","fb12df7d71e0":"audio/unit6-digital-citizen/fb12df7d71e0.mp3","0f5cb0be06f4":"audio/unit6-digital-citizen/0f5cb0be06f4.mp3","dda69acf0fdc":"audio/unit6-digital-citizen/dda69acf0fdc.mp3","6c8a074ae256":"audio/unit6-digital-citizen/6c8a074ae256.mp3","2faa9a175805":"audio/unit6-digital-citizen/2faa9a175805.mp3","e6935275b71c":"audio/unit6-digital-citizen/e6935275b71c.mp3","fb6c019928e6":"audio/unit6-digital-citizen/fb6c019928e6.mp3","ba9b44c19d27":"audio/unit6-digital-citizen/ba9b44c19d27.mp3","d1595c9f264f":"audio/unit6-digital-citizen/d1595c9f264f.mp3","ff3a6c929580":"audio/unit6-digital-citizen/ff3a6c929580.mp3","ad94c1828fa0":"audio/unit6-digital-citizen/ad94c1828fa0.mp3","ec61f2e8bd94":"audio/unit6-digital-citizen/ec61f2e8bd94.mp3","fc6b66441927":"audio/unit6-digital-citizen/fc6b66441927.mp3","96f74e32874e":"audio/unit6-digital-citizen/96f74e32874e.mp3","d6ca8b3e9f0c":"audio/unit6-digital-citizen/d6ca8b3e9f0c.mp3","e836fce3fb56":"audio/unit6-digital-citizen/e836fce3fb56.mp3","95f7373d43b5":"audio/unit6-digital-citizen/95f7373d43b5.mp3","2d811c67edd9":"audio/unit6-digital-citizen/2d811c67edd9.mp3","e27d06036c28":"audio/unit6-digital-citizen/e27d06036c28.mp3","589c52abf38d":"audio/unit6-digital-citizen/589c52abf38d.mp3","cd2cf7025107":"audio/unit6-digital-citizen/cd2cf7025107.mp3","11020d7182b4":"audio/unit6-digital-citizen/11020d7182b4.mp3","122afd434c8d":"audio/unit6-digital-citizen/122afd434c8d.mp3","55b0ef48cbe9":"audio/unit6-digital-citizen/55b0ef48cbe9.mp3","bf4b149752bf":"audio/unit6-digital-citizen/bf4b149752bf.mp3","708be9673085":"audio/unit6-digital-citizen/708be9673085.mp3","2f7513fe62f0":"audio/unit6-digital-citizen/2f7513fe62f0.mp3","513441fd2361":"audio/unit6-digital-citizen/513441fd2361.mp3","08b18b1c9d3f":"audio/unit6-digital-citizen/08b18b1c9d3f.mp3","0f6c33cf5e8f":"audio/unit6-digital-citizen/0f6c33cf5e8f.mp3","3eafec2896ee":"audio/unit6-digital-citizen/3eafec2896ee.mp3","5ddea67078ac":"audio/unit6-digital-citizen/5ddea67078ac.mp3","d4b7d10743a0":"audio/unit6-digital-citizen/d4b7d10743a0.mp3","fe70cd9d31fc":"audio/unit6-digital-citizen/fe70cd9d31fc.mp3","ac282b30702c":"audio/unit6-digital-citizen/ac282b30702c.mp3","1c41f46306dd":"audio/unit6-digital-citizen/1c41f46306dd.mp3","203bd51429a7":"audio/unit6-digital-citizen/203bd51429a7.mp3","e340388bba14":"audio/unit6-digital-citizen/e340388bba14.mp3","43d08725258c":"audio/unit6-digital-citizen/43d08725258c.mp3","d53bff67c4e7":"audio/unit6-digital-citizen/d53bff67c4e7.mp3","ee2c9a9af384":"audio/unit6-digital-citizen/ee2c9a9af384.mp3","e60669c938bd":"audio/unit6-digital-citizen/e60669c938bd.mp3","7038bb36c81f":"audio/unit6-digital-citizen/7038bb36c81f.mp3","4f372b58a1f1":"audio/unit6-digital-citizen/4f372b58a1f1.mp3","a8ca6eb27022":"audio/unit6-digital-citizen/a8ca6eb27022.mp3","812e6a0e1766":"audio/unit6-digital-citizen/812e6a0e1766.mp3","e0dc218eb49e":"audio/unit6-digital-citizen/e0dc218eb49e.mp3","2b6f96e72d2d":"audio/unit6-digital-citizen/2b6f96e72d2d.mp3","d88ad5044fbf":"audio/unit6-digital-citizen/d88ad5044fbf.mp3","f2bf9e7285ac":"audio/unit6-digital-citizen/f2bf9e7285ac.mp3","e03fa9fe34c6":"audio/unit6-digital-citizen/e03fa9fe34c6.mp3","bca508f2d362":"audio/unit6-digital-citizen/bca508f2d362.mp3","e38a7a98a053":"audio/unit6-digital-citizen/e38a7a98a053.mp3","cb17070b5262":"audio/unit6-digital-citizen/cb17070b5262.mp3","00bcf34650e7":"audio/unit6-digital-citizen/00bcf34650e7.mp3","31bdbf6c03b6":"audio/unit6-digital-citizen/31bdbf6c03b6.mp3","8f80d69b1156":"audio/unit6-digital-citizen/8f80d69b1156.mp3","3ac6917b89d3":"audio/unit6-digital-citizen/3ac6917b89d3.mp3","fbe0ca0a665c":"audio/unit6-digital-citizen/fbe0ca0a665c.mp3","256f2d657990":"audio/unit6-digital-citizen/256f2d657990.mp3","578ec9771780":"audio/unit6-digital-citizen/578ec9771780.mp3","dfea9d844a59":"audio/unit6-digital-citizen/dfea9d844a59.mp3","9d6b2e279659":"audio/unit6-digital-citizen/9d6b2e279659.mp3","2d28739ec064":"audio/unit6-digital-citizen/2d28739ec064.mp3","87ac2b780ee5":"audio/unit6-digital-citizen/87ac2b780ee5.mp3","160c736d9917":"audio/unit6-digital-citizen/160c736d9917.mp3","3bf1390f48da":"audio/unit6-digital-citizen/3bf1390f48da.mp3","81df4455eae2":"audio/unit6-digital-citizen/81df4455eae2.mp3","f01a115f8cd0":"audio/unit6-digital-citizen/f01a115f8cd0.mp3","275ae7cb3561":"audio/unit6-digital-citizen/275ae7cb3561.mp3","ee6a1e7d5ff1":"audio/unit6-digital-citizen/ee6a1e7d5ff1.mp3","c8585768ef59":"audio/unit6-digital-citizen/c8585768ef59.mp3","49f11b649cb1":"audio/unit6-digital-citizen/49f11b649cb1.mp3","863a2fc0098e":"audio/unit6-digital-citizen/863a2fc0098e.mp3","70bffc13f760":"audio/unit6-digital-citizen/70bffc13f760.mp3","c8ca9c3acfed":"audio/unit6-digital-citizen/c8ca9c3acfed.mp3","a59e18c9eb46":"audio/unit6-digital-citizen/a59e18c9eb46.mp3","a66234b845ea":"audio/unit6-digital-citizen/a66234b845ea.mp3","621619bdccfd":"audio/unit6-digital-citizen/621619bdccfd.mp3","4780fc79462b":"audio/unit6-digital-citizen/4780fc79462b.mp3","33d4c21d870f":"audio/unit6-digital-citizen/33d4c21d870f.mp3","b308f2e90e23":"audio/unit6-digital-citizen/b308f2e90e23.mp3","dfb3e4afa929":"audio/unit6-digital-citizen/dfb3e4afa929.mp3","962b348acb3d":"audio/unit6-digital-citizen/962b348acb3d.mp3","57f54cf2d9c1":"audio/unit6-digital-citizen/57f54cf2d9c1.mp3","fd6c15660e25":"audio/unit6-digital-citizen/fd6c15660e25.mp3","1060bed7e1d6":"audio/unit6-digital-citizen/1060bed7e1d6.mp3","dec1ce6c690b":"audio/unit6-digital-citizen/dec1ce6c690b.mp3","f3bc581be169":"audio/unit6-digital-citizen/f3bc581be169.mp3","3fb0e684b56b":"audio/unit6-digital-citizen/3fb0e684b56b.mp3","42b34b1c98e1":"audio/unit6-digital-citizen/42b34b1c98e1.mp3","e04742eeacc1":"audio/unit6-digital-citizen/e04742eeacc1.mp3","3a2ba9ffe23c":"audio/unit6-digital-citizen/3a2ba9ffe23c.mp3","a62583db49bd":"audio/unit6-digital-citizen/a62583db49bd.mp3","e0293c5ef2f8":"audio/unit6-digital-citizen/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/unit6-digital-citizen/9bb8216b6df6.mp3","023784df2a92":"audio/unit6-digital-citizen/023784df2a92.mp3","557c63c5c9c0":"audio/unit6-digital-citizen/557c63c5c9c0.mp3","dab05dcf3741":"audio/unit6-digital-citizen/dab05dcf3741.mp3","dc60fd67731f":"audio/unit6-digital-citizen/dc60fd67731f.mp3","af6ba89d9b27":"audio/unit6-digital-citizen/af6ba89d9b27.mp3","aca2b0992481":"audio/unit6-digital-citizen/aca2b0992481.mp3","66590c21d92e":"audio/unit6-digital-citizen/66590c21d92e.mp3","f19e1081b596":"audio/unit6-digital-citizen/f19e1081b596.mp3","7fdd46cba22b":"audio/unit6-digital-citizen/7fdd46cba22b.mp3","84c24a3726c4":"audio/unit6-digital-citizen/84c24a3726c4.mp3","e0196ffda95a":"audio/unit6-digital-citizen/e0196ffda95a.mp3","e18a189a9371":"audio/unit6-digital-citizen/e18a189a9371.mp3","8af1f0edc12c":"audio/unit6-digital-citizen/8af1f0edc12c.mp3","23f891c8e7ad":"audio/unit6-digital-citizen/23f891c8e7ad.mp3","5a382c3bfa4a":"audio/unit6-digital-citizen/5a382c3bfa4a.mp3"}</script>
+<script id="dlfAudioData" type="application/json">{"4577156e1cef":"audio/unit6-digital-citizen/4577156e1cef.mp3","d811e87eefb3":"audio/unit6-digital-citizen/d811e87eefb3.mp3","71a51a023ae8":"audio/unit6-digital-citizen/71a51a023ae8.mp3","852128f8e136":"audio/unit6-digital-citizen/852128f8e136.mp3","ce97d9170f39":"audio/unit6-digital-citizen/ce97d9170f39.mp3","df86dd6e5606":"audio/unit6-digital-citizen/df86dd6e5606.mp3","81b02bd7a638":"audio/unit6-digital-citizen/81b02bd7a638.mp3","42527b20073b":"audio/unit6-digital-citizen/42527b20073b.mp3","d92e23419da2":"audio/unit6-digital-citizen/d92e23419da2.mp3","2da548527a35":"audio/unit6-digital-citizen/2da548527a35.mp3","ac4eb68838eb":"audio/unit6-digital-citizen/ac4eb68838eb.mp3","1c18dff8dd8e":"audio/unit6-digital-citizen/1c18dff8dd8e.mp3","93b462e960a2":"audio/unit6-digital-citizen/93b462e960a2.mp3","e563af64533b":"audio/unit6-digital-citizen/e563af64533b.mp3","a9bb5e4d37e5":"audio/unit6-digital-citizen/a9bb5e4d37e5.mp3","d800ba46ebb9":"audio/unit6-digital-citizen/d800ba46ebb9.mp3","a4360a52ed6e":"audio/unit6-digital-citizen/a4360a52ed6e.mp3","59ac1ea7eda5":"audio/unit6-digital-citizen/59ac1ea7eda5.mp3","bbbf05b03ab0":"audio/unit6-digital-citizen/bbbf05b03ab0.mp3","f19e1081b596":"audio/unit6-digital-citizen/f19e1081b596.mp3","556e94dd062a":"audio/unit6-digital-citizen/556e94dd062a.mp3","d585a6a9d18d":"audio/unit6-digital-citizen/d585a6a9d18d.mp3","5daa65353dd9":"audio/unit6-digital-citizen/5daa65353dd9.mp3","fb12df7d71e0":"audio/unit6-digital-citizen/fb12df7d71e0.mp3","0f5cb0be06f4":"audio/unit6-digital-citizen/0f5cb0be06f4.mp3","dda69acf0fdc":"audio/unit6-digital-citizen/dda69acf0fdc.mp3","6c8a074ae256":"audio/unit6-digital-citizen/6c8a074ae256.mp3","2faa9a175805":"audio/unit6-digital-citizen/2faa9a175805.mp3","e6935275b71c":"audio/unit6-digital-citizen/e6935275b71c.mp3","4741ca6d15c7":"audio/unit6-digital-citizen/4741ca6d15c7.mp3","9e5739a9b37c":"audio/unit6-digital-citizen/9e5739a9b37c.mp3","b3e8fd4edb42":"audio/unit6-digital-citizen/b3e8fd4edb42.mp3","68385e3c32c6":"audio/unit6-digital-citizen/68385e3c32c6.mp3","a2d918738eaf":"audio/unit6-digital-citizen/a2d918738eaf.mp3","9dee8565eb61":"audio/unit6-digital-citizen/9dee8565eb61.mp3","fb6c019928e6":"audio/unit6-digital-citizen/fb6c019928e6.mp3","ba9b44c19d27":"audio/unit6-digital-citizen/ba9b44c19d27.mp3","d1595c9f264f":"audio/unit6-digital-citizen/d1595c9f264f.mp3","ff3a6c929580":"audio/unit6-digital-citizen/ff3a6c929580.mp3","24708a203eab":"audio/unit6-digital-citizen/24708a203eab.mp3","3418c0ccc28e":"audio/unit6-digital-citizen/3418c0ccc28e.mp3","9d073d397d15":"audio/unit6-digital-citizen/9d073d397d15.mp3","fb39cf47540b":"audio/unit6-digital-citizen/fb39cf47540b.mp3","a0cc435982a4":"audio/unit6-digital-citizen/a0cc435982a4.mp3","4ec78ef440b8":"audio/unit6-digital-citizen/4ec78ef440b8.mp3","c1ade4749e62":"audio/unit6-digital-citizen/c1ade4749e62.mp3","c6c9c0bc3bad":"audio/unit6-digital-citizen/c6c9c0bc3bad.mp3","79e6f62c3bb7":"audio/unit6-digital-citizen/79e6f62c3bb7.mp3","ca5637df9bd9":"audio/unit6-digital-citizen/ca5637df9bd9.mp3","ad94c1828fa0":"audio/unit6-digital-citizen/ad94c1828fa0.mp3","ec61f2e8bd94":"audio/unit6-digital-citizen/ec61f2e8bd94.mp3","fc6b66441927":"audio/unit6-digital-citizen/fc6b66441927.mp3","96f74e32874e":"audio/unit6-digital-citizen/96f74e32874e.mp3","6ed3f2c845c1":"audio/unit6-digital-citizen/6ed3f2c845c1.mp3","00a397b3a5ed":"audio/unit6-digital-citizen/00a397b3a5ed.mp3","93e2ea9d56d9":"audio/unit6-digital-citizen/93e2ea9d56d9.mp3","661ccc31cbc4":"audio/unit6-digital-citizen/661ccc31cbc4.mp3","870e808a9b33":"audio/unit6-digital-citizen/870e808a9b33.mp3","b77219a7489a":"audio/unit6-digital-citizen/b77219a7489a.mp3","8ee28a3811e0":"audio/unit6-digital-citizen/8ee28a3811e0.mp3","82b8f183cc09":"audio/unit6-digital-citizen/82b8f183cc09.mp3","ec7d47fbad48":"audio/unit6-digital-citizen/ec7d47fbad48.mp3","c7450f3cf215":"audio/unit6-digital-citizen/c7450f3cf215.mp3","b2b419796e61":"audio/unit6-digital-citizen/b2b419796e61.mp3","86375f3877d5":"audio/unit6-digital-citizen/86375f3877d5.mp3","9f53f391a41c":"audio/unit6-digital-citizen/9f53f391a41c.mp3","6c3354f08b8b":"audio/unit6-digital-citizen/6c3354f08b8b.mp3","d49531864c8a":"audio/unit6-digital-citizen/d49531864c8a.mp3","54de7cbad710":"audio/unit6-digital-citizen/54de7cbad710.mp3","87601ef1b2da":"audio/unit6-digital-citizen/87601ef1b2da.mp3","1484802ffa6d":"audio/unit6-digital-citizen/1484802ffa6d.mp3","d6ca8b3e9f0c":"audio/unit6-digital-citizen/d6ca8b3e9f0c.mp3","e836fce3fb56":"audio/unit6-digital-citizen/e836fce3fb56.mp3","95f7373d43b5":"audio/unit6-digital-citizen/95f7373d43b5.mp3","2d811c67edd9":"audio/unit6-digital-citizen/2d811c67edd9.mp3","0cfdf9b686a4":"audio/unit6-digital-citizen/0cfdf9b686a4.mp3","b2acb7d39bb5":"audio/unit6-digital-citizen/b2acb7d39bb5.mp3","4e89e04c25d4":"audio/unit6-digital-citizen/4e89e04c25d4.mp3","6827e3732c6c":"audio/unit6-digital-citizen/6827e3732c6c.mp3","a852298ad1cf":"audio/unit6-digital-citizen/a852298ad1cf.mp3","15cd76f764d7":"audio/unit6-digital-citizen/15cd76f764d7.mp3","d53bff67c4e7":"audio/unit6-digital-citizen/d53bff67c4e7.mp3","ee2c9a9af384":"audio/unit6-digital-citizen/ee2c9a9af384.mp3","e60669c938bd":"audio/unit6-digital-citizen/e60669c938bd.mp3","7038bb36c81f":"audio/unit6-digital-citizen/7038bb36c81f.mp3","4f372b58a1f1":"audio/unit6-digital-citizen/4f372b58a1f1.mp3","a8ca6eb27022":"audio/unit6-digital-citizen/a8ca6eb27022.mp3","812e6a0e1766":"audio/unit6-digital-citizen/812e6a0e1766.mp3","e0dc218eb49e":"audio/unit6-digital-citizen/e0dc218eb49e.mp3","2b6f96e72d2d":"audio/unit6-digital-citizen/2b6f96e72d2d.mp3","d88ad5044fbf":"audio/unit6-digital-citizen/d88ad5044fbf.mp3","f2bf9e7285ac":"audio/unit6-digital-citizen/f2bf9e7285ac.mp3","e03fa9fe34c6":"audio/unit6-digital-citizen/e03fa9fe34c6.mp3","bca508f2d362":"audio/unit6-digital-citizen/bca508f2d362.mp3","e38a7a98a053":"audio/unit6-digital-citizen/e38a7a98a053.mp3","ac3e2c0643a9":"audio/unit6-digital-citizen/ac3e2c0643a9.mp3","05052482ba72":"audio/unit6-digital-citizen/05052482ba72.mp3","aa20bf2e7612":"audio/unit6-digital-citizen/aa20bf2e7612.mp3","480f56ad3870":"audio/unit6-digital-citizen/480f56ad3870.mp3","5b50ff75585b":"audio/unit6-digital-citizen/5b50ff75585b.mp3","d9f8c3aef32d":"audio/unit6-digital-citizen/d9f8c3aef32d.mp3","cb17070b5262":"audio/unit6-digital-citizen/cb17070b5262.mp3","00bcf34650e7":"audio/unit6-digital-citizen/00bcf34650e7.mp3","31bdbf6c03b6":"audio/unit6-digital-citizen/31bdbf6c03b6.mp3","8f80d69b1156":"audio/unit6-digital-citizen/8f80d69b1156.mp3","3ac6917b89d3":"audio/unit6-digital-citizen/3ac6917b89d3.mp3","fbe0ca0a665c":"audio/unit6-digital-citizen/fbe0ca0a665c.mp3","256f2d657990":"audio/unit6-digital-citizen/256f2d657990.mp3","578ec9771780":"audio/unit6-digital-citizen/578ec9771780.mp3","dfea9d844a59":"audio/unit6-digital-citizen/dfea9d844a59.mp3","9d6b2e279659":"audio/unit6-digital-citizen/9d6b2e279659.mp3","2d28739ec064":"audio/unit6-digital-citizen/2d28739ec064.mp3","87ac2b780ee5":"audio/unit6-digital-citizen/87ac2b780ee5.mp3","160c736d9917":"audio/unit6-digital-citizen/160c736d9917.mp3","3bf1390f48da":"audio/unit6-digital-citizen/3bf1390f48da.mp3","81df4455eae2":"audio/unit6-digital-citizen/81df4455eae2.mp3","f01a115f8cd0":"audio/unit6-digital-citizen/f01a115f8cd0.mp3","275ae7cb3561":"audio/unit6-digital-citizen/275ae7cb3561.mp3","ee6a1e7d5ff1":"audio/unit6-digital-citizen/ee6a1e7d5ff1.mp3","c8585768ef59":"audio/unit6-digital-citizen/c8585768ef59.mp3","49f11b649cb1":"audio/unit6-digital-citizen/49f11b649cb1.mp3","863a2fc0098e":"audio/unit6-digital-citizen/863a2fc0098e.mp3","e9c6c56b1672":"audio/unit6-digital-citizen/e9c6c56b1672.mp3","70bffc13f760":"audio/unit6-digital-citizen/70bffc13f760.mp3","c8ca9c3acfed":"audio/unit6-digital-citizen/c8ca9c3acfed.mp3","a59e18c9eb46":"audio/unit6-digital-citizen/a59e18c9eb46.mp3","220a085a822c":"audio/unit6-digital-citizen/220a085a822c.mp3","7fdd46cba22b":"audio/unit6-digital-citizen/7fdd46cba22b.mp3","84c24a3726c4":"audio/unit6-digital-citizen/84c24a3726c4.mp3","a66234b845ea":"audio/unit6-digital-citizen/a66234b845ea.mp3","e0196ffda95a":"audio/unit6-digital-citizen/e0196ffda95a.mp3","199c945eaa8d":"audio/unit6-digital-citizen/199c945eaa8d.mp3","c55411e88b8a":"audio/unit6-digital-citizen/c55411e88b8a.mp3","e9609d88680a":"audio/unit6-digital-citizen/e9609d88680a.mp3","a668c5f37b5e":"audio/unit6-digital-citizen/a668c5f37b5e.mp3","621619bdccfd":"audio/unit6-digital-citizen/621619bdccfd.mp3","4780fc79462b":"audio/unit6-digital-citizen/4780fc79462b.mp3","33d4c21d870f":"audio/unit6-digital-citizen/33d4c21d870f.mp3","b308f2e90e23":"audio/unit6-digital-citizen/b308f2e90e23.mp3","dfb3e4afa929":"audio/unit6-digital-citizen/dfb3e4afa929.mp3","962b348acb3d":"audio/unit6-digital-citizen/962b348acb3d.mp3","57f54cf2d9c1":"audio/unit6-digital-citizen/57f54cf2d9c1.mp3","fd6c15660e25":"audio/unit6-digital-citizen/fd6c15660e25.mp3","1060bed7e1d6":"audio/unit6-digital-citizen/1060bed7e1d6.mp3","dec1ce6c690b":"audio/unit6-digital-citizen/dec1ce6c690b.mp3","f3bc581be169":"audio/unit6-digital-citizen/f3bc581be169.mp3","3fb0e684b56b":"audio/unit6-digital-citizen/3fb0e684b56b.mp3","42b34b1c98e1":"audio/unit6-digital-citizen/42b34b1c98e1.mp3","e04742eeacc1":"audio/unit6-digital-citizen/e04742eeacc1.mp3","3a2ba9ffe23c":"audio/unit6-digital-citizen/3a2ba9ffe23c.mp3","a62583db49bd":"audio/unit6-digital-citizen/a62583db49bd.mp3","e0293c5ef2f8":"audio/unit6-digital-citizen/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/unit6-digital-citizen/9bb8216b6df6.mp3","023784df2a92":"audio/unit6-digital-citizen/023784df2a92.mp3","557c63c5c9c0":"audio/unit6-digital-citizen/557c63c5c9c0.mp3","dab05dcf3741":"audio/unit6-digital-citizen/dab05dcf3741.mp3","dc60fd67731f":"audio/unit6-digital-citizen/dc60fd67731f.mp3","af6ba89d9b27":"audio/unit6-digital-citizen/af6ba89d9b27.mp3","aca2b0992481":"audio/unit6-digital-citizen/aca2b0992481.mp3","66590c21d92e":"audio/unit6-digital-citizen/66590c21d92e.mp3","e18a189a9371":"audio/unit6-digital-citizen/e18a189a9371.mp3","8af1f0edc12c":"audio/unit6-digital-citizen/8af1f0edc12c.mp3","23f891c8e7ad":"audio/unit6-digital-citizen/23f891c8e7ad.mp3","5a382c3bfa4a":"audio/unit6-digital-citizen/5a382c3bfa4a.mp3","bc0313244bbf":"audio/unit6-digital-citizen/bc0313244bbf.mp3","a06fda363c63":"audio/unit6-digital-citizen/a06fda363c63.mp3"}</script>
 <script>window.DLF_CONFIG={extraReadSelectors:['.say','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
+<script src="_lib/reflection.js"></script>
 
 </body>
 </html>

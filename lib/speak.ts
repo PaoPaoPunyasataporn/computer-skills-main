@@ -11,9 +11,8 @@
 //   scripts/gen-audio-app.mjs records every string this app can say into public/audio/
 //   and writes a manifest mapping the text to its MP3.
 //
-// The browser voice remains as a last resort, for any string that has no clip (say,
-// text added after the last recording run) — and there it will at least use a real Thai
-// voice if the device happens to have one.
+// There is deliberately no browser-voice fallback: a string with no clip stays silent
+// (with a console warning) until scripts/gen-audio-app.mjs is re-run.
 
 // Must match cleanKey() in scripts/gen-audio-app.mjs, or the lookup will miss.
 function cleanText(s: string): string {
@@ -33,7 +32,7 @@ function loadManifest(): Promise<void> {
   loading ??= fetch('/audio/manifest.json')
     .then((r) => (r.ok ? r.json() : {}))
     .then((m) => { manifest = m; })
-    .catch(() => { manifest = {}; });   // no manifest: fall back to the browser voice
+    .catch(() => { manifest = {}; });   // no manifest: clips are simply unavailable
   return loading;
 }
 
@@ -45,33 +44,10 @@ function stop() {
   try { window.speechSynthesis?.cancel(); } catch { /* ignore */ }
 }
 
-// The browser voice — only used when no clip exists for this string.
-function browserVoice(text: string) {
-  if (!('speechSynthesis' in window)) return;
-  const sp = window.speechSynthesis;
-  const say = () => {
-    try {
-      const u = new SpeechSynthesisUtterance(text);
-      const vs = sp.getVoices();
-      const th = vs.find((v) => v.lang?.toLowerCase().startsWith('th')) ?? vs.find((v) => /thai/i.test(v.name));
-      if (th) { u.voice = th; u.lang = th.lang || 'th-TH'; } else { u.lang = 'th-TH'; }
-      u.rate = 0.95;
-      u.pitch = 1.05;
-      sp.speak(u);
-      // Chrome stays mute forever if the queue was left paused.
-      if (sp.paused) sp.resume();
-    } catch { /* ignore */ }
-  };
-  // Chrome drops an utterance queued in the same tick as cancel(), and a cold tab
-  // often has no voices loaded yet.
-  if (sp.getVoices().length === 0) {
-    let fired = false;
-    const go = () => { if (fired) return; fired = true; say(); };
-    sp.addEventListener('voiceschanged', go, { once: true });
-    setTimeout(go, 250);
-  } else {
-    setTimeout(say, 60);
-  }
+// No recording for this string: stay silent and say so in the console, rather than
+// reading Thai in a wrong-accent English voice. Re-run scripts/gen-audio-app.mjs.
+function missingClip(text: string) {
+  console.warn('[speak] no recording for:', text);
 }
 
 export function speak(text: string) {
@@ -86,11 +62,11 @@ export function speak(text: string) {
       try {
         const a = new Audio(src);
         current = a;
-        a.play().catch(() => browserVoice(key));   // e.g. the file 404s
+        a.play().catch(() => missingClip(key));   // e.g. the file 404s
         return;
       } catch { /* fall through */ }
     }
-    browserVoice(key);
+    missingClip(key);
   });
 }
 

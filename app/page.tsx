@@ -122,6 +122,7 @@ export default function Home() {
             <div style={{ textAlign: 'center', marginTop: 30, fontSize: 13, color: 'var(--muted2)', lineHeight: 1.8 }}>
               อ้างอิง <b>DigComp 3.0</b> (JRC, 2025) · พัฒนาโดย <b>PaoPao Punyasataporn</b><br />
               <Link href="/admin" className="btn-ghost3d" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 14, fontSize: 14 }}>👩‍🏫 สำหรับครู · ดูรายชื่อผู้ผ่านการรับรอง</Link>
+              <br /><Link href="/guide" className="btn-ghost3d" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 10, fontSize: 14 }}>📘 คู่มือครู</Link>
             </div>
 
             <p style={{ textAlign: 'center', maxWidth: 560, margin: '14px auto 0', fontSize: 11.5, color: 'var(--muted3)', lineHeight: 1.7 }}>

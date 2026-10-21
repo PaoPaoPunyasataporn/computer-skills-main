@@ -121,6 +121,7 @@ export default function AdminPage() {
           </div>
           <div style={{ textAlign: 'center', marginTop: 18 }}>
             <Link className="btn-ghost3d" href="/" style={{ display: 'inline-flex' }}>← กลับหน้าหลัก</Link>
+            <Link className="btn-ghost3d" href="/guide" style={{ display: 'inline-flex', marginLeft: 8 }}>📘 คู่มือครู</Link>
           </div>
         </div>
       </Shell>
@@ -138,6 +139,7 @@ export default function AdminPage() {
         </span>
         <button className="btn-ghost3d" style={{ padding: '9px 16px', fontSize: 14 }} disabled={busy} onClick={load}>{busy ? '...' : 'รีเฟรช ↻'}</button>
         <button className="btn-ghost3d" style={{ padding: '9px 16px', fontSize: 14 }} disabled={shown.length === 0} onClick={downloadCsv}>⬇ ดาวน์โหลด CSV</button>
+        <Link href="/guide" className="btn-ghost3d" style={{ padding: '9px 16px', fontSize: 14, display: 'inline-flex' }}>📘 คู่มือครู</Link>
       </div>
 
       {certs.length > 0 && (

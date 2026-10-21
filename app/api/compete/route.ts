@@ -23,6 +23,16 @@ const UNSAFE_NAME_CHARS = new RegExp('[\\u0000-\\u001F\\u007F<>]', 'g');
 function cleanName(v: unknown): string {
   return String(v ?? '').replace(UNSAFE_NAME_CHARS, '').trim().replace(/\s+/g, ' ').slice(0, 16);
 }
+// Nicknames are visible to the whole room, so refuse rude words and anything that looks
+// like contact details (phone number, e-mail, link). Checked on the lowercased name with
+// spaces and common separators removed so "s h i t" or "ค.ว.ย" don't slip past.
+const RUDE = ['ควย', 'เหี้ย', 'สัส', 'แม่ง', 'ชิบหาย', 'ไอ้สัตว์', 'อีดอก', 'เย็ด', 'fuck', 'bitch'];
+function nameProblem(name: string): string | null {
+  const flat = name.toLowerCase().replace(/[\s._\-*]+/g, '');
+  if (RUDE.some((w) => flat.includes(w))) return 'ชื่อนี้ใช้ไม่ได้ ลองตั้งชื่อเล่นน่ารัก ๆ นะ';
+  if (/\d{7,}/.test(flat) || /@|https?:|www\./.test(flat)) return 'ไม่ต้องใส่เบอร์โทรหรืออีเมลนะ ใส่แค่ชื่อเล่น';
+  return null;
+}
 function cleanCode(v: unknown): string {
   return String(v ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
 }
@@ -68,6 +78,7 @@ export async function POST(req: NextRequest) {
         // has the standard IP rate limit above.
         const name = cleanName(b.name);
         if (!name) return fail('ใส่ชื่อเล่นก่อนนะ');
+        { const bad = nameProblem(name); if (bad) return fail(bad); }
         const mode = MODES.includes(b.mode as Mode) ? (b.mode as Mode) : 'typing';
         const level = LEVELS.includes(b.level as TypingLevel) ? (b.level as TypingLevel) : null;
         const { room, playerId: id } = await createRoom(mode, { name, avatar: cleanAvatar(b.avatar) }, level);
@@ -77,6 +88,7 @@ export async function POST(req: NextRequest) {
       case 'join': {
         const name = cleanName(b.name);
         if (!name) return fail('ใส่ชื่อเล่นก่อนนะ');
+        { const bad = nameProblem(name); if (bad) return fail(bad); }
         if (code.length !== 4) return fail('รหัสห้องต้องมี 4 ตัว');
         const { playerId: id } = await joinRoom(code, { name, avatar: cleanAvatar(b.avatar) });
         return NextResponse.json({ ok: true, code, playerId: id, ...(await getState(code))! });
