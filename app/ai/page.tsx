@@ -94,7 +94,7 @@ function AiHomeInner() {
                 <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 28 }}>รู้เท่าทัน AI!</div>
                 <div className="banner-sub" style={{ color: '#FFE6E1' }}>เลเวล {level}</div>
               </div>
-              <div style={{ minWidth: 210 }}>
+              <div style={{ flex: '1 1 210px', minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Sarabun', fontWeight: 600, fontSize: 13, color: '#FFE6E1', marginBottom: 8 }}><span>สู่เลเวลถัดไป</span><span>{xp} / {nextLevelXp} XP</span></div>
                 <div className="goal-track"><div className="goal-fill" style={{ width: `${xpPct}%` }} /></div>
               </div>

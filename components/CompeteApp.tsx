@@ -118,8 +118,12 @@ export default function CompeteApp() {
 
     async function tick() {
       try {
-        const j = await post({ action: 'progress', code, playerId, score: scoreRef.current, progress: progRef.current, done: doneRef.current });
+        // Back in the lobby (after a rematch): report a clean slate so a stale 'done' or
+        // score from the last race can never end the next one before it starts.
+        const lobby = stateRef.current?.room.status === 'lobby';
+        const j = await post({ action: 'progress', code, playerId, score: lobby ? 0 : scoreRef.current, progress: lobby ? 0 : progRef.current, done: lobby ? false : doneRef.current });
         if (!alive) return;
+        if (j.room.status === 'lobby') { setScore(0); setProgress(0); setDone(false); }
         setState({ room: j.room, players: j.players });
       } catch {
         /* one dropped ping is nothing — the next one will catch up */
@@ -557,9 +561,9 @@ function DragDropRace(p: { seed: number; rounds: number; setScore: (fn: (s: numb
   const icons = useMemo<DesktopIcon[]>(() => pickSeededGeneric(DESKTOP_ICONS, p.seed + 1, quarter), [p.seed, quarter]);
   const ctxTasks = useMemo<ContextTask[]>(() => pickSeededGeneric(CONTEXT_TASKS, p.seed + 2, quarter), [p.seed, quarter]);
 
-  function advance() {
+  function advance(scored = true) {
     const next = round + 1;
-    p.setScore((s) => s + 1);
+    if (scored) p.setScore((s) => s + 1);
     p.setProgress(Math.round((next / p.rounds) * 100));
     if (next >= p.rounds) { p.onDone(); return; }
     setRound(next);
@@ -570,7 +574,7 @@ function DragDropRace(p: { seed: number; rounds: number; setScore: (fn: (s: numb
   return (
     <section className="cmp-card">
       <div className="cmp-round">รอบที่ {round + 1} / {p.rounds} · {phaseLabel}</div>
-      {phase === 'click' && <ShrinkTarget key={round} seed={p.seed} round={round} onHit={advance} onMiss={advance} />}
+      {phase === 'click' && <ShrinkTarget key={round} seed={p.seed} round={round} onHit={() => advance(true)} onMiss={() => advance(false)} />}
       {phase === 'dclick' && <DoubleClickIcon key={round} icon={icons[round - quarter]} onOpen={advance} />}
       {phase === 'drag' && <DragToBin key={round} item={dragItems[round - quarter * 2]} onDrop={advance} />}
       {phase === 'ctxmen' && <ContextMenuTask key={round} task={ctxTasks[round - quarter * 3]} seed={p.seed + round} onPick={advance} />}
@@ -586,18 +590,23 @@ function ShrinkTarget(p: { seed: number; round: number; onHit: () => void; onMis
   const [shrunk, setShrunk] = useState(false);
   const [resolved, setResolved] = useState(false);
   const missTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resolvedRef = useRef(false);   // a ref, so the miss/hit side effects never run inside a state updater
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setShrunk(true));
     missTimer.current = setTimeout(() => {
-      setResolved((was) => { if (!was) p.onMiss(); return true; });
+      if (resolvedRef.current) return;
+      resolvedRef.current = true;
+      setResolved(true);
+      p.onMiss();
     }, duration + 60);
     return () => { cancelAnimationFrame(raf); if (missTimer.current) clearTimeout(missTimer.current); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration]);
 
   function click() {
-    if (resolved) return;
+    if (resolvedRef.current) return;
+    resolvedRef.current = true;
     setResolved(true);
     if (missTimer.current) clearTimeout(missTimer.current);
     p.onHit();

@@ -59,8 +59,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // Generous: a racing tab pings this about once a second, per player.
-  if (!rateLimit(`compete:${clientKey(req)}`, 300, 60_000)) return fail('ช้าลงหน่อยนะ', 429);
+  // Generous: every player pings this once a second, and a whole class often shares one
+  // school IP (20 players = ~1200 a minute).
+  if (!rateLimit(`compete:${clientKey(req)}`, 2400, 60_000)) return fail('ช้าลงหน่อยนะ', 429);
 
   let raw: unknown;
   try { raw = await req.json(); } catch { return fail('bad request'); }

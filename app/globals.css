@@ -43,7 +43,7 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .chip.fire{background:#FFF2DC;border:2px solid #F4D9A6;color:var(--amber);}
 
 /* ── banners ── */
-.banner{display:flex;align-items:center;gap:20px;border-radius:24px;padding:22px 26px;margin-bottom:24px;color:#fff;}
+.banner{display:flex;flex-wrap:wrap;align-items:center;gap:20px;border-radius:24px;padding:22px 26px;margin-bottom:24px;color:#fff;}
 .banner.green{background:linear-gradient(135deg,var(--green-l),#3BA93C);box-shadow:0 14px 32px rgba(56,169,58,.32);}
 .banner.gold{background:linear-gradient(135deg,var(--gold),var(--orange));box-shadow:0 14px 32px rgba(240,152,46,.32);}
 .banner.blue{background:linear-gradient(135deg,#4FB0FF,#2277CC);box-shadow:0 14px 32px rgba(34,119,204,.32);}

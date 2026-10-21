@@ -26,7 +26,8 @@ export default function AdminPage() {
       const r = await fetch('/api/admin/certifications');
       if (r.status === 401) { setAuthed(false); setBusy(false); return; }
       const d = await r.json();
-      if (d.ok) { setAuthed(true); setCerts(d.certifications || []); }
+      if (d.ok) { setAuthed(true); setErr(''); setCerts(d.certifications || []); }
+      else setErr('ดึงรายชื่อไม่ได้ในตอนนี้ กรุณาลองใหม่อีกครั้ง');
     } catch { setErr('เชื่อมต่อไม่ได้'); }
     setBusy(false);
   }, []);
@@ -99,7 +100,7 @@ export default function AdminPage() {
   }
 
   if (authed === null) {
-    return <Shell><div style={{ padding: 40, textAlign: 'center', fontFamily: 'Sarabun', color: 'var(--muted2)' }}>กำลังโหลด…</div></Shell>;
+    return <Shell><div style={{ padding: 40, textAlign: 'center', fontFamily: 'Sarabun', color: 'var(--muted2)' }}>{err ? (<div>{err}<br /><button className="btn-ghost3d" style={{ marginTop: 12 }} onClick={() => void load()}>ลองใหม่</button></div>) : 'กำลังโหลด…'}</div></Shell>;
   }
 
   if (!authed) {

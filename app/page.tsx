@@ -73,7 +73,7 @@ export default function Home() {
                 <div style={{ fontFamily: 'Mitr', fontWeight: 700, fontSize: 28 }}>มาเล่นเรียนรู้กันเถอะ!</div>
                 <div className="banner-sub">เลเวล {level}</div>
               </div>
-              <div style={{ minWidth: 210 }}>
+              <div style={{ flex: '1 1 210px', minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'Sarabun', fontWeight: 600, fontSize: 13, color: '#EAFBE6', marginBottom: 8 }}><span>สู่เลเวลถัดไป</span><span>{xp} / {nextLevelXp} XP</span></div>
                 <div className="goal-track"><div className="goal-fill" style={{ width: `${xpPct}%` }} /></div>
               </div>

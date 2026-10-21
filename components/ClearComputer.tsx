@@ -7,7 +7,7 @@ import { useState } from 'react';
 // the server and are not stored in the browser at all.
 const SESSION_KEYS = ['cs_progress', 'cs_daily'];
 // Older versions kept these in localStorage; clear them too so nothing is left behind.
-const LEGACY_LOCAL_KEYS = ['cs_progress', 'cs_daily', 'cs_compete_me', 'dlfMute'];
+const LEGACY_LOCAL_KEYS = ['cs_progress', 'cs_daily', 'cs_compete_me', 'cs_student', 'dlfMute'];
 
 export default function ClearComputer() {
   const [open, setOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function ClearComputer() {
             <ul style={{ margin: '0 0 10px 20px', padding: 0 }}>
               <li>ดาวและความคืบหน้าของบทเรียนที่เล่นไปแล้ว</li>
               <li>บันทึกกิจกรรมของวันนี้</li>
-              <li>ข้อมูลเก่าที่เคยเก็บไว้ในเครื่อง (ชื่อเล่นในห้องแข่ง และการตั้งค่าเสียง)</li>
+              <li>ข้อมูลเก่าที่เคยเก็บไว้ในเครื่อง (ชื่อเล่นในห้องแข่ง ชื่อที่เคยพิมพ์ในบทเรียน และการตั้งค่าเสียง)</li>
             </ul>
             <p style={{ margin: '0 0 6px' }}><b>สิ่งที่ไม่ถูกลบ</b>:</p>
             <ul style={{ margin: '0 0 14px 20px', padding: 0 }}>
