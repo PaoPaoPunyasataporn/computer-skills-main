@@ -124,6 +124,9 @@
   function dlfPlayCheer(){if(muted||!DLF_CHEER)return;try{var a=new Audio(DLF_CHEER);a.volume=0.85;a.play().catch(function(){});}catch(e){}}
   dlf.bigCongrats=function(o){o=o||{};
     const st=Math.max(0,Math.min(3,o.stars==null?3:(o.stars|0)));
+    // Tell the host page (same origin only) which result this lesson actually earned, so only a lesson
+    // that reached its results screen is recorded — and with its real stars, not a flat 3.
+    try{ if(window.parent&&window.parent!==window) window.parent.postMessage({type:'cs-lesson-result',stars:st},window.location.origin); }catch(e){}
     const perfect=st>=2;
     document.getElementById('dlfCongTrophy').textContent=o.trophy||(perfect?'🏆':'🌟');
     document.getElementById('dlfCongTitle').textContent=o.title||(perfect?'เยี่ยมมาก!':'ทำได้ดีมาก!');

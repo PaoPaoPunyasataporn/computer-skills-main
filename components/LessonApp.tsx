@@ -11,11 +11,14 @@ export default function LessonApp({ area }: { area: Area }) {
   const [game, setGame] = useState<Game | null>(null);
 
   function openGame(g: Game) { setGame(g); }
-  function finishGame(g: Game) {
-    // Still tracked locally so the XP meter keeps rising — but the cards no
-    // longer show any "done" checkmark or star badge.
-    saveProgress(area.num, g.code, 3, 0, 0);
-    recordDaily();
+  function finishGame(g: Game, stars?: number | null) {
+    // Tracked locally so the XP meter keeps rising — but only for a lesson that was actually
+    // finished (it reports its real stars when its results screen opens). Leaving early with ✕
+    // records nothing, so XP can't be farmed by opening and closing lessons.
+    if (stars != null && stars > 0) {
+      saveProgress(area.num, g.code, stars, 0, 0);
+      recordDaily();
+    }
     setGame(null);
   }
 
@@ -57,7 +60,7 @@ export default function LessonApp({ area }: { area: Area }) {
         </div>
       </div>
 
-      {game && <GameOverlay game={game} onFinish={() => finishGame(game)} />}
+      {game && <GameOverlay game={game} onFinish={(_score, stars) => finishGame(game, stars)} />}
     </div>
   );
 }

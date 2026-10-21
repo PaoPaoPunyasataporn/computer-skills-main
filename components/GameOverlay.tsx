@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Game } from '@/lib/content';
 import Speaker from '@/components/Speaker';
 import { playApplause } from '@/lib/sfx';
@@ -36,15 +36,25 @@ export default function GameOverlay({
   game: Game;
   isTest?: boolean;
   onClose?: () => void;
-  onFinish: (score?: BossScore | null) => void;
+  // `stars` is the result the lesson itself reported when it reached its results screen
+  // (0-3), or null if the child left before finishing — callers should then record nothing.
+  onFinish: (score?: BossScore | null, stars?: number | null) => void;
   onAbandon?: () => void;
 }) {
   const [score, setScore] = useState<BossScore | null>(null);
   const [confirming, setConfirming] = useState(false);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const lessonStars = useRef<number | null>(null);
 
   useEffect(() => {
     function onMsg(e: MessageEvent) {
       const d = e.data;
+      // A lesson reports its real result once its results screen opens. Only trust our own iframe.
+      if (d && typeof d === 'object' && d.type === 'cs-lesson-result' && e.source === frameRef.current?.contentWindow) {
+        const n = Number(d.stars);
+        if (Number.isFinite(n)) lessonStars.current = Math.max(0, Math.min(3, Math.round(n)));
+        return;
+      }
       if (d && typeof d === 'object' && d.type === 'cs-boss-complete') {
         const correct = Number(d.correct), total = Number(d.total), percent = Number(d.percent);
         if (Number.isFinite(correct) && Number.isFinite(total) && Number.isFinite(percent)) {
@@ -64,12 +74,12 @@ export default function GameOverlay({
   function onExitClick() {
     if (cleared) return onFinish(score);           // passed the test — go get the certificate
     if (isTest) return setConfirming(true);        // quitting mid-test — warn first
-    onFinish(null);                                // practice game — just leave
+    onFinish(null, lessonStars.current);           // practice game — leave; stars only if it was finished
   }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: '#1b1030' }}>
-      <iframe src={game.file} title={game.th} style={{ width: '100%', height: '100%', border: 0, background: '#fff' }} allow="autoplay; fullscreen" />
+      <iframe ref={frameRef} src={game.file} title={game.th} style={{ width: '100%', height: '100%', border: 0, background: '#fff' }} allow="autoplay; fullscreen" />
 
       <button
         className="btn3d"

@@ -63,9 +63,11 @@ function AiHomeInner() {
   // the old subtree after the grid swaps out.
   useEffect(() => { headingRef.current?.focus(); }, [moduleKey]);
 
-  function finishQuickGame() {
-    if (quickGame) {
-      saveProgress(quickGame.area, quickGame.game.code, 3, 0, 0);
+  // Only a lesson that was actually finished is recorded, with the stars it earned; leaving early
+  // with ✕ records nothing.
+  function finishQuickGame(_score?: unknown, stars?: number | null) {
+    if (quickGame && stars != null && stars > 0) {
+      saveProgress(quickGame.area, quickGame.game.code, stars, 0, 0);
       recordDaily();
       loadStats();
     }
