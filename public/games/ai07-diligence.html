@@ -3,25 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>นักใช้ AI อย่างมีความรับผิดชอบ</title>
+<title>ใช้ AI อย่างรับผิดชอบ</title>
 <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="_lib/theme-base.css" rel="stylesheet">
 <style>
 :root{
-  --primary:#D07E1E; --primary-light:#FFF3D6; --primary-dark:#A8620E;
+  --primary:#3E7CB8; --primary-light:#E4F0FB; --primary-dark:#2B5C8C;
   --green:#38A93A; --green-light:#E9FBE7;
   --red:#E4614F; --red-light:#FDECEA;
   --panel2:var(--cream2);
 }
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#FFF1D6 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#DDF6F1 0%,transparent 55%),var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#DCEBFA 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FDF1E4 0%,transparent 55%),var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
 h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 *{box-sizing:border-box;overflow-wrap:anywhere;}
 
-/* ===== same card/button/chip language as the rest of the AI course
-   (.intro-wrap/.teach-slide/.btn from ai0 etc.) — just laid out full-bleed
-   with a persistent 5-part process strip up top instead of a small
-   floating box, so the lesson actually fills the screen. ===== */
 #procbar{position:sticky;top:0;z-index:50;width:100%;background:transparent;padding:12px 16px;}
 #steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
 .pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
@@ -53,15 +49,21 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
 .ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
 .canim{margin:2px auto 4px;}
-.canim-mylines,.canim-my-label{opacity:0;animation:canimIn 4s ease-in-out infinite;}
-.canim-ailines,.canim-ai-label{opacity:1;animation:canimOut 4s ease-in-out infinite;}
-@keyframes canimIn{0%,40%{opacity:0;}60%,100%{opacity:1;}}
-@keyframes canimOut{0%,40%{opacity:1;}60%,100%{opacity:0;}}
+.canim-flow{stroke-dasharray:8 6;animation:canimDash 1.2s linear infinite;}
+@keyframes canimDash{to{stroke-dashoffset:-28;}}
+.canim-pulse{animation:canimPulse 1.6s ease-in-out infinite;}
+@keyframes canimPulse{0%,100%{r:5;opacity:1;}50%{r:8;opacity:.5;}}
 .cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
 .cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
 .cdot.on{background:var(--primary);width:22px;border-radius:5px;}
 .cnav{display:flex;gap:10px;margin-top:14px;}
 .cnav .btn{flex:1;}
+
+/* checklist mini-visual inside concept 2 */
+.clist{list-style:none;margin:10px 0 0;padding:0;text-align:left;max-width:420px;width:100%;}
+.clist li{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--text2);line-height:1.6;padding:6px 0;border-top:1px dashed var(--border);}
+.clist li:first-child{border-top:none;}
+.clist .qn{font-family:'Mitr',sans-serif;font-weight:700;color:var(--primary-dark);flex:0 0 auto;}
 
 /* practice step */
 .rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
@@ -72,22 +74,20 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .taskcard .say{font-size:15px;color:var(--text);line-height:1.7;}
 
 /* drag-to-sort hands-on core */
+.taskcard.draggable{cursor:grab;user-select:none;touch-action:none;position:relative;box-shadow:0 3px 0 var(--line-d);}
+.taskcard.draggable:active{cursor:grabbing;}
+.taskcard.armed{box-shadow:0 0 0 3px var(--primary),0 3px 0 var(--line-d);transform:translateY(-2px);}
+.taskcard.dragging{transition:none;box-shadow:0 14px 26px rgba(15,27,45,.22);}
 .taskcard.settling{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;}
 .taskcard.answered{pointer-events:none;}
 .draghint{font-size:11.5px;color:var(--text3);margin:8px 0 2px;text-align:center;}
-.badge-opts{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
-.badge-opt{border:2px solid var(--border);border-bottom-width:4px;border-radius:14px;background:var(--panel);padding:13px 16px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:600;color:var(--text);text-align:left;cursor:pointer;transition:transform .1s;}
-.badge-opt:active{transform:translateY(2px);}
-.badge-card{margin-top:16px;border-radius:18px;padding:22px 20px;text-align:center;border:2.5px solid var(--border);}
-.badge-card.risk-low{background:var(--green-light,#E9FBE7);border-color:#38A93A;}
-.badge-card.risk-med{background:#FFF3D6;border-color:#C58A00;}
-.badge-card.risk-high{background:#FDECEA;border-color:#E4614F;}
-.badge-icon{font-size:44px;margin-bottom:6px;}
-.badge-title{font-family:'Mitr',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;}
-.badge-risk{font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;display:inline-block;padding:4px 14px;border-radius:99px;background:rgba(0,0,0,.08);margin-bottom:10px;}
-.badge-note{font-size:13px;color:var(--text2);line-height:1.7;text-align:left;}
+.hlword{display:inline;padding:2px 3px;border-radius:5px;cursor:pointer;}
+.hlword:hover{background:rgba(208,126,30,.14);}
+.hlword.hlhit{background:var(--green);color:#fff;animation:hlPop .3s ease;}
+.hlword.hlmiss{background:var(--red-light);color:#A32E20;text-decoration:line-through;}
+@keyframes hlPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
 .dropzones{width:100%;display:flex;gap:8px;margin:14px 0 4px;}
-.dropzone{flex:1;min-height:92px;border:2px solid var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:var(--panel2);transition:border-color .15s,background .15s,transform .15s;cursor:pointer;}
+.dropzone{flex:1;min-height:92px;border:2px dashed var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:var(--panel2);transition:border-color .15s,background .15s,transform .15s;cursor:pointer;}
 .dropzone .zi{font-size:22px;}
 .dropzone:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
 .dropzone.over{border-style:solid;border-color:var(--primary);background:var(--primary-light);transform:scale(1.045);}
@@ -111,6 +111,28 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
 .res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
 </style>
+
+<style>
+.optcol{width:100%;display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;}
+.optbtn{width:100%;text-align:left;font-family:'Sarabun',sans-serif;font-size:14.5px;line-height:1.6;color:var(--text);background:var(--panel);border:2px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;padding:12px 16px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;}
+.optbtn:hover:not(:disabled){border-color:var(--primary);background:var(--primary-light);}
+.optbtn:disabled{cursor:default;}
+.optbtn.correct{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.optbtn.wrong{border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.optrow{display:flex;gap:8px;width:100%;margin:14px 0 4px;}
+.optrow .optbtn{text-align:center;font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;padding:14px 6px;}
+.ctxbox{width:100%;background:var(--panel2);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;}
+.cmp{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:10px;text-align:left;}
+.cmp .cbox{border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.65;border:1.5px solid var(--border);background:var(--panel2);}
+.cmp .cbox b{display:block;font-family:'Mitr',sans-serif;font-size:11.5px;margin-bottom:3px;}
+.cmp .cbox.bad{border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.cmp .cbox.good{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.cmp .cnote{font-size:13px;color:var(--text2);line-height:1.65;}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;}
+.tabchip{font-family:'Mitr',sans-serif;font-size:12.5px;font-weight:600;background:var(--panel);border:1.5px solid var(--border);border-radius:99px;padding:6px 12px;cursor:pointer;color:var(--text2);}
+.tabchip.on{background:var(--primary);border-color:var(--primary);color:#fff;}
+.tabtext{width:100%;margin-top:10px;background:var(--primary-light);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;min-height:64px;}
+</style>
 </head>
 <body>
 
@@ -119,18 +141,16 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 </div>
 
 <div class="stage">
-  <!-- STEP 1 · Hook (one line + one visual, real situation) -->
   <div class="panel" id="s1" data-step="0">
     <div class="intro-wrap">
       <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
       <span class="big-icon">🧾</span>
-      <div class="title">เพื่อนให้ AI เขียนเรียงความทั้งเรื่อง แล้วส่งเป็นชื่อตัวเอง</div>
-      <div class="sub">"เร็วดี ไม่มีใครรู้หรอก" เพื่อนบอก — แต่นี่ยังนับว่าเป็นงานของเพื่อนอยู่ไหม?</div>
+      <div class="title">เพื่อนให้ AI เขียนเรียงความทั้งเรื่องแล้วส่งเป็นชื่อตัวเอง ส่วนอีกคนพิมพ์ที่อยู่และเบอร์โทรให้ AI ช่วยหาทางกลับบ้าน</div>
+      <div class="sub">การใช้ AI อย่างรับผิดชอบมี 2 เรื่อง: งานที่ส่งยังเป็นของเราจริงไหม และข้อมูลที่พิมพ์ให้ AI ปลอดภัยไหม</div>
       <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
     </div>
   </div>
 
-  <!-- STEP 2 · Concept -->
   <div class="panel" id="s2" data-step="1" style="display:none">
     <div class="teach-wrap">
       <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
@@ -143,57 +163,36 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
     </div>
   </div>
 
-  <!-- STEP 3 · Hands-on core -->
   <div class="panel" id="s3" data-step="2" style="display:none">
     <div class="teach-wrap" style="text-align:left">
       <div class="rhead">
         <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือตัดสินใจ</span>
         <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
       </div>
-      <span class="rtag" id="roundTag" style="display:block;margin:10px 0 6px">ข้อที่ 1/6</span>
-      <div class="taskcard" id="taskCard"><div class="who">📋 สถานการณ์</div><div class="say" id="taskSay"></div></div>
-      <div class="draghint" id="dragHint">👉 อ่านสถานการณ์แล้วแตะปุ่มคำตอบที่ตรงที่สุด</div>
-      <div class="dropzones" id="dropZones"></div>
+      <span class="rtag" id="roundTag" style="display:block;margin:10px 0 6px">ข้อที่ 1</span>
+      <div class="taskcard"><div class="who">📋 สถานการณ์</div><div class="say" id="qSay"></div></div>
+      <div class="ctxbox" id="ctxBox" style="display:none"></div>
+      <div id="optsWrap"></div>
       <div class="explainbox" id="explainBox" style="margin-top:14px"></div>
-      <button class="btn" id="nextRoundBtn" style="display:none;margin-top:14px" onclick="nextRound()">ข้อถัดไป →</button>
-
-      <div id="disclosureSection" style="display:none">
-        <div class="rtag" id="discTag" style="display:block;margin:10px 0 6px"></div>
-        <div class="taskcard" id="discTaskCard"><div class="who">📝 สถานการณ์ — ฝึกพิมพ์ประโยคบอกตรง ๆ</div><div class="say" id="discSay"></div></div>
-        <div class="draghint">✍️ พิมพ์ประโยคสั้น ๆ ที่จะใช้บอก เช่น "ฉันใช้ AI ช่วย... แล้วบอกครู/เพื่อนว่า..."</div>
-        <textarea id="discInput" rows="2" style="width:100%;border-radius:14px;border:1.5px solid var(--border);padding:12px;font-family:'Sarabun',sans-serif;font-size:14.5px;margin-top:10px;box-sizing:border-box;"></textarea>
-        <button class="btn" id="discSubmitBtn" style="margin-top:12px" onclick="submitDisclosure()">ส่งคำตอบ →</button>
-        <div class="explainbox" id="discExplain" style="margin-top:14px"></div>
-        <button class="btn" id="discNextBtn" style="display:none;margin-top:14px" onclick="nextDisclosure()">ข้อถัดไป →</button>
-      </div>
-
-      <div id="badgeSection" style="display:none">
-        <div class="rtag" style="display:block;margin:10px 0 6px">🏷️ สร้างป้ายเปิดเผยการใช้ AI ของตัวเอง</div>
-        <div class="draghint">เลือกว่าครั้งนี้ใช้ AI ช่วยงานแค่ไหน แล้วดูว่าป้ายและระดับความเสี่ยงที่ได้เป็นแบบไหน</div>
-        <div id="badgeOpts" class="badge-opts"></div>
-        <div id="badgeCard" class="badge-card" style="display:none"></div>
-        <button class="btn" id="badgeNextBtn" style="display:none;margin-top:14px" onclick="goStep(3)">ไปสะท้อนคิดกัน →</button>
-      </div>
+      <button class="btn" id="nextBtn" style="display:none;margin-top:14px" onclick="nextRound()">ข้อถัดไป →</button>
     </div>
   </div>
 
-  <!-- STEP 4 · Reflection (+ stars/completion) -->
-  <div class="panel" id="s5" data-step="3" style="display:none">
+  <div class="panel" id="s4" data-step="3" style="display:none">
     <div class="refl-wrap">
       <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
-      <div class="title" style="margin-top:2px">ครั้งหน้าจะใช้ AI ทำงานยังไงให้ยังเป็นของเรา?</div>
-      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าครั้งต่อไปเวลาจะให้ AI ช่วยทำงาน เราจะทำยังไงให้ยังถือว่าเป็นงานและความเข้าใจของตัวเอง</div>
+      <div class="title" style="margin-top:2px">ครั้งหน้าจะใช้ AI ทำงานและพิมพ์ข้อความอย่างไร?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าครั้งต่อไปเราจะทำอย่างไรให้งานยังเป็นของเรา และจะเช็กอะไรก่อนพิมพ์ข้อมูลให้ AI</div>
       <div id="tryReal"></div>
-      <textarea id="reflText" placeholder="เช่น ครั้งหน้าฉันจะให้ AI ช่วยแค่ร่างไอเดีย แล้วเขียนเองต่อ..."></textarea>
+      <textarea id="reflText" placeholder="เช่น ครั้งหน้าฉันจะให้ AI ช่วยแค่ร่างไอเดียแล้วเขียนเอง และจะไม่พิมพ์ชื่อกับที่อยู่ให้ AI..."></textarea>
       <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
     </div>
   </div>
 
-  <!-- DONE -->
   <div class="panel" id="done" style="display:none">
     <div class="results-wrap">
       <div class="res-emoji" id="resEmoji">🏆</div>
-      <div class="res-title" id="resTitle">ใช้ AI อย่างรับผิดชอบเก่งมาก!</div>
+      <div class="res-title" id="resTitle">ใช้ AI อย่างรับผิดชอบ!</div>
       <div class="res-stars" id="resStars">⭐⭐⭐</div>
       <div class="res-score" id="resScore"></div>
       <button class="btn" onclick="restartGame()">เรียนอีกครั้ง →</button>
@@ -202,11 +201,6 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 </div>
 
 <script>
-// The lesson has 4 SCREENS (curStep 0-3), but the process has 5 named PARTS —
-// "immediate feedback" happens live inside the hands-on screen rather than
-// being its own screen, so it and "hands-on core" both point at screen 2.
-// The header panel always shows all 5 parts; each one's on/cur/upcoming
-// status is derived from comparing its screen index to curStep.
 const PROCESS = [
   { label:'จุดเริ่ม', step:0 },
   { label:'แนวคิด', step:1 },
@@ -216,11 +210,12 @@ const PROCESS = [
 let curStep = 0;
 function $(id){ return document.getElementById(id); }
 function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 function renderRail(){
   $('steprail').innerHTML = PROCESS.map((p,i)=>{
     const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
-    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+    return '<span class="pchip '+cls+'"><span class="num">'+(cls==='done'?'':i+1)+'</span>'+esc(p.label)+'</span>';
   }).join('');
 }
 function goStep(n){
@@ -233,24 +228,24 @@ function goStep(n){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ===== Step 2: concept =====
-const CONCEPT_ANIM = `<div class="canim" aria-hidden="true"><svg viewBox="0 0 160 110" width="130" height="90">
-  <rect x="30" y="10" width="100" height="90" rx="10" fill="var(--panel2)" stroke="var(--border)" stroke-width="2"/>
-  <g class="canim-ailines"><rect x="45" y="26" width="70" height="7" rx="3" fill="var(--primary)"/><rect x="45" y="40" width="70" height="7" rx="3" fill="var(--primary)"/><rect x="45" y="54" width="50" height="7" rx="3" fill="var(--primary)"/></g>
-  <g class="canim-mylines"><rect x="45" y="26" width="55" height="7" rx="3" fill="var(--green)"/><rect x="45" y="40" width="70" height="7" rx="3" fill="var(--green)"/><rect x="45" y="54" width="40" height="7" rx="3" fill="var(--green)"/></g>
-  <text x="80" y="90" text-anchor="middle" font-size="11" font-weight="700" font-family="Mitr,sans-serif" class="canim-ai-label" fill="var(--primary-dark)">100% AI</text>
-  <text x="80" y="90" text-anchor="middle" font-size="11" font-weight="700" font-family="Mitr,sans-serif" class="canim-my-label" fill="#1F6B33">คำพูดของเรา</text>
-</svg></div>`;
-const CONCEPTS = [
-  { icon:'🎯', title:'เช็กก่อนว่างานนี้ควรให้ AI ช่วยแค่ไหน', body:'ให้ AI ช่วย "ร่างไอเดีย" หรือ "อธิบายให้เข้าใจ" ได้เสมอ — แต่ถ้าโจทย์บอกว่าต้องแสดงว่า "เราเข้าใจ" หรือ "เราทำเอง" (เช่น การบ้าน ข้อสอบ) ต้องคิดและเขียนเองเป็นหลัก AI ช่วยได้แค่บางส่วน' },
-  { icon:'🗣️', title:'บอกตามตรง และผลงานสุดท้ายต้องยังเป็นของเรา', body:'ถ้ากติกาถามว่าใช้ AI ช่วยไหม ต้องบอกตามตรงเสมอ และถ้า AI เขียนให้ทั้งหมดแล้วเราแค่ก็อบวางไปส่งโดยไม่เข้าใจเลย นั่นไม่ใช่งานของเราอีกต่อไป — ต้องอ่าน เข้าใจ และแก้ไขให้เป็นความคิดตัวเองก่อนส่งเสมอ', anim:true },
-];
+// ===== Step 2: concept cards =====
+const CONCEPTS = [{"icon":"🎯","title":"เช็กก่อนว่างานนี้ควรให้ AI ช่วยแค่ไหน","body":"ให้ AI ช่วยร่างไอเดียหรืออธิบายให้เข้าใจได้เสมอ แต่ถ้าโจทย์ต้องการดูว่าเราเข้าใจหรือทำเอง (เช่น การบ้าน ข้อสอบ) เราต้องคิดและเขียนเองเป็นหลัก","items":["ให้ AI อธิบายหรือร่างไอเดีย แล้วเราเขียนใหม่ด้วยความเข้าใจ","ถ้ากติกาห้ามใช้ AI ต้องไม่ใช้","ถ้ากติกาให้ใช้แต่ต้องแจ้ง ต้องแจ้งตามจริง"]},{"icon":"🗣️","title":"บอกตามตรง และงานสุดท้ายต้องยังเป็นของเรา","body":"ถ้าถามว่าใช้ AI ช่วยไหม ต้องตอบตามจริง และการก็อบคำตอบมาวางโดยไม่เข้าใจ ไม่ใช่งานของเรา ประโยคที่บอกชัดว่า AI ช่วยส่วนไหน และเราทำส่วนไหน ทำให้คนเชื่อใจงานของเรา","compare":{"bad":"ฉันเขียนเองทั้งหมด (ทั้งที่ให้ AI เขียนให้)","good":"ฉันใช้ AI ช่วยหาไอเดียหัวข้อ ส่วนเนื้อหาและการแก้ไขฉันเขียนเอง","note":"ประโยคแรกไม่ตรงความจริง ประโยคที่สองบอกชัดว่า AI ช่วยตรงไหน"}},{"icon":"💾","title":"สิ่งที่พิมพ์ให้ AI ไม่ได้หายไปไหน","body":"ข้อความที่เราพิมพ์คุยกับ AI อาจถูกบันทึกไว้ในระบบของบริษัทที่สร้าง AI นั้น บางครั้งถูกนำไปปรับปรุงระบบ หรือมีคนตรวจสอบได้ ต่างจากการคุยกับเพื่อนที่พูดแล้วจบ จึงควรพิมพ์เฉพาะสิ่งที่จำเป็นจริง ๆ"},{"icon":"✅","title":"เช็ก 3 ข้อ ก่อนพิมพ์อะไรให้ AI","body":"ถามตัวเองก่อนกดส่ง","items":["จำเป็นไหม — ถามได้โดยไม่ต้องบอกชื่อเต็ม ที่อยู่ เบอร์โทร หรือรหัสผ่านหรือเปล่า","เป็นของฉันคนเดียวไหม — ถ้าเป็นข้อมูลของเพื่อนหรือครอบครัว ต้องขออนุญาตก่อน","ถ้าคนแปลกหน้าเห็น ไม่เป็นไรไหม — ถ้าไม่อยากให้เห็น ก็ไม่ควรพิมพ์"]}];
 let cIdx = 0;
 function renderConcept(){ cIdx = 0; renderConceptCard(); }
 function renderConceptCard(){
   const c = CONCEPTS[cIdx];
-  $('ccardWrap').innerHTML = `<div class="ccard"><span class="ci">${c.icon}</span><div class="ct">${esc(c.title)}</div>${c.anim ? CONCEPT_ANIM : ''}<div class="cb">${esc(c.body)}</div></div>`;
-  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  const list = c.items ? '<ul class="clist">' + c.items.map((t,i)=>'<li><span class="qn">'+(i+1)+'</span><span>'+esc(t)+'</span></li>').join('') + '</ul>' : '';
+  const cmp = c.compare ? '<div class="cmp"><div class="cbox bad"><b class="cxbadge">'+esc(c.compare.badLabel||'❌ แบบที่ไม่ดี')+'</b><span>'+esc(c.compare.bad)+'</span></div><div class="cbox good"><b class="cxbadge">'+esc(c.compare.goodLabel||'✅ แบบที่ดี')+'</b><span>'+esc(c.compare.good)+'</span></div>'+(c.compare.note?'<div class="cnote">'+esc(c.compare.note)+'</div>':'')+'</div>' : '';
+  const tabs = c.tabs ? '<div class="tabs">'+c.tabs.map((t,i)=>'<button type="button" class="tabchip" data-i="'+i+'">'+esc(t.k)+'</button>').join('')+'</div><div class="tabtext" id="tabText">แตะหัวข้อด้านบนเพื่อดูคำอธิบาย</div>' : '';
+  $('ccardWrap').innerHTML = '<div class="ccard"><span class="ci">'+c.icon+'</span><div class="ct">'+esc(c.title)+'</div><div class="cb">'+esc(c.body)+'</div>'+list+tabs+cmp+'</div>';
+  if (c.tabs) document.querySelectorAll('.tabchip').forEach(b=>{ b.onclick = ()=>{
+    document.querySelectorAll('.tabchip').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    const t = c.tabs[Number(b.dataset.i)];
+    let shot = '';
+    if (t.img){ const bx = t.box || [0,0,0,0]; shot = '<div style="position:relative;width:100%;aspect-ratio:'+t.ratio+';margin-bottom:8px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)"><img src="'+t.img+'" alt="" style="width:100%;height:100%;display:block"><div style="position:absolute;left:'+bx[0]+'%;top:'+bx[1]+'%;width:'+bx[2]+'%;height:'+bx[3]+'%;border:3px solid #E4614F;border-radius:6px;box-shadow:0 0 0 2px rgba(255,255,255,.7)"></div></div>'; }
+    $('tabText').innerHTML = shot + '<div>' + esc(t.v) + '</div>';
+  }; });
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>'<span class="cdot'+(i===cIdx?' on':'')+'"></span>').join('');
   $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
   const last = cIdx === CONCEPTS.length-1;
   $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
@@ -259,217 +254,62 @@ function renderConceptCard(){
 function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
 function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
 
-// ===== Step 3: practice =====
-const VERDICTS = [
-  { key:'ok', label:'✅ ทำได้เลย', emoji:'✅', short:'ทำได้เลย' },
-  { key:'tell', label:'📢 ทำได้ แต่ต้องบอกครู/บอกก่อน', emoji:'📢', short:'ทำได้ แต่ต้องบอก' },
-  { key:'no', label:'❌ ทำไม่ได้', emoji:'❌', short:'ทำไม่ได้' },
-];
-const ROUNDS = [
-  { task:'ให้ AI ช่วยอธิบายศัพท์ยาก ๆ ในบทเรียนที่ไม่เข้าใจ แล้วเราสรุปเป็นคำพูดตัวเองอีกที', answer:'ok',
-    explain:'ใช้ AI ช่วยอธิบายให้เข้าใจ แล้วเราสรุปเองด้วยความเข้าใจของตัวเอง — ถือว่าใช้ AI เพื่อการเรียนรู้อย่างเหมาะสม' },
-  { task:'ให้ AI เขียนเรียงความทั้งเรื่อง แล้วก็อบวางส่งครูเป็นชื่อตัวเองโดยไม่แก้ไขอะไรเลย', answer:'no',
-    explain:'นี่ไม่ใช่งานของเราอีกต่อไป — ครูให้การบ้านนี้เพื่อดูว่าเราเขียนและคิดเองได้แค่ไหน การส่งงาน AI ทั้งดุ้นเป็นชื่อเราถือว่าไม่ซื่อสัตย์' },
-  { task:'ครูอนุญาตให้ใช้ AI ช่วยหาไอเดียสำหรับโปรเจกต์กลุ่ม โดยขอให้บอกในรายงานว่าใช้ AI ช่วยส่วนไหนบ้าง', answer:'tell',
-    explain:'ครูอนุญาตให้ใช้แต่ขอให้บอกอย่างชัดเจน — ต้องระบุในรายงานตามที่ครูขอเสมอ ถึงจะยังถือว่าซื่อสัตย์และทำถูกกติกา' },
-  { task:'ให้ AI ช่วยแปลคำศัพท์ภาษาอังกฤษเป็นไทยเพื่อทำความเข้าใจบทความที่อ่านอยู่', answer:'ok',
-    explain:'การใช้ AI เป็นเครื่องมือช่วยแปล/ทำความเข้าใจเนื้อหา ไม่ได้ทำให้ความเข้าใจหรือความคิดที่แท้จริงเป็นของ AI แทนเรา ทำได้ปกติ' },
-  { task:'ข้อสอบที่ทำที่บ้านระบุชัดเจนว่า "ห้ามใช้ AI หรือความช่วยเหลือใด ๆ" แต่แอบใช้ AI ช่วยตอบบางข้อโดยไม่บอกใคร', answer:'no',
-    explain:'กติกาห้ามไว้ชัดเจนแล้ว การแอบใช้โดยไม่บอกถือว่าโกงและผิดกติกาโดยตรง ไม่ว่าจะใช้แค่บางข้อก็ตาม' },
-  { task:'ทำโปสเตอร์วิทยาศาสตร์ ให้ AI ช่วยสร้างภาพประกอบ แล้วใส่เครดิตกำกับไว้ว่า "ภาพสร้างโดย AI" ใต้ภาพ', answer:'tell',
-    explain:'ใช้ AI ช่วยสร้างภาพได้ แต่ควรให้เครดิต/บอกไว้อย่างชัดเจนว่าส่วนไหนสร้างโดย AI เพื่อความโปร่งใสกับคนที่ดูผลงาน' },
-  { task:'ให้ AI ช่วยตรวจตัวสะกดและไวยากรณ์ในเรียงความที่เราเขียนเองทั้งหมด ก่อนส่งครู', answer:'ok',
-    explain:'เนื้อหาและความคิดทั้งหมดยังเป็นของเรา AI แค่ช่วยตรวจทานเหมือนพจนานุกรม/เครื่องมือช่วยเขียน ทำได้ตามปกติ' },
-  { task:'ทำรายงานกลุ่ม เพื่อนในกลุ่มให้ AI เขียนส่วนของตัวเองทั้งหมดโดยไม่บอกสมาชิกคนอื่นในกลุ่มเลย', answer:'no',
-    explain:'ไม่ซื่อสัตย์ต่อเพื่อนร่วมกลุ่มที่ต้องรับผิดชอบร่วมกัน ควรบอกเพื่อนในกลุ่มก่อนเสมอว่าใช้ AI ช่วยส่วนไหน' },
-  { task:'ครูให้โจทย์ปลายเปิดว่า "ใช้เครื่องมืออะไรก็ได้ในการค้นคว้า" ให้ AI ช่วยหาข้อมูลประกอบ แล้วเขียนสรุปเองด้วยคำพูดตัวเอง', answer:'ok',
-    explain:'กติกาเปิดให้ใช้เครื่องมือได้อย่างอิสระ และเราสรุปเป็นความเข้าใจของตัวเองสุดท้าย ถือว่าใช้ได้อย่างเหมาะสม' },
-  { task:'ทำการบ้านศิลปะให้วาดรูปเอง แต่ใช้ AI สร้างภาพทั้งภาพแล้วส่งเป็นผลงานตัวเองโดยไม่บอกใคร', answer:'no',
-    explain:'โจทย์ระบุชัดว่าต้องวาดเอง การให้ AI สร้างภาพทั้งภาพแล้วอ้างว่าเป็นฝีมือตัวเองถือว่าไม่ซื่อสัตย์และผิดกติกาโดยตรง' },
-  { task:'ให้ AI ช่วยแปลข้อความภาษาอังกฤษที่เพื่อนส่งมาเป็นภาษาไทย เพื่อให้เข้าใจว่าเพื่อนพูดอะไร', answer:'ok',
-    explain:'ใช้ AI เป็นเครื่องมือช่วยแปลเพื่อสื่อสารกับเพื่อน ไม่ได้เกี่ยวกับงานที่ต้องส่งครูหรือประเมินความเข้าใจ ทำได้ตามปกติ' },
-  { task:'ให้ AI ช่วยสร้างคำถามแบบทดสอบสำหรับทบทวนบทเรียนก่อนสอบ แล้วลองตอบเองดูเพื่อเช็กความเข้าใจ', answer:'ok',
-    explain:'ใช้ AI เป็นเครื่องมือฝึกฝนตัวเอง เราเป็นคนตอบและเรียนรู้เอง ถือว่าใช้ AI เพื่อการเรียนรู้อย่างเหมาะสม' },
-  { task:'ครูวิชาคอมพิวเตอร์อนุญาตให้ใช้ AI ช่วยหาจุดผิดพลาด (bug) ในโค้ดได้อย่างเปิดเผยในชั่วโมงเรียน', answer:'ok',
-    explain:'ครูอนุญาตให้ใช้อย่างชัดเจนในบริบทของชั่วโมงเรียนนั้น และเราเป็นคนแก้โค้ดเอง จึงทำได้ตามกติกาที่ครูวางไว้' },
-  { task:'เขียนจดหมายสมัครงาน (cover letter) ให้ AI เขียนให้ทั้งฉบับ แล้วส่งให้บริษัทโดยไม่บอกว่าใช้ AI ช่วยเขียน', answer:'no',
-    explain:'จดหมายสมัครงานควรสะท้อนตัวตนและความตั้งใจของเราเอง การให้ AI เขียนทั้งหมดแล้วปิดบังไม่บอกถือว่าไม่ซื่อสัตย์ต่อผู้รับสมัคร' },
-  { task:'ใช้ AI ช่วยแปลบทความวิชาการภาษาอังกฤษเป็นภาษาไทยเพื่อทำรายงาน แล้วอ้างอิงแหล่งที่มาของบทความให้ครบถ้วน', answer:'ok',
-    explain:'ใช้ AI ช่วยแปลเพื่อทำความเข้าใจ และยังคงอ้างอิงแหล่งข้อมูลอย่างถูกต้อง ถือว่าใช้เครื่องมืออย่างมีความรับผิดชอบ' },
-  { task:'ทำโปรเจกต์วิทยาศาสตร์ ครูขอให้ระบุไว้ในหน้าบรรณานุกรมว่าใช้เครื่องมือ AI ตัวไหนช่วยส่วนไหนบ้าง', answer:'tell',
-    explain:'ครูกำหนดให้ต้องระบุแหล่งที่มาของความช่วยเหลือ รวมถึงเครื่องมือ AI ไว้อย่างชัดเจน ต้องทำตามเพื่อความโปร่งใสทางวิชาการ' },
-];
-let rIdx = 0, wrongCount = 0, answered = false;
+// ===== Step 3: choose-and-explain rounds =====
+// type 'v' = three fixed verdict buttons; type 'p' = pick the best of several written options (order shuffled).
+const VERDICTS = ["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"];
+const ROUNDS = [{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ให้ AI ช่วยอธิบายศัพท์ยาก ๆ ในบทเรียน แล้วเราสรุปเป็นคำพูดตัวเองอีกที","ans":0,"why":"ใช้ AI ช่วยให้เข้าใจ แล้วสรุปด้วยความเข้าใจของเราเอง ถือเป็นการเรียนรู้ที่เหมาะสม"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ให้ AI เขียนเรียงความทั้งเรื่อง แล้วก็อบส่งครูเป็นชื่อตัวเองโดยไม่แก้ไขอะไร","ans":2,"why":"ไม่ใช่งานของเราอีกต่อไป ครูให้การบ้านเพื่อดูว่าเราคิดและเขียนเองได้แค่ไหน"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ครูอนุญาตให้ใช้ AI หาไอเดียโปรเจกต์กลุ่ม โดยขอให้บอกในรายงานว่าใช้ช่วยส่วนไหน","ans":1,"why":"ทำได้เมื่อบอกตามที่ครูขอ การบอกชัดเจนทำให้งานยังโปร่งใสและซื่อสัตย์"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ข้อสอบที่ทำที่บ้านระบุว่าห้ามใช้ AI แต่แอบใช้ช่วยตอบบางข้อโดยไม่บอกใคร","ans":2,"why":"กติกาห้ามไว้ชัดเจน การแอบใช้คือการโกง แม้จะใช้แค่บางข้อ"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ทำโปสเตอร์วิทยาศาสตร์ ให้ AI ช่วยสร้างภาพประกอบ แล้วใส่เครดิตใต้ภาพว่า ภาพสร้างโดย AI","ans":1,"why":"ใช้ได้เมื่อบอกให้ชัดว่าส่วนไหนสร้างโดย AI เพื่อความโปร่งใสกับคนดูผลงาน"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ให้ AI ตรวจตัวสะกดและไวยากรณ์ในเรียงความที่เราเขียนเองทั้งหมดก่อนส่งครู","ans":0,"why":"เนื้อหาและความคิดยังเป็นของเรา AI แค่ช่วยตรวจทานเหมือนพจนานุกรม"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ทำการบ้านศิลปะที่ให้วาดเอง แต่ใช้ AI สร้างภาพทั้งภาพแล้วส่งเป็นผลงานตัวเองโดยไม่บอกใคร","ans":2,"why":"โจทย์ให้วาดเอง การให้ AI สร้างทั้งภาพแล้วอ้างเป็นฝีมือตัวเองไม่ซื่อสัตย์"},{"type":"v","labels":["✅ ทำได้เลย","📢 ทำได้ แต่ต้องบอก","❌ ทำไม่ได้"],"q":"ครูให้โจทย์ปลายเปิดว่าใช้เครื่องมืออะไรก็ได้ในการค้นคว้า ให้ AI ช่วยหาข้อมูลแล้วเขียนสรุปเอง","ans":0,"why":"กติกาเปิดให้ใช้ และเราสรุปด้วยความเข้าใจของตัวเอง จึงทำได้"},{"type":"p","q":"ข้อไหนเป็นประโยคบอกการใช้ AI ที่ชัดเจนและตรงความจริงที่สุด?","opts":[{"t":"ฉันใช้ AI ช่วยตรวจจุดที่ควรปรับ ส่วนเนื้อหาและการแก้ไขฉันทำเอง","ok":true,"why":"บอกว่า AI ช่วยส่วนไหน และเราทำส่วนไหน"},{"t":"ฉันทำเองทั้งหมด","ok":false,"why":"ไม่ตรงความจริงถ้ามี AI ช่วย"},{"t":"ใช้ AI นิดหน่อย","ok":false,"why":"คลุมเครือ ไม่บอกว่าช่วยตรงไหน"}]},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"ช่วยแนะนำหนังสือแนวผจญภัยสนุก ๆ ให้หน่อย","ans":0,"why":"ไม่มีข้อมูลส่วนตัวใด ๆ เป็นคำถามทั่วไป พิมพ์ได้ตามปกติ"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"ฉันชื่อ ด.ญ. พิมพ์ลดา อยู่บ้านเลขที่ 45/2 ซอยสุขใจ 7 เบอร์โทรพ่อ 08X-XXX-XXXX ช่วยหาเส้นทางเดินกลับบ้าน","ans":2,"why":"มีชื่อเต็ม ที่อยู่ และเบอร์โทรผู้ปกครองในข้อความเดียว ถ้าหลุดไปอาจเป็นอันตราย ควรตัดออกทั้งหมด"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"พ่อแม่จะไปทำงานต่างจังหวัด 3 วัน ฉันอยู่บ้านคนเดียว ช่วยแนะนำวิธีทำอาหารง่าย ๆ หน่อย","ans":1,"why":"การบอกว่าอยู่บ้านคนเดียวช่วงไหนกับระบบภายนอกมีความเสี่ยง ควรถามผู้ใหญ่ หรือเปลี่ยนคำถามไม่ให้บอกเรื่องนี้"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"นี่คือรหัสผ่านอีเมลของฉัน: Passw0rd123! ช่วยเช็กให้หน่อยว่าปลอดภัยไหม","ans":2,"why":"ห้ามพิมพ์รหัสผ่านจริงให้ใครหรือระบบไหน ให้ถามหลักการทั่วไปแทน เช่น รหัสผ่านที่ดีควรมีอะไรบ้าง"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"เพื่อนสนิทของฉันชื่อจริงนามสกุลจริงว่า ... เขาป่วยเป็นโรค ... ช่วยหาข้อมูลโรคนี้ให้หน่อย","ans":1,"why":"เป็นข้อมูลสุขภาพของคนอื่น ควรถามเพื่อนหรือผู้ใหญ่ก่อน หรือถามแบบไม่ระบุชื่อ"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"นี่คือรูปหน้าบัตรประชาชนของฉัน ช่วยอ่านเลขบัตรให้หน่อย (แนบรูปบัตร)","ans":2,"why":"บัตรประชาชนมีข้อมูลระบุตัวตนสำคัญมาก ไม่ควรอัปโหลดเอกสารราชการให้ AI ใด ๆ"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"ฉันสอบตกวิชาคณิตศาสตร์ กลัวพ่อแม่ดุ ควรทำยังไงดี รู้สึกเครียดมาก","ans":0,"why":"เป็นการขอคำแนะนำเรื่องความรู้สึกทั่วไป ไม่มีข้อมูลระบุตัวตน แต่ถ้าเครียดมากควรคุยกับผู้ใหญ่ที่ไว้ใจด้วย"},{"type":"v","labels":["✅ พิมพ์ได้เลย","🙋 ถามผู้ใหญ่ก่อน","🚫 ไม่ควรพิมพ์"],"q":"น้องชายฉันอายุ 6 ขวบ ชื่อ ... เรียนโรงเรียน ... ห้อง ... ช่วยแนะนำของขวัญวันเกิดหน่อย","ans":1,"why":"ชื่อ โรงเรียน และห้องรวมกันระบุตัวน้องได้ ควรถามผู้ปกครองก่อน หรือถามโดยไม่ระบุชื่อและโรงเรียน"},{"type":"p","q":"ข้อไหนเป็นการถามเรื่องเดิมที่ปลอดภัยกว่า? (เรื่องเดิม: ขอให้ AI ช่วยหาเส้นทางเดินจากโรงเรียนกลับบ้าน)","opts":[{"t":"ช่วยแนะนำวิธีเดินทางกลับบ้านจากโรงเรียนอย่างปลอดภัยโดยทั่วไป","ok":true,"why":"ถามหลักการได้โดยไม่ต้องบอกชื่อ ที่อยู่ หรือเบอร์โทร"},{"t":"ฉันชื่อ [ชื่อเต็ม] อยู่ [บ้านเลขที่] ช่วยหาเส้นทางให้หน่อย","ok":false,"why":"บอกข้อมูลระบุตัวตนที่ไม่จำเป็น"},{"t":"นี่คือเบอร์โทรพ่อ [เบอร์] เผื่อต้องติดต่อ","ok":false,"why":"ไม่จำเป็นต้องให้เบอร์ผู้ปกครองกับ AI"}]}];
+let rIdx = 0, wrongCount = 0, answered = false, curOpts = [];
 
 function startPractice(){ rIdx = 0; wrongCount = 0; renderRound(); }
 function renderRound(){
   const r = ROUNDS[rIdx];
   answered = false;
-  $('taskCard').style.display = '';
-  $('dragHint').style.display = '';
-  $('dropZones').style.display = '';
-  $('disclosureSection').style.display = 'none';
-  $('roundTag').textContent = `ข้อที่ ${rIdx+1}/${ROUNDS.length}`;
-  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
-  $('taskSay').textContent = r.task;
-  const card = $('taskCard');
-  card.className = 'taskcard';
-  card.style.transform = '';
-  card.style.opacity = '';
-  $('dropZones').innerHTML = VERDICTS.map(v=>
-    `<div class="dropzone" data-key="${v.key}" tabindex="0" role="button" aria-label="${esc(v.label)}"><span class="zi">${v.emoji}</span><span>${esc(v.short)}</span></div>`
-  ).join('');
-  document.querySelectorAll('.dropzone').forEach(z=>{
-    z.onclick = ()=>submitVerdict(z.dataset.key);
-    z.onkeydown = (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); submitVerdict(z.dataset.key); } };
-  });
-  $('explainBox').className = 'explainbox';
-  $('explainBox').innerHTML = '';
-  $('nextRoundBtn').style.display = 'none';
+  $('roundTag').textContent = 'ข้อที่ ' + (rIdx+1) + '/' + ROUNDS.length;
+  $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง';
+  $('qSay').textContent = r.q;
+  if (r.ctx){ $('ctxBox').style.display = ''; $('ctxBox').textContent = r.ctx; } else { $('ctxBox').style.display = 'none'; }
+  if (r.type === 'v'){
+    curOpts = (r.labels || VERDICTS).map((v,i)=>({ t:v, ok: i===r.ans, why: r.why }));
+    $('optsWrap').innerHTML = '<div class="optrow">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
+  } else {
+    curOpts = shuffle(r.opts);
+    $('optsWrap').innerHTML = '<div class="optcol">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
+  }
+  document.querySelectorAll('#optsWrap .optbtn').forEach(b=>{ b.onclick = ()=>pick(Number(b.dataset.i)); });
+  $('explainBox').className = 'explainbox'; $('explainBox').innerHTML = '';
+  $('nextBtn').style.display = 'none';
 }
-function submitVerdict(key){
+function pick(i){
   if (answered) return;
   answered = true;
-  const r = ROUNDS[rIdx];
-  const card = $('taskCard');
-  card.classList.add('answered');
-  card.classList.remove('armed');
-  document.querySelectorAll('.dropzone').forEach(z=>{ if(z.dataset.key!==key) z.classList.add('disabled'); });
-  const correct = key === r.answer;
-  const chosenZone = document.querySelector(`.dropzone[data-key="${key}"]`);
-  const targetZone = document.querySelector(`.dropzone[data-key="${r.answer}"]`);
-  if (chosenZone) chosenZone.classList.add(correct ? 'correct' : 'wrong');
-  if (!correct && targetZone) targetZone.classList.add('correct');
-  // animate the card flying toward the chosen zone, then settle
-  if (chosenZone){
-    const cr = card.getBoundingClientRect(), zr = chosenZone.getBoundingClientRect();
-    const dx = (zr.left+zr.width/2) - (cr.left+cr.width/2);
-    const dy = (zr.top+zr.height/2) - (cr.top+cr.height/2);
-    card.classList.add('settling');
-    card.style.transform = `translate(${dx}px,${dy}px) scale(.35)`;
-    card.style.opacity = '0';
-  }
-  if (!correct){ wrongCount++; }
-  $('scorePill').textContent = `ตอบผิด ${wrongCount} ครั้ง`;
-  setTimeout(()=>{
-    $('explainBox').className = 'explainbox show ' + (correct ? 'correct' : 'wrong');
-    const rightLbl = VERDICTS.find(v=>v.key===r.answer).label;
-    $('explainBox').innerHTML = `<b>${correct ? '✅ ถูกต้อง!' : '❌ ผิด มั่ว! คำตอบคือ ' + rightLbl}</b>${esc(r.explain)}`;
-    $('nextRoundBtn').style.display = 'block';
-  }, 260);
-  if (correct && window.dlf) dlf.cheer('เก่งมาก!');
+  const o = curOpts[i];
+  const isVerdict = ROUNDS[rIdx].type === 'v';
+  const btns = document.querySelectorAll('#optsWrap .optbtn');
+  btns.forEach((b,j)=>{ b.disabled = true; if (curOpts[j].ok) b.classList.add('correct'); else if (j===i) b.classList.add('wrong'); });
+  const right = curOpts.find(x=>x.ok);
+  if (!o.ok){ wrongCount++; $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง'; }
+  $('explainBox').className = 'explainbox show ' + (o.ok ? 'correct' : 'wrong');
+  // each sentence sits in its own element so each one has its own recording (no runtime-composed text)
+  $('explainBox').innerHTML = o.ok
+    ? '<b>✅ ถูกต้อง!</b><div>' + esc(o.why) + '</div>'
+    : '<b>❌ ยังไม่ใช่</b>' + (isVerdict ? '' : '<div>' + esc(o.why) + '</div>') + '<div><b class="cxbadge">ที่เหมาะที่สุดคือ</b> <span>' + esc(right.t) + '</span></div><div>' + esc(right.why) + '</div>';
+  $('nextBtn').style.display = 'block';
+  if (o.ok && window.dlf) dlf.cheer('เก่งมาก!');
 }
 function nextRound(){
   rIdx++;
-  if (rIdx >= ROUNDS.length){ startDisclosure(); return; }
+  if (rIdx >= ROUNDS.length){ goStep(3); return; }
   renderRound();
 }
 
-// ===== Step 3b: typed disclosure-sentence practice =====
-const DISCLOSURE_ITEMS = [
-  { task:'ครูอนุญาตให้ใช้ AI ช่วยหาไอเดียโปรเจกต์กลุ่ม และขอให้บอกว่าใช้ AI ช่วยส่วนไหนบ้าง ลองพิมพ์ประโยคที่จะเขียนบอกไว้ในรายงาน' },
-  { task:'ทำโปสเตอร์วิทยาศาสตร์ ใช้ AI ช่วยสร้างภาพประกอบ ลองพิมพ์ประโยคเครดิตที่จะใส่ไว้ใต้ภาพเพื่อบอกว่าใช้ AI ช่วยสร้าง' },
-  { task:'ทำโปรเจกต์วิทยาศาสตร์ที่ต้องระบุเครื่องมือ AI ที่ใช้ในหน้าบรรณานุกรม ลองพิมพ์ประโยคสั้น ๆ ที่จะเขียนระบุไว้' },
-];
-let dIdx = 0;
-function startDisclosure(){
-  dIdx = 0;
-  $('taskCard').style.display = 'none';
-  $('dragHint').style.display = 'none';
-  $('dropZones').style.display = 'none';
-  $('explainBox').className = 'explainbox';
-  $('explainBox').innerHTML = '';
-  $('nextRoundBtn').style.display = 'none';
-  $('disclosureSection').style.display = '';
-  $('roundTag').textContent = 'แบบฝึกเพิ่มเติม: ฝึกบอกตรง ๆ';
-  renderDisclosure();
-}
-let discTries = 0;
-function renderDisclosure(){
-  discTries = 0;
-  const d = DISCLOSURE_ITEMS[dIdx];
-  $('discTag').textContent = `ฝึกบอกตรง ๆ — ข้อที่ ${dIdx+1}/${DISCLOSURE_ITEMS.length}`;
-  $('discSay').textContent = d.task;
-  $('discInput').value = '';
-  $('discInput').disabled = false;
-  $('discSubmitBtn').style.display = 'block';
-  $('discExplain').className = 'explainbox';
-  $('discExplain').innerHTML = '';
-  $('discNextBtn').style.display = 'none';
-}
-function checkDisclosure(text){
-  const t = (text||'').trim();
-  const hasAI = /ai/i.test(t);
-  const hasVerb = /(ช่วย|บอก|ใช้|ระบุ)/.test(t);
-  return hasAI && hasVerb && t.length >= 8;
-}
-function submitDisclosure(){
-  const text = $('discInput').value;
-  const ok = checkDisclosure(text);
-  if (!ok && discTries < 1){
-    // first miss: show the hint but let the student revise their sentence
-    discTries++;
-    $('discExplain').className = 'explainbox show wrong';
-    $('discExplain').innerHTML = '<b>💡 ลองแก้อีกครั้ง</b>ประโยคที่บอกตรง ๆ ควรมีคำว่า "AI" และบอกว่า "ช่วย" อะไร แล้ว "บอก" ใคร เช่น "ฉันใช้ AI ช่วยหาไอเดีย แล้วบอกครูว่าใช้ส่วนไหนบ้าง"';
-    return;
-  }
-  $('discInput').disabled = true;
-  $('discSubmitBtn').style.display = 'none';
-  $('discExplain').className = 'explainbox show ' + (ok ? 'correct' : 'wrong');
-  $('discExplain').innerHTML = ok
-    ? '<b>✅ เยี่ยม!</b>ประโยคของเราบอกตรง ๆ ว่าใช้ AI ช่วยส่วนไหน — แบบนี้แหละที่ทำให้คนอื่นเชื่อใจงานของเราได้'
-    : '<b>💡 ลองอีกนิด</b>ประโยคที่บอกตรง ๆ ควรมีคำว่า "AI" และบอกว่า "ช่วย" อะไร แล้ว "บอก" ใคร เช่น "ฉันใช้ AI ช่วยหาไอเดีย แล้วบอกครูว่าใช้ส่วนไหนบ้าง"';
-  $('discNextBtn').style.display = 'block';
-  if (ok && window.dlf) dlf.cheer('เก่งมาก!');
-}
-function nextDisclosure(){
-  dIdx++;
-  if (dIdx >= DISCLOSURE_ITEMS.length){ startBadgePhase(); return; }
-  renderDisclosure();
-}
-
-// ── Disclosure Card Generator: pick how AI was used on a piece of work, get a
-// generated badge with a risk rating — matching the actual level of AI involvement
-// to how much disclosure/oversight that level of use calls for. ──
-const BADGE_LEVELS = [
-  { label:'ใช้ AI ช่วยหาไอเดีย/วางโครงเรื่องเท่านั้น (Brainstormed outline)', risk:'low', icon:'🟢',
-    title:'ป้าย: ใช้ AI ช่วยคิดไอเดีย', note:'เราลงมือเขียนเองทั้งหมด AI แค่ช่วยจุดประกายไอเดียตอนเริ่มต้น — ความเสี่ยงต่ำ เพราะผลงานส่วนใหญ่ยังเป็นฝีมือเราเอง แต่ก็ควรบอกครูว่าใช้ AI ช่วยตรงจุดนี้ตามตรง' },
-  { label:'ใช้ AI ช่วยแก้คำผิด/ปรับสำนวนหลังเขียนเองแล้ว', risk:'low', icon:'🟢',
-    title:'ป้าย: ใช้ AI ช่วยขัดเกลาภาษา', note:'เนื้อหาหลักเป็นของเราเอง AI แค่ช่วยตรวจคำผิดหรือปรับสำนวนให้อ่านลื่นขึ้น — ความเสี่ยงต่ำ คล้ายการให้เพื่อนช่วยพรูฟงาน แต่ควรบอกให้ชัดว่าใช้ AI ช่วยส่วนนี้' },
-  { label:'ให้ AI ช่วยเขียนบางย่อหน้า แล้วเรานำมาปรับแก้เอง', risk:'med', icon:'🟡',
-    title:'ป้าย: AI ร่วมเขียนบางส่วน', note:'มีเนื้อหาบางส่วนที่ AI เขียนให้ แม้เราจะปรับแก้ต่อ — ความเสี่ยงปานกลาง ควรบอกครูอย่างชัดเจนว่าย่อหน้าไหนมาจาก AI และเราปรับแก้อะไรบ้าง เพื่อความโปร่งใส' },
-  { label:'ให้ AI เขียนทั้งชิ้นงานให้ทั้งหมด (Wrote whole essay)', risk:'high', icon:'🔴',
-    title:'ป้าย: AI เขียนทั้งหมด', note:'งานชิ้นนี้แทบไม่มีส่วนที่เป็นความคิดหรือลายมือของเราเองเลย — ความเสี่ยงสูงมาก ถือเป็นการลอกผลงาน (plagiarism) และไม่ยุติธรรมกับตัวเราเองที่ไม่ได้ฝึกทักษะ ควรกลับไปเขียนเองใหม่แล้วให้ AI ช่วยแค่บางจุดแทน' },
-];
-function startBadgePhase(){
-  $('disclosureSection').style.display = 'none';
-  $('badgeSection').style.display = '';
-  $('badgeCard').style.display = 'none';
-  $('badgeNextBtn').style.display = 'none';
-  $('badgeOpts').innerHTML = BADGE_LEVELS.map((b,i)=>
-    `<button type="button" class="badge-opt" onclick="onBadgePick(${i})">${esc(b.label)}</button>`
-  ).join('');
-}
-function onBadgePick(i){
-  const b = BADGE_LEVELS[i];
-  $('badgeOpts').style.display = 'none';
-  const card = $('badgeCard');
-  card.className = 'badge-card show risk-' + b.risk;
-  const riskTh = b.risk === 'low' ? 'ความเสี่ยงต่ำ' : b.risk === 'med' ? 'ความเสี่ยงปานกลาง' : 'ความเสี่ยงสูง';
-  card.innerHTML = `<div class="badge-icon">${b.icon}</div><div class="badge-title">${esc(b.title)}</div><div class="badge-risk">${riskTh}</div><div class="badge-note">${esc(b.note)}</div>`;
-  card.style.display = 'block';
-  $('badgeNextBtn').style.display = 'block';
-  if (window.dlf) dlf.cheer('สร้างป้ายเสร็จแล้ว!');
-}
-
-// ===== Step 4 done =====
+// ===== Step 4: finish =====
 function finishGame(){
-  window.dlfStars = wrongCount <= 3 ? 3 : wrongCount <= 8 ? 2 : 1;
+  window.dlfStars = wrongCount <= 2 ? 3 : wrongCount <= 5 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
-  $('resTitle').textContent = window.dlfStars === 3 ? 'ใช้ AI อย่างรับผิดชอบเก่งมาก!' : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
+  $('resTitle').textContent = window.dlfStars === 3 ? "ใช้ AI อย่างรับผิดชอบ!" : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `ตอบครบ ${ROUNDS.length} ข้อ โดยตอบผิดทั้งหมด ${wrongCount} ครั้ง`;
+  $('resScore').textContent = 'ตอบครบ ' + ROUNDS.length + ' ข้อ โดยตอบผิดทั้งหมด ' + wrongCount + ' ครั้ง';
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -527,10 +367,11 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"264311b2a54e":"audio/ai07-diligence/264311b2a54e.mp3","18c364d85fd4":"audio/ai07-diligence/18c364d85fd4.mp3","6bc22e9c919a":"audio/ai07-diligence/6bc22e9c919a.mp3","bbe12c6aa31d":"audio/ai07-diligence/bbe12c6aa31d.mp3","d811e87eefb3":"audio/ai07-diligence/d811e87eefb3.mp3","71a51a023ae8":"audio/ai07-diligence/71a51a023ae8.mp3","fd2d26303411":"audio/ai07-diligence/fd2d26303411.mp3","24462eefcef8":"audio/ai07-diligence/24462eefcef8.mp3","ce97d9170f39":"audio/ai07-diligence/ce97d9170f39.mp3","3b87c08c8a5f":"audio/ai07-diligence/3b87c08c8a5f.mp3","0b2e1728eeaf":"audio/ai07-diligence/0b2e1728eeaf.mp3","3fd550cea15d":"audio/ai07-diligence/3fd550cea15d.mp3","4afd66827078":"audio/ai07-diligence/4afd66827078.mp3","556e94dd062a":"audio/ai07-diligence/556e94dd062a.mp3","d585a6a9d18d":"audio/ai07-diligence/d585a6a9d18d.mp3","5daa65353dd9":"audio/ai07-diligence/5daa65353dd9.mp3","e522ba2ddb27":"audio/ai07-diligence/e522ba2ddb27.mp3","e3ae6098c1c7":"audio/ai07-diligence/e3ae6098c1c7.mp3","d7d19cf1b3a1":"audio/ai07-diligence/d7d19cf1b3a1.mp3","aac1e62b9867":"audio/ai07-diligence/aac1e62b9867.mp3","22af96fb7805":"audio/ai07-diligence/22af96fb7805.mp3","fe68331584c0":"audio/ai07-diligence/fe68331584c0.mp3","758911ef0c15":"audio/ai07-diligence/758911ef0c15.mp3","cd01811443a2":"audio/ai07-diligence/cd01811443a2.mp3","a018fa7b59e9":"audio/ai07-diligence/a018fa7b59e9.mp3","a1ff2b7c2ea5":"audio/ai07-diligence/a1ff2b7c2ea5.mp3","e34e6b74b69d":"audio/ai07-diligence/e34e6b74b69d.mp3","f328d410cdd1":"audio/ai07-diligence/f328d410cdd1.mp3","43e5b4394061":"audio/ai07-diligence/43e5b4394061.mp3","3106b1646d34":"audio/ai07-diligence/3106b1646d34.mp3","7fdd46cba22b":"audio/ai07-diligence/7fdd46cba22b.mp3","2840223fc4a0":"audio/ai07-diligence/2840223fc4a0.mp3","a66234b845ea":"audio/ai07-diligence/a66234b845ea.mp3","09b335e30ff5":"audio/ai07-diligence/09b335e30ff5.mp3","eb0de1fd0502":"audio/ai07-diligence/eb0de1fd0502.mp3","4780fc79462b":"audio/ai07-diligence/4780fc79462b.mp3","dfb3e4afa929":"audio/ai07-diligence/dfb3e4afa929.mp3","c7cd5b8431b3":"audio/ai07-diligence/c7cd5b8431b3.mp3","57f54cf2d9c1":"audio/ai07-diligence/57f54cf2d9c1.mp3","e1f4ceb5abfc":"audio/ai07-diligence/e1f4ceb5abfc.mp3","9f1077b0e909":"audio/ai07-diligence/9f1077b0e909.mp3","ce0e4382905a":"audio/ai07-diligence/ce0e4382905a.mp3","dec1ce6c690b":"audio/ai07-diligence/dec1ce6c690b.mp3","f3bc581be169":"audio/ai07-diligence/f3bc581be169.mp3","3fb0e684b56b":"audio/ai07-diligence/3fb0e684b56b.mp3","42b34b1c98e1":"audio/ai07-diligence/42b34b1c98e1.mp3","e04742eeacc1":"audio/ai07-diligence/e04742eeacc1.mp3","1e2367efeff9":"audio/ai07-diligence/1e2367efeff9.mp3","a62583db49bd":"audio/ai07-diligence/a62583db49bd.mp3","e0293c5ef2f8":"audio/ai07-diligence/e0293c5ef2f8.mp3","36e99e2434a4":"audio/ai07-diligence/36e99e2434a4.mp3","c3ab2efdd791":"audio/ai07-diligence/c3ab2efdd791.mp3","45f7a44c9a6b":"audio/ai07-diligence/45f7a44c9a6b.mp3","3f95bbeb928f":"audio/ai07-diligence/3f95bbeb928f.mp3","2fdf3d0fbaa0":"audio/ai07-diligence/2fdf3d0fbaa0.mp3","b1259aa1ea1f":"audio/ai07-diligence/b1259aa1ea1f.mp3","dab05dcf3741":"audio/ai07-diligence/dab05dcf3741.mp3","dc60fd67731f":"audio/ai07-diligence/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai07-diligence/af6ba89d9b27.mp3","aca2b0992481":"audio/ai07-diligence/aca2b0992481.mp3","66590c21d92e":"audio/ai07-diligence/66590c21d92e.mp3","e18a189a9371":"audio/ai07-diligence/e18a189a9371.mp3","8af1f0edc12c":"audio/ai07-diligence/8af1f0edc12c.mp3","b1fb3c16cc08":"audio/ai07-diligence/b1fb3c16cc08.mp3","d20057966865":"audio/ai07-diligence/d20057966865.mp3","7ec91b6fdd80":"audio/ai07-diligence/7ec91b6fdd80.mp3","56401ef046c8":"audio/ai07-diligence/56401ef046c8.mp3","45c82b7b530e":"audio/ai07-diligence/45c82b7b530e.mp3","68108bb3bf1c":"audio/ai07-diligence/68108bb3bf1c.mp3","e9177d645c0f":"audio/ai07-diligence/e9177d645c0f.mp3","528d0d0e27ba":"audio/ai07-diligence/528d0d0e27ba.mp3","cc41b120b799":"audio/ai07-diligence/cc41b120b799.mp3","6498798cd081":"audio/ai07-diligence/6498798cd081.mp3","9bb8216b6df6":"audio/ai07-diligence/9bb8216b6df6.mp3","25c6023076a9":"audio/ai07-diligence/25c6023076a9.mp3","852128f8e136":"audio/ai07-diligence/852128f8e136.mp3","d92326542d90":"audio/ai07-diligence/d92326542d90.mp3","10f0907de717":"audio/ai07-diligence/10f0907de717.mp3","004034d821ca":"audio/ai07-diligence/004034d821ca.mp3","ff52e344dc90":"audio/ai07-diligence/ff52e344dc90.mp3","c0f8ecc5a197":"audio/ai07-diligence/c0f8ecc5a197.mp3","f52ca2e8c8d6":"audio/ai07-diligence/f52ca2e8c8d6.mp3","bf871114cb6f":"audio/ai07-diligence/bf871114cb6f.mp3","196e84135b1a":"audio/ai07-diligence/196e84135b1a.mp3","f3b7fe7dd048":"audio/ai07-diligence/f3b7fe7dd048.mp3","024e2cd7aeb6":"audio/ai07-diligence/024e2cd7aeb6.mp3","c02e3ab4fe09":"audio/ai07-diligence/c02e3ab4fe09.mp3","3c04d1e2e760":"audio/ai07-diligence/3c04d1e2e760.mp3","7525e06d3941":"audio/ai07-diligence/7525e06d3941.mp3","d70f624e9cd1":"audio/ai07-diligence/d70f624e9cd1.mp3","b89d8cddb903":"audio/ai07-diligence/b89d8cddb903.mp3","0ec92e9ed472":"audio/ai07-diligence/0ec92e9ed472.mp3","633d57726c1d":"audio/ai07-diligence/633d57726c1d.mp3","fe9377e50284":"audio/ai07-diligence/fe9377e50284.mp3","cbd3cfe69a2a":"audio/ai07-diligence/cbd3cfe69a2a.mp3","ec482ab50b23":"audio/ai07-diligence/ec482ab50b23.mp3","8265ab401037":"audio/ai07-diligence/8265ab401037.mp3","5bdf1c98b3e6":"audio/ai07-diligence/5bdf1c98b3e6.mp3","c4adb36b4be2":"audio/ai07-diligence/c4adb36b4be2.mp3","740b5c27b418":"audio/ai07-diligence/740b5c27b418.mp3","0d1b14969c55":"audio/ai07-diligence/0d1b14969c55.mp3","4479d73b04f4":"audio/ai07-diligence/4479d73b04f4.mp3","78abdb005bee":"audio/ai07-diligence/78abdb005bee.mp3","33303e7f22e9":"audio/ai07-diligence/33303e7f22e9.mp3","e97d5977993b":"audio/ai07-diligence/e97d5977993b.mp3","78e0919c6f11":"audio/ai07-diligence/78e0919c6f11.mp3","1abbd30927f5":"audio/ai07-diligence/1abbd30927f5.mp3","42059ba307ca":"audio/ai07-diligence/42059ba307ca.mp3","5b857a32cbe4":"audio/ai07-diligence/5b857a32cbe4.mp3","eabff9c7c14f":"audio/ai07-diligence/eabff9c7c14f.mp3","682657ba5cfc":"audio/ai07-diligence/682657ba5cfc.mp3","1a7fc8ddec9f":"audio/ai07-diligence/1a7fc8ddec9f.mp3","a53cceadaf31":"audio/ai07-diligence/a53cceadaf31.mp3","2391f40689e3":"audio/ai07-diligence/2391f40689e3.mp3","fec65c078c45":"audio/ai07-diligence/fec65c078c45.mp3","5e866d870cab":"audio/ai07-diligence/5e866d870cab.mp3","ab76bcf25774":"audio/ai07-diligence/ab76bcf25774.mp3","62a756b4f61a":"audio/ai07-diligence/62a756b4f61a.mp3","46ba103744bd":"audio/ai07-diligence/46ba103744bd.mp3","d860a1e72a77":"audio/ai07-diligence/d860a1e72a77.mp3","103390453104":"audio/ai07-diligence/103390453104.mp3","976ac11d1172":"audio/ai07-diligence/976ac11d1172.mp3","3938b3af3f03":"audio/ai07-diligence/3938b3af3f03.mp3","5082421b3b2d":"audio/ai07-diligence/5082421b3b2d.mp3","c86eb60eb9d3":"audio/ai07-diligence/c86eb60eb9d3.mp3","318fdab3949f":"audio/ai07-diligence/318fdab3949f.mp3","e162fa1593f6":"audio/ai07-diligence/e162fa1593f6.mp3","8515c4990d20":"audio/ai07-diligence/8515c4990d20.mp3","ec0f1a92076e":"audio/ai07-diligence/ec0f1a92076e.mp3","dbda77c1111f":"audio/ai07-diligence/dbda77c1111f.mp3","fc0238a70c17":"audio/ai07-diligence/fc0238a70c17.mp3","b478fe5c05a5":"audio/ai07-diligence/b478fe5c05a5.mp3","be746fd3ca56":"audio/ai07-diligence/be746fd3ca56.mp3","0d36a7d24752":"audio/ai07-diligence/0d36a7d24752.mp3","10b25f97ef70":"audio/ai07-diligence/10b25f97ef70.mp3","823217234fe1":"audio/ai07-diligence/823217234fe1.mp3","0dd7d71b7ba6":"audio/ai07-diligence/0dd7d71b7ba6.mp3","27c745f46945":"audio/ai07-diligence/27c745f46945.mp3","351d6ad00989":"audio/ai07-diligence/351d6ad00989.mp3"}</script>
-<script>window.DLF_CONFIG={extraReadSelectors:['.say','.tx','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+
+<script id="dlfAudioData" type="application/json">{"1fa5264b51cf":"audio/ai07-diligence/1fa5264b51cf.mp3","d811e87eefb3":"audio/ai07-diligence/d811e87eefb3.mp3","71a51a023ae8":"audio/ai07-diligence/71a51a023ae8.mp3","852128f8e136":"audio/ai07-diligence/852128f8e136.mp3","ce97d9170f39":"audio/ai07-diligence/ce97d9170f39.mp3","3b87c08c8a5f":"audio/ai07-diligence/3b87c08c8a5f.mp3","8a32efa24eb1":"audio/ai07-diligence/8a32efa24eb1.mp3","61821e9f9145":"audio/ai07-diligence/61821e9f9145.mp3","2b3fa74a1e0f":"audio/ai07-diligence/2b3fa74a1e0f.mp3","6928148b18a4":"audio/ai07-diligence/6928148b18a4.mp3","f10f159fd826":"audio/ai07-diligence/f10f159fd826.mp3","3106bd0ee8b4":"audio/ai07-diligence/3106bd0ee8b4.mp3","9a2a5d144b3f":"audio/ai07-diligence/9a2a5d144b3f.mp3","a762aae8f201":"audio/ai07-diligence/a762aae8f201.mp3","edbdbf480221":"audio/ai07-diligence/edbdbf480221.mp3","8129545227ec":"audio/ai07-diligence/8129545227ec.mp3","8cbd86dac1d6":"audio/ai07-diligence/8cbd86dac1d6.mp3","8436128610b4":"audio/ai07-diligence/8436128610b4.mp3","9018b7614f7f":"audio/ai07-diligence/9018b7614f7f.mp3","b588f14b7f37":"audio/ai07-diligence/b588f14b7f37.mp3","87efb9908a4a":"audio/ai07-diligence/87efb9908a4a.mp3","6e65872b8caa":"audio/ai07-diligence/6e65872b8caa.mp3","59ac1ea7eda5":"audio/ai07-diligence/59ac1ea7eda5.mp3","bbbf05b03ab0":"audio/ai07-diligence/bbbf05b03ab0.mp3","556e94dd062a":"audio/ai07-diligence/556e94dd062a.mp3","d585a6a9d18d":"audio/ai07-diligence/d585a6a9d18d.mp3","5daa65353dd9":"audio/ai07-diligence/5daa65353dd9.mp3","d92326542d90":"audio/ai07-diligence/d92326542d90.mp3","e3ae6098c1c7":"audio/ai07-diligence/e3ae6098c1c7.mp3","477a818db61c":"audio/ai07-diligence/477a818db61c.mp3","2db7502a8cb8":"audio/ai07-diligence/2db7502a8cb8.mp3","e7dc3da5c457":"audio/ai07-diligence/e7dc3da5c457.mp3","ca6a8ec59c0c":"audio/ai07-diligence/ca6a8ec59c0c.mp3","1a7d4c3bfed5":"audio/ai07-diligence/1a7d4c3bfed5.mp3","195ba5a59545":"audio/ai07-diligence/195ba5a59545.mp3","0b90925040f9":"audio/ai07-diligence/0b90925040f9.mp3","a6350661975a":"audio/ai07-diligence/a6350661975a.mp3","af42a2d22383":"audio/ai07-diligence/af42a2d22383.mp3","631d8dbc553b":"audio/ai07-diligence/631d8dbc553b.mp3","4ec682fc1640":"audio/ai07-diligence/4ec682fc1640.mp3","c0c259f2ca10":"audio/ai07-diligence/c0c259f2ca10.mp3","ce9cc5ef8ad5":"audio/ai07-diligence/ce9cc5ef8ad5.mp3","9ea991594f79":"audio/ai07-diligence/9ea991594f79.mp3","a4998435858f":"audio/ai07-diligence/a4998435858f.mp3","9541488d7d8e":"audio/ai07-diligence/9541488d7d8e.mp3","55392338a4ba":"audio/ai07-diligence/55392338a4ba.mp3","b10ada0316da":"audio/ai07-diligence/b10ada0316da.mp3","da36d2a9253f":"audio/ai07-diligence/da36d2a9253f.mp3","09074eae0c47":"audio/ai07-diligence/09074eae0c47.mp3","9f0689892677":"audio/ai07-diligence/9f0689892677.mp3","b97e6df9e8a5":"audio/ai07-diligence/b97e6df9e8a5.mp3","930e4ec32574":"audio/ai07-diligence/930e4ec32574.mp3","6f8fbf3ae148":"audio/ai07-diligence/6f8fbf3ae148.mp3","522e06b5cdb0":"audio/ai07-diligence/522e06b5cdb0.mp3","5863b046a029":"audio/ai07-diligence/5863b046a029.mp3","46fa4e69d0f3":"audio/ai07-diligence/46fa4e69d0f3.mp3","5a211d7c3160":"audio/ai07-diligence/5a211d7c3160.mp3","f88781c392f1":"audio/ai07-diligence/f88781c392f1.mp3","03075897aca8":"audio/ai07-diligence/03075897aca8.mp3","77e0e445c967":"audio/ai07-diligence/77e0e445c967.mp3","5edb74e5fbfb":"audio/ai07-diligence/5edb74e5fbfb.mp3","bac85c826843":"audio/ai07-diligence/bac85c826843.mp3","1ce9fbc46080":"audio/ai07-diligence/1ce9fbc46080.mp3","b00453df7b59":"audio/ai07-diligence/b00453df7b59.mp3","56e11dad2e9c":"audio/ai07-diligence/56e11dad2e9c.mp3","e5e183b02ae4":"audio/ai07-diligence/e5e183b02ae4.mp3","22680cf81367":"audio/ai07-diligence/22680cf81367.mp3","580cfe40f119":"audio/ai07-diligence/580cfe40f119.mp3","c2ad8f8859d7":"audio/ai07-diligence/c2ad8f8859d7.mp3","c361cda77ec0":"audio/ai07-diligence/c361cda77ec0.mp3","6e7e50ec6f57":"audio/ai07-diligence/6e7e50ec6f57.mp3","22decf6e9a98":"audio/ai07-diligence/22decf6e9a98.mp3","51ff1e347560":"audio/ai07-diligence/51ff1e347560.mp3","360c731df7a0":"audio/ai07-diligence/360c731df7a0.mp3","596388244c62":"audio/ai07-diligence/596388244c62.mp3","69ae6c9c6894":"audio/ai07-diligence/69ae6c9c6894.mp3","e98e249b81e3":"audio/ai07-diligence/e98e249b81e3.mp3","fa3051dcd2b5":"audio/ai07-diligence/fa3051dcd2b5.mp3","70bffc13f760":"audio/ai07-diligence/70bffc13f760.mp3","c8ca9c3acfed":"audio/ai07-diligence/c8ca9c3acfed.mp3","a59e18c9eb46":"audio/ai07-diligence/a59e18c9eb46.mp3","a66234b845ea":"audio/ai07-diligence/a66234b845ea.mp3","10dee6810686":"audio/ai07-diligence/10dee6810686.mp3","4780fc79462b":"audio/ai07-diligence/4780fc79462b.mp3","33d4c21d870f":"audio/ai07-diligence/33d4c21d870f.mp3","b308f2e90e23":"audio/ai07-diligence/b308f2e90e23.mp3","dfb3e4afa929":"audio/ai07-diligence/dfb3e4afa929.mp3","d742cf6f4a5f":"audio/ai07-diligence/d742cf6f4a5f.mp3","e17528606b37":"audio/ai07-diligence/e17528606b37.mp3","3938b3af3f03":"audio/ai07-diligence/3938b3af3f03.mp3","5082421b3b2d":"audio/ai07-diligence/5082421b3b2d.mp3","25b35748764c":"audio/ai07-diligence/25b35748764c.mp3","c86eb60eb9d3":"audio/ai07-diligence/c86eb60eb9d3.mp3","1996aac54605":"audio/ai07-diligence/1996aac54605.mp3","e162fa1593f6":"audio/ai07-diligence/e162fa1593f6.mp3","905a05d06f8e":"audio/ai07-diligence/905a05d06f8e.mp3","8515c4990d20":"audio/ai07-diligence/8515c4990d20.mp3","4ae5149312b4":"audio/ai07-diligence/4ae5149312b4.mp3","41bfd1ebf3b6":"audio/ai07-diligence/41bfd1ebf3b6.mp3","636eda90669f":"audio/ai07-diligence/636eda90669f.mp3","0fb6f0029a18":"audio/ai07-diligence/0fb6f0029a18.mp3","57f54cf2d9c1":"audio/ai07-diligence/57f54cf2d9c1.mp3","d388ca15fd13":"audio/ai07-diligence/d388ca15fd13.mp3","a3dcec38eda7":"audio/ai07-diligence/a3dcec38eda7.mp3","dec1ce6c690b":"audio/ai07-diligence/dec1ce6c690b.mp3","f3bc581be169":"audio/ai07-diligence/f3bc581be169.mp3","3fb0e684b56b":"audio/ai07-diligence/3fb0e684b56b.mp3","42b34b1c98e1":"audio/ai07-diligence/42b34b1c98e1.mp3","e04742eeacc1":"audio/ai07-diligence/e04742eeacc1.mp3","3a2ba9ffe23c":"audio/ai07-diligence/3a2ba9ffe23c.mp3","a62583db49bd":"audio/ai07-diligence/a62583db49bd.mp3","e0293c5ef2f8":"audio/ai07-diligence/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai07-diligence/9bb8216b6df6.mp3","86e7aa07703f":"audio/ai07-diligence/86e7aa07703f.mp3","fc1ee6855c4a":"audio/ai07-diligence/fc1ee6855c4a.mp3","dab05dcf3741":"audio/ai07-diligence/dab05dcf3741.mp3","dc60fd67731f":"audio/ai07-diligence/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai07-diligence/af6ba89d9b27.mp3","aca2b0992481":"audio/ai07-diligence/aca2b0992481.mp3","66590c21d92e":"audio/ai07-diligence/66590c21d92e.mp3","f19e1081b596":"audio/ai07-diligence/f19e1081b596.mp3","7fdd46cba22b":"audio/ai07-diligence/7fdd46cba22b.mp3","84c24a3726c4":"audio/ai07-diligence/84c24a3726c4.mp3","e0196ffda95a":"audio/ai07-diligence/e0196ffda95a.mp3","e18a189a9371":"audio/ai07-diligence/e18a189a9371.mp3","8af1f0edc12c":"audio/ai07-diligence/8af1f0edc12c.mp3","23f891c8e7ad":"audio/ai07-diligence/23f891c8e7ad.mp3","5a382c3bfa4a":"audio/ai07-diligence/5a382c3bfa4a.mp3","fc0238a70c17":"audio/ai07-diligence/fc0238a70c17.mp3","b478fe5c05a5":"audio/ai07-diligence/b478fe5c05a5.mp3","be746fd3ca56":"audio/ai07-diligence/be746fd3ca56.mp3","01715edecbb6":"audio/ai07-diligence/01715edecbb6.mp3","545dc6fc84f2":"audio/ai07-diligence/545dc6fc84f2.mp3","339ee754bd2d":"audio/ai07-diligence/339ee754bd2d.mp3","fbc7e39f3f8a":"audio/ai07-diligence/fbc7e39f3f8a.mp3","9dbe8efd5462":"audio/ai07-diligence/9dbe8efd5462.mp3","d504294d6bc4":"audio/ai07-diligence/d504294d6bc4.mp3","10b25f97ef70":"audio/ai07-diligence/10b25f97ef70.mp3","365feec83273":"audio/ai07-diligence/365feec83273.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.say','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
-<script>window.TRY_REAL={"title":"ใช้ AI ช่วยโดยไม่ให้ AI ทำแทน และเขียนบอกให้ชัด","intro":"ลองใช้ AI เป็นผู้ตรวจงาน แล้วแก้งานด้วยตัวเอง จากนั้นเขียนประโยคบอกว่าใช้ AI ช่วยตรงไหน","links":[{"label":"เปิด Gemini","url":"https://gemini.google.com"},{"label":"เปิด ChatGPT","url":"https://chatgpt.com"}],"prompt":"ช่วยอ่านเรียงความสั้นของฉันด้านล่าง แล้วบอกจุดที่ควรปรับ 3 ข้อ พร้อมเหตุผล ห้ามเขียนใหม่ให้ทั้งหมด\n\n[วางเรียงความที่เราเขียนเอง ไม่ใส่ชื่อจริงหรือข้อมูลส่วนตัว]","steps":["เขียนเรียงความสั้น ๆ ด้วยตัวเองก่อน 1 ย่อหน้า แล้ววางตามคำสั่ง","อ่านคำแนะนำ เลือกเองว่าจะรับข้อไหน แล้วแก้งานด้วยคำพูดของเรา","เขียนประโยคบอกการใช้ AI เช่น \"ฉันใช้ [เครื่องมือ] ช่วยตรวจจุดที่ควรปรับ ส่วนเนื้อหาและการแก้ไขฉันทำเอง\""],"observe":["งานสุดท้ายยังเป็นความคิดและคำพูดของเราเองไหม","ประโยคบอกการใช้ AI บอกชัดไหมว่า AI ช่วยส่วนไหน และเราทำส่วนไหน","มีคำแนะนำข้อไหนที่เราไม่รับ เพราะไม่ตรงกับสิ่งที่เราอยากสื่อไหม"]};</script>
+<script>window.TRY_REAL={"title":"ใช้ AI ช่วยโดยไม่ให้ทำแทน เขียนบอกให้ชัด และเช็กการตั้งค่า","intro":"ลองใช้ AI เป็นผู้ตรวจงาน แก้งานด้วยตัวเอง เขียนประโยคบอกว่าใช้ AI ช่วยตรงไหน และดูว่าเครื่องมือเก็บข้อมูลแชตของเราหรือไม่","links":[{"label":"เปิด Gemini","url":"https://gemini.google.com"},{"label":"เปิด ChatGPT","url":"https://chatgpt.com"}],"prompt":"ช่วยอ่านเรียงความสั้นของฉันด้านล่าง แล้วบอกจุดที่ควรปรับ 3 ข้อ พร้อมเหตุผล ห้ามเขียนใหม่ให้ทั้งหมด [วางเรียงความที่เราเขียนเอง ไม่ใส่ชื่อจริงหรือข้อมูลส่วนตัว]","steps":["เขียนเรียงความสั้น ๆ ด้วยตัวเองก่อน 1 ย่อหน้า แล้ววางตามคำสั่ง","เลือกเองว่าจะรับคำแนะนำข้อไหน แล้วแก้งานด้วยคำพูดของเรา","เขียนประโยคบอกการใช้ AI เช่น ฉันใช้ [เครื่องมือ] ช่วยตรวจจุดที่ควรปรับ ส่วนเนื้อหาและการแก้ไขฉันทำเอง","เปิดเมนู Settings / การตั้งค่าของเครื่องมือ หาหัวข้อเรื่องประวัติการสนทนาหรือการใช้ข้อมูลปรับปรุงโมเดล จดไว้ว่าเปิดหรือปิด แล้วถามผู้ปกครองหรือครูก่อนเปลี่ยนค่า"],"observe":["งานสุดท้ายยังเป็นความคิดและคำพูดของเราเองไหม","ประโยคบอกการใช้ AI บอกชัดไหมว่า AI ช่วยส่วนไหนและเราทำส่วนไหน","เจอการตั้งค่าเรื่องประวัติแชทหรือการใช้ข้อมูลของเราไหม และตอนนี้ตั้งไว้แบบไหน"],"note":"ชื่อเมนูอาจต่างกันในแต่ละเครื่องมือ อย่าเปลี่ยนการตั้งค่าบัญชีโดยไม่ถามผู้ปกครอง"};</script>
 <script src="_lib/try-real.js"></script>
 </body>
 </html>

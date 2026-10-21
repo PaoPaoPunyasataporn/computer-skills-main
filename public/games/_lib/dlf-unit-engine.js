@@ -96,12 +96,21 @@
     return [c];
   }
   dlf.speak=function(text,opts){opts=opts||{};if(muted||!text)return;
-    var clean=dlfCleanKey(text);stopAudio();
-    var direct=dlfSrc(clean)||AUD[md5(text.trim()).slice(0,12)]||AUD[text];
+    var flat=String(text).replace(/\u0001/g,' ');
+    var clean=dlfCleanKey(flat);stopAudio();
+    var direct=dlfSrc(clean)||AUD[md5(flat.trim()).slice(0,12)]||AUD[flat];
     if(direct){dlfPlaySrc(direct);return;}
-    var chunks=dlfChunks(text), i=0;
+    // Element boundaries (a bold label followed by its explanation) are separate pieces, each with
+    // its own recording; splitting the fused string at an inner "!" would break the match.
+    var pieces=String(text).split('\u0001').map(dlfCleanKey).filter(Boolean), chunks=[], i=0;
+    pieces.forEach(function(p){ chunks=chunks.concat(dlfChunks(p)); });
+    chunks=chunks.filter(function(c){return dlfSrc(c);});
     function nxt(){ if(i>=chunks.length){return;} var s=dlfSrc(chunks[i]); i++; if(s){dlfPlaySrc(s,nxt);} else {nxt();} }
-    if(chunks.length && dlfSrc(chunks[0])){ nxt(); } else { tts(clean,opts); }
+    if(chunks.length){ nxt(); }
+    // Browser speech reads Thai as gibberish on machines without a Thai voice, so on a page that has
+    // recordings it is never used: a missing clip is reported (and fixed by scripts/gen-audio.mjs).
+    else if(!Object.keys(AUD).length){ tts(clean,opts); }
+    else { try{console.warn('[dlf] no recording for:',clean);}catch(e){} }
   };
   dlf.stop=stopAudio;
   dlf.has=function(text){var c=dlfCleanKey(text||'');return !!(AUD[md5(c).slice(0,12)]||AUD[md5((text||'').trim()).slice(0,12)]);};
@@ -220,7 +229,7 @@
       if(n.nodeType===3) out+=n.textContent;
       else if(n.nodeType===1 && !n.classList.contains('dlf-say')
               && !n.matches('[class*="score"],[class*="lives"],[class*="timer"],[class*="count"],[class*="badge"],[class*="num"],[class*="fill"],[class*="bar"]'))
-        out+=n.textContent;
+        out+='\u0001'+n.textContent+'\u0001';   // element boundary: dlf.speak() plays each piece with its own clip
     });
     return dlfClean(out);
   }

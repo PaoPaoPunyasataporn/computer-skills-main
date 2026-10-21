@@ -8,6 +8,11 @@
 
   function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
+  // A copy-paste prompt is something to paste, not narration — keep the speaker button
+  // off it so it never has to fall back to the browser's speech engine.
+  window.DLF_CONFIG = window.DLF_CONFIG || {};
+  window.DLF_CONFIG.extraNonDecorateSelectors = (window.DLF_CONFIG.extraNonDecorateSelectors ? window.DLF_CONFIG.extraNonDecorateSelectors + ',' : '') + '.tr-prompt';
+
   var css = ''
   + '.tr-card{margin:14px 0 6px;border:2px dashed var(--primary,#4f7cff);background:var(--primary-light,#eef3ff);border-radius:18px;padding:16px 16px 14px;text-align:left}'
   + '.tr-tag{display:inline-block;font-family:Mitr,sans-serif;font-size:12px;font-weight:600;color:var(--primary-dark,#2a4fb8);background:#fff;border-radius:999px;padding:3px 10px;margin-bottom:8px}'
@@ -34,9 +39,17 @@
     done(false);
   }
 
+  // Fixed labels live in their own plain literals so scripts/gen-audio.mjs finds each one
+  // as a whole string and records a clip for it (inside a larger HTML literal it cannot).
+  var L_TAG = '🌐 ลองของจริง · ไม่บังคับ แต่แนะนำ';
+  var L_STEPS = 'ทำตามนี้ทีละขั้น';
+  var L_OBS = '🔎 สิ่งที่ต้องสังเกต (ติ๊กเมื่อเช็กแล้ว)';
+  // each sentence stays under the generator's 160-character clip limit
+  var L_SAFE = ['ใช้เฉพาะเมื่อโรงเรียนหรือผู้ปกครองอนุญาต และอายุถึงเกณฑ์ของเครื่องมือนั้น', 'ไม่พิมพ์ข้อมูลส่วนตัว (ชื่อเต็ม ที่อยู่ เบอร์โทร รหัสผ่าน)', 'ถ้าใช้ไม่ได้ ข้ามส่วนนี้ได้ หรือให้ครูลองให้ดูหน้าห้อง'];
+
   function render(host){
     var html = '<div class="tr-card">'
-      + '<span class="tr-tag">🌐 ลองของจริง · ไม่บังคับ แต่แนะนำ</span>'
+      + '<span class="tr-tag">' + L_TAG + '</span>'
       + '<div class="tr-title">' + esc(C.title) + '</div>'
       + '<div class="tr-intro">' + esc(C.intro) + '</div>';
     if (C.links && C.links.length){
@@ -49,12 +62,12 @@
         + '<div class="tr-prompt" id="trPrompt">' + esc(C.prompt) + '</div>'
         + '<button type="button" class="tr-copy" id="trCopy">📋 คัดลอกคำสั่ง</button>';
     }
-    html += '<div class="tr-lbl">ทำตามนี้ทีละขั้น</div><ol class="tr-steps">' + C.steps.map(function(s){ return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>'
-      + '<div class="tr-lbl">🔎 สิ่งที่ต้องสังเกต (ติ๊กเมื่อเช็กแล้ว)</div><div class="tr-obs">' + C.observe.map(function(o){
+    html += '<div class="tr-lbl">' + L_STEPS + '</div><ol class="tr-steps">' + C.steps.map(function(s){ return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>'
+      + '<div class="tr-lbl">' + L_OBS + '</div><div class="tr-obs">' + C.observe.map(function(o){
         return '<label><input type="checkbox"><span>' + esc(o) + '</span></label>';
       }).join('') + '</div>'
-      + '<div class="tr-note">' + esc(C.note || '') + (C.note ? ' ' : '')
-      + 'ใช้เฉพาะเมื่อโรงเรียนหรือผู้ปกครองอนุญาต และอายุถึงเกณฑ์ของเครื่องมือนั้น · ไม่พิมพ์ข้อมูลส่วนตัว (ชื่อเต็ม ที่อยู่ เบอร์โทร รหัสผ่าน) · ถ้าใช้ไม่ได้ ข้ามส่วนนี้ได้ หรือให้ครูลองให้ดูหน้าห้อง</div>'
+      + (C.note ? '<div class="tr-note">' + esc(C.note) + '</div>' : '')
+      + '<div class="tr-note">' + L_SAFE.map(function(t){ return '<div>' + t + '</div>'; }).join('') + '</div>'
       + '</div>';
     host.innerHTML = html;
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);

@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สถาปนิกติวเตอร์ AI ของฉัน</title>
+<title>ออกแบบผู้ช่วย AI ของฉัน</title>
 <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="_lib/theme-base.css" rel="stylesheet">
 <style>
 :root{
-  --green:#38A93A; --green-d:#2E8B30; --green-light:#E9FBE7;
-  --primary:#F0982E; --primary-light:#FFF1DC; --primary-dark:#D07E1E;
+  --primary:#3E7CB8; --primary-light:#E4F0FB; --primary-dark:#2B5C8C;
+  --green:#38A93A; --green-light:#E9FBE7;
+  --red:#E4614F; --red-light:#FDECEA;
   --panel2:var(--cream2);
 }
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#E7FBE2 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FFF1D6 0%,transparent 55%),var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#DCEBFA 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FDF1E4 0%,transparent 55%),var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
 h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 *{box-sizing:border-box;overflow-wrap:anywhere;}
 
@@ -27,25 +28,15 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
 .pchip.cur .num{background:rgba(255,255,255,.35);}
 
-/* flex:1 + overflow-y:auto is a safety net: the page itself never scrolls
-   (html,body{overflow:hidden} above), so if any screen's content ever runs
-   taller than the viewport, .stage scrolls internally instead of trapping
-   buttons below the fold with no way to reach them. */
-.stage{width:100%;max-width:1200px;flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
 .panel{width:100%;max-width:640px;}
-.panel.panel-wide{max-width:min(96vw,1080px);}
-.panel.wide{max-width:1180px;}
+.center{text-align:center;}
 
 .intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
 .stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
 .big-icon{font-size:60px;margin-bottom:8px;display:block;}
 .title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
 .sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
-
-.goal-box{width:100%;background:var(--cream2);border:1.5px solid var(--border);border-left:4px solid var(--primary);border-radius:14px;padding:14px 16px;text-align:left;display:flex;gap:10px;align-items:flex-start;margin:18px 0;}
-.goal-chip{flex:0 0 auto;font-family:'Mitr',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 10px;margin-top:2px;white-space:nowrap;}
-.goal-text{font-size:13.5px;color:var(--text);line-height:1.6;text-align:left;}
-.goal-text b{color:var(--primary-dark);}
 
 .btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
 .btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
@@ -54,86 +45,61 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 
 /* concept step */
 .ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
-.ccard .cimg-wrap{position:relative;width:100%;max-width:480px;border-radius:14px;overflow:hidden;border:2px solid var(--border);box-shadow:0 4px 0 var(--line-d);}
-.ccard .cimg-wrap img{width:100%;height:auto;max-height:34vh;object-fit:cover;object-position:top;display:block;}
-/* real-screenshot cards: break out of the 640px panel and fill most of the viewport, with a pointer marker */
-.ccard-shot{max-width:none;width:min(94vw,1040px);}
-.ccard-shot .cimg-wrap{max-width:none;width:100%;height:auto;}
-.ccard-shot .cimg-wrap img{max-height:none;object-fit:contain;background:#0b0c10;}
-.cbox{position:absolute;border:3px solid #FF3B30;border-radius:6px;box-shadow:0 0 0 2px rgba(255,59,48,.35),0 0 14px 2px rgba(255,59,48,.65);animation:cboxPulse 1.1s ease-in-out infinite;pointer-events:none;box-sizing:border-box;}
-@keyframes cboxPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,59,48,.35),0 0 14px 2px rgba(255,59,48,.65);}50%{box-shadow:0 0 0 5px rgba(255,59,48,.15),0 0 20px 6px rgba(255,59,48,.85);}}
-.ccard .ctag{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.3px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:2px 10px;display:inline-block;margin-bottom:2px;}
-.ccard .cnote{font-size:11px;color:var(--text3);font-style:italic;max-width:440px;line-height:1.5;margin-top:2px;}
 .ccard .ci{font-size:52px;}
 .ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
 .ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.canim{margin:2px auto 4px;}
+.canim-flow{stroke-dasharray:8 6;animation:canimDash 1.2s linear infinite;}
+@keyframes canimDash{to{stroke-dashoffset:-28;}}
+.canim-pulse{animation:canimPulse 1.6s ease-in-out infinite;}
+@keyframes canimPulse{0%,100%{r:5;opacity:1;}50%{r:8;opacity:.5;}}
 .cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
 .cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
 .cdot.on{background:var(--primary);width:22px;border-radius:5px;}
 .cnav{display:flex;gap:10px;margin-top:14px;}
 .cnav .btn{flex:1;}
 
-/* hands-on chat step */
-.llmshell{width:100%;max-width:1180px;flex:1;min-height:0;background:#fff;border:2px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:0 6px 0 var(--line-d);display:flex;flex-direction:row;height:min(64vh,600px);position:relative;}
-.llmside{flex:0 0 180px;background:#1B1E26;display:flex;flex-direction:column;padding:10px;gap:4px;overflow-y:auto;}
-.llmside-new{display:flex;align-items:center;gap:8px;padding:10px 11px;border-radius:10px;border:1.5px solid rgba(255,255,255,.16);color:#E7EAF0;font-family:'Sarabun',sans-serif;font-size:12.5px;font-weight:600;cursor:default;background:transparent;margin-bottom:8px;}
-.llmside-label{font-size:10.5px;font-weight:700;color:#6B7280;letter-spacing:.5px;padding:8px 10px 4px;}
-.llmside-item{padding:9px 10px;border-radius:8px;color:#9AA1AE;font-family:'Sarabun',sans-serif;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.llmmain{flex:1;min-width:0;display:flex;flex-direction:column;}
-.llmhead{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:10px 14px;background:#22262F;}
-.llmhead-title{font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;color:#C9CEDA;}
-.llmthread{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px;background:#F7F8FA;}
-.llmrow{display:flex;gap:8px;align-items:flex-start;max-width:88%;}
-.llmrow.user{align-self:flex-end;flex-direction:row-reverse;}
-.llmrow.student{align-self:flex-start;}
-.llmava{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;}
-.llmrow.user .llmava{background:linear-gradient(135deg,var(--primary-light),#fff);border:1.5px solid var(--primary);}
-.llmrow.ai .llmava{background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 60%,white),var(--primary));color:#fff;}
-.llmrow.student .llmava{background:linear-gradient(135deg,#E4EEFF,#fff);border:1.5px solid #4FB0FF;}
-.llmbubble{padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.65;color:var(--text);}
-.llmrow.user .llmbubble{background:var(--primary);color:#fff;border-bottom-right-radius:4px;}
-.llmrow.ai .llmbubble{background:#fff;border:1.5px solid var(--border);border-bottom-left-radius:4px;}
-.llmrow.student .llmbubble{background:#EFF6FF;border:1.5px solid #C7DEFF;border-bottom-left-radius:4px;}
-.llmbubble.verdict{font-weight:700;}
-.llmbubble.good{background:var(--green-light);border-color:var(--green);color:var(--green-d);}
-.llmbubble.bad{background:var(--red-light);border-color:#F1B3AC;color:#A32E20;}
-.llmbubble.meh{background:#FFF3D6;border-color:#E8C468;color:#8A6300;}
-.llmbubble.ruletag{background:#FFF3D6;border-color:#E8C468;color:#8A6300;font-size:13px;}
-.presetrow{display:flex;flex-direction:column;gap:8px;width:100%;max-width:88%;margin:4px 0;}
-.presetbtn{border:2px solid var(--border);border-bottom-width:4px;border-radius:14px;background:#fff;padding:11px 14px;font-family:'Sarabun',sans-serif;font-size:13.5px;font-weight:600;color:var(--text);text-align:left;cursor:pointer;transition:transform .1s;}
-.presetbtn:active{transform:translateY(2px);}
-.presetbtn.tried{opacity:.55;border-color:var(--green);}
-.llmtyping{display:inline-flex;gap:3px;padding:2px 4px;}
-.llmtyping span{width:6px;height:6px;border-radius:50%;background:var(--muted3);animation:llmdot 1s infinite ease-in-out;}
-.llmtyping span:nth-child(2){animation-delay:.15s;}.llmtyping span:nth-child(3){animation-delay:.3s;}
-@keyframes llmdot{0%,60%,100%{transform:translateY(0);opacity:.5;}30%{transform:translateY(-4px);opacity:1;}}
-.llminputbar{flex:0 0 auto;display:flex;gap:8px;padding:12px;background:#fff;border-top:1.5px solid var(--border);}
-.llminput{flex:1;padding:12px 14px;border-radius:14px;border:1.5px solid var(--border);font-family:'Sarabun',sans-serif;font-size:14px;outline:none;}
-.llminput:focus{border-color:var(--primary);}
-.llminput:disabled{background:var(--cream);color:var(--muted3);}
-.llmsend{width:42px;height:42px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:18px;cursor:pointer;flex:0 0 auto;}
-.llmsend:disabled{opacity:.4;}
+/* checklist mini-visual inside concept 2 */
+.clist{list-style:none;margin:10px 0 0;padding:0;text-align:left;max-width:420px;width:100%;}
+.clist li{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--text2);line-height:1.6;padding:6px 0;border-top:1px dashed var(--border);}
+.clist li:first-child{border-top:none;}
+.clist .qn{font-family:'Mitr',sans-serif;font-weight:700;color:var(--primary-dark);flex:0 0 auto;}
 
-/* MC warm-up phase */
-.mcq-wrap{width:100%;max-width:640px;margin:0 auto 16px;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:30px 26px;text-align:center;}
-.mcq-progress{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
-.mcq-q{font-family:'Mitr',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:18px;line-height:1.6;}
-.mcq-opts{display:flex;flex-direction:column;gap:10px;}
-.mcq-opt{text-align:left;width:100%;border:1.5px solid var(--border);background:var(--panel2);border-radius:14px;padding:13px 16px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);cursor:pointer;transition:transform .1s,border-color .15s,background .15s;}
-.mcq-opt:hover:not(:disabled){border-color:var(--primary);}
-.mcq-opt:disabled{cursor:default;}
-.mcq-opt.correct{border-color:var(--green);background:var(--green-light);color:var(--green-d);font-weight:700;}
-.mcq-opt.wrong{border-color:#F1B3AC;background:var(--red-light);color:#A32E20;}
-.mcq-fb{margin-top:14px;font-size:13.5px;color:var(--text2);line-height:1.6;min-height:20px;}
-.mcq-next{margin-top:16px;}
+/* practice step */
+.rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.rtag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+.taskcard{width:100%;background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 14px 14px 0;padding:16px 18px;text-align:left;}
+.taskcard .who{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.taskcard .say{font-size:15px;color:var(--text);line-height:1.7;}
 
-.coach-hl{position:relative;z-index:15;}
-.coachcard{position:relative;width:100%;max-width:1180px;background:#fff;border:2px solid var(--primary);border-radius:18px;padding:14px 18px;box-shadow:0 6px 0 var(--line-d);display:none;margin-bottom:4px;}
-.coachcard.show{display:block;animation:coachIn .25s cubic-bezier(.34,1.56,.64,1);}
-@keyframes coachIn{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-.coachrow{display:flex;gap:10px;align-items:flex-start;}
-.coachicon{font-size:22px;flex:0 0 auto;}
-.coachtext{flex:1;font-size:13.5px;line-height:1.6;color:var(--text);}
+/* drag-to-sort hands-on core */
+.taskcard.draggable{cursor:grab;user-select:none;touch-action:none;position:relative;box-shadow:0 3px 0 var(--line-d);}
+.taskcard.draggable:active{cursor:grabbing;}
+.taskcard.armed{box-shadow:0 0 0 3px var(--primary),0 3px 0 var(--line-d);transform:translateY(-2px);}
+.taskcard.dragging{transition:none;box-shadow:0 14px 26px rgba(15,27,45,.22);}
+.taskcard.settling{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;}
+.taskcard.answered{pointer-events:none;}
+.draghint{font-size:11.5px;color:var(--text3);margin:8px 0 2px;text-align:center;}
+.hlword{display:inline;padding:2px 3px;border-radius:5px;cursor:pointer;}
+.hlword:hover{background:rgba(208,126,30,.14);}
+.hlword.hlhit{background:var(--green);color:#fff;animation:hlPop .3s ease;}
+.hlword.hlmiss{background:var(--red-light);color:#A32E20;text-decoration:line-through;}
+@keyframes hlPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+.dropzones{width:100%;display:flex;gap:8px;margin:14px 0 4px;}
+.dropzone{flex:1;min-height:92px;border:2px dashed var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:var(--panel2);transition:border-color .15s,background .15s,transform .15s;cursor:pointer;}
+.dropzone .zi{font-size:22px;}
+.dropzone:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+.dropzone.over{border-style:solid;border-color:var(--primary);background:var(--primary-light);transform:scale(1.045);}
+.dropzone.correct{border-style:solid;border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.dropzone.wrong{border-style:solid;border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.dropzone.disabled{pointer-events:none;opacity:.6;}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
 
 /* reflection step */
 .refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
@@ -145,6 +111,28 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 .res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
 .res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
 </style>
+
+<style>
+.optcol{width:100%;display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;}
+.optbtn{width:100%;text-align:left;font-family:'Sarabun',sans-serif;font-size:14.5px;line-height:1.6;color:var(--text);background:var(--panel);border:2px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;padding:12px 16px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;}
+.optbtn:hover:not(:disabled){border-color:var(--primary);background:var(--primary-light);}
+.optbtn:disabled{cursor:default;}
+.optbtn.correct{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.optbtn.wrong{border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.optrow{display:flex;gap:8px;width:100%;margin:14px 0 4px;}
+.optrow .optbtn{text-align:center;font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;padding:14px 6px;}
+.ctxbox{width:100%;background:var(--panel2);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;}
+.cmp{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:10px;text-align:left;}
+.cmp .cbox{border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.65;border:1.5px solid var(--border);background:var(--panel2);}
+.cmp .cbox b{display:block;font-family:'Mitr',sans-serif;font-size:11.5px;margin-bottom:3px;}
+.cmp .cbox.bad{border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.cmp .cbox.good{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.cmp .cnote{font-size:13px;color:var(--text2);line-height:1.65;}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;}
+.tabchip{font-family:'Mitr',sans-serif;font-size:12.5px;font-weight:600;background:var(--panel);border:1.5px solid var(--border);border-radius:99px;padding:6px 12px;cursor:pointer;color:var(--text2);}
+.tabchip.on{background:var(--primary);border-color:var(--primary);color:#fff;}
+.tabtext{width:100%;margin-top:10px;background:var(--primary-light);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;min-height:64px;}
+</style>
 </head>
 <body>
 
@@ -153,18 +141,16 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
 </div>
 
 <div class="stage">
-  <!-- STEP 1 · Hook -->
   <div class="panel" id="s1" data-step="0">
     <div class="intro-wrap">
       <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
       <span class="big-icon">💎</span>
-      <div class="title">ขอให้ AI ติวเตอร์ช่วยการบ้าน แต่มันเฉลยคำตอบให้เลยทันที</div>
-      <div class="sub">พรุ่งนี้สอบคณิต แต่ AI แค่บอกคำตอบตรง ๆ ไม่ได้ช่วยให้คิดเองสักนิด — ปัญหาอยู่ที่ "กฎ" ที่ตั้งให้ AI ยังไม่รัดกุมพอ</div>
+      <div class="title">ติวเตอร์ AI เฉลยคำตอบทุกข้อทันที เราเลยไม่ได้คิดเอง</div>
+      <div class="sub">เครื่องมือ AI หลายตัวให้เราตั้งชื่อ บทบาท และกฎให้ผู้ช่วยเองได้ และแนบเอกสารให้ตอบจากเอกสารได้ มาเรียนรู้หลักการออกแบบ</div>
       <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
     </div>
   </div>
 
-  <!-- STEP 2 · Concept -->
   <div class="panel" id="s2" data-step="1" style="display:none">
     <div class="teach-wrap">
       <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
@@ -177,61 +163,44 @@ h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
     </div>
   </div>
 
-  <!-- STEP 3 · Hands-on core + immediate feedback -->
-  <div class="panel wide" id="s3" data-step="2" style="display:none">
-    <div class="mcq-wrap" id="mcqWrap">
-      <span class="mcq-progress" id="mcqProgress"></span>
-      <div class="mcq-q" id="mcqQ"></div>
-      <div class="mcq-opts" id="mcqOpts"></div>
-      <div class="mcq-fb" id="mcqFb"></div>
-      <button class="btn mcq-next" id="mcqNextBtn" style="display:none" onclick="mcNext()">ถัดไป →</button>
-    </div>
-    <div id="chatPhase" style="display:none">
-      <div class="coachcard" id="coachCard">
-        <div class="coachrow"><span class="coachicon">💡</span><div class="coachtext" id="coachText"></div></div>
+  <div class="panel" id="s3" data-step="2" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือตัดสินใจ</span>
+        <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
       </div>
-      <div class="llmshell">
-        <div class="llmside">
-          <div class="llmside-new">➕ แชทใหม่</div>
-          <div class="llmside-label">ประวัติแชท</div>
-          <div class="llmside-item">💬 สร้างติวเตอร์ AI</div>
-        </div>
-        <div class="llmmain">
-          <div class="llmhead"><span class="llmhead-title" id="headTitle">ผู้ช่วยสร้าง Gem</span></div>
-          <div class="llmthread" id="chatThread"></div>
-        </div>
-      </div>
+      <span class="rtag" id="roundTag" style="display:block;margin:10px 0 6px">ข้อที่ 1</span>
+      <div class="taskcard"><div class="who">📋 สถานการณ์</div><div class="say" id="qSay"></div></div>
+      <div class="ctxbox" id="ctxBox" style="display:none"></div>
+      <div id="optsWrap"></div>
+      <div class="explainbox" id="explainBox" style="margin-top:14px"></div>
+      <button class="btn" id="nextBtn" style="display:none;margin-top:14px" onclick="nextRound()">ข้อถัดไป →</button>
     </div>
   </div>
 
-  <!-- STEP 4 · Reflection -->
   <div class="panel" id="s4" data-step="3" style="display:none">
     <div class="refl-wrap">
       <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
-      <div class="title" style="margin-top:2px">ถ้าจะออกแบบ AI ช่วยเพื่อน จะตั้งกฎอะไรบ้าง?</div>
-      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าถ้าจะสร้าง AI ผู้ช่วยสักตัวให้เพื่อนหรือน้องใช้ เราจะตั้งกฎอะไรเพื่อให้มัน "ช่วยสอน" แทนที่จะ "เฉลยให้เลย"</div>
+      <div class="title" style="margin-top:2px">ผู้ช่วยของเราจะมีกฎอะไร และใช้เอกสารอะไร?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าถ้าเราออกแบบผู้ช่วยสักตัว จะตั้งชื่อ บทบาท กฎ และแนบเอกสารอะไร</div>
       <div id="tryReal"></div>
-      <textarea id="reflText" placeholder="เช่น ฉันจะตั้งกฎว่าห้าม AI บอกคำตอบตรง ๆ แต่ให้ถามคำถามกลับทีละขั้นแทน..."></textarea>
+      <textarea id="reflText" placeholder="เช่น ผู้ช่วยติววิทย์ ม.1 กฎคือห้ามเฉลยทันที และแนบโน้ตบทเรียนของฉัน..."></textarea>
       <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
     </div>
   </div>
 
-  <!-- DONE -->
   <div class="panel" id="done" style="display:none">
     <div class="results-wrap">
       <div class="res-emoji" id="resEmoji">🏆</div>
-      <div class="res-title" id="resTitle">Gem ของคุณใช้งานได้ดีมาก!</div>
+      <div class="res-title" id="resTitle">สถาปนิกผู้ช่วย AI!</div>
       <div class="res-stars" id="resStars">⭐⭐⭐</div>
       <div class="res-score" id="resScore"></div>
-      <button class="btn" onclick="restartGame()">ออกแบบ Gem ใหม่ →</button>
+      <button class="btn" onclick="restartGame()">เรียนอีกครั้ง →</button>
     </div>
   </div>
 </div>
 
 <script>
-// 5 named process parts mapped onto 4 real screens — "immediate feedback"
-// happens live inside the hands-on chat screen (testing the Gem right after
-// building it), so it and "hands-on core" both point at screen 2.
 const PROCESS = [
   { label:'จุดเริ่ม', step:0 },
   { label:'แนวคิด', step:1 },
@@ -241,11 +210,12 @@ const PROCESS = [
 let curStep = 0;
 function $(id){ return document.getElementById(id); }
 function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 function renderRail(){
   $('steprail').innerHTML = PROCESS.map((p,i)=>{
     const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
-    return `<span class="pchip ${cls}"><span class="num">${cls==='done'?'':i+1}</span>${esc(p.label)}</span>`;
+    return '<span class="pchip '+cls+'"><span class="num">'+(cls==='done'?'':i+1)+'</span>'+esc(p.label)+'</span>';
   }).join('');
 }
 function goStep(n){
@@ -254,42 +224,28 @@ function goStep(n){
   $('done').style.display = 'none'; $('done').classList.remove('active');
   renderRail();
   if (n===1) renderConcept();
-  if (n===2) startPhase3();
+  if (n===2) startPractice();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ===== Step 2: concept =====
-// Cards 0-1 explain the idea; cards 2-5 are real screenshots (not a mockup)
-// of creating a Gem on gemini.google.com, so students see this is a genuine
-// feature they can use themselves, not just a simulated exercise.
-const CONCEPTS = [
-  { icon:'💎', title:'Gem คือ AI ที่ตั้งค่าเองได้', body:'Gem เป็นแนวคิดของ AI ผู้ช่วยที่เราออกแบบเองได้ 2 ส่วนหลัก คือ Persona (บทบาทและนิสัย) และ Rules (กฎการตอบ) — กำหนดให้ชัดว่าอยากให้ AI เป็นใครและทำอะไรได้บ้าง' },
-  { icon:'🚫', title:'กฎที่ดีต้องบอกทั้ง "ห้ามทำ" และ "ทำแทน"', body:'แค่บอกว่า "ห้ามเฉลยคำตอบ" อาจไม่พอ ต้องบอกด้วยว่าให้ AI ทำอะไรแทน เช่น "ให้คำใบ้ทีละขั้น" หรือ "ถามคำถามกลับ" — กฎที่รัดกุมช่วยให้ AI ช่วยสอนจริง ๆ แทนที่จะเฉลยให้เลย' },
-  { tag:'ของจริงจาก Gemini · ขั้นที่ 1', img:'img/ai09-gemini-walkthrough/step1-gemini-home.png', ratio:'1906/893', box:[0.4,24.1,14.0,3.2],
-    title:'เปิด gemini.google.com แล้วล็อกอินด้วยบัญชี Google',
-    body:'นี่คือหน้าแรกของ Gemini เว็บแอป AI ผู้ช่วยจริงจาก Google — กดตรงกรอบสีแดง เมนู "Gems" ทางซ้าย ซึ่งเป็นที่ที่เราจะสร้างติวเตอร์ AI ของตัวเอง',
-    note:'ภาพหน้าจอจริงจาก Gemini ใช้เพื่อการศึกษาเท่านั้น บทเรียนนี้ไม่มีความเกี่ยวข้องหรือได้รับการรับรองจาก Google' },
-  { tag:'ของจริงจาก Gemini · ขั้นที่ 2', img:'img/ai09-gemini-walkthrough/step2-gems-menu.png', ratio:'1907/897', box:[0.4,24.0,14.4,3.2],
-    title:'ตอนนี้อยู่ในเมนู "Gems" แล้ว — เลื่อนลงไปที่ "My Gems"',
-    body:'หน้านี้จะโชว์ Gem สำเร็จรูปที่ Google ทำไว้ให้ลองเล่นก่อน — เลื่อนลงมาอีกนิดจะเจอส่วน "My Gems" ที่เก็บ Gem ที่เราสร้างเอง' },
-  { tag:'ของจริงจาก Gemini · ขั้นที่ 3', img:'img/ai09-gemini-walkthrough/step3-new-gem-button.png', ratio:'920/380', box:[84.1,86.3,10.2,10.5],
-    title:'กดปุ่ม "+ New Gem" เพื่อเริ่มสร้าง',
-    body:'ปุ่มสีฟ้ามุมขวาล่างของส่วน "My Gems" (กรอบสีแดง) — กดตรงนี้เพื่อเปิดหน้าสร้าง Gem ใหม่' },
-  { tag:'ของจริงจาก Gemini · ขั้นที่ 4', img:'img/ai09-gemini-walkthrough/step4-name-and-instructions.png', ratio:'1908/900', box:[27.7,17.2,31.3,5.0],
-    title:'ตั้งชื่อ แล้วเขียน Instructions (กฎ) ให้ AI',
-    body:'ช่อง "Name" (กรอบสีแดง) ใส่ชื่อ Gem, ช่อง "Instructions" คือที่ที่เราเขียนกฎแบบเดียวกับที่กำลังจะฝึกในด่านต่อไป — เขียนเสร็จกด "Save" แล้วเริ่มคุยกับ Gem ของตัวเองได้เลย' },
-];
+// ===== Step 2: concept cards =====
+const CONCEPTS = [{"icon":"💎","title":"ผู้ช่วยของเรามี 3 ส่วน","body":"ผู้ช่วยที่เราตั้งเอง (เช่น Gem ใน Gemini หรือ GPTs ใน ChatGPT) ประกอบด้วย","items":["ชื่อ — ให้จำง่ายและบอกหน้าที่","บทบาท — เป็นใคร สอนใคร ใช้น้ำเสียงแบบไหน","กฎ — สิ่งที่ต้องทำและห้ามทำทุกครั้งที่ตอบ"],"compare":{"badLabel":"❌ ไม่มีกฎ","bad":"ผู้ช่วยตอบเฉลยตรง ๆ ทุกข้อทันที เราได้คำตอบแต่ไม่ได้ฝึกคิด","goodLabel":"✅ มีกฎ","good":"ผู้ช่วยที่มีกฎ ห้ามเฉลยทันที จะถามนำทีละขั้นก่อน แล้วจบด้วยคำถามเช็กความเข้าใจ","note":"นี่คือตัวอย่างอธิบายแนวคิด ไม่ใช่คำตอบจริงของ AI ตัวใด ผลจริงลองดูได้ในส่วน ลองของจริง ตอนท้าย"}},{"icon":"🖱️","title":"สร้าง Gem ใน Gemini ทีละขั้น (ภาพจริง)","body":"แตะแต่ละขั้นเพื่อดูภาพหน้าจอจริง กรอบสีแดงคือจุดที่ต้องกด ภาพนี้ใช้เพื่อการศึกษาเท่านั้น ไม่เกี่ยวข้องหรือได้รับการรับรองจาก Google","tabs":[{"k":"1 เปิด Gemini","v":"เปิด gemini.google.com แล้วล็อกอินด้วยบัญชี Google กดเมนู Gems ทางซ้าย (กรอบสีแดง) ซึ่งเป็นที่สร้างผู้ช่วยของเรา","img":"img/ai09-gemini-walkthrough/step1-gemini-home.png","ratio":"1906/893","box":[0.4,24.1,14,3.2]},{"k":"2 เมนู Gems","v":"หน้านี้โชว์ Gem สำเร็จรูปที่ Google ทำไว้ให้ลองเล่น เลื่อนลงไปจะเจอส่วน My Gems ที่เก็บ Gem ที่เราสร้างเอง","img":"img/ai09-gemini-walkthrough/step2-gems-menu.png","ratio":"1907/897","box":[0.4,24,14.4,3.2]},{"k":"3 ปุ่ม New Gem","v":"กดปุ่มสีฟ้ามุมขวาล่างของส่วน My Gems (กรอบสีแดง) เพื่อเปิดหน้าสร้าง Gem ใหม่","img":"img/ai09-gemini-walkthrough/step3-new-gem-button.png","ratio":"920/380","box":[84.1,86.3,10.2,10.5]},{"k":"4 ชื่อและกฎ","v":"ช่อง Name ใส่ชื่อ Gem ส่วนช่อง Instructions คือที่เขียนกฎให้ผู้ช่วย เขียนเสร็จกด Save แล้วเริ่มคุยกับ Gem ของเราได้เลย","img":"img/ai09-gemini-walkthrough/step4-name-and-instructions.png","ratio":"1908/900","box":[27.7,17.2,31.3,5]}]},{"icon":"📏","title":"กฎที่ดีเขียนให้สั้น ชัด และตรวจได้","body":"กฎที่ดีบอกสิ่งที่ต้องทำชัดเจน จนเราเช็กได้ว่าผู้ช่วยทำตามหรือไม่","compare":{"bad":"ช่วยฉันเรียนให้เก่ง","good":"ห้ามเฉลยทันที ถามนำทีละขั้น และจบด้วยคำถามเช็กความเข้าใจ 1 ข้อ","note":"ข้อแรกกว้างเกินไป ผู้ช่วยไม่รู้ว่าต้องทำอะไร ข้อที่สองตรวจได้ทุกครั้งที่ตอบ"}},{"icon":"📚","title":"ให้ AI ตอบจากเอกสารของเรา","body":"AI ปกติตอบจากสิ่งที่เรียนรู้มา อาจไม่รู้เรื่องเฉพาะของโรงเรียนเรา หรือเดามั่ว ถ้าแนบเอกสารและสั่งให้ตอบจากเอกสาร คำตอบจะตรงกับเอกสารมากขึ้น","compare":{"badLabel":"❌ ไม่แนบเอกสาร","bad":"ถามเวลาเปิดห้องสมุด AI อาจเดาเวลาที่ฟังดูเป็นไปได้ แต่ไม่ตรงกับของโรงเรียน","goodLabel":"✅ แนบเอกสาร + สั่งตอบจากเอกสาร","good":"AI ตอบตามประกาศที่แนบ และถ้าเอกสารไม่มีคำตอบ จะบอกว่า ไม่พบในเอกสาร","note":"เป็นตัวอย่างอธิบายแนวคิด ไม่ใช่คำตอบจริงของ AI ตัวใด"}},{"icon":"🗂️","title":"เลือกเอกสารให้ตรงเรื่อง","body":"เอกสารที่แนบคือสิ่งที่ผู้ช่วยจะเชื่อ","items":["แนบเฉพาะไฟล์ที่เกี่ยวกับเรื่องที่จะถาม","ไฟล์ที่ล้าสมัยทำให้คำตอบล้าสมัย ควรใช้ฉบับล่าสุด","ห้ามแนบข้อมูลส่วนตัวของคนอื่น เช่น รายชื่อพร้อมเบอร์โทร"]}];
 let cIdx = 0;
 function renderConcept(){ cIdx = 0; renderConceptCard(); }
 function renderConceptCard(){
   const c = CONCEPTS[cIdx];
-  const cardCls = c.img ? 'ccard ccard-shot' : 'ccard';
-  const media = c.img
-    ? `<div class="cimg-wrap" style="aspect-ratio:${c.ratio}"><img src="${esc(c.img)}" alt="${esc(c.title)}" loading="lazy">${c.box ? `<div class="cbox" style="left:${c.box[0]}%;top:${c.box[1]}%;width:${c.box[2]}%;height:${c.box[3]}%"></div>` : ''}</div>`
-    : `<span class="ci">${c.icon}</span>`;
-  $('ccardWrap').innerHTML = `<div class="${cardCls}">${c.tag ? `<span class="ctag">${esc(c.tag)}</span>` : ''}${media}<div class="ct">${esc(c.title)}</div><div class="cb">${esc(c.body)}</div>${c.note ? `<div class="cnote">${esc(c.note)}</div>` : ''}</div>`;
-  $('ccardWrap').closest('.panel').classList.toggle('panel-wide', !!c.img);
-  $('cdots').innerHTML = CONCEPTS.map((_,i)=>`<span class="cdot${i===cIdx?' on':''}"></span>`).join('');
+  const list = c.items ? '<ul class="clist">' + c.items.map((t,i)=>'<li><span class="qn">'+(i+1)+'</span><span>'+esc(t)+'</span></li>').join('') + '</ul>' : '';
+  const cmp = c.compare ? '<div class="cmp"><div class="cbox bad"><b class="cxbadge">'+esc(c.compare.badLabel||'❌ แบบที่ไม่ดี')+'</b><span>'+esc(c.compare.bad)+'</span></div><div class="cbox good"><b class="cxbadge">'+esc(c.compare.goodLabel||'✅ แบบที่ดี')+'</b><span>'+esc(c.compare.good)+'</span></div>'+(c.compare.note?'<div class="cnote">'+esc(c.compare.note)+'</div>':'')+'</div>' : '';
+  const tabs = c.tabs ? '<div class="tabs">'+c.tabs.map((t,i)=>'<button type="button" class="tabchip" data-i="'+i+'">'+esc(t.k)+'</button>').join('')+'</div><div class="tabtext" id="tabText">แตะหัวข้อด้านบนเพื่อดูคำอธิบาย</div>' : '';
+  $('ccardWrap').innerHTML = '<div class="ccard"><span class="ci">'+c.icon+'</span><div class="ct">'+esc(c.title)+'</div><div class="cb">'+esc(c.body)+'</div>'+list+tabs+cmp+'</div>';
+  if (c.tabs) document.querySelectorAll('.tabchip').forEach(b=>{ b.onclick = ()=>{
+    document.querySelectorAll('.tabchip').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    const t = c.tabs[Number(b.dataset.i)];
+    let shot = '';
+    if (t.img){ const bx = t.box || [0,0,0,0]; shot = '<div style="position:relative;width:100%;aspect-ratio:'+t.ratio+';margin-bottom:8px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)"><img src="'+t.img+'" alt="" style="width:100%;height:100%;display:block"><div style="position:absolute;left:'+bx[0]+'%;top:'+bx[1]+'%;width:'+bx[2]+'%;height:'+bx[3]+'%;border:3px solid #E4614F;border-radius:6px;box-shadow:0 0 0 2px rgba(255,255,255,.7)"></div></div>'; }
+    $('tabText').innerHTML = shot + '<div>' + esc(t.v) + '</div>';
+  }; });
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>'<span class="cdot'+(i===cIdx?' on':'')+'"></span>').join('');
   $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
   const last = cIdx === CONCEPTS.length-1;
   $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
@@ -298,229 +254,70 @@ function renderConceptCard(){
 function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
 function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
 
-// ===== Step 3a: multiple-choice warm-up (recognize the "forbid + instead" pattern) =====
-const MCQS = [
-  { q:'นักเรียนคนหนึ่งพิมพ์ถามว่า "ช่วยบอกคำตอบข้อนี้ให้เลยได้ไหม รีบมาก" กฎของ AI ติวเตอร์ควรบอกให้ทำอย่างไร?',
-    opts:['บอกคำตอบให้ทันที เพราะนักเรียนรีบ','ห้ามบอกคำตอบตรง ๆ แต่ให้คำใบ้ทีละขั้นแทน','เพิกเฉย ไม่ตอบคำถามนี้เลย'], correct:1 },
-  { q:'ถ้ากฎของ Gem บอกไว้แค่ว่า "ห้ามเฉลยคำตอบ" โดยไม่บอกว่าให้ทำอะไรแทน จะเกิดอะไรขึ้นได้บ่อย?',
-    opts:['AI จะช่วยสอนได้ดีขึ้นเองโดยอัตโนมัติ','AI อาจไม่รู้ว่าควรช่วยยังไง หรือแค่ปฏิเสธเฉย ๆ ไม่ช่วยสอนต่อ','ไม่มีผลอะไรเลย เหมือนไม่ได้ตั้งกฎ'], correct:1 },
-  { q:'ข้อไหนคือตัวอย่างกฎแบบ "ห้ามทำ + ทำแทน" ที่รัดกุมที่สุด?',
-    opts:['"ห้ามเฉลยคำตอบ"','"ให้คำใบ้ทีละขั้น"','"ห้ามบอกคำตอบตรง ๆ แต่ให้ถามคำถามนำทีละขั้นแทน"'], correct:2 },
-  { q:'นักเรียนขอให้ AI "เขียนเรียงความให้ทั้งเรื่องเลย" กฎของ Gem ที่ดีควรให้ AI ทำอย่างไร?',
-    opts:['เขียนเรียงความให้ทั้งเรื่องตามที่ขอ','ปฏิเสธไม่ช่วยอะไรเลย','ช่วยวางโครงเรื่องและตั้งคำถามชวนคิด แทนการเขียนให้จบทั้งเรื่อง'], correct:2 },
-  { q:'ทำไม Persona (บทบาทและนิสัยของ Gem) จึงสำคัญคู่กับกฎ (Rules)?',
-    opts:['เพราะทำให้ AI ดูน่ารักอย่างเดียว ไม่มีผลต่อการช่วยสอน','เพราะบทบาทช่วยกำหนดโทนการช่วยเหลือให้สอดคล้องกับกฎที่ตั้งไว้','เพราะ Persona ไม่เกี่ยวข้องกับกฎเลย'], correct:1 },
-];
-let mcIdx = 0, mcMistakes = 0, mcAnswered = false;
+// ===== Step 3: choose-and-explain rounds =====
+// type 'v' = three fixed verdict buttons; type 'p' = pick the best of several written options (order shuffled).
+const VERDICTS = [];
+const ROUNDS = [{"type":"p","q":"ผู้ช่วยติวคณิตศาสตร์สำหรับเด็ก ป.4 ชื่อและบทบาทไหนเหมาะที่สุด?","opts":[{"t":"ครูพี่ใจดี — ติวเตอร์คณิตศาสตร์ ป.4 อธิบายช้า ๆ ด้วยตัวอย่างใกล้ตัว","ok":true,"why":"ชื่อบอกหน้าที่ และบทบาทบอกกลุ่มผู้เรียนกับน้ำเสียงชัดเจน"},{"t":"บอท — ตอบได้ทุกเรื่อง","ok":false,"why":"กว้างเกินไป ไม่บอกว่าช่วยใคร ทำอะไร"},{"t":"ศาสตราจารย์ — อธิบายด้วยศัพท์เทคนิคระดับมหาวิทยาลัย","ok":false,"why":"ยากเกินไปสำหรับเด็ก ป.4"}]},{"type":"p","q":"อยากให้ผู้ช่วยไม่เฉลยทันที กฎข้อไหนเหมาะ?","opts":[{"t":"ห้ามเฉลยคำตอบทันที ให้ถามนำทีละขั้นก่อน","ok":true,"why":"บอกสิ่งที่ต้องทำชัดเจน"},{"t":"ตอบให้เร็วที่สุด","ok":false,"why":"ทำให้เฉลยทันที ตรงข้ามกับที่ต้องการ"},{"t":"ช่วยฉันเรียนให้เก่ง","ok":false,"why":"กว้างเกินไป ผู้ช่วยไม่รู้ว่าต้องทำอะไร"}]},{"type":"p","q":"กฎข้อไหน ตรวจได้ ว่าผู้ช่วยทำตามหรือไม่?","opts":[{"t":"จบทุกครั้งด้วยคำถามเช็กความเข้าใจ 1 ข้อ","ok":true,"why":"ดูได้ทันทีว่าท้ายคำตอบมีคำถามหรือไม่"},{"t":"ใจดีกับนักเรียน","ok":false,"why":"วัดไม่ได้ว่าทำตามหรือไม่"},{"t":"พยายามอธิบายให้ดี","ok":false,"why":"กำกวม ไม่มีเกณฑ์ตรวจ"}]},{"type":"p","q":"ถ้าผู้ช่วยไม่แน่ใจในคำตอบ ควรมีกฎให้ทำอย่างไร?","opts":[{"t":"บอกตรง ๆ ว่าไม่แน่ใจ และแนะนำให้เช็กจากหนังสือหรือครู","ok":true,"why":"ทำให้เราไม่เชื่อคำตอบที่อาจผิดโดยไม่ตรวจ"},{"t":"เดาให้ฟังดูมั่นใจ","ok":false,"why":"ทำให้เราเชื่อคำตอบที่อาจผิด"},{"t":"เปลี่ยนไปพูดเรื่องอื่น","ok":false,"why":"ไม่ช่วยให้เราได้คำตอบหรือรู้ว่าต้องตรวจ"}]},{"type":"p","q":"กฎข้อไหนช่วยกันไม่ให้ผู้ช่วยทำการบ้านแทนเรา?","opts":[{"t":"ถ้านักเรียนขอคำตอบการบ้านตรง ๆ ให้ช่วยด้วยการบอกใบ้ทีละขั้น ไม่เขียนคำตอบสุดท้ายให้","ok":true,"why":"ผู้ช่วยยังช่วยได้ แต่เราต้องคิดเอง"},{"t":"เขียนคำตอบการบ้านให้ครบทุกข้อเสมอ","ok":false,"why":"เป็นการทำแทน ไม่ได้ฝึกคิด"},{"t":"ปฏิเสธทุกคำถามเกี่ยวกับการบ้าน","ok":false,"why":"ไม่ช่วยอะไรเลย ทั้งที่การช่วยให้เข้าใจเป็นสิ่งดี"}]},{"type":"p","q":"ผู้ช่วยตอบเฉลยทันทีทุกข้อ ควรแก้อะไร?","opts":[{"t":"เพิ่มกฎ ห้ามเฉลยทันที ให้ถามนำก่อน","ok":true,"why":"พฤติกรรมของผู้ช่วยปรับได้ด้วยกฎที่เราเขียน"},{"t":"เปลี่ยนชื่อผู้ช่วย","ok":false,"why":"ชื่อไม่ได้เปลี่ยนพฤติกรรม"},{"t":"ถามคำถามให้สั้นลง","ok":false,"why":"ไม่แก้ปัญหา เพราะผู้ช่วยยังไม่มีกฎ"}]},{"type":"p","q":"อยากให้ผู้ช่วยโรงเรียนตอบเวลาเปิดห้องสมุดได้ถูกต้อง ควรแนบไฟล์ไหน?","opts":[{"t":"ประกาศเวลาเปิดปิดห้องสมุดฉบับล่าสุด","ok":true,"why":"ตรงกับเรื่องที่จะถามและเป็นข้อมูลปัจจุบัน"},{"t":"เมนูอาหารกลางวัน","ok":false,"why":"ไม่เกี่ยวกับห้องสมุด"},{"t":"รูปงานกีฬาสี","ok":false,"why":"ไม่มีข้อมูลที่ต้องใช้ตอบ"}]},{"type":"p","q":"ผู้ช่วยตอบเวลาห้องสมุดผิด เพราะไฟล์ที่แนบเป็นของปีที่แล้ว ควรทำอะไร?","opts":[{"t":"เปลี่ยนเป็นไฟล์ฉบับล่าสุด","ok":true,"why":"ผู้ช่วยตอบตามเอกสารที่ได้รับ จึงต้องให้ข้อมูลที่ถูกต้องและเป็นปัจจุบัน"},{"t":"สั่งให้ผู้ช่วยตั้งใจตอบมากขึ้น","ok":false,"why":"ผู้ช่วยตอบตามไฟล์ที่ผิดอยู่ ความตั้งใจไม่ช่วย"},{"t":"ลบกฎทั้งหมดของผู้ช่วย","ok":false,"why":"ปัญหาอยู่ที่ไฟล์ ไม่ใช่กฎ"}]},{"type":"p","q":"คำสั่งข้อไหนทำให้ผู้ช่วยตอบตรงเอกสารที่สุด?","opts":[{"t":"ตอบจากเอกสารที่แนบเท่านั้น ถ้าไม่มีให้บอกว่าไม่พบในเอกสาร ห้ามเดา","ok":true,"why":"ผูกคำตอบกับเอกสาร และบอกทางออกเมื่อไม่มีคำตอบ"},{"t":"ตอบให้ครบทุกเรื่องที่ถาม","ok":false,"why":"ทำให้ผู้ช่วยเดาเรื่องที่เอกสารไม่มี"},{"t":"ตอบสั้น ๆ","ok":false,"why":"คุมความยาว แต่ไม่ได้ทำให้ตอบจากเอกสาร"}]},{"type":"p","q":"ผู้ช่วยตอบเรื่องที่ไม่มีในเอกสารแบบเดาอยู่เรื่อย ๆ ควรแก้อะไร?","opts":[{"t":"เพิ่มคำสั่ง ตอบจากเอกสารเท่านั้น ถ้าไม่มีให้บอกว่าไม่พบ","ok":true,"why":"ปิดทางเดา และให้ผู้ช่วยยอมรับเมื่อไม่รู้"},{"t":"แนบเอกสารเพิ่มเรื่อย ๆ โดยไม่เปลี่ยนคำสั่ง","ok":false,"why":"ผู้ช่วยยังเดาได้เมื่อเจอเรื่องที่ไม่มี"},{"t":"เปลี่ยนรูปโปรไฟล์ของผู้ช่วย","ok":false,"why":"ไม่เกี่ยวกับพฤติกรรม"}]},{"type":"v","labels":["✅ แนบได้","🙋 ถามก่อน","🚫 ไม่ควรแนบ"],"q":"กฎการใช้ห้องสมุดของโรงเรียน (เอกสารทั่วไปที่ประกาศอยู่แล้ว)","ans":0,"why":"เป็นเอกสารทั่วไปของโรงเรียน ไม่มีข้อมูลส่วนตัว แนบได้"},{"type":"v","labels":["✅ แนบได้","🙋 ถามก่อน","🚫 ไม่ควรแนบ"],"q":"รายชื่อนักเรียนทั้งห้องพร้อมเบอร์โทรผู้ปกครอง","ans":2,"why":"มีข้อมูลส่วนตัวของคนอื่นจำนวนมาก ห้ามแนบให้เครื่องมือ AI"},{"type":"v","labels":["✅ แนบได้","🙋 ถามก่อน","🚫 ไม่ควรแนบ"],"q":"โน้ตสรุปบทเรียนที่เราเขียนเอง","ans":0,"why":"เป็นงานของเราเองและไม่มีข้อมูลส่วนตัวของใคร แนบได้"},{"type":"v","labels":["✅ แนบได้","🙋 ถามก่อน","🚫 ไม่ควรแนบ"],"q":"ไฟล์งานกลุ่มที่เพื่อนช่วยกันเขียน","ans":1,"why":"มีส่วนที่เป็นผลงานของเพื่อน ควรถามเพื่อนก่อนนำไปแนบ"}];
+let rIdx = 0, wrongCount = 0, answered = false, curOpts = [];
 
-function startPhase3(){
-  if ($('chatThread').childElementCount || mcIdx > 0) return; // already started, don't reset on revisit
-  $('mcqWrap').style.display = '';
-  $('chatPhase').style.display = 'none';
-  mcIdx = 0; mcMistakes = 0;
-  renderMcq();
-}
-function renderMcq(){
-  const q = MCQS[mcIdx];
-  mcAnswered = false;
-  $('mcqProgress').textContent = `ทบทวนแนวคิด · ข้อ ${mcIdx+1} / ${MCQS.length}`;
-  $('mcqQ').textContent = q.q;
-  $('mcqFb').textContent = '';
-  $('mcqNextBtn').style.display = 'none';
-  $('mcqOpts').innerHTML = q.opts.map((o,i)=>`<button class="mcq-opt" onclick="mcAnswer(${i})">${esc(o)}</button>`).join('');
-}
-function mcAnswer(i){
-  if (mcAnswered) return;
-  mcAnswered = true;
-  const q = MCQS[mcIdx];
-  const btns = $('mcqOpts').querySelectorAll('.mcq-opt');
-  btns.forEach(b=>b.disabled = true);
-  if (i === q.correct){
-    btns[i].classList.add('correct');
-    $('mcqFb').textContent = '✅ ถูกต้อง! กฎที่ดีต้องบอกทั้ง "ห้ามทำ" และ "ทำแทน"';
+function startPractice(){ rIdx = 0; wrongCount = 0; renderRound(); }
+function renderRound(){
+  const r = ROUNDS[rIdx];
+  answered = false;
+  $('roundTag').textContent = 'ข้อที่ ' + (rIdx+1) + '/' + ROUNDS.length;
+  $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง';
+  $('qSay').textContent = r.q;
+  if (r.ctx){ $('ctxBox').style.display = ''; $('ctxBox').textContent = r.ctx; } else { $('ctxBox').style.display = 'none'; }
+  if (r.type === 'v'){
+    curOpts = (r.labels || VERDICTS).map((v,i)=>({ t:v, ok: i===r.ans, why: r.why }));
+    $('optsWrap').innerHTML = '<div class="optrow">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
   } else {
-    btns[i].classList.add('wrong');
-    btns[q.correct].classList.add('correct');
-    mcMistakes++;
-    $('mcqFb').textContent = '❌ ผิด มั่ว! คำตอบที่ถูกคือข้อที่ไฮไลต์สีเขียว';
+    curOpts = shuffle(r.opts);
+    $('optsWrap').innerHTML = '<div class="optcol">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
   }
-  $('mcqNextBtn').textContent = mcIdx === MCQS.length-1 ? 'ไปลงมือสร้าง Gem →' : 'ถัดไป →';
-  $('mcqNextBtn').style.display = '';
+  document.querySelectorAll('#optsWrap .optbtn').forEach(b=>{ b.onclick = ()=>pick(Number(b.dataset.i)); });
+  $('explainBox').className = 'explainbox'; $('explainBox').innerHTML = '';
+  $('nextBtn').style.display = 'none';
 }
-function mcNext(){
-  mcIdx++;
-  if (mcIdx >= MCQS.length){
-    $('mcqWrap').style.display = 'none';
-    $('chatPhase').style.display = '';
-    startChat();
-    return;
-  }
-  renderMcq();
+function pick(i){
+  if (answered) return;
+  answered = true;
+  const o = curOpts[i];
+  const isVerdict = ROUNDS[rIdx].type === 'v';
+  const btns = document.querySelectorAll('#optsWrap .optbtn');
+  btns.forEach((b,j)=>{ b.disabled = true; if (curOpts[j].ok) b.classList.add('correct'); else if (j===i) b.classList.add('wrong'); });
+  const right = curOpts.find(x=>x.ok);
+  if (!o.ok){ wrongCount++; $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง'; }
+  $('explainBox').className = 'explainbox show ' + (o.ok ? 'correct' : 'wrong');
+  // each sentence sits in its own element so each one has its own recording (no runtime-composed text)
+  $('explainBox').innerHTML = o.ok
+    ? '<b>✅ ถูกต้อง!</b><div>' + esc(o.why) + '</div>'
+    : '<b>❌ ยังไม่ใช่</b>' + (isVerdict ? '' : '<div>' + esc(o.why) + '</div>') + '<div><b class="cxbadge">ที่เหมาะที่สุดคือ</b> <span>' + esc(right.t) + '</span></div><div>' + esc(right.why) + '</div>';
+  $('nextBtn').style.display = 'block';
+  if (o.ok && window.dlf) dlf.cheer('เก่งมาก!');
 }
-
-// ===== Step 3b: hands-on Gem builder chat, then compare presets =====
-// Instead of typing free-text rules that get regex-matched (fragile, and the
-// student never actually SEES why wording matters), the student now picks
-// from predetermined instruction presets and watches the SAME fixed question
-// answered differently under each one — the cause-and-effect is visible
-// side-by-side in the same chat thread instead of inferred from a pass/fail.
-const TEST_Q = 'ช่วยบอกคำตอบข้อ 5 ในใบงานคณิตให้หน่อยได้ไหม รีบมาก';
-const INSTRUCTION_PRESETS = [
-  { key:'none', label:'🚫 ไม่ตั้งกฎอะไรเลย', rule:'(ไม่มีกฎ — ปล่อยให้ AI ตอบตามปกติ)',
-    answer:'ได้เลยครับ! คำตอบข้อ 5 คือ 42 ครับ',
-    verdict:'bad', note:'ไม่มีกฎ = AI เฉลยให้ตรง ๆ ทันที นักเรียนไม่ได้คิดเองเลย' },
-  { key:'forbidOnly', label:'⚠️ ห้ามบอกคำตอบตรง ๆ (แค่นั้น)', rule:'ห้ามบอกคำตอบตรง ๆ',
-    answer:'ขอโทษครับ พี่บอกคำตอบให้ไม่ได้ครับ',
-    verdict:'meh', note:'"ห้ามทำ" อย่างเดียวไม่พอ — AI แค่ปฏิเสธเฉย ๆ ไม่ได้ช่วยสอนอะไรเลย' },
-  { key:'forbidPlus', label:'✅ ห้ามบอกคำตอบตรง ๆ + ให้คำใบ้ทีละขั้นแทน', rule:'ห้ามบอกคำตอบตรง ๆ ให้คำใบ้ทีละขั้นแทน',
-    answer:'อืม ลองคิดดูก่อนนะ 🙂 บอกพี่หน่อยว่าโจทย์ข้อนี้เกี่ยวกับเรื่องอะไร แล้วเราค่อย ๆ ไล่ทีละขั้นด้วยกันนะ',
-    verdict:'good', note:'"ห้ามทำ" + "ทำแทน" คู่กัน — AI ช่วยสอนจริง ๆ แทนที่จะเฉลยหรือแค่ปฏิเสธ' },
-];
-
-let stage = 'name', gem = { name:'', persona:'' }, triedPresets = new Set();
-
-function coachShow(text){ $('coachText').textContent = text; $('coachCard').classList.add('show'); }
-function coachHide(){ $('coachCard').classList.remove('show'); }
-
-function appendRow(role, html, cls){
-  const row = document.createElement('div');
-  row.className = `llmrow ${role}`;
-  const ava = role==='user' ? '🙋' : role==='student' ? '🧑‍🎓' : '🛠️';
-  row.innerHTML = `<span class="llmava">${ava}</span><div class="llmbubble${cls?' '+cls:''}">${html}</div>`;
-  $('chatThread').appendChild(row);
-  $('chatThread').scrollTop = $('chatThread').scrollHeight;
-  return row;
-}
-function typing(){ return appendRow('ai', '<span class="llmtyping"><span></span><span></span><span></span></span>'); }
-
-// Every choice in the Gem builder is multiple choice — there's no real LLM behind the
-// page, so nothing is typed. The student picks a name and a persona, then compares rules.
-const NAME_CHOICES = ['ติวเตอร์คณิตของฉัน', 'AI Tutor', 'พี่ช่วยการบ้าน'];
-const PERSONA_CHOICES = [
-  { text:'ตอบทุกอย่างที่ถามให้เร็วที่สุด', ok:false,
-    fb:'ยังไม่บอกว่า AI เป็นใครและพูดแบบไหน — Gem จะตอบแบบกว้าง ๆ ไม่มีเอกลักษณ์ ลองเลือกแบบที่ระบุบทบาท + นิสัยชัดเจน' },
-  { text:'คุณเป็นติวเตอร์คณิตศาสตร์ระดับประถม ใจดีแต่ไม่ใจอ่อน พูดให้กำลังใจนักเรียนเสมอ', ok:true,
-    fb:'' },
-  { text:'คุณเป็นครูที่เข้มงวดมาก ห้ามพูดให้กำลังใจเด็ดขาด', ok:false,
-    fb:'นิสัยแบบนี้ไม่เหมาะกับนักเรียนประถมที่ต้องการกำลังใจ — persona ที่ดีต้องเหมาะกับคนที่มาเรียนด้วย' },
-];
-let buildMisses = 0;
-
-function showChoiceRow(id, labels, handlerName, usedSet){
-  const wrap = document.createElement('div');
-  wrap.className = 'presetrow';
-  wrap.id = id;
-  wrap.innerHTML = labels.map((l,i) =>
-    `<button type="button" class="presetbtn${usedSet && usedSet.has(i)?' tried':''}" onclick="${handlerName}(${i})">${esc(l)}</button>`
-  ).join('');
-  $('chatThread').appendChild(wrap);
-  $('chatThread').scrollTop = $('chatThread').scrollHeight;
+function nextRound(){
+  rIdx++;
+  if (rIdx >= ROUNDS.length){ goStep(3); return; }
+  renderRound();
 }
 
-function startChat(){
-  if ($('chatThread').childElementCount) return; // already started, don't reset on revisit
-  buildMisses = 0;
-  appendRow('ai', 'สวัสดี! มาช่วยกันออกแบบ AI ติวเตอร์ส่วนตัวของคุณกันเถอะ 🛠️<br>ก่อนอื่น อยากตั้งชื่อ Gem นี้ว่าอะไรดี? แตะเลือกด้านล่างได้เลย');
-  stage = 'name';
-  coachShow('ขั้นนี้แตะเลือกคำตอบด้านล่างได้เลย — ไม่ต้องพิมพ์เอง');
-  showChoiceRow('nameRow', NAME_CHOICES.map(n => '📛 ' + n), 'pickName');
-}
-
-function pickName(i){
-  const row = $('nameRow'); if (row) row.remove();
-  gem.name = NAME_CHOICES[i];
-  appendRow('user', esc(gem.name));
-  const t = typing();
-  setTimeout(() => {
-    t.querySelector('.llmbubble').innerHTML = `ชื่อเพราะดี "${esc(gem.name)}" 👍 ต่อไป — อยากให้ Gem นี้ "สวมบทบาทเป็นใคร" และมีนิสัยแบบไหน? เลือกคำสั่ง (instructions) ที่ดีที่สุดด้านล่าง`;
-    stage = 'persona';
-    showChoiceRow('personaRow', PERSONA_CHOICES.map(p => p.text), 'pickPersona', personaTried);
-  }, 700);
-}
-
-const personaTried = new Set();
-function pickPersona(i){
-  const row = $('personaRow'); if (row) row.remove();
-  const p = PERSONA_CHOICES[i];
-  appendRow('user', esc(p.text));
-  const t = typing();
-  setTimeout(() => {
-    if (!p.ok){
-      buildMisses++; personaTried.add(i);
-      t.querySelector('.llmbubble').innerHTML = `🤔 ${esc(p.fb)} — ลองเลือกใหม่อีกครั้ง`;
-      showChoiceRow('personaRow', PERSONA_CHOICES.map(x => x.text), 'pickPersona', personaTried);
-      return;
-    }
-    gem.persona = p.text;
-    t.querySelector('.llmbubble').innerHTML = `เข้าใจแล้ว! สร้าง Gem "${esc(gem.name)}" เรียบร้อยแล้ว 🎉<br>ทีนี้มาดูกันว่า "กฎ" ที่ตั้งให้ AI มีผลกับคำตอบแค่ไหน — ลองเลือกกฎแบบต่าง ๆ ด้านล่าง แล้วให้นักเรียนจำลองถามคำถามเดิมซ้ำ ๆ ดู`;
-    stage = 'preset';
-    coachShow('เลือกกฎ 1 แบบด้านล่าง แล้วดูว่า Gem ตอบคำถามเดิมต่างกันแค่ไหน — ลองให้ครบทั้ง 3 แบบเพื่อเทียบกัน');
-    showPresetPicker();
-  }, 700);
-}
-
-function showPresetPicker(){
-  const wrap = document.createElement('div');
-  wrap.className = 'presetrow';
-  wrap.id = 'presetRow';
-  wrap.innerHTML = INSTRUCTION_PRESETS.map(p =>
-    `<button type="button" class="presetbtn${triedPresets.has(p.key)?' tried':''}" onclick="pickPreset('${p.key}')">${esc(p.label)}${triedPresets.has(p.key)?' ✓':''}</button>`
-  ).join('');
-  $('chatThread').appendChild(wrap);
-  $('chatThread').scrollTop = $('chatThread').scrollHeight;
-}
-function pickPreset(key){
-  const row = $('presetRow');
-  if (row) row.remove();
-  const preset = INSTRUCTION_PRESETS.find(p => p.key === key);
-  triedPresets.add(key);
-  appendRow('ai', `📌 กฎที่เลือก: <b>${esc(preset.rule)}</b>`, 'ruletag');
-  setTimeout(() => {
-    appendRow('student', esc(TEST_Q));
-    const t = typing();
-    setTimeout(() => {
-      t.querySelector('.llmbubble').innerHTML = esc(preset.answer);
-      const verdictText = preset.verdict === 'good' ? '✅ ดี!' : preset.verdict === 'meh' ? '⚠️ ยังไม่ดีพอ' : '❌ ผิด มั่ว!';
-      appendRow('ai', `${verdictText} ${esc(preset.note)}`, 'verdict ' + preset.verdict);
-      if (triedPresets.size >= INSTRUCTION_PRESETS.length){
-        finishTesting();
-      } else {
-        const btn = document.createElement('button');
-        btn.className = 'btn ghost'; btn.style.marginTop = '4px';
-        btn.textContent = 'ลองกฎแบบอื่น เพื่อเทียบกัน →';
-        btn.onclick = () => { btn.parentElement.remove(); showPresetPicker(); };
-        $('chatThread').appendChild(document.createElement('div')).appendChild(btn);
-        $('chatThread').scrollTop = $('chatThread').scrollHeight;
-      }
-    }, 900);
-  }, 500);
-}
-
-function finishTesting(){
-  coachHide();
-  const btn = document.createElement('button');
-  btn.className = 'btn'; btn.style.marginTop = '4px'; btn.textContent = 'ไปขั้นต่อไป →';
-  btn.onclick = () => goStep(3);
-  appendRow('ai', `ลองครบทั้ง ${INSTRUCTION_PRESETS.length} แบบแล้ว! เห็นไหมว่าคำถามเดียวกัน แต่คำตอบต่างกันมากตามกฎที่ตั้งไว้ 🎉`);
-  $('chatThread').appendChild(document.createElement('div')).appendChild(btn);
-}
-
-// ===== Step 4 done =====
+// ===== Step 4: finish =====
 function finishGame(){
-  const _miss = mcMistakes + buildMisses;
-  window.dlfStars = _miss === 0 ? 3 : _miss <= 2 ? 2 : 1;
+  window.dlfStars = wrongCount <= 2 ? 3 : wrongCount <= 5 ? 2 : 1;
   document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
   $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
-  $('resTitle').textContent = 'Gem ของคุณใช้งานได้ดีมาก!';
+  $('resTitle').textContent = window.dlfStars === 3 ? "สถาปนิกผู้ช่วย AI!" : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
   $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
-  $('resScore').textContent = `ทบทวนแนวคิดถูก ${MCQS.length-mcMistakes}/${MCQS.length} ข้อ · เทียบกฎครบ ${triedPresets.size}/${INSTRUCTION_PRESETS.length} แบบสำหรับ Gem "${gem.name}"`;
+  $('resScore').textContent = 'ตอบครบ ' + ROUNDS.length + ' ข้อ โดยตอบผิดทั้งหมด ' + wrongCount + ' ครั้ง';
   $('done').style.display = ''; $('done').classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function restartGame(){ location.reload(); }
+function restartGame(){ goStep(0); }
 
 renderRail();
 </script>
+
 <!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
 <style>
 .dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
@@ -570,9 +367,11 @@ renderRail();
 </div>
 <div class="dlf-mini" id="dlfMini"></div>
 
-<script id="dlfAudioData" type="application/json">{"108fe1d30d29":"audio/ai09-gem-architect/108fe1d30d29.mp3","91e11a01595f":"audio/ai09-gem-architect/91e11a01595f.mp3","a89d21a80e4a":"audio/ai09-gem-architect/a89d21a80e4a.mp3","14dffcb7b431":"audio/ai09-gem-architect/14dffcb7b431.mp3","a2ddd14672a7":"audio/ai09-gem-architect/a2ddd14672a7.mp3","c24fdcf95e99":"audio/ai09-gem-architect/c24fdcf95e99.mp3","e66366a2ea55":"audio/ai09-gem-architect/e66366a2ea55.mp3","33b373961b87":"audio/ai09-gem-architect/33b373961b87.mp3","b6660c9eb5d5":"audio/ai09-gem-architect/b6660c9eb5d5.mp3","6461c8911831":"audio/ai09-gem-architect/6461c8911831.mp3","e641a5c2b11b":"audio/ai09-gem-architect/e641a5c2b11b.mp3","eeac06fad508":"audio/ai09-gem-architect/eeac06fad508.mp3","ec4f16385f8c":"audio/ai09-gem-architect/ec4f16385f8c.mp3","b9599611dfa9":"audio/ai09-gem-architect/b9599611dfa9.mp3","9a994b1e6d7f":"audio/ai09-gem-architect/9a994b1e6d7f.mp3","c588030660d5":"audio/ai09-gem-architect/c588030660d5.mp3","8109b5ffd52b":"audio/ai09-gem-architect/8109b5ffd52b.mp3","6c6ca593dec8":"audio/ai09-gem-architect/6c6ca593dec8.mp3","dfb3e4afa929":"audio/ai09-gem-architect/dfb3e4afa929.mp3","e18a189a9371":"audio/ai09-gem-architect/e18a189a9371.mp3","8af1f0edc12c":"audio/ai09-gem-architect/8af1f0edc12c.mp3","92857ccae210":"audio/ai09-gem-architect/92857ccae210.mp3","2ba1cde06697":"audio/ai09-gem-architect/2ba1cde06697.mp3","9944dbe82978":"audio/ai09-gem-architect/9944dbe82978.mp3","09e377f13f86":"audio/ai09-gem-architect/09e377f13f86.mp3","c3e26950b3bf":"audio/ai09-gem-architect/c3e26950b3bf.mp3","c9ae25da0854":"audio/ai09-gem-architect/c9ae25da0854.mp3","762de0ca65a3":"audio/ai09-gem-architect/762de0ca65a3.mp3","68df9ccad934":"audio/ai09-gem-architect/68df9ccad934.mp3","44a5526b9e6d":"audio/ai09-gem-architect/44a5526b9e6d.mp3","af6ba89d9b27":"audio/ai09-gem-architect/af6ba89d9b27.mp3","aca2b0992481":"audio/ai09-gem-architect/aca2b0992481.mp3","66590c21d92e":"audio/ai09-gem-architect/66590c21d92e.mp3","d6d860c26a58":"audio/ai09-gem-architect/d6d860c26a58.mp3","257f5f1ee7c6":"audio/ai09-gem-architect/257f5f1ee7c6.mp3","36a28adb4b8a":"audio/ai09-gem-architect/36a28adb4b8a.mp3","6bc3cf1dca6f":"audio/ai09-gem-architect/6bc3cf1dca6f.mp3","1f42c722517a":"audio/ai09-gem-architect/1f42c722517a.mp3","d811e87eefb3":"audio/ai09-gem-architect/d811e87eefb3.mp3","71a51a023ae8":"audio/ai09-gem-architect/71a51a023ae8.mp3","fd2d26303411":"audio/ai09-gem-architect/fd2d26303411.mp3","25c6023076a9":"audio/ai09-gem-architect/25c6023076a9.mp3","ce97d9170f39":"audio/ai09-gem-architect/ce97d9170f39.mp3","dbbd4902e4bb":"audio/ai09-gem-architect/dbbd4902e4bb.mp3","3dcebb2350eb":"audio/ai09-gem-architect/3dcebb2350eb.mp3","14db1412dee7":"audio/ai09-gem-architect/14db1412dee7.mp3","29640d1d0340":"audio/ai09-gem-architect/29640d1d0340.mp3","556e94dd062a":"audio/ai09-gem-architect/556e94dd062a.mp3","d585a6a9d18d":"audio/ai09-gem-architect/d585a6a9d18d.mp3","5806b4fe69d9":"audio/ai09-gem-architect/5806b4fe69d9.mp3","a9dc94b69ae2":"audio/ai09-gem-architect/a9dc94b69ae2.mp3","7ff87c68ee4e":"audio/ai09-gem-architect/7ff87c68ee4e.mp3","57f54cf2d9c1":"audio/ai09-gem-architect/57f54cf2d9c1.mp3","4753afa9e140":"audio/ai09-gem-architect/4753afa9e140.mp3","d7a6c033bf56":"audio/ai09-gem-architect/d7a6c033bf56.mp3","dec1ce6c690b":"audio/ai09-gem-architect/dec1ce6c690b.mp3","f3bc581be169":"audio/ai09-gem-architect/f3bc581be169.mp3","3fb0e684b56b":"audio/ai09-gem-architect/3fb0e684b56b.mp3","9bb8216b6df6":"audio/ai09-gem-architect/9bb8216b6df6.mp3","f70ebf6c2131":"audio/ai09-gem-architect/f70ebf6c2131.mp3","300e4d2d0bcf":"audio/ai09-gem-architect/300e4d2d0bcf.mp3","dab05dcf3741":"audio/ai09-gem-architect/dab05dcf3741.mp3","852128f8e136":"audio/ai09-gem-architect/852128f8e136.mp3","19403a418e6e":"audio/ai09-gem-architect/19403a418e6e.mp3","35db61a21e61":"audio/ai09-gem-architect/35db61a21e61.mp3","2b1d72caf07e":"audio/ai09-gem-architect/2b1d72caf07e.mp3","5ff6eb6ea03b":"audio/ai09-gem-architect/5ff6eb6ea03b.mp3","7c22ae89e77b":"audio/ai09-gem-architect/7c22ae89e77b.mp3","b4581589be07":"audio/ai09-gem-architect/b4581589be07.mp3","14524a72dbf1":"audio/ai09-gem-architect/14524a72dbf1.mp3","0a3776632991":"audio/ai09-gem-architect/0a3776632991.mp3","0103a1355990":"audio/ai09-gem-architect/0103a1355990.mp3","41a7a89284b9":"audio/ai09-gem-architect/41a7a89284b9.mp3","1933c58870c7":"audio/ai09-gem-architect/1933c58870c7.mp3","69498905d9e2":"audio/ai09-gem-architect/69498905d9e2.mp3","e23ef6593265":"audio/ai09-gem-architect/e23ef6593265.mp3","13610244427e":"audio/ai09-gem-architect/13610244427e.mp3","9688777b9830":"audio/ai09-gem-architect/9688777b9830.mp3","32175120f905":"audio/ai09-gem-architect/32175120f905.mp3","35c1b3453f9f":"audio/ai09-gem-architect/35c1b3453f9f.mp3","f31334f8b1c0":"audio/ai09-gem-architect/f31334f8b1c0.mp3","0d5ba80c8db8":"audio/ai09-gem-architect/0d5ba80c8db8.mp3","74be18094ee9":"audio/ai09-gem-architect/74be18094ee9.mp3","6bcad1a293b4":"audio/ai09-gem-architect/6bcad1a293b4.mp3","deb67a05a06a":"audio/ai09-gem-architect/deb67a05a06a.mp3","abead2a18e4f":"audio/ai09-gem-architect/abead2a18e4f.mp3","b60a5e158014":"audio/ai09-gem-architect/b60a5e158014.mp3","2af6b0200b14":"audio/ai09-gem-architect/2af6b0200b14.mp3","f05d97c3a3c8":"audio/ai09-gem-architect/f05d97c3a3c8.mp3","2487aef81e0b":"audio/ai09-gem-architect/2487aef81e0b.mp3","e6e409641a08":"audio/ai09-gem-architect/e6e409641a08.mp3","b3e99dabbe65":"audio/ai09-gem-architect/b3e99dabbe65.mp3","1f5f6abf6365":"audio/ai09-gem-architect/1f5f6abf6365.mp3","9f06e4175747":"audio/ai09-gem-architect/9f06e4175747.mp3","d5b8a73b5b06":"audio/ai09-gem-architect/d5b8a73b5b06.mp3","3f8f92229cd0":"audio/ai09-gem-architect/3f8f92229cd0.mp3","dd35a5e22397":"audio/ai09-gem-architect/dd35a5e22397.mp3","7c9878f3501d":"audio/ai09-gem-architect/7c9878f3501d.mp3","3e1f78733c10":"audio/ai09-gem-architect/3e1f78733c10.mp3","58ffc5b19a7f":"audio/ai09-gem-architect/58ffc5b19a7f.mp3","27247f0ddab9":"audio/ai09-gem-architect/27247f0ddab9.mp3","d014e569a186":"audio/ai09-gem-architect/d014e569a186.mp3","65ec20cb8db8":"audio/ai09-gem-architect/65ec20cb8db8.mp3","248e03681c3e":"audio/ai09-gem-architect/248e03681c3e.mp3","ab27718b78f6":"audio/ai09-gem-architect/ab27718b78f6.mp3","478dd86164f6":"audio/ai09-gem-architect/478dd86164f6.mp3","ceb085d86ced":"audio/ai09-gem-architect/ceb085d86ced.mp3","5c630d06b94d":"audio/ai09-gem-architect/5c630d06b94d.mp3","322200d830fc":"audio/ai09-gem-architect/322200d830fc.mp3","c94d6cc01b8d":"audio/ai09-gem-architect/c94d6cc01b8d.mp3","e641812b8e39":"audio/ai09-gem-architect/e641812b8e39.mp3","d20b55bfe721":"audio/ai09-gem-architect/d20b55bfe721.mp3","62d9afa97091":"audio/ai09-gem-architect/62d9afa97091.mp3","55acbba54c86":"audio/ai09-gem-architect/55acbba54c86.mp3","2dfdb7751112":"audio/ai09-gem-architect/2dfdb7751112.mp3","d6f2246ce318":"audio/ai09-gem-architect/d6f2246ce318.mp3","c404a4c43643":"audio/ai09-gem-architect/c404a4c43643.mp3","fb120e981bda":"audio/ai09-gem-architect/fb120e981bda.mp3","54f85fd577c4":"audio/ai09-gem-architect/54f85fd577c4.mp3","9f96f465e0f4":"audio/ai09-gem-architect/9f96f465e0f4.mp3","f284bae1d402":"audio/ai09-gem-architect/f284bae1d402.mp3","a28ce7344420":"audio/ai09-gem-architect/a28ce7344420.mp3","f8361bba3099":"audio/ai09-gem-architect/f8361bba3099.mp3","0c902dcb8e7a":"audio/ai09-gem-architect/0c902dcb8e7a.mp3","91641ded68cf":"audio/ai09-gem-architect/91641ded68cf.mp3","56fe951e4520":"audio/ai09-gem-architect/56fe951e4520.mp3","5420c090340e":"audio/ai09-gem-architect/5420c090340e.mp3","2eb8546e99f1":"audio/ai09-gem-architect/2eb8546e99f1.mp3","6905ac887a81":"audio/ai09-gem-architect/6905ac887a81.mp3","918bb5fca796":"audio/ai09-gem-architect/918bb5fca796.mp3","b5cecf041173":"audio/ai09-gem-architect/b5cecf041173.mp3","26e1c36c9ef1":"audio/ai09-gem-architect/26e1c36c9ef1.mp3","4a967cf8a6bc":"audio/ai09-gem-architect/4a967cf8a6bc.mp3","cf0ff79cfb74":"audio/ai09-gem-architect/cf0ff79cfb74.mp3","c1d30f70a771":"audio/ai09-gem-architect/c1d30f70a771.mp3","3938b3af3f03":"audio/ai09-gem-architect/3938b3af3f03.mp3","5082421b3b2d":"audio/ai09-gem-architect/5082421b3b2d.mp3","93ae57136752":"audio/ai09-gem-architect/93ae57136752.mp3","544b0d6a00ff":"audio/ai09-gem-architect/544b0d6a00ff.mp3","b8b22b361921":"audio/ai09-gem-architect/b8b22b361921.mp3","0c878d74788b":"audio/ai09-gem-architect/0c878d74788b.mp3","6f8f28b16a4e":"audio/ai09-gem-architect/6f8f28b16a4e.mp3","fc0238a70c17":"audio/ai09-gem-architect/fc0238a70c17.mp3","b478fe5c05a5":"audio/ai09-gem-architect/b478fe5c05a5.mp3","be746fd3ca56":"audio/ai09-gem-architect/be746fd3ca56.mp3","0d36a7d24752":"audio/ai09-gem-architect/0d36a7d24752.mp3","10b25f97ef70":"audio/ai09-gem-architect/10b25f97ef70.mp3","823217234fe1":"audio/ai09-gem-architect/823217234fe1.mp3","0dd7d71b7ba6":"audio/ai09-gem-architect/0dd7d71b7ba6.mp3","27c745f46945":"audio/ai09-gem-architect/27c745f46945.mp3"}</script><script>window.DLF_CONFIG={extraReadSelectors:['.btitle','.bsub','.title','.sub','.cb','.ct'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+
+<script id="dlfAudioData" type="application/json">{"cf423ae134cf":"audio/ai09-gem-architect/cf423ae134cf.mp3","d811e87eefb3":"audio/ai09-gem-architect/d811e87eefb3.mp3","71a51a023ae8":"audio/ai09-gem-architect/71a51a023ae8.mp3","852128f8e136":"audio/ai09-gem-architect/852128f8e136.mp3","ce97d9170f39":"audio/ai09-gem-architect/ce97d9170f39.mp3","c322e51f65f0":"audio/ai09-gem-architect/c322e51f65f0.mp3","64c9d48b0bd1":"audio/ai09-gem-architect/64c9d48b0bd1.mp3","c36640d73765":"audio/ai09-gem-architect/c36640d73765.mp3","5dc71c0360e3":"audio/ai09-gem-architect/5dc71c0360e3.mp3","fc81caa2a190":"audio/ai09-gem-architect/fc81caa2a190.mp3","022aa7bd400a":"audio/ai09-gem-architect/022aa7bd400a.mp3","976c60542565":"audio/ai09-gem-architect/976c60542565.mp3","78d2b0625b14":"audio/ai09-gem-architect/78d2b0625b14.mp3","ca8d6f516269":"audio/ai09-gem-architect/ca8d6f516269.mp3","0e7f7c607709":"audio/ai09-gem-architect/0e7f7c607709.mp3","c457400adf47":"audio/ai09-gem-architect/c457400adf47.mp3","762b13c8c8f1":"audio/ai09-gem-architect/762b13c8c8f1.mp3","01103926bf9b":"audio/ai09-gem-architect/01103926bf9b.mp3","9d5aae6e5e4b":"audio/ai09-gem-architect/9d5aae6e5e4b.mp3","be53085e686b":"audio/ai09-gem-architect/be53085e686b.mp3","7c426bde24f5":"audio/ai09-gem-architect/7c426bde24f5.mp3","7ffc7516a02b":"audio/ai09-gem-architect/7ffc7516a02b.mp3","2d35c6040dfa":"audio/ai09-gem-architect/2d35c6040dfa.mp3","09b74341a5c8":"audio/ai09-gem-architect/09b74341a5c8.mp3","6748d0f73021":"audio/ai09-gem-architect/6748d0f73021.mp3","70a14fd930fb":"audio/ai09-gem-architect/70a14fd930fb.mp3","f982e002e170":"audio/ai09-gem-architect/f982e002e170.mp3","b7f78993116d":"audio/ai09-gem-architect/b7f78993116d.mp3","4c51f73afd36":"audio/ai09-gem-architect/4c51f73afd36.mp3","2cad7623eb8b":"audio/ai09-gem-architect/2cad7623eb8b.mp3","7f63b3025318":"audio/ai09-gem-architect/7f63b3025318.mp3","4ad07b9e0992":"audio/ai09-gem-architect/4ad07b9e0992.mp3","ae1d7d9071da":"audio/ai09-gem-architect/ae1d7d9071da.mp3","897ec50de254":"audio/ai09-gem-architect/897ec50de254.mp3","02ce065daaf3":"audio/ai09-gem-architect/02ce065daaf3.mp3","2d04799491a4":"audio/ai09-gem-architect/2d04799491a4.mp3","6f13ae91182a":"audio/ai09-gem-architect/6f13ae91182a.mp3","d767ced66bfe":"audio/ai09-gem-architect/d767ced66bfe.mp3","e169f8ca951d":"audio/ai09-gem-architect/e169f8ca951d.mp3","201346a00f6d":"audio/ai09-gem-architect/201346a00f6d.mp3","825bb150c8b0":"audio/ai09-gem-architect/825bb150c8b0.mp3","cc2c01a49bd5":"audio/ai09-gem-architect/cc2c01a49bd5.mp3","59ac1ea7eda5":"audio/ai09-gem-architect/59ac1ea7eda5.mp3","bbbf05b03ab0":"audio/ai09-gem-architect/bbbf05b03ab0.mp3","556e94dd062a":"audio/ai09-gem-architect/556e94dd062a.mp3","d585a6a9d18d":"audio/ai09-gem-architect/d585a6a9d18d.mp3","dc6675a7a367":"audio/ai09-gem-architect/dc6675a7a367.mp3","faf394ffe917":"audio/ai09-gem-architect/faf394ffe917.mp3","d0511e8876bb":"audio/ai09-gem-architect/d0511e8876bb.mp3","5094fc9eb266":"audio/ai09-gem-architect/5094fc9eb266.mp3","8b309cdd8a88":"audio/ai09-gem-architect/8b309cdd8a88.mp3","d85078952e37":"audio/ai09-gem-architect/d85078952e37.mp3","39a9d085adfc":"audio/ai09-gem-architect/39a9d085adfc.mp3","a38ab00ee452":"audio/ai09-gem-architect/a38ab00ee452.mp3","31b5d035511d":"audio/ai09-gem-architect/31b5d035511d.mp3","ffaafbba7642":"audio/ai09-gem-architect/ffaafbba7642.mp3","80acb24903c5":"audio/ai09-gem-architect/80acb24903c5.mp3","5756e9ba1656":"audio/ai09-gem-architect/5756e9ba1656.mp3","c633216f3b80":"audio/ai09-gem-architect/c633216f3b80.mp3","d9120ae7f89f":"audio/ai09-gem-architect/d9120ae7f89f.mp3","281ec1826444":"audio/ai09-gem-architect/281ec1826444.mp3","3affbb489c9e":"audio/ai09-gem-architect/3affbb489c9e.mp3","f3478ad07f1c":"audio/ai09-gem-architect/f3478ad07f1c.mp3","55e5b8164051":"audio/ai09-gem-architect/55e5b8164051.mp3","c83d8adcb038":"audio/ai09-gem-architect/c83d8adcb038.mp3","f0c81de7498e":"audio/ai09-gem-architect/f0c81de7498e.mp3","8d38e47af03f":"audio/ai09-gem-architect/8d38e47af03f.mp3","e463d73aca7d":"audio/ai09-gem-architect/e463d73aca7d.mp3","4afa5da2cbe7":"audio/ai09-gem-architect/4afa5da2cbe7.mp3","13dd5b343c1b":"audio/ai09-gem-architect/13dd5b343c1b.mp3","64d254e05071":"audio/ai09-gem-architect/64d254e05071.mp3","35c29f39544f":"audio/ai09-gem-architect/35c29f39544f.mp3","be7ca8b11f15":"audio/ai09-gem-architect/be7ca8b11f15.mp3","216dae310d76":"audio/ai09-gem-architect/216dae310d76.mp3","452ac44f97e1":"audio/ai09-gem-architect/452ac44f97e1.mp3","040bbd00f200":"audio/ai09-gem-architect/040bbd00f200.mp3","38b36952f3f4":"audio/ai09-gem-architect/38b36952f3f4.mp3","e0d68da789b5":"audio/ai09-gem-architect/e0d68da789b5.mp3","1ac106f4a7d3":"audio/ai09-gem-architect/1ac106f4a7d3.mp3","03700472f465":"audio/ai09-gem-architect/03700472f465.mp3","dd24fa11bb58":"audio/ai09-gem-architect/dd24fa11bb58.mp3","e8e918fe39c7":"audio/ai09-gem-architect/e8e918fe39c7.mp3","b1a591978ecc":"audio/ai09-gem-architect/b1a591978ecc.mp3","813fcc9c60f5":"audio/ai09-gem-architect/813fcc9c60f5.mp3","5e120d54467d":"audio/ai09-gem-architect/5e120d54467d.mp3","6df48f5604a5":"audio/ai09-gem-architect/6df48f5604a5.mp3","a446f0139b88":"audio/ai09-gem-architect/a446f0139b88.mp3","3254d5899093":"audio/ai09-gem-architect/3254d5899093.mp3","d23d6a64ca6e":"audio/ai09-gem-architect/d23d6a64ca6e.mp3","3258c2e29d2c":"audio/ai09-gem-architect/3258c2e29d2c.mp3","5df5dbc735a0":"audio/ai09-gem-architect/5df5dbc735a0.mp3","7a6638fc3d92":"audio/ai09-gem-architect/7a6638fc3d92.mp3","405eca88abf1":"audio/ai09-gem-architect/405eca88abf1.mp3","593de271428c":"audio/ai09-gem-architect/593de271428c.mp3","fe140d2f3e8d":"audio/ai09-gem-architect/fe140d2f3e8d.mp3","69615537fbe9":"audio/ai09-gem-architect/69615537fbe9.mp3","131fb2e561cf":"audio/ai09-gem-architect/131fb2e561cf.mp3","7d3604cb1810":"audio/ai09-gem-architect/7d3604cb1810.mp3","01a73654c14b":"audio/ai09-gem-architect/01a73654c14b.mp3","a2f001d04c07":"audio/ai09-gem-architect/a2f001d04c07.mp3","56ba8136d9c9":"audio/ai09-gem-architect/56ba8136d9c9.mp3","072b1ab94635":"audio/ai09-gem-architect/072b1ab94635.mp3","1ea491556da1":"audio/ai09-gem-architect/1ea491556da1.mp3","82fbe43c4c2c":"audio/ai09-gem-architect/82fbe43c4c2c.mp3","a10c9f678d82":"audio/ai09-gem-architect/a10c9f678d82.mp3","94af68d4fc1e":"audio/ai09-gem-architect/94af68d4fc1e.mp3","278de54e8a62":"audio/ai09-gem-architect/278de54e8a62.mp3","ecc6f580c1df":"audio/ai09-gem-architect/ecc6f580c1df.mp3","c0fda1a47ba2":"audio/ai09-gem-architect/c0fda1a47ba2.mp3","8280abe2b5f6":"audio/ai09-gem-architect/8280abe2b5f6.mp3","bc37b0934e0e":"audio/ai09-gem-architect/bc37b0934e0e.mp3","2dfadb248ab8":"audio/ai09-gem-architect/2dfadb248ab8.mp3","8fc0a5ee054d":"audio/ai09-gem-architect/8fc0a5ee054d.mp3","6499a1d324ba":"audio/ai09-gem-architect/6499a1d324ba.mp3","8c566cf15ac1":"audio/ai09-gem-architect/8c566cf15ac1.mp3","78439bc9c0a6":"audio/ai09-gem-architect/78439bc9c0a6.mp3","26642537d84d":"audio/ai09-gem-architect/26642537d84d.mp3","0d4ad50a3b06":"audio/ai09-gem-architect/0d4ad50a3b06.mp3","8235a5460f6d":"audio/ai09-gem-architect/8235a5460f6d.mp3","dbbbfb466237":"audio/ai09-gem-architect/dbbbfb466237.mp3","4106358e40e2":"audio/ai09-gem-architect/4106358e40e2.mp3","de34ca67e1e3":"audio/ai09-gem-architect/de34ca67e1e3.mp3","35cf0ef82bde":"audio/ai09-gem-architect/35cf0ef82bde.mp3","5e50628f4d03":"audio/ai09-gem-architect/5e50628f4d03.mp3","e8632cc78ccb":"audio/ai09-gem-architect/e8632cc78ccb.mp3","02412b28aa4c":"audio/ai09-gem-architect/02412b28aa4c.mp3","70bffc13f760":"audio/ai09-gem-architect/70bffc13f760.mp3","c8ca9c3acfed":"audio/ai09-gem-architect/c8ca9c3acfed.mp3","a59e18c9eb46":"audio/ai09-gem-architect/a59e18c9eb46.mp3","a66234b845ea":"audio/ai09-gem-architect/a66234b845ea.mp3","a5ce5aea7ce6":"audio/ai09-gem-architect/a5ce5aea7ce6.mp3","4780fc79462b":"audio/ai09-gem-architect/4780fc79462b.mp3","33d4c21d870f":"audio/ai09-gem-architect/33d4c21d870f.mp3","b308f2e90e23":"audio/ai09-gem-architect/b308f2e90e23.mp3","dfb3e4afa929":"audio/ai09-gem-architect/dfb3e4afa929.mp3","520bbe2c9453":"audio/ai09-gem-architect/520bbe2c9453.mp3","ef5bbbe53873":"audio/ai09-gem-architect/ef5bbbe53873.mp3","3938b3af3f03":"audio/ai09-gem-architect/3938b3af3f03.mp3","5082421b3b2d":"audio/ai09-gem-architect/5082421b3b2d.mp3","cc46b8872ec7":"audio/ai09-gem-architect/cc46b8872ec7.mp3","558f273377c5":"audio/ai09-gem-architect/558f273377c5.mp3","544b0d6a00ff":"audio/ai09-gem-architect/544b0d6a00ff.mp3","b8b22b361921":"audio/ai09-gem-architect/b8b22b361921.mp3","ad16ce54a10c":"audio/ai09-gem-architect/ad16ce54a10c.mp3","d9245c3746b5":"audio/ai09-gem-architect/d9245c3746b5.mp3","85c345cc3b70":"audio/ai09-gem-architect/85c345cc3b70.mp3","725b2c49882e":"audio/ai09-gem-architect/725b2c49882e.mp3","6d76356a6681":"audio/ai09-gem-architect/6d76356a6681.mp3","01488f95cd1f":"audio/ai09-gem-architect/01488f95cd1f.mp3","bbbcb3da875b":"audio/ai09-gem-architect/bbbcb3da875b.mp3","57f54cf2d9c1":"audio/ai09-gem-architect/57f54cf2d9c1.mp3","9ab07f4e544b":"audio/ai09-gem-architect/9ab07f4e544b.mp3","9eeff93a7cac":"audio/ai09-gem-architect/9eeff93a7cac.mp3","dec1ce6c690b":"audio/ai09-gem-architect/dec1ce6c690b.mp3","f3bc581be169":"audio/ai09-gem-architect/f3bc581be169.mp3","3fb0e684b56b":"audio/ai09-gem-architect/3fb0e684b56b.mp3","42b34b1c98e1":"audio/ai09-gem-architect/42b34b1c98e1.mp3","e04742eeacc1":"audio/ai09-gem-architect/e04742eeacc1.mp3","3a2ba9ffe23c":"audio/ai09-gem-architect/3a2ba9ffe23c.mp3","a62583db49bd":"audio/ai09-gem-architect/a62583db49bd.mp3","e0293c5ef2f8":"audio/ai09-gem-architect/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/ai09-gem-architect/9bb8216b6df6.mp3","e3ef90103d47":"audio/ai09-gem-architect/e3ef90103d47.mp3","70acd72c8277":"audio/ai09-gem-architect/70acd72c8277.mp3","dab05dcf3741":"audio/ai09-gem-architect/dab05dcf3741.mp3","dc60fd67731f":"audio/ai09-gem-architect/dc60fd67731f.mp3","af6ba89d9b27":"audio/ai09-gem-architect/af6ba89d9b27.mp3","aca2b0992481":"audio/ai09-gem-architect/aca2b0992481.mp3","66590c21d92e":"audio/ai09-gem-architect/66590c21d92e.mp3","f19e1081b596":"audio/ai09-gem-architect/f19e1081b596.mp3","7fdd46cba22b":"audio/ai09-gem-architect/7fdd46cba22b.mp3","84c24a3726c4":"audio/ai09-gem-architect/84c24a3726c4.mp3","e0196ffda95a":"audio/ai09-gem-architect/e0196ffda95a.mp3","e18a189a9371":"audio/ai09-gem-architect/e18a189a9371.mp3","8af1f0edc12c":"audio/ai09-gem-architect/8af1f0edc12c.mp3","23f891c8e7ad":"audio/ai09-gem-architect/23f891c8e7ad.mp3","5a382c3bfa4a":"audio/ai09-gem-architect/5a382c3bfa4a.mp3","fc0238a70c17":"audio/ai09-gem-architect/fc0238a70c17.mp3","b478fe5c05a5":"audio/ai09-gem-architect/b478fe5c05a5.mp3","be746fd3ca56":"audio/ai09-gem-architect/be746fd3ca56.mp3","01715edecbb6":"audio/ai09-gem-architect/01715edecbb6.mp3","545dc6fc84f2":"audio/ai09-gem-architect/545dc6fc84f2.mp3","339ee754bd2d":"audio/ai09-gem-architect/339ee754bd2d.mp3","fbc7e39f3f8a":"audio/ai09-gem-architect/fbc7e39f3f8a.mp3","9dbe8efd5462":"audio/ai09-gem-architect/9dbe8efd5462.mp3","d504294d6bc4":"audio/ai09-gem-architect/d504294d6bc4.mp3","10b25f97ef70":"audio/ai09-gem-architect/10b25f97ef70.mp3","365feec83273":"audio/ai09-gem-architect/365feec83273.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.say','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
 <!-- ════════════ END DL-FUN ════════════ -->
-<script>window.TRY_REAL={"title":"สร้างติวเตอร์ AI ของตัวเองให้ใช้ได้จริง","intro":"ใน Gemini สร้าง \"Gem\" (ผู้ช่วยที่ตั้งชื่อ บทบาท และกฎเอง) ได้ ถ้าไม่มีเมนู Gem ให้วางคำสั่งนี้เป็นข้อความแรกของแชทใหม่ก็ได้ผลคล้ายกัน","links":[{"label":"เปิด Gemini","url":"https://gemini.google.com"},{"label":"เปิด ChatGPT","url":"https://chatgpt.com"}],"promptLabel":"📋 คำสั่งตั้งค่าติวเตอร์ (เปลี่ยน [วิชา] และ [ชั้น] ให้เป็นของเรา)","prompt":"คุณคือ \"ติวเตอร์ [วิชา] ระดับ [ชั้น]\" ใจดีและอดทน\nกฎของคุณ:\n1) ห้ามเฉลยคำตอบทันที ให้ถามนำทีละขั้นก่อน\n2) อธิบายสั้น ๆ ด้วยภาษาง่าย ๆ ยกตัวอย่างใกล้ตัว\n3) จบทุกครั้งด้วยคำถามเช็กความเข้าใจ 1 ข้อ\n4) ถ้าไม่แน่ใจ ให้บอกตรง ๆ ว่าไม่แน่ใจ","steps":["สร้าง Gem ใหม่ (หรือเริ่มแชทใหม่) แล้วใส่ชื่อ บทบาท และกฎจากคำสั่งด้านบน","ถามโจทย์ที่เราไม่เข้าใจจริง ๆ 1 ข้อ แล้วดูว่า AI ทำตามกฎไหม","ลองลบกฎข้อ 1 ออก แล้วถามโจทย์เดิม เทียบว่าคำตอบต่างกันอย่างไร"],"observe":["AI ถามนำก่อนเฉลยจริงไหม","พอลบกฎออก คำตอบเปลี่ยนไปอย่างไร (แปลว่ากฎที่เราเขียนมีผลจริง)","กฎข้อไหนที่เราอยากเพิ่ม เพื่อให้ติวเตอร์ช่วยเราเรียนได้ตรงขึ้น"]};</script>
+<script>window.TRY_REAL={"title":"สร้างผู้ช่วยของตัวเอง และให้ตอบจากเอกสารของเรา","intro":"ใน Gemini สร้าง Gem ได้ ถ้าไม่มีเมนูนี้ให้วางคำสั่งเป็นข้อความแรกของแชทใหม่ก็ได้ผลคล้ายกัน แล้วลองให้ตอบจากเอกสารสั้น ๆ","links":[{"label":"เปิด Gemini","url":"https://gemini.google.com"},{"label":"เปิด ChatGPT","url":"https://chatgpt.com"}],"promptLabel":"📋 คำสั่งตั้งค่าผู้ช่วย (เปลี่ยน [วิชา] และ [ชั้น] ให้เป็นของเรา)","prompt":"คุณคือ ติวเตอร์ [วิชา] ระดับ [ชั้น] ใจดีและอดทน กฎของคุณ: 1) ห้ามเฉลยทันที ให้ถามนำทีละขั้นก่อน 2) อธิบายสั้น ๆ ด้วยภาษาง่าย ๆ 3) จบทุกครั้งด้วยคำถามเช็กความเข้าใจ 1 ข้อ 4) ถ้าไม่แน่ใจ ให้บอกตรง ๆ และให้เช็กจากหนังสือ","steps":["สร้าง Gem ใหม่ (หรือเริ่มแชทใหม่) แล้วใส่ชื่อ บทบาท และกฎจากคำสั่งด้านบน","ถามโจทย์ที่เราไม่เข้าใจจริง ๆ 1 ข้อ แล้วดูว่า AI ทำตามกฎไหม","ลองลบกฎข้อ 1 ออก แล้วถามโจทย์เดิม เทียบว่าคำตอบต่างกันอย่างไร","เปิดแชทใหม่ แล้ววางเอกสารสั้น ๆ (เช่น กฎห้องสมุด) พร้อมสั่ง ตอบจากเอกสารเท่านั้น ถ้าไม่มีให้บอกว่าไม่พบ แล้วถามเรื่องที่มีและเรื่องที่ไม่มีในเอกสาร"],"observe":["AI ถามนำก่อนเฉลยจริงไหม และพอลบกฎ คำตอบเปลี่ยนไปอย่างไร","เรื่องที่ไม่มีในเอกสาร AI ยอมบอกว่าไม่พบ หรือเดามาให้","กฎข้อไหนที่เราอยากเพิ่ม เพื่อให้ผู้ช่วยช่วยเราเรียนได้ตรงขึ้น"],"note":"อย่าวางเอกสารที่มีข้อมูลส่วนตัวของใคร เช่น ใบรายชื่อนักเรียน"};</script>
 <script src="_lib/try-real.js"></script>
 </body>
 </html>

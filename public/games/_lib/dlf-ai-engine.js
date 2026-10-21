@@ -82,16 +82,26 @@
     if(dlfSrc(c)) return [c];
     var parts=c.split(/(?<=[?!\.ฯ])\s+|\s{2,}|\s*[:：]\s*|\s*\(/).map(function(s){return dlfCleanKey(s.replace(/\)$/,''));}).filter(Boolean);
     var have=parts.filter(function(p){return dlfSrc(p);});
+    if(have.length && have.length<parts.length){try{console.warn('[dlf] part without a recording in:',c);}catch(e){}}
     if(have.length) return have;
     return [c];
   }
   dlf.speak=function(text,opts){opts=opts||{};if(muted||!text)return;
-    var clean=dlfCleanKey(text);stopAudio();
-    var direct=dlfSrc(clean)||AUD[md5(text.trim()).slice(0,12)]||AUD[text];
+    var flat=String(text).replace(/\u0001/g,' ');
+    var clean=dlfCleanKey(flat);stopAudio();
+    var direct=dlfSrc(clean)||AUD[md5(flat.trim()).slice(0,12)]||AUD[flat];
     if(direct){dlfPlaySrc(direct);return;}
-    var chunks=dlfChunks(text), i=0;
+    // Element boundaries (a bold label followed by its explanation) are separate pieces, each
+    // with its own recording — otherwise splitting at the "!" inside the explanation breaks the match.
+    var pieces=String(text).split('\u0001').map(dlfCleanKey).filter(Boolean), chunks=[], i=0;
+    pieces.forEach(function(p){ chunks=chunks.concat(dlfChunks(p)); });
+    chunks=chunks.filter(function(c){return dlfSrc(c);});
     function nxt(){ if(i>=chunks.length){return;} var s=dlfSrc(chunks[i]); i++; if(s){dlfPlaySrc(s,nxt);} else {nxt();} }
-    if(chunks.length && dlfSrc(chunks[0])){ nxt(); } else { tts(clean,opts); }
+    if(chunks.length){ nxt(); }
+    // Browser speech reads Thai as gibberish on machines without a Thai voice, so on a page that has
+    // recordings it is never used: a missing clip is reported (and fixed by scripts/gen-audio.mjs).
+    else if(!Object.keys(AUD).length){ tts(clean,opts); }
+    else { try{console.warn('[dlf] no recording for:',clean);}catch(e){} }
   };
   dlf.stop=stopAudio;
   dlf.has=function(text){var c=dlfCleanKey(text||'');return !!(AUD[md5(c).slice(0,12)]||AUD[md5((text||'').trim()).slice(0,12)]);};
@@ -160,7 +170,9 @@
   }
   function dlfIsControl(el){
     if(el.matches('button,a,input,textarea,select,label')) return true;
-    if(el.closest('button,a[href],input,.btn,[role="button"]'+((window.DLF_CONFIG&&window.DLF_CONFIG.extraNonDecorateSelectors)?(','+window.DLF_CONFIG.extraNonDecorateSelectors):''))) return true;
+    // Step rail and live counters (ข้อที่ 3/12, ตอบผิด 4 ครั้ง, คดีที่ 1/4, ...) change constantly and can
+    // never have a pre-recorded clip, so they get no speaker button instead of a broken one.
+    if(el.closest('#steprail,.rtag,.round-tag,.scorepill,.progress-note,.step-chip,button,a[href],input,.btn,[role="button"]'+((window.DLF_CONFIG&&window.DLF_CONFIG.extraNonDecorateSelectors)?(','+window.DLF_CONFIG.extraNonDecorateSelectors):''))) return true;
     return false;
   }
   function dlfFullText(el){
@@ -168,7 +180,7 @@
     el.childNodes.forEach(function(n){
       if(n.nodeType===3) out+=n.textContent;
       else if(n.nodeType===1 && !n.classList.contains('dlf-say') && !n.matches('[class*="score"],[class*="badge"]'))
-        out+=n.textContent;
+        out+='\u0001'+n.textContent+'\u0001';   // element boundary: dlf.speak() plays each piece with its own clip
     });
     return dlfClean(out);
   }

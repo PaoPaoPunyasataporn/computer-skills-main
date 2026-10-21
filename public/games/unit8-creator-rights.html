@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ลิขสิทธิ์และการสร้างผลงานของตัวเอง</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="_lib/theme-base.css" rel="stylesheet">
+<style>
+:root{
+  --primary:#3E7CB8; --primary-light:#E4F0FB; --primary-dark:#2B5C8C;
+  --green:#38A93A; --green-light:#E9FBE7;
+  --red:#E4614F; --red-light:#FDECEA;
+  --panel2:var(--cream2);
+}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Sarabun',sans-serif;background:radial-gradient(1000px 620px at 12% -6%,#DCEBFA 0%,transparent 58%),radial-gradient(950px 720px at 100% 105%,#FDF1E4 0%,transparent 55%),var(--bg);color:var(--text);display:flex;flex-direction:column;align-items:center;}
+h1,h2,h3,h4{font-family:'Mitr',sans-serif;margin:0;}
+*{box-sizing:border-box;overflow-wrap:anywhere;}
+
+#procbar{position:sticky;top:0;z-index:50;width:100%;background:transparent;padding:12px 16px;}
+#steprail{display:flex;justify-content:center;gap:8px;max-width:920px;margin:0 auto;flex-wrap:wrap;}
+.pchip{display:flex;align-items:center;gap:6px;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;padding:6px 14px 6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--panel2);color:var(--text3);white-space:nowrap;}
+.pchip .num{width:19px;height:19px;border-radius:50%;background:var(--line-d);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+.pchip.done{border-color:var(--primary);color:var(--primary-dark);background:var(--primary-light);}
+.pchip.done .num{background:var(--green);}
+.pchip.done .num::before{content:'✓';}
+.pchip.cur{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 4px 0 var(--primary-dark);}
+.pchip.cur .num{background:rgba(255,255,255,.35);}
+
+.stage{width:100%;max-width:900px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px 20px 56px;}
+.panel{width:100%;max-width:640px;}
+.center{text-align:center;}
+
+.intro-wrap,.teach-wrap,.results-wrap,.refl-wrap{width:100%;background:var(--panel);border:2px solid var(--border);border-bottom:6px solid var(--line-d);border-radius:22px;padding:34px 28px;text-align:center;}
+.stepstage{font-family:'Mitr',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:var(--primary-dark);background:var(--primary-light);border:1px solid var(--primary);border-radius:20px;padding:3px 12px;display:inline-block;margin-bottom:14px;}
+.big-icon{font-size:60px;margin-bottom:8px;display:block;}
+.title{font-family:'Mitr',sans-serif;font-size:22px;font-weight:700;color:var(--primary-dark);margin-bottom:8px;}
+.sub{font-size:14.5px;color:var(--text2);line-height:1.7;}
+
+.btn{border:none;border-radius:16px;color:#fff;font-family:'Mitr',sans-serif;font-weight:700;font-size:16px;cursor:pointer;padding:15px 20px;width:100%;transition:transform .1s,box-shadow .1s;background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 80%,white),var(--primary));box-shadow:0 5px 0 var(--primary-dark);}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 2px 0 var(--primary-dark);}
+.btn.ghost{background:var(--panel);color:var(--text);border:1.5px solid var(--border);border-bottom:4px solid var(--line-d);box-shadow:none;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* concept step */
+.ccard{min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.ccard .ci{font-size:52px;}
+.ccard .ct{font-family:'Mitr',sans-serif;font-size:20px;font-weight:700;color:var(--primary-dark);}
+.ccard .cb{font-size:14.5px;color:var(--text2);line-height:1.7;max-width:480px;}
+.canim{margin:2px auto 4px;}
+.canim-flow{stroke-dasharray:8 6;animation:canimDash 1.2s linear infinite;}
+@keyframes canimDash{to{stroke-dashoffset:-28;}}
+.canim-pulse{animation:canimPulse 1.6s ease-in-out infinite;}
+@keyframes canimPulse{0%,100%{r:5;opacity:1;}50%{r:8;opacity:.5;}}
+.cdots{display:flex;gap:6px;justify-content:center;margin:16px 0 4px;}
+.cdot{width:8px;height:8px;border-radius:50%;background:var(--line-d);transition:all .2s;}
+.cdot.on{background:var(--primary);width:22px;border-radius:5px;}
+.cnav{display:flex;gap:10px;margin-top:14px;}
+.cnav .btn{flex:1;}
+
+/* checklist mini-visual inside concept 2 */
+.clist{list-style:none;margin:10px 0 0;padding:0;text-align:left;max-width:420px;width:100%;}
+.clist li{display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--text2);line-height:1.6;padding:6px 0;border-top:1px dashed var(--border);}
+.clist li:first-child{border-top:none;}
+.clist .qn{font-family:'Mitr',sans-serif;font-weight:700;color:var(--primary-dark);flex:0 0 auto;}
+
+/* practice step */
+.rhead{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.rtag{font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);}
+.scorepill{font-family:'Mitr',sans-serif;font-weight:700;font-size:13px;color:var(--primary-dark);background:var(--primary-light);border-radius:99px;padding:5px 14px;}
+.taskcard{width:100%;background:var(--panel2);border-left:3px solid var(--primary);border-radius:0 14px 14px 0;padding:16px 18px;text-align:left;}
+.taskcard .who{font-family:'Mitr',sans-serif;font-size:11px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.taskcard .say{font-size:15px;color:var(--text);line-height:1.7;}
+
+/* drag-to-sort hands-on core */
+.taskcard.draggable{cursor:grab;user-select:none;touch-action:none;position:relative;box-shadow:0 3px 0 var(--line-d);}
+.taskcard.draggable:active{cursor:grabbing;}
+.taskcard.armed{box-shadow:0 0 0 3px var(--primary),0 3px 0 var(--line-d);transform:translateY(-2px);}
+.taskcard.dragging{transition:none;box-shadow:0 14px 26px rgba(15,27,45,.22);}
+.taskcard.settling{transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;}
+.taskcard.answered{pointer-events:none;}
+.draghint{font-size:11.5px;color:var(--text3);margin:8px 0 2px;text-align:center;}
+.hlword{display:inline;padding:2px 3px;border-radius:5px;cursor:pointer;}
+.hlword:hover{background:rgba(208,126,30,.14);}
+.hlword.hlhit{background:var(--green);color:#fff;animation:hlPop .3s ease;}
+.hlword.hlmiss{background:var(--red-light);color:#A32E20;text-decoration:line-through;}
+@keyframes hlPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+.dropzones{width:100%;display:flex;gap:8px;margin:14px 0 4px;}
+.dropzone{flex:1;min-height:92px;border:2px dashed var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 6px;text-align:center;font-family:'Mitr',sans-serif;font-size:12px;font-weight:700;color:var(--text2);background:var(--panel2);transition:border-color .15s,background .15s,transform .15s;cursor:pointer;}
+.dropzone .zi{font-size:22px;}
+.dropzone:focus-visible{outline:2px solid var(--primary);outline-offset:2px;}
+.dropzone.over{border-style:solid;border-color:var(--primary);background:var(--primary-light);transform:scale(1.045);}
+.dropzone.correct{border-style:solid;border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.dropzone.wrong{border-style:solid;border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.dropzone.disabled{pointer-events:none;opacity:.6;}
+
+.explainbox{width:100%;border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.7;display:none;}
+.explainbox.show{display:block;}
+.explainbox.correct{background:var(--green-light);border-left:4px solid var(--green);color:#1F6B33;}
+.explainbox.wrong{background:var(--red-light);border-left:4px solid var(--red);color:#A32E20;}
+.explainbox b{display:block;font-family:'Mitr',sans-serif;font-size:12px;margin-bottom:4px;}
+
+/* reflection step */
+.refl-wrap textarea{width:100%;min-height:110px;border-radius:14px;border:1.5px solid var(--border);padding:14px;font-family:'Sarabun',sans-serif;font-size:14.5px;color:var(--text);resize:vertical;box-sizing:border-box;}
+.refl-wrap textarea:focus{outline:2px solid var(--primary);}
+.refl-hint{font-size:12.5px;color:var(--text3);margin:8px 0 14px;line-height:1.6;}
+
+.res-emoji{font-size:70px;margin-bottom:8px;}
+.res-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:var(--primary-dark);margin-bottom:6px;}
+.res-stars{font-size:34px;letter-spacing:6px;margin:8px 0;}
+.res-score{font-size:14.5px;color:var(--text2);margin-bottom:18px;}
+</style>
+
+<style>
+.optcol{width:100%;display:flex;flex-direction:column;gap:10px;margin:14px 0 4px;}
+.optbtn{width:100%;text-align:left;font-family:'Sarabun',sans-serif;font-size:14.5px;line-height:1.6;color:var(--text);background:var(--panel);border:2px solid var(--border);border-bottom:4px solid var(--line-d);border-radius:14px;padding:12px 16px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;}
+.optbtn:hover:not(:disabled){border-color:var(--primary);background:var(--primary-light);}
+.optbtn:disabled{cursor:default;}
+.optbtn.correct{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.optbtn.wrong{border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.optrow{display:flex;gap:8px;width:100%;margin:14px 0 4px;}
+.optrow .optbtn{text-align:center;font-family:'Mitr',sans-serif;font-size:13px;font-weight:700;padding:14px 6px;}
+.ctxbox{width:100%;background:var(--panel2);border-radius:12px;padding:12px 14px;margin-top:10px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;}
+.cmp{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:10px;text-align:left;}
+.cmp .cbox{border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.65;border:1.5px solid var(--border);background:var(--panel2);}
+.cmp .cbox b{display:block;font-family:'Mitr',sans-serif;font-size:11.5px;margin-bottom:3px;}
+.cmp .cbox.bad{border-color:var(--red);background:var(--red-light);color:#A32E20;}
+.cmp .cbox.good{border-color:var(--green);background:var(--green-light);color:#1F6B33;}
+.cmp .cnote{font-size:13px;color:var(--text2);line-height:1.65;}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px;}
+.tabchip{font-family:'Mitr',sans-serif;font-size:12.5px;font-weight:600;background:var(--panel);border:1.5px solid var(--border);border-radius:99px;padding:6px 12px;cursor:pointer;color:var(--text2);}
+.tabchip.on{background:var(--primary);border-color:var(--primary);color:#fff;}
+.tabtext{width:100%;margin-top:10px;background:var(--primary-light);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7;color:var(--text);text-align:left;min-height:64px;}
+</style>
+</head>
+<body>
+
+<div id="procbar">
+  <div id="steprail"></div>
+</div>
+
+<div class="stage">
+  <div class="panel" id="s1" data-step="0">
+    <div class="intro-wrap">
+      <span class="stepstage">ขั้นที่ 1 · จุดเริ่ม</span>
+      <span class="big-icon">🖼️</span>
+      <div class="title">น้องเอาภาพจากอินเทอร์เน็ตมาใส่โปสเตอร์ แล้วส่งประกวดโดยไม่บอกว่าเป็นภาพของใคร</div>
+      <div class="sub">ภาพ เพลง และข้อความทุกชิ้นมีเจ้าของ มาเรียนรู้ว่าอะไรใช้ได้ ใช้อย่างไรถึงเรียกว่าให้เกียรติเจ้าของ และสร้างผลงานที่เป็นของเราจริง ๆ</div>
+      <button class="btn" style="margin-top:18px" onclick="goStep(1)">เริ่มเรียนรู้ →</button>
+    </div>
+  </div>
+
+  <div class="panel" id="s2" data-step="1" style="display:none">
+    <div class="teach-wrap">
+      <span class="stepstage">ขั้นที่ 2 · แนวคิดสำคัญ</span>
+      <div id="ccardWrap"></div>
+      <div class="cdots" id="cdots"></div>
+      <div class="cnav">
+        <button class="btn ghost" id="cBack" onclick="cPrev()">← ย้อนกลับ</button>
+        <button class="btn" id="cNext" onclick="cNext()">ถัดไป →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="s3" data-step="2" style="display:none">
+    <div class="teach-wrap" style="text-align:left">
+      <div class="rhead">
+        <span class="stepstage" style="margin:0">ขั้นที่ 3 · ลงมือตัดสินใจ</span>
+        <span class="scorepill" id="scorePill">ตอบผิด 0 ครั้ง</span>
+      </div>
+      <span class="rtag" id="roundTag" style="display:block;margin:10px 0 6px">ข้อที่ 1</span>
+      <div class="taskcard"><div class="who">📋 สถานการณ์</div><div class="say" id="qSay"></div></div>
+      <div class="ctxbox" id="ctxBox" style="display:none"></div>
+      <div id="optsWrap"></div>
+      <div class="explainbox" id="explainBox" style="margin-top:14px"></div>
+      <button class="btn" id="nextBtn" style="display:none;margin-top:14px" onclick="nextRound()">ข้อถัดไป →</button>
+    </div>
+  </div>
+
+  <div class="panel" id="s4" data-step="3" style="display:none">
+    <div class="refl-wrap">
+      <span class="stepstage">ขั้นที่ 4 · สะท้อนคิด</span>
+      <div class="title" style="margin-top:2px">งานครั้งต่อไป เราจะใช้ภาพ เพลง และข้อมูลอย่างไร?</div>
+      <div class="refl-hint">ไม่มีคำตอบผิด — เขียนสั้น ๆ ว่าครั้งหน้าที่ทำรายงานหรือโปสเตอร์ เราจะหาภาพ เพลง และข้อมูลอย่างไรให้ถูกต้อง และบอกที่มาอย่างไร</div>
+      
+      <textarea id="reflText" placeholder="เช่น ครั้งหน้าฉันจะใช้ภาพที่ถ่ายเอง หรือภาพที่มีป้าย CC และใส่เครดิตทุกครั้ง..."></textarea>
+      <button class="btn" style="margin-top:16px" onclick="finishGame()">เสร็จสิ้นบทเรียน →</button>
+    </div>
+  </div>
+
+  <div class="panel" id="done" style="display:none">
+    <div class="results-wrap">
+      <div class="res-emoji" id="resEmoji">🏆</div>
+      <div class="res-title" id="resTitle">ผู้สร้างที่ให้เกียรติเจ้าของ!</div>
+      <div class="res-stars" id="resStars">⭐⭐⭐</div>
+      <div class="res-score" id="resScore"></div>
+      <button class="btn" onclick="restartGame()">เรียนอีกครั้ง →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PROCESS = [
+  { label:'จุดเริ่ม', step:0 },
+  { label:'แนวคิด', step:1 },
+  { label:'ลงมือทำ + ตอบสนองทันที', step:2 },
+  { label:'สะท้อนคิด', step:3 },
+];
+let curStep = 0;
+function $(id){ return document.getElementById(id); }
+function esc(s){ return (''+s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function renderRail(){
+  $('steprail').innerHTML = PROCESS.map((p,i)=>{
+    const cls = p.step<curStep ? 'done' : p.step===curStep ? 'cur' : '';
+    return '<span class="pchip '+cls+'"><span class="num">'+(cls==='done'?'':i+1)+'</span>'+esc(p.label)+'</span>';
+  }).join('');
+}
+function goStep(n){
+  curStep = n;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>{ p.style.display = Number(p.dataset.step)===n ? '' : 'none'; });
+  $('done').style.display = 'none'; $('done').classList.remove('active');
+  renderRail();
+  if (n===1) renderConcept();
+  if (n===2) startPractice();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== Step 2: concept cards =====
+const CONCEPTS = [{"icon":"©️","title":"ผลงานทุกชิ้นมีเจ้าของ","body":"ภาพ เพลง วิดีโอ และข้อความที่ใครสร้างขึ้น เป็นของผู้สร้างตั้งแต่สร้างเสร็จ ไม่ต้องติดเครื่องหมายใด ๆ การที่เห็นอยู่บนอินเทอร์เน็ตไม่ได้แปลว่าเอาไปใช้ฟรีได้ ต้องดูก่อนว่าเจ้าของอนุญาตหรือไม่"},{"icon":"🏷️","title":"ใบอนุญาตบอกว่าใช้ได้แค่ไหน","body":"ผลงานที่เจ้าของเปิดให้ใช้จะมีป้ายบอกเงื่อนไข","items":["ป้าย Creative Commons (CC) ส่วนใหญ่ใช้ได้ถ้าให้เครดิตเจ้าของ","บางป้ายห้ามใช้เพื่อหากำไร (เช่น ขายสินค้า) หรือห้ามดัดแปลง","ถ้าไม่มีป้ายอนุญาต ให้ถือว่ายังห้ามใช้ ต้องขอเจ้าของ หรือใช้ภาพที่ถ่ายหรือวาดเอง"]},{"icon":"✍️","title":"เขียนด้วยคำของตัวเอง และบอกแหล่งที่มา","body":"เวลาหาข้อมูลมาทำรายงาน","items":["อ่านให้เข้าใจ แล้วปิดหน้าจอ","เขียนใหม่ด้วยคำของเราเอง","ใส่แหล่งที่มา (ชื่อเว็บหรือหนังสือ) ทุกครั้ง","ถ้าคัดมาตรง ๆ ให้ใส่เครื่องหมายคำพูดและบอกที่มา"]},{"icon":"💡","title":"สร้างสิ่งใหม่ ไม่ใช่แค่ลอก","body":"เทคโนโลยีช่วยให้เราถ่ายภาพ ตัดต่อ แต่งเพลงสั้น หรือใช้เครื่องมือ AI ช่วยร่างไอเดียได้ ผลงานที่ดีต้องมีความคิดของเราอยู่ในนั้น และให้เครดิตสิ่งที่เรายืมมาประกอบ"}];
+let cIdx = 0;
+function renderConcept(){ cIdx = 0; renderConceptCard(); }
+function renderConceptCard(){
+  const c = CONCEPTS[cIdx];
+  const list = c.items ? '<ul class="clist">' + c.items.map((t,i)=>'<li><span class="qn">'+(i+1)+'</span><span>'+esc(t)+'</span></li>').join('') + '</ul>' : '';
+  const cmp = c.compare ? '<div class="cmp"><div class="cbox bad"><b class="cxbadge">'+esc(c.compare.badLabel||'❌ แบบที่ไม่ดี')+'</b><span>'+esc(c.compare.bad)+'</span></div><div class="cbox good"><b class="cxbadge">'+esc(c.compare.goodLabel||'✅ แบบที่ดี')+'</b><span>'+esc(c.compare.good)+'</span></div>'+(c.compare.note?'<div class="cnote">'+esc(c.compare.note)+'</div>':'')+'</div>' : '';
+  const tabs = c.tabs ? '<div class="tabs">'+c.tabs.map((t,i)=>'<button type="button" class="tabchip" data-i="'+i+'">'+esc(t.k)+'</button>').join('')+'</div><div class="tabtext" id="tabText">แตะหัวข้อด้านบนเพื่อดูคำอธิบาย</div>' : '';
+  $('ccardWrap').innerHTML = '<div class="ccard"><span class="ci">'+c.icon+'</span><div class="ct">'+esc(c.title)+'</div><div class="cb">'+esc(c.body)+'</div>'+list+tabs+cmp+'</div>';
+  if (c.tabs) document.querySelectorAll('.tabchip').forEach(b=>{ b.onclick = ()=>{
+    document.querySelectorAll('.tabchip').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    const t = c.tabs[Number(b.dataset.i)];
+    let shot = '';
+    if (t.img){ const bx = t.box || [0,0,0,0]; shot = '<div style="position:relative;width:100%;aspect-ratio:'+t.ratio+';margin-bottom:8px;border-radius:8px;overflow:hidden;border:1.5px solid var(--border)"><img src="'+t.img+'" alt="" style="width:100%;height:100%;display:block"><div style="position:absolute;left:'+bx[0]+'%;top:'+bx[1]+'%;width:'+bx[2]+'%;height:'+bx[3]+'%;border:3px solid #E4614F;border-radius:6px;box-shadow:0 0 0 2px rgba(255,255,255,.7)"></div></div>'; }
+    $('tabText').innerHTML = shot + '<div>' + esc(t.v) + '</div>';
+  }; });
+  $('cdots').innerHTML = CONCEPTS.map((_,i)=>'<span class="cdot'+(i===cIdx?' on':'')+'"></span>').join('');
+  $('cBack').style.visibility = cIdx===0 ? 'hidden' : 'visible';
+  const last = cIdx === CONCEPTS.length-1;
+  $('cNext').textContent = last ? 'เริ่มลงมือทำ →' : 'ถัดไป →';
+  $('cNext').onclick = last ? ()=>goStep(2) : cNext;
+}
+function cNext(){ cIdx = Math.min(CONCEPTS.length-1, cIdx+1); renderConceptCard(); }
+function cPrev(){ cIdx = Math.max(0, cIdx-1); renderConceptCard(); }
+
+// ===== Step 3: choose-and-explain rounds =====
+// type 'v' = three fixed verdict buttons; type 'p' = pick the best of several written options (order shuffled).
+const VERDICTS = ["✅ ใช้ได้เลย","🏷️ ใช้ได้ถ้าให้เครดิตหรือขออนุญาต","🚫 ใช้ไม่ได้"];
+const ROUNDS = [{"type":"v","q":"ใช้ภาพที่เราถ่ายเองในโปสเตอร์ของเรา","ans":0,"why":"ภาพที่เราถ่ายเองเป็นของเรา ใช้ได้เต็มที่"},{"type":"v","q":"ใช้ภาพที่มีป้าย Creative Commons แบบให้เครดิต (CC BY) ในรายงาน","ans":1,"why":"ป้ายนี้อนุญาตให้ใช้ได้ โดยต้องบอกชื่อเจ้าของภาพและที่มาให้ชัดเจน"},{"type":"v","q":"ดาวน์โหลดเพลงดังของศิลปินมาใส่ประกอบวิดีโอที่จะโพสต์ให้ทุกคนดู","ans":2,"why":"เพลงนั้นมีเจ้าของและต้องได้รับอนุญาตก่อน ควรเลือกเพลงที่เปิดให้ใช้ได้ หรือเพลงที่เราแต่งเอง"},{"type":"v","q":"คัดลอกย่อหน้าจากเว็บไซต์มาวางในรายงานโดยไม่บอกที่มา","ans":2,"why":"เป็นการเอาคำของคนอื่นมาเป็นของเรา ต้องเขียนใหม่ด้วยคำของเรา หรือใส่เครื่องหมายคำพูดและบอกแหล่งที่มา"},{"type":"v","q":"ใช้ภาพวาดของเพื่อนในสไลด์ โดยเพื่อนอนุญาตแล้วและใส่ชื่อเพื่อนเป็นเครดิต","ans":1,"why":"ขออนุญาตและให้เครดิต เป็นวิธีที่ถูกต้องในการใช้ผลงานของคนอื่น"},{"type":"v","q":"ใช้ภาพที่ค้นเจอทางอินเทอร์เน็ตโดยไม่มีป้ายอนุญาต ใส่ในโปสเตอร์ที่จะขายเป็นสินค้า","ans":2,"why":"ภาพที่ไม่มีป้ายอนุญาตถือว่ายังห้ามใช้ โดยเฉพาะการใช้หากำไรต้องมีสิทธิ์ชัดเจน"},{"type":"v","q":"ใช้เพลงจากเว็บที่เขียนว่า “ปลอดค่าลิขสิทธิ์” ตามเงื่อนไขที่เว็บนั้นกำหนด","ans":1,"why":"เว็บแต่ละแห่งมีเงื่อนไขต่างกัน บางแห่งต้องให้เครดิต จึงต้องอ่านเงื่อนไขก่อนใช้"},{"type":"p","q":"ประโยคต้นฉบับ: “พืชใช้แสงแดด น้ำ และคาร์บอนไดออกไซด์สร้างอาหารและปล่อยออกซิเจน เรียกว่าการสังเคราะห์แสง” ข้อไหนเป็นการเขียนใหม่ที่ถูกต้อง?","opts":[{"t":"การสังเคราะห์แสงคือวิธีที่ต้นไม้ผลิตอาหารเองจากแสง น้ำ และก๊าซคาร์บอนไดออกไซด์ โดยได้ออกซิเจนออกมาด้วย (ที่มา: หนังสือวิทยาศาสตร์ ป.6)","ok":true,"why":"เรียบเรียงด้วยคำของตัวเองให้ความหมายถูกต้อง และบอกแหล่งที่มา"},{"t":"พืชใช้แสงแดด น้ำ และคาร์บอนไดออกไซด์สร้างอาหารและปล่อยออกซิเจน เรียกว่าการสังเคราะห์แสง","ok":false,"why":"คัดลอกตรง ๆ ไม่มีเครื่องหมายคำพูดและไม่บอกที่มา"},{"t":"พืชใช้แสงแดด น้ำ และคาร์บอนไดออกไซด์สร้างอาหารและปล่อยก๊าซออกซิเจน เรียกว่าการสังเคราะห์แสง","ok":false,"why":"เปลี่ยนแค่คำเดียว ยังเป็นประโยคเดิมและไม่บอกที่มา"}]},{"type":"p","q":"ข้อไหนเป็นการให้เครดิตภาพที่ดีที่สุด?","opts":[{"t":"ภาพโดย [ชื่อผู้สร้าง] จาก [ชื่อเว็บไซต์] ใบอนุญาต CC BY","ok":true,"why":"บอกเจ้าของ แหล่งที่มา และเงื่อนไข ทำให้คนอื่นตรวจสอบได้"},{"t":"ภาพจากอินเทอร์เน็ต","ok":false,"why":"ไม่บอกเจ้าของและที่มา ตรวจสอบไม่ได้"},{"t":"ภาพ: Google","ok":false,"why":"Google เป็นเครื่องมือค้นหา ไม่ใช่เจ้าของภาพ"}]},{"type":"p","q":"โปรเจกต์ศิลปะ ข้อไหนทำให้ผลงานเป็นของเรามากที่สุด?","opts":[{"t":"ถ่ายภาพวัตถุเอง ออกแบบและตัดต่อเอง และให้เครดิตฟอนต์หรือเพลงที่ยืมมา","ok":true,"why":"ความคิดและการลงมือเป็นของเรา และให้เกียรติสิ่งที่ยืมมา"},{"t":"เอาภาพของคนอื่นมาเปลี่ยนสีแล้วเซ็นชื่อตัวเอง","ok":false,"why":"ยังเป็นภาพของคนอื่น แค่ปรับนิดหน่อย"},{"t":"ให้ AI สร้างทั้งชิ้นแล้วส่งโดยไม่บอกใคร","ok":false,"why":"ไม่ใช่ความคิดของเราเอง และไม่ซื่อสัตย์ต่อผู้ตรวจ"}]},{"type":"p","q":"ข้อไหนคือเหตุผลที่ “ภาพอยู่บนอินเทอร์เน็ต” ไม่ได้แปลว่าเอาไปใช้ฟรีได้?","opts":[{"t":"เพราะภาพเป็นของผู้สร้างตั้งแต่สร้างเสร็จ แม้ไม่ได้ติดป้ายลิขสิทธิ์","ok":true,"why":"ลิขสิทธิ์เกิดขึ้นเองเมื่อสร้างผลงาน ไม่ต้องจดหรือติดเครื่องหมาย"},{"t":"เพราะต้องมีเครื่องหมาย © ภาพถึงจะมีลิขสิทธิ์","ok":false,"why":"ไม่จำเป็น ภาพมีลิขสิทธิ์ตั้งแต่สร้างแม้ไม่มีเครื่องหมาย"},{"t":"เพราะเว็บไซต์เป็นเจ้าของภาพทุกใบที่ขึ้นบนเว็บ","ok":false,"why":"เว็บเป็นแค่ที่แสดง ผู้สร้างภาพยังเป็นเจ้าของ"}]},{"type":"p","q":"จะใช้เพลงประกอบวิดีโอของโรงเรียนที่จะโพสต์ให้คนทั่วไปดู ควรทำอย่างไร?","opts":[{"t":"ใช้เพลงที่มีใบอนุญาตให้ใช้ได้ หรือขออนุญาตเจ้าของเพลงก่อน","ok":true,"why":"ถูกต้องตามสิทธิ์ของเจ้าของ และไม่ทำให้วิดีโอถูกลบภายหลัง"},{"t":"เปิดเพลงดังจากแอปแล้วอัดเสียงไปในวิดีโอ","ok":false,"why":"ยังเป็นการใช้เพลงของคนอื่นโดยไม่ได้รับอนุญาต"},{"t":"ตัดเพลงให้สั้นกว่า 10 วินาที ก็ใช้ได้เลย","ok":false,"why":"ความสั้นไม่ทำให้ได้สิทธิ์ใช้ เป็นความเข้าใจผิดที่พบบ่อย"}]},{"type":"p","q":"ข้อไหนเป็นการใช้เทคโนโลยีสร้างสรรค์ผลงานใหม่?","opts":[{"t":"ถ่ายวิดีโอสั้นเล่าเรื่องในโรงเรียน ตัดต่อเอง ใส่เพลงที่มีสิทธิ์ใช้","ok":true,"why":"มีความคิดและการลงมือของเราเป็นแกนหลัก และใช้ของที่ได้รับอนุญาต"},{"t":"ก็อปสไลด์ของรุ่นพี่แล้วเปลี่ยนชื่อเป็นของตัวเอง","ok":false,"why":"เป็นการลอกผลงานคนอื่น"},{"t":"ดาวน์โหลดวิดีโอของคนอื่นมาอัปโหลดใหม่เป็นช่องของเรา","ok":false,"why":"เป็นการเอาผลงานคนอื่นมาแสดงเป็นของเรา"}]},{"type":"p","q":"มีคนเอาภาพที่เราถ่ายไปใช้โดยไม่ให้เครดิต เราควรทำอะไรก่อน?","opts":[{"t":"ขอให้เขาใส่เครดิตหรือเอาออกอย่างสุภาพ และแจ้งผู้ใหญ่หรือรายงานแพลตฟอร์มถ้าไม่ได้ผล","ok":true,"why":"เริ่มจากวิธีสุภาพก่อน แล้วค่อยใช้ช่องทางที่เหมาะสมถ้าจำเป็น"},{"t":"โพสต์ประจานเขาให้ทุกคนเห็น","ok":false,"why":"ทำให้เรื่องบานปลาย และอาจทำผิดมารยาทเสียเอง"},{"t":"ปล่อยไป เพราะคิดว่าทำอะไรไม่ได้","ok":false,"why":"เรามีสิทธิ์ขอให้ให้เครดิตหรือเอาออกได้"}]}];
+let rIdx = 0, wrongCount = 0, answered = false, curOpts = [];
+
+function startPractice(){ rIdx = 0; wrongCount = 0; renderRound(); }
+function renderRound(){
+  const r = ROUNDS[rIdx];
+  answered = false;
+  $('roundTag').textContent = 'ข้อที่ ' + (rIdx+1) + '/' + ROUNDS.length;
+  $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง';
+  $('qSay').textContent = r.q;
+  if (r.ctx){ $('ctxBox').style.display = ''; $('ctxBox').textContent = r.ctx; } else { $('ctxBox').style.display = 'none'; }
+  if (r.type === 'v'){
+    curOpts = (r.labels || VERDICTS).map((v,i)=>({ t:v, ok: i===r.ans, why: r.why }));
+    $('optsWrap').innerHTML = '<div class="optrow">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
+  } else {
+    curOpts = shuffle(r.opts);
+    $('optsWrap').innerHTML = '<div class="optcol">' + curOpts.map((o,i)=>'<button class="optbtn" data-i="'+i+'">'+esc(o.t)+'</button>').join('') + '</div>';
+  }
+  document.querySelectorAll('#optsWrap .optbtn').forEach(b=>{ b.onclick = ()=>pick(Number(b.dataset.i)); });
+  $('explainBox').className = 'explainbox'; $('explainBox').innerHTML = '';
+  $('nextBtn').style.display = 'none';
+}
+function pick(i){
+  if (answered) return;
+  answered = true;
+  const o = curOpts[i];
+  const isVerdict = ROUNDS[rIdx].type === 'v';
+  const btns = document.querySelectorAll('#optsWrap .optbtn');
+  btns.forEach((b,j)=>{ b.disabled = true; if (curOpts[j].ok) b.classList.add('correct'); else if (j===i) b.classList.add('wrong'); });
+  const right = curOpts.find(x=>x.ok);
+  if (!o.ok){ wrongCount++; $('scorePill').textContent = 'ตอบผิด ' + wrongCount + ' ครั้ง'; }
+  $('explainBox').className = 'explainbox show ' + (o.ok ? 'correct' : 'wrong');
+  // each sentence sits in its own element so each one has its own recording (no runtime-composed text)
+  $('explainBox').innerHTML = o.ok
+    ? '<b>✅ ถูกต้อง!</b><div>' + esc(o.why) + '</div>'
+    : '<b>❌ ยังไม่ใช่</b>' + (isVerdict ? '' : '<div>' + esc(o.why) + '</div>') + '<div><b class="cxbadge">ที่เหมาะที่สุดคือ</b> <span>' + esc(right.t) + '</span></div><div>' + esc(right.why) + '</div>';
+  $('nextBtn').style.display = 'block';
+  if (o.ok && window.dlf) dlf.cheer('เก่งมาก!');
+}
+function nextRound(){
+  rIdx++;
+  if (rIdx >= ROUNDS.length){ goStep(3); return; }
+  renderRound();
+}
+
+// ===== Step 4: finish =====
+function finishGame(){
+  window.dlfStars = wrongCount <= 2 ? 3 : wrongCount <= 5 ? 2 : 1;
+  document.querySelectorAll('.panel[data-step]').forEach(p=>p.style.display='none');
+  $('resEmoji').textContent = window.dlfStars === 3 ? '🏆' : window.dlfStars === 2 ? '🎉' : '🌟';
+  $('resTitle').textContent = window.dlfStars === 3 ? "ผู้สร้างที่ให้เกียรติเจ้าของ!" : 'เก่งขึ้นเรื่อย ๆ ลองอีกครั้งได้นะ';
+  $('resStars').textContent = '⭐'.repeat(window.dlfStars) + '☆'.repeat(3-window.dlfStars);
+  $('resScore').textContent = 'ตอบครบ ' + ROUNDS.length + ' ข้อ โดยตอบผิดทั้งหมด ' + wrongCount + ' ครั้ง';
+  $('done').style.display = ''; $('done').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function restartGame(){ goStep(0); }
+
+renderRail();
+</script>
+
+<!-- ════════════ DL-FUN SHARED LAYER (เสียง + แอนิเมชัน) ════════════ -->
+<style>
+.dlf-spk{position:fixed;top:14px;right:14px;z-index:9998;width:44px;height:44px;border-radius:50%;
+  border:2px solid var(--border);background:var(--panel);color:var(--text);
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 14px rgba(15,27,45,.1);transition:transform .15s;}
+.dlf-spk:hover{transform:scale(1.12) rotate(-6deg);}.dlf-spk:active{transform:scale(.9);}.dlf-spk.muted{opacity:.5;}
+.dlf-say{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;
+  border-radius:50%;border:1.5px solid var(--primary);background:var(--primary-light);
+  color:var(--primary-dark);font-size:14px;cursor:pointer;margin-left:6px;vertical-align:middle;transition:transform .12s;}
+.dlf-say:hover{transform:scale(1.2) rotate(8deg);}
+.dlf-say.playing{animation:dlfPulse .6s ease infinite;}
+@keyframes dlfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25);}}
+.dlf-cong{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(15,27,45,.55);backdrop-filter:blur(3px);}
+.dlf-cong.show{display:flex;animation:dlfFade .3s ease;}
+@keyframes dlfFade{from{opacity:0;}to{opacity:1;}}
+.dlf-cong-card{position:relative;text-align:center;padding:36px 40px;border-radius:24px;
+  background:var(--panel);border:2px solid var(--green);box-shadow:0 20px 60px rgba(15,27,45,.3);max-width:340px;
+  animation:dlfPop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes dlfPop{0%{transform:scale(.4) rotate(-8deg);opacity:0;}100%{transform:scale(1) rotate(0);opacity:1;}}
+.dlf-cong-trophy{font-size:80px;display:block;margin-bottom:10px;animation:dlfBounce 1s ease infinite;}
+@keyframes dlfBounce{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-14px) scale(1.08);}}
+.dlf-cong-title{font-family:'Mitr',sans-serif;font-size:26px;font-weight:700;color:#2E6B44;margin-bottom:6px;}
+.dlf-cong-sub{font-family:'Sarabun',sans-serif;font-size:15px;color:var(--text2);margin-bottom:20px;}
+.dlf-cong-stars{font-size:30px;letter-spacing:6px;margin-bottom:18px;}
+.dlf-cong-btn{padding:12px 28px;border-radius:30px;border:none;cursor:pointer;font-family:'Mitr',sans-serif;
+  font-size:15px;font-weight:600;color:#fff;background:var(--green);transition:transform .15s;}
+.dlf-cong-btn:hover{transform:scale(1.05);}
+.dlf-mini{position:fixed;left:50%;top:70px;transform:translateX(-50%) translateY(-30px);z-index:9997;
+  background:var(--panel);border:2px solid var(--primary);color:var(--text);
+  font-family:'Mitr',sans-serif;font-weight:600;font-size:15px;padding:10px 20px;border-radius:30px;
+  box-shadow:0 8px 24px rgba(15,27,45,.2);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);}
+.dlf-mini.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.dlf-confetti{position:fixed;top:-12px;z-index:9999;pointer-events:none;border-radius:2px;}
+@keyframes dlfFall{to{transform:translateY(108vh) rotate(720deg);}}
+</style>
+<button class="dlf-spk" id="dlfSpk" title="เปิด/ปิดเสียง" style="display:none !important" aria-hidden="true" tabindex="-1">🔊</button>
+<div class="dlf-cong" id="dlfCong">
+  <div class="dlf-cong-card">
+    <span class="dlf-cong-trophy" id="dlfCongTrophy">🏆</span>
+    <div class="dlf-cong-title" id="dlfCongTitle">เยี่ยมมาก!</div>
+    <div class="dlf-cong-sub" id="dlfCongSub">น้องทำสำเร็จแล้ว</div>
+    <div class="dlf-cong-stars" id="dlfCongStars">⭐⭐⭐</div>
+    <button class="dlf-cong-btn" id="dlfCongBtn" onclick="dlf.closeCong()">ไปต่อ 🎉</button>
+  </div>
+</div>
+<div class="dlf-mini" id="dlfMini"></div>
+
+
+<script id="dlfAudioData" type="application/json">{"12b6a2d8245a":"audio/unit8-creator-rights/12b6a2d8245a.mp3","d811e87eefb3":"audio/unit8-creator-rights/d811e87eefb3.mp3","71a51a023ae8":"audio/unit8-creator-rights/71a51a023ae8.mp3","852128f8e136":"audio/unit8-creator-rights/852128f8e136.mp3","ce97d9170f39":"audio/unit8-creator-rights/ce97d9170f39.mp3","6b3339405acb":"audio/unit8-creator-rights/6b3339405acb.mp3","8ea7a14cc428":"audio/unit8-creator-rights/8ea7a14cc428.mp3","10fa08efc617":"audio/unit8-creator-rights/10fa08efc617.mp3","f2e2af2924a2":"audio/unit8-creator-rights/f2e2af2924a2.mp3","4fdd4620979d":"audio/unit8-creator-rights/4fdd4620979d.mp3","3373e71e41f2":"audio/unit8-creator-rights/3373e71e41f2.mp3","2fcf47e894f6":"audio/unit8-creator-rights/2fcf47e894f6.mp3","9c7b6866164a":"audio/unit8-creator-rights/9c7b6866164a.mp3","a2390fcfbe3a":"audio/unit8-creator-rights/a2390fcfbe3a.mp3","7c2a2c94dbc6":"audio/unit8-creator-rights/7c2a2c94dbc6.mp3","70d57be22e22":"audio/unit8-creator-rights/70d57be22e22.mp3","16e24e3c8f58":"audio/unit8-creator-rights/16e24e3c8f58.mp3","cc9edb6b3a79":"audio/unit8-creator-rights/cc9edb6b3a79.mp3","3f5b631dbc1f":"audio/unit8-creator-rights/3f5b631dbc1f.mp3","531d78e2354b":"audio/unit8-creator-rights/531d78e2354b.mp3","59ac1ea7eda5":"audio/unit8-creator-rights/59ac1ea7eda5.mp3","bbbf05b03ab0":"audio/unit8-creator-rights/bbbf05b03ab0.mp3","556e94dd062a":"audio/unit8-creator-rights/556e94dd062a.mp3","d585a6a9d18d":"audio/unit8-creator-rights/d585a6a9d18d.mp3","0bae7e283530":"audio/unit8-creator-rights/0bae7e283530.mp3","2db25231ef58":"audio/unit8-creator-rights/2db25231ef58.mp3","c47da2eb8a43":"audio/unit8-creator-rights/c47da2eb8a43.mp3","f10729bff63f":"audio/unit8-creator-rights/f10729bff63f.mp3","15f65d817c45":"audio/unit8-creator-rights/15f65d817c45.mp3","2a7dbdb8a00e":"audio/unit8-creator-rights/2a7dbdb8a00e.mp3","18ed450ca171":"audio/unit8-creator-rights/18ed450ca171.mp3","fa777cfae8ff":"audio/unit8-creator-rights/fa777cfae8ff.mp3","c09c63d02f7b":"audio/unit8-creator-rights/c09c63d02f7b.mp3","966e63bd67ba":"audio/unit8-creator-rights/966e63bd67ba.mp3","f6138f414119":"audio/unit8-creator-rights/f6138f414119.mp3","945b3ffaa1f0":"audio/unit8-creator-rights/945b3ffaa1f0.mp3","992a73664052":"audio/unit8-creator-rights/992a73664052.mp3","6ce2f8151234":"audio/unit8-creator-rights/6ce2f8151234.mp3","bbd911f4ab1d":"audio/unit8-creator-rights/bbd911f4ab1d.mp3","f1ddf5e144cd":"audio/unit8-creator-rights/f1ddf5e144cd.mp3","f5f58e214370":"audio/unit8-creator-rights/f5f58e214370.mp3","7d2dc2179b0a":"audio/unit8-creator-rights/7d2dc2179b0a.mp3","ad60b28c08ed":"audio/unit8-creator-rights/ad60b28c08ed.mp3","b030f121ee0d":"audio/unit8-creator-rights/b030f121ee0d.mp3","26a980e3940c":"audio/unit8-creator-rights/26a980e3940c.mp3","6b7810f2945c":"audio/unit8-creator-rights/6b7810f2945c.mp3","1ae257d748ef":"audio/unit8-creator-rights/1ae257d748ef.mp3","d618d7fcc106":"audio/unit8-creator-rights/d618d7fcc106.mp3","f992fb941a56":"audio/unit8-creator-rights/f992fb941a56.mp3","58f9ec538bd1":"audio/unit8-creator-rights/58f9ec538bd1.mp3","696cbca7a775":"audio/unit8-creator-rights/696cbca7a775.mp3","0b25cbb1e131":"audio/unit8-creator-rights/0b25cbb1e131.mp3","640b7f633609":"audio/unit8-creator-rights/640b7f633609.mp3","d37f29b51f69":"audio/unit8-creator-rights/d37f29b51f69.mp3","ab9702289ccb":"audio/unit8-creator-rights/ab9702289ccb.mp3","2bc2c7ad5fe6":"audio/unit8-creator-rights/2bc2c7ad5fe6.mp3","28e6521a604c":"audio/unit8-creator-rights/28e6521a604c.mp3","c1bfabf7cddd":"audio/unit8-creator-rights/c1bfabf7cddd.mp3","fbfb85038a97":"audio/unit8-creator-rights/fbfb85038a97.mp3","4fccb8620042":"audio/unit8-creator-rights/4fccb8620042.mp3","eb667dc1778d":"audio/unit8-creator-rights/eb667dc1778d.mp3","1566ae7cca8d":"audio/unit8-creator-rights/1566ae7cca8d.mp3","4c8b5825999d":"audio/unit8-creator-rights/4c8b5825999d.mp3","f155d731571e":"audio/unit8-creator-rights/f155d731571e.mp3","df872d9efd60":"audio/unit8-creator-rights/df872d9efd60.mp3","e3e49ffd7648":"audio/unit8-creator-rights/e3e49ffd7648.mp3","0edaa629320c":"audio/unit8-creator-rights/0edaa629320c.mp3","63048cae1356":"audio/unit8-creator-rights/63048cae1356.mp3","2dd5162bfccf":"audio/unit8-creator-rights/2dd5162bfccf.mp3","59832692f9a9":"audio/unit8-creator-rights/59832692f9a9.mp3","a531a7de2ced":"audio/unit8-creator-rights/a531a7de2ced.mp3","cde9380145c8":"audio/unit8-creator-rights/cde9380145c8.mp3","1a7fb9e616b8":"audio/unit8-creator-rights/1a7fb9e616b8.mp3","d2f102eb5d27":"audio/unit8-creator-rights/d2f102eb5d27.mp3","91e1632f2a60":"audio/unit8-creator-rights/91e1632f2a60.mp3","ec1f2ca54ab5":"audio/unit8-creator-rights/ec1f2ca54ab5.mp3","a0684fe5d795":"audio/unit8-creator-rights/a0684fe5d795.mp3","647e23134f46":"audio/unit8-creator-rights/647e23134f46.mp3","7faddfbedffe":"audio/unit8-creator-rights/7faddfbedffe.mp3","6a0f2de68be4":"audio/unit8-creator-rights/6a0f2de68be4.mp3","7bb8f5a84ab5":"audio/unit8-creator-rights/7bb8f5a84ab5.mp3","05e5fca53ca1":"audio/unit8-creator-rights/05e5fca53ca1.mp3","057a0bb15afd":"audio/unit8-creator-rights/057a0bb15afd.mp3","5dc048a4e057":"audio/unit8-creator-rights/5dc048a4e057.mp3","2c69608cbf2f":"audio/unit8-creator-rights/2c69608cbf2f.mp3","0f7098656bbe":"audio/unit8-creator-rights/0f7098656bbe.mp3","cc21ad5e092c":"audio/unit8-creator-rights/cc21ad5e092c.mp3","dc6e54d6674a":"audio/unit8-creator-rights/dc6e54d6674a.mp3","04aceb71b338":"audio/unit8-creator-rights/04aceb71b338.mp3","b14891dd4658":"audio/unit8-creator-rights/b14891dd4658.mp3","70bffc13f760":"audio/unit8-creator-rights/70bffc13f760.mp3","c8ca9c3acfed":"audio/unit8-creator-rights/c8ca9c3acfed.mp3","a59e18c9eb46":"audio/unit8-creator-rights/a59e18c9eb46.mp3","a66234b845ea":"audio/unit8-creator-rights/a66234b845ea.mp3","4aaf4f0055dd":"audio/unit8-creator-rights/4aaf4f0055dd.mp3","4780fc79462b":"audio/unit8-creator-rights/4780fc79462b.mp3","33d4c21d870f":"audio/unit8-creator-rights/33d4c21d870f.mp3","b308f2e90e23":"audio/unit8-creator-rights/b308f2e90e23.mp3","dfb3e4afa929":"audio/unit8-creator-rights/dfb3e4afa929.mp3","21ccb092875e":"audio/unit8-creator-rights/21ccb092875e.mp3","57f54cf2d9c1":"audio/unit8-creator-rights/57f54cf2d9c1.mp3","a3af2a2085a7":"audio/unit8-creator-rights/a3af2a2085a7.mp3","5cd1f72a7af9":"audio/unit8-creator-rights/5cd1f72a7af9.mp3","dec1ce6c690b":"audio/unit8-creator-rights/dec1ce6c690b.mp3","f3bc581be169":"audio/unit8-creator-rights/f3bc581be169.mp3","3fb0e684b56b":"audio/unit8-creator-rights/3fb0e684b56b.mp3","42b34b1c98e1":"audio/unit8-creator-rights/42b34b1c98e1.mp3","e04742eeacc1":"audio/unit8-creator-rights/e04742eeacc1.mp3","3a2ba9ffe23c":"audio/unit8-creator-rights/3a2ba9ffe23c.mp3","a62583db49bd":"audio/unit8-creator-rights/a62583db49bd.mp3","e0293c5ef2f8":"audio/unit8-creator-rights/e0293c5ef2f8.mp3","9bb8216b6df6":"audio/unit8-creator-rights/9bb8216b6df6.mp3","8e331697c164":"audio/unit8-creator-rights/8e331697c164.mp3","b46872ab33f1":"audio/unit8-creator-rights/b46872ab33f1.mp3","dab05dcf3741":"audio/unit8-creator-rights/dab05dcf3741.mp3","dc60fd67731f":"audio/unit8-creator-rights/dc60fd67731f.mp3","af6ba89d9b27":"audio/unit8-creator-rights/af6ba89d9b27.mp3","aca2b0992481":"audio/unit8-creator-rights/aca2b0992481.mp3","66590c21d92e":"audio/unit8-creator-rights/66590c21d92e.mp3","f19e1081b596":"audio/unit8-creator-rights/f19e1081b596.mp3","7fdd46cba22b":"audio/unit8-creator-rights/7fdd46cba22b.mp3","84c24a3726c4":"audio/unit8-creator-rights/84c24a3726c4.mp3","e0196ffda95a":"audio/unit8-creator-rights/e0196ffda95a.mp3","e18a189a9371":"audio/unit8-creator-rights/e18a189a9371.mp3","8af1f0edc12c":"audio/unit8-creator-rights/8af1f0edc12c.mp3","23f891c8e7ad":"audio/unit8-creator-rights/23f891c8e7ad.mp3","5a382c3bfa4a":"audio/unit8-creator-rights/5a382c3bfa4a.mp3"}</script>
+<script>window.DLF_CONFIG={extraReadSelectors:['.say','.sub'],extraNonDecorateSelectors:'textarea'};</script><script src="_lib/dlf-ai-engine.js"></script>
+<!-- ════════════ END DL-FUN ════════════ -->
+
+</body>
+</html>

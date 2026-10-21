@@ -28,12 +28,14 @@ export const AREAS: Area[] = [
     num: 2, mascot: '💬', title: 'การสื่อสารและการทำงานร่วมกัน', sub: 'คุย แบ่งปัน และทำงานร่วมกับคนอื่นอย่างสุภาพและปลอดภัย',
     games: [
       { code: 'g-message', icon: '📧', th: 'ฝึกใช้อีเมล', desc: 'สร้างบัญชี เข้าสู่ระบบ อ่าน ตอบกลับ ส่งอีเมล และระวังฟิชชิง', file: '/games/unit7-message-master.html' },
+      { code: 'g-citizen', icon: '💬', th: 'พลเมืองดิจิทัล', desc: 'มารยาทออนไลน์ ขออนุญาตก่อนโพสต์ ดูแลตัวตนดิจิทัล และทำงานกลุ่มออนไลน์ให้ราบรื่น', file: '/games/unit6-digital-citizen.html' },
     ],
   },
   {
-    num: 3, mascot: '🔐', title: 'การสร้างและดูแลบัญชีดิจิทัล', sub: 'สมัครบัญชีของตัวเอง และดูแลให้ปลอดภัย',
+    num: 3, mascot: '🔐', title: 'การสร้างเนื้อหาและดูแลบัญชีดิจิทัล', sub: 'สมัครบัญชีของตัวเอง สร้างผลงานของตัวเอง และใช้ผลงานคนอื่นอย่างถูกต้อง',
     games: [
       { code: 'g-google-account', icon: '🔐', th: 'สร้างบัญชี Google', desc: 'สมัครบัญชี Google ทีละขั้นตอน ตั้งรหัสผ่านที่ปลอดภัย', file: '/games/unit3-google-account.html' },
+      { code: 'g-creator', icon: '🖼️', th: 'ลิขสิทธิ์และผลงานของฉัน', desc: 'รู้ว่าภาพ เพลง และข้อความอะไรใช้ได้ ให้เครดิตอย่างไร เขียนด้วยคำของตัวเอง และสร้างผลงานใหม่', file: '/games/unit8-creator-rights.html' },
     ],
   },
   {
@@ -56,7 +58,7 @@ export const AREAS: Area[] = [
     // Each game forces the actual skill (label real data, fix a biased
     // dataset, click the real UI, write your own prompt, design system rules)
     // instead of letting a kid pattern-match a multiple-choice answer key.
-    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 3 โมดูล 12 บทเรียน',
+    num: 6, mascot: '🤖', title: 'ทักษะ AI เพื่ออนาคต', sub: 'จาก AI คืออะไร ไปจนถึงใช้งาน AI อย่างมีวิจารณญาณและรับผิดชอบ — 3 โมดูล 9 บทเรียน',
     modules: [
       {
         key: 'm1-foundations', icon: '🤖', title: 'รากฐาน AI', sub: 'AI คืออะไร เรียนรู้จากข้อมูลยังไง ทำไมบางทีถึงลำเอียง และ AI ซ่อนอยู่ที่ไหนในชีวิตจริง',
@@ -64,25 +66,22 @@ export const AREAS: Area[] = [
           { code: 'g-ai-foundations', icon: '🤖', th: 'AI คืออะไร และทำงานอย่างไร', desc: 'พื้นฐาน AI คืออะไร เรียนรู้ยังไง และทำไมบางทีถึงตอบผิด', file: '/games/ai01-foundations.html' },
           { code: 'g-modeltrainer', icon: '🧑‍🏫', th: 'ครูฝึก AI', desc: 'เป็นครูสอน AI เอง ติดป้ายข้อมูล ฝึกโมเดล และดูว่าข้อมูลดีทำให้ AI เก่งยังไง', file: '/games/ai02-model-trainer.html' },
           { code: 'g-biasdetective', icon: '🕵️', th: 'นักสืบอคติ AI', desc: 'สืบหาสาเหตุที่ AI ลำเอียง แล้วแก้ข้อมูลให้ยุติธรรมกับทุกคน', file: '/games/ai03-bias-detective.html' },
-          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร พร้อม 25 ข้อเปรียบเทียบของจริงกับ AI (คลิป/ภาพ/บทความ)', file: '/games/ai12-ai-in-the-world.html' },
+          { code: 'g-aiworld', icon: '🌏', th: 'AI รอบตัวเรา', desc: 'AI ซ่อนอยู่ที่ไหนบ้างในชีวิตจริง ช่วยอะไรได้ และต้องระวังอะไร รวม 30 ข้อ มีทั้งจับคู่ ตัดสินสถานการณ์ และเปรียบเทียบของจริงกับ AI (คลิป/ภาพ/บทความ)', file: '/games/ai12-ai-in-the-world.html' },
         ],
       },
       {
         key: 'm2-collab', icon: '🤝', title: 'ทำงานร่วมกับ AI', sub: 'สั่งงาน AI ให้ชัดเจน ตรวจสอบก่อนเชื่อ และรู้ว่างานไหนควรใช้ AI',
         games: [
-          { code: 'g-ui-inspector', icon: '🖥️', th: 'หน้าจอแชท AI และการสั่งงานให้ชัดเจน', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI คำว่า "token" คืออะไร และเขียนคำสั่งให้ครบ 3 ส่วน (ใคร/ทำอะไร/ตอบแบบไหน)', file: '/games/ai04-ui-inspector.html' },
+          { code: 'g-ui-inspector', icon: '🖥️', th: 'แชต AI: รู้จักปุ่ม และเขียนคำสั่งให้ชัด', desc: 'รู้จักปุ่มต่าง ๆ บนแชท AI เขียนคำสั่งให้ครบ 3 ส่วน (ใคร/ทำอะไร/ตอบแบบไหน) และบอกฉากกับแสงเมื่อสั่งสร้างภาพ', file: '/games/ai04-ui-inspector.html' },
           { code: 'g-discernment', icon: '🔍', th: 'นักตรวจสอบคำตอบ AI', desc: 'อ่านคำตอบของ AI อย่างเท่าทัน จับจุดที่ผิด มั่นใจเกินจริง หรือลำเอียง ก่อนเชื่อ', file: '/games/ai06-discernment.html' },
-          { code: 'g-diligence', icon: '🧾', th: 'นักใช้ AI อย่างมีความรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และผลงานยังเป็นของเราแค่ไหน', file: '/games/ai07-diligence.html' },
-          { code: 'g-privacy', icon: '🔒', th: 'รู้ทันความเป็นส่วนตัวกับ AI', desc: 'เช็กก่อนพิมพ์ว่าข้อมูลไหนปลอดภัย ข้อมูลไหนควรถามผู้ใหญ่ก่อน และข้อมูลไหนไม่ควรพิมพ์ให้ AI', file: '/games/ai08-privacy.html' },
-          { code: 'g-imagemockup', icon: '🖼️', th: 'สร้างภาพและม็อคอัพด้วย AI', desc: 'เอาผลงานหรือสินค้าของตัวเองไปจัดวางในฉากสมจริง ให้ดูเป็นมืออาชีพ', file: '/games/ai14-image-mockup.html' },
+          { code: 'g-diligence', icon: '🧾', th: 'ใช้ AI อย่างรับผิดชอบ', desc: 'รู้ว่างานไหนควรให้ AI ช่วย ต้องบอกใครว่าใช้ AI และเช็กก่อนพิมพ์ว่าข้อมูลไหนปลอดภัย ควรถามผู้ใหญ่ หรือไม่ควรพิมพ์', file: '/games/ai07-diligence.html' },
         ],
       },
       {
         key: 'm3-shaping', icon: '💎', title: 'ออกแบบพฤติกรรม AI แล้วใช้เรียนรู้', sub: 'ตั้งกฎให้ AI ผู้ช่วยของตัวเอง ปรับโทนให้เหมาะกับงาน แล้วใช้ AI ติวเตอร์ที่ออกแบบเองช่วยเรียนรู้เรื่องใหม่จริง ๆ',
         games: [
-          { code: 'g-gemarchitect', icon: '💎', th: 'สถาปนิกติวเตอร์ AI ของฉัน', desc: 'ดูภาพจริงของ Gemini ทีละขั้น แล้วเลือกชื่อ บทบาท และกฎให้ AI ติวเตอร์ พร้อมเทียบคำตอบเมื่อตั้งกฎต่างกัน', file: '/games/ai09-gem-architect.html' },
-          { code: 'g-sandboxmaster', icon: '📚', th: 'สถาปนิกข้อมูลอ้างอิงของ AI', desc: 'ดูภาพเคลื่อนไหวเทียบ AI ที่มีและไม่มีเอกสาร (RAG) แล้วลองสร้างผู้ช่วยโรงเรียนเอง แนบไฟล์ให้ตรงเรื่อง และตั้งคำสั่งให้ตอบจากเอกสาร', file: '/games/ai10-sandbox-master.html' },
-          { code: 'g-learnwithai', icon: '🎓', th: 'เรียนรู้เรื่องใหม่กับ AI', desc: 'ลองใช้ AI ช่วยเตรียมสอบ 4 แบบ: สรุปข้อความ ทำการ์ดคำศัพท์ ออกโจทย์ฝึก และให้ AI สอนแนวคิด — คลิกเลือกคำสั่งแล้วดูผลลัพธ์', file: '/games/ai11-learn-with-ai.html' },
+          { code: 'g-gemarchitect', icon: '💎', th: 'ออกแบบผู้ช่วย AI ของฉัน', desc: 'เรียนรู้การตั้งชื่อ บทบาท และกฎให้ผู้ช่วย AI และการแนบเอกสารให้ตอบจากเอกสาร แล้วลองสร้างผู้ช่วยตัวจริงในเครื่องมือ', file: '/games/ai09-gem-architect.html' },
+          { code: 'g-learnwithai', icon: '🎓', th: 'ใช้ AI เป็นเครื่องมือเรียน', desc: 'ใช้ AI ช่วยเตรียมสอบ 4 แบบ: สรุป ทำการ์ดคำศัพท์ ออกโจทย์ฝึก และให้สอนแนวคิด พร้อมรู้ว่าต้องตรวจอะไรก่อนเชื่อ', file: '/games/ai11-learn-with-ai.html' },
         ],
       },
     ],

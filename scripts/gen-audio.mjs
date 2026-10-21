@@ -33,11 +33,25 @@ import { spawn } from 'child_process';
 // literal containing the OTHER kind of quote — e.g. 'เว็บที่บอกว่า "กินน้ำแข็งแล้วเก่ง"' —
 // so those strings were never recorded and their speakers stayed broken.
 const LITERALS = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\$]|\\.)*)`/g;
+// Quoted strings can never span a line, so they can be matched line by line.
+const QUOTED = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"/g;
 function literalStrings(code) {
   const out = [];
   for (const m of code.matchAll(LITERALS)) {
     const raw = m[1] ?? m[2] ?? m[3];
     if (raw && /[฀-๿]/.test(raw)) out.push(raw.replace(/\\'/g, "'").replace(/\\"/g, '"'));
+  }
+  // Second pass. The pass above treats a backtick template as one literal that may span
+  // lines, so a template containing ${…} can knock it out of sync and swallow every real
+  // string up to the next backtick — those strings were then never listed, never got a
+  // clip, and silently fell back to the browser's speech engine. Scanning each line for
+  // quoted strings recovers them.
+  for (const line of code.split('\n')) {
+    if (!/[฀-๿]/.test(line)) continue;
+    for (const m of line.matchAll(QUOTED)) {
+      const raw = m[1] ?? m[2];
+      if (raw && /[฀-๿]/.test(raw)) out.push(raw.replace(/\\'/g, "'").replace(/\\"/g, '"'));
+    }
   }
   return out;
 }
@@ -45,7 +59,7 @@ function literalStrings(code) {
 const GAMES = 'public/games';
 const CACHE = path.join('node_modules', '.cache', 'cs-edge-tts'); // Edge TTS MP3s, keyed by clip id
 const REFRESH_PROGRESS = path.join(CACHE, 'refresh-progress.json');
-const MAX_LEN = 160;          // the TTS endpoint truncates long strings; ours are labels
+const MAX_LEN = 220;          // matches the engine's own readable() limit: anything it puts a speaker on needs a clip (checked: a ~200-char Thai sentence synthesises in full, ~14s)
 const DELAY_MS = 120;         // be a polite client
 const REFRESH = process.env.CS_EDGE_TTS_REFRESH === '1' || process.argv.includes('--refresh');
 console.log(`Edge TTS refresh: ${REFRESH}`);
@@ -83,7 +97,10 @@ async function synth(text) {
     try {
       fs.mkdirSync(CACHE, { recursive: true });
       await new Promise((resolve, reject) => {
-        const child = spawn('python', ['-m', 'edge_tts', '--voice', voice, '--text', text, '--write-media', cached], { stdio: 'pipe' });
+        // Math/box/dingbat symbols (⊞ ▢ ✕ ...) make the service return no audio at all. Strip them
+        // from what is SPOKEN only — the clip id is still keyed on the original text so lookups match.
+        const spoken = text.replace(/[∀-⋿■-◿✀-➿]/g, ' ').replace(/\s+/g, ' ').trim();
+        const child = spawn('python', ['-m', 'edge_tts', '--voice', voice, '--text', spoken, '--write-media', cached], { stdio: 'pipe' });
         let error = '';
         let settled = false;
         // A hung websocket here previously stalled the whole migration for hours with
@@ -129,6 +146,16 @@ async function synth(text) {
 function speakableStrings(html, dir) {
   const out = new Set();
   const add = (raw) => {
+    // A literal that carries inline tags (e.g. 'พิมพ์ <strong>A S D F</strong> ...'): at runtime the engine
+    // reads each element's text as its own piece, so record every piece plus the tag-free whole.
+    if (/<[a-z/]/i.test(raw)) {
+      addOne(raw.replace(/<[^>]*>/g, ' '));
+      for (const piece of raw.split(/<[^>]*>/)) addOne(piece);
+      return;
+    }
+    addOne(raw);
+  };
+  const addOne = (raw) => {
     const c = cleanKey(raw);
     // Mirror the engine's own readable() gate (txt.length<2 never gets a speaker
     // button). Below that length this is almost always a data value picked up by the
@@ -137,6 +164,7 @@ function speakableStrings(html, dir) {
     // several such isolated glyphs (Thai digits, ฿, the phinthu diacritic ฺ, ...) have no
     // pronunciation Azure's TTS can produce in isolation, so they hard-failed synthesis
     // for text nothing ever speaks.
+    if (/[{}]|&&|=>|<\/?[a-z]/i.test(c)) return;   // source code / markup picked up by accident, never spoken text
     if (c && c.length >= 2 && c.length <= MAX_LEN) out.add(c);
   };
   // Scan the code only. The audio map used to be one multi-megabyte base64 line (clips are
@@ -158,6 +186,16 @@ function speakableStrings(html, dir) {
   const bodyOnly = code.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<style[\s\S]*?<\/style>/g, '');
   for (const m of bodyOnly.matchAll(/>([^<]*[฀-๿][^<]*)</g)) {
     add(m[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim());
+  }
+  // Text between tags inside a script's HTML template strings (e.g. `<div class="round-title">…</div>`
+  // built in JS). When that template also holds ${…} pieces the string scan above cannot read it as
+  // one literal, so these were never recorded. Only fully static runs are taken; anything with ${…}
+  // in it is built at runtime and cannot be pre-recorded.
+  for (const m of code.matchAll(/>([^<>`]*[฀-๿][^<>`]*)</g)) {
+    const t = m[1];
+    if (t.includes('${') || t.includes("'+") || t.includes('\\n')) continue;
+    if (/[{}]|&&|=>|\bfunction\b|\bconst\b|\breturn\b/.test(t)) continue;   // that is code, not text
+    add(t.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim());
   }
   for (const m of html.matchAll(/<script src="([^"]+\.js)"/g)) {
     const jsPath = path.join(dir, m[1]);
